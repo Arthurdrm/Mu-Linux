@@ -471,9 +471,12 @@ The rest of `Content/`:
   for what the server sends in the catalog.
 - `audio/sound/<kind>/`: sounds split into `ambient`, `effect`, `interface`,
   `monster`, `npc`, `player` and `skill`.
-- `monster/unused/` and `npc/unused/`: models the 0.97k does not load, from
-  later versions (monsters grouped by the 5.2 map that creates them: Kalima,
-  Aida, Castle Siege, Crywolf...). They are kept for custom content.
+- `monster/unused/`, `npc/unused/`, `player/unused/` and `item/unused/`:
+  models and textures the 0.97k does not load, from later versions (monsters
+  grouped by the 5.2 map that creates them: Kalima, Aida, Castle Siege,
+  Crywolf...; `player/unused/` holds the Dark Lord and `item/unused/` its
+  items, the elemental rings and necklaces, Kundun...). They stay
+  registered, so they remain available for custom content.
 
 ---
 

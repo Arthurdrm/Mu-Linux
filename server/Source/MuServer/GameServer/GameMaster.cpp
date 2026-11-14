@@ -85,8 +85,9 @@ void CGameMaster::SetGameMasterLevel(LPOBJ lpObj, int level)
 {
 	for (int n = 0; n < this->m_count; n++)
 	{
-		if (strcmp(this->m_GameMasterInfo[n].Account, lpObj->Account) == 0 && TextName::Equals(this->m_GameMasterInfo[n].Name, lpObj->Name))
+		if (_stricmp(this->m_GameMasterInfo[n].Account, lpObj->Account) == 0 && TextName::Equals(this->m_GameMasterInfo[n].Name, lpObj->Name))
 		{
+			this->m_GameMasterInfo[n].Level = level;
 			return;
 		}
 	}
@@ -104,9 +105,14 @@ void CGameMaster::SetGameMasterLevel(LPOBJ lpObj, int level)
 
 bool CGameMaster::CheckGameMasterLevel(LPOBJ lpObj, int level)
 {
+	if ((lpObj->Authority & 32) != 0)
+	{
+		return true;
+	}
+
 	for (int n = 0; n < this->m_count; n++)
 	{
-		if (strcmp(this->m_GameMasterInfo[n].Account, lpObj->Account) == 0 && TextName::Equals(this->m_GameMasterInfo[n].Name, lpObj->Name) && this->m_GameMasterInfo[n].Level >= level)
+		if (_stricmp(this->m_GameMasterInfo[n].Account, lpObj->Account) == 0 && TextName::Equals(this->m_GameMasterInfo[n].Name, lpObj->Name) && this->m_GameMasterInfo[n].Level >= level)
 		{
 			return true;
 		}

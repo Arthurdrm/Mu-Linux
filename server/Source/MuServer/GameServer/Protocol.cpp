@@ -28,6 +28,7 @@
 #include "Party.h"
 #include "Quest.h"
 #include "ServerInfo.h"
+#include "GameMaster.h"
 #include "SkillManager.h"
 #include "Trade.h"
 #include "ContentCatalog.h"
@@ -600,6 +601,20 @@ void CGChatRecv(PMSG_CHAT_RECV* lpMsg, int aIndex)
 		}
 		else
 		{
+			return;
+		}
+	}
+
+	if (lpMsg->message[0] == '!')
+	{
+		if (gGameMaster.CheckGameMasterLevel(lpObj, 1) || (lpObj->Authority & 32) != 0)
+		{
+			char buff[256] = { 0 };
+			const char* msgStart = &lpMsg->message[1];
+			while (*msgStart == ' ') msgStart++;
+			wsprintf(buff, "[%s][%s] %s", gServerInfo.m_ServerName, lpObj->Name, msgStart);
+			GDGlobalNoticeSend(0, buff);
+			gLog.Output(LOG_COMMAND, "[GMNotice][%s][%s] - (Message: %s)", lpObj->Account, lpObj->Name, msgStart);
 			return;
 		}
 	}

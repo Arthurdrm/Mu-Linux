@@ -17,6 +17,7 @@
 #include "Quest.h"
 #include "ServerInfo.h"
 #include "ShopManager.h"
+#include "SkillManager.h"
 #include "Trade.h"
 #include "Util.h"
 #include "Warehouse.h"
@@ -112,6 +113,18 @@ bool CNpcTalk::NpcTalk(LPOBJ lpNpc, LPOBJ lpObj)
 		case 249:
 		{
 			this->NpcGuard(lpNpc, lpObj);
+
+			break;
+		}
+
+		case 242:
+		{
+			if (lpNpc->Map == 3 && lpNpc->X == 173 && lpNpc->Y == 125)
+			{
+				return 0;
+			}
+
+			this->NpcBuffElf(lpNpc, lpObj);
 
 			break;
 		}
@@ -225,6 +238,30 @@ void CNpcTalk::NpcGuard(LPOBJ lpNpc, LPOBJ lpObj)
 {
 	GCChatTargetSend(lpObj, lpNpc->Index, gMessage.GetTextMessage(27, lpObj->Lang));
 }
+
+void CNpcTalk::NpcBuffElf(LPOBJ lpNpc, LPOBJ lpObj)
+{
+	if (lpObj->Type != OBJECT_USER || gObjIsConnectedGP(lpObj->Index) == 0)
+	{
+		return;
+	}
+
+	int buffTime = 1800; // 30 minutos
+	int damageBuff = 50; // Moderado: +50 ataque
+	int defenseBuff = 50; // Moderado: +50 defesa
+
+	gEffectManager.AddEffect(lpObj, 0, EFFECT_GREATER_DAMAGE, buffTime, damageBuff, 0, 0, 0, lpNpc->Index);
+	gEffectManager.AddEffect(lpObj, 0, EFFECT_GREATER_DEFENSE, buffTime, defenseBuff, 0, 0, 0, lpNpc->Index);
+
+	gSkillManager.GCSkillAttackSend(lpNpc, SKILL_GREATER_DAMAGE, lpObj->Index, 1);
+	gSkillManager.GCSkillAttackSend(lpNpc, SKILL_GREATER_DEFENSE, lpObj->Index, 1);
+
+	char speech[] = "Receba a bênção de força e proteção, guerreiro!";
+	GCChatTargetSend(lpObj, lpNpc->Index, speech);
+
+	gNotice.GCNoticeSend(lpObj->Index, 1, "[Elfa de Buff] Bênção ativada! (+50 Dano e Defesa por 30m)");
+}
+
 
 void CNpcTalk::CGNpcTalkRecv(PMSG_NPC_TALK_RECV* lpMsg, int aIndex)
 {

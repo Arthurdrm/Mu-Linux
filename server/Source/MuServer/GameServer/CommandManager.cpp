@@ -25,6 +25,7 @@
 #include "GoldenArcherBingo.h"
 #include <cerrno>
 #include <cstdlib>
+#include <cctype>
 
 CCommandManager gCommandManager;
 
@@ -240,6 +241,11 @@ bool CCommandManager::ManagementCore(LPOBJ lpObj, char* message)
 	memset(command, 0, sizeof(command));
 
 	this->GetString(message, command, sizeof(command), 0);
+
+	if (_stricmp(command, "/gpost") == 0 || _stricmp(command, "/anuncio") == 0)
+	{
+		strcpy_s(command, "/global");
+	}
 
 	COMMAND_LIST CommandData;
 
@@ -1995,14 +2001,26 @@ void CCommandManager::CommandGMSkin(LPOBJ lpObj, char* arg)
 
 	this->GetString(arg, name, sizeof(name), 0);
 
-	if (name[0] == '\0')
+	if (name[0] == 0)
 	{
 		gNotice.GCNoticeSend(lpObj->Index, 1, gMessage.GetTextMessage(94, lpObj->Lang));
 
 		return;
 	}
 
-	LPOBJ lpTarget = gObjFind(name);
+	LPOBJ lpTarget = 0;
+	int monster = 0;
+
+	if (isdigit((unsigned char)name[0]))
+	{
+		lpTarget = lpObj;
+		monster = atoi(name);
+	}
+	else
+	{
+		lpTarget = gObjFind(name);
+		monster = this->GetNumber(arg, 1);
+	}
 
 	if (lpTarget == 0)
 	{
@@ -2011,13 +2029,13 @@ void CCommandManager::CommandGMSkin(LPOBJ lpObj, char* arg)
 		return;
 	}
 
-	lpTarget->Change = this->GetNumber(arg, 1);
+	lpTarget->Change = monster;
 
 	gObjViewportListProtocolCreate(lpTarget);
 
 	gObjectManager.CharacterUpdateMapEffect(lpTarget);
 
-	gLog.Output(LOG_COMMAND, "[CommandSkin][%s][%s] - (Name: %s, Change: %d)", lpObj->Account, lpObj->Name, name, lpTarget->Change);
+	gLog.Output(LOG_COMMAND, "[CommandSkin][%s][%s] - (Target: %s, Change: %d)", lpObj->Account, lpObj->Name, lpTarget->Name, lpTarget->Change);
 }
 
 void CCommandManager::CommandGMMakeMob(LPOBJ lpObj, char* arg)

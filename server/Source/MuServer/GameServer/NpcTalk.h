@@ -71,6 +71,8 @@ public:
 
 	void NpcGuard(LPOBJ lpNpc, LPOBJ lpObj);
 
+	void NpcBuffElf(LPOBJ lpNpc, LPOBJ lpObj);
+
 	void CGNpcTalkRecv(PMSG_NPC_TALK_RECV* lpMsg, int aIndex);
 
 	void CGNpcTalkCloseRecv(int aIndex);

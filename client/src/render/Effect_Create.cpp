@@ -641,6 +641,121 @@ static bool CreateEffect_Type268(float*& pfVar17, float*& pfVar8, float*& result
   return false;
 }
 
+// IDA: CreateEffect (0x00460DC0), case 238.
+static bool CreateEffect_Type238(float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 5;
+  *(char *)((char*)DAT_07cf1ffc + 1408) = *(char *)((char*)DAT_07cf1ffc + 1408) + 1;   // serial de proyectiles
+  { result = (float*)(pfVar17); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 239.
+static bool CreateEffect_Type239(float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 25;
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  { result = (float*)(pfVar17); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_SKILL_BLAST.
+static bool CreateEffect_SkillBlast(float *& param_8, intptr_t& iVar9, float*& pfVar12, float*& pfVar17, intptr_t& uVar10, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 30;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  uVar10 = _rand() % 8;
+  param_8 = (float *)(uVar10 + 10);
+  pfVar12 = pfVar17 + 4;
+  AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
+  iVar9 = _rand();
+  param_8 = (float *)(iVar9 % 100 + 200);
+  *pfVar12 = (float)(int)(intptr_t)param_8 + *pfVar12;
+  iVar9 = _rand();
+  param_8 = (float *)(iVar9 % 100 + -0x32);
+  AsObject(pfVar17)->Position[1] = (float)(intptr_t)param_8 + AsObject(pfVar17)->Position[1];
+  iVar9 = _rand();
+  param_8 = (float *)(iVar9 % 500 + 300);
+  AsObject(pfVar17)->Position[2] = (float)(intptr_t)param_8 + AsObject(pfVar17)->Position[2];
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = 0.0;
+  iVar9 = _rand();
+  param_8 = (float *)(iVar9 % 0x32);
+  AsObject(pfVar17)->Direction[2] = _DAT_0055298c - (float)(intptr_t)param_8;
+  AsObject(pfVar17)->Angle[0] = 0.0;
+  AsObject(pfVar17)->Angle[1] = 20.0;
+  AsObject(pfVar17)->Angle[2] = 0.0;
+  pfVar17[0x10] = *pfVar12;
+  pfVar17[0x11] = AsObject(pfVar17)->Position[1];
+  pfVar17[0x12] = AsObject(pfVar17)->Position[2];
+  Joint_Create(0x4ea,pfVar12,pfVar12,AsObject(pfVar17)->Angle,5,(intptr_t)pfVar17,100.0,-1,0);
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  { result = (float*)(pfVar17); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_ARROW_DOUBLE.
+static bool CreateEffect_ArrowDouble(float*& pfVar12, float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 30;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
+  AsObject(pfVar17)->Scale = 1.0;
+  pfVar12 = pfVar17 + 4;
+  AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552980;
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = -70.0;
+  AsObject(pfVar17)->Direction[2] = 0.0;
+  pfVar17[0x10] = *pfVar12;
+  pfVar17[0x11] = AsObject(pfVar17)->Position[1];
+  pfVar17[0x12] = AsObject(pfVar17)->Position[2];
+  Joint_Create(0x4ea,pfVar12,pfVar12,AsObject(pfVar17)->Angle,5,(intptr_t)pfVar17,100.0,-1,0);
+  if (*(float *)&AsObject(pfVar17)->SubType != 0.0) {
+    CreateEffect(MODEL_PIERCING,pfVar12,AsObject(pfVar17)->Angle,AsObject(pfVar17)->Light,(float *)0x0,pfVar17,(float *)0xffffffff,
+                 (float *)0x0,0);
+    *(float *)&AsObject(pfVar17)->AttackPoint = 0.0;
+    AsObject(pfVar17)->Kind = 1;
+  }
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  { result = (float*)(pfVar17); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 243.
+static bool CreateEffect_Type243(float& fVar27, intptr_t& iVar9, float* const& local_3c, float& local_58, float& local_5c, float& local_60, float& local_64, float& local_68, float& local_6c, float*& pfVar12, float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 30;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
+  AsObject(pfVar17)->Scale = 1.0;
+  iVar9 = 0;
+  AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552980;
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = -30.0;
+  AsObject(pfVar17)->Direction[2] = 0.0;
+  Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
+  local_6c = -10.0;
+  local_68 = -100.0;
+  local_64 = 15.0;
+  Vector_Rotate(&local_6c,local_3c + 3,&local_60);
+  pfVar8 = AsObject(pfVar17)->StartPosition;
+  *pfVar8 = AsObject(pfVar17)->Position[0];
+  AsObject(pfVar17)->StartPosition[1] = AsObject(pfVar17)->Position[1];
+  AsObject(pfVar17)->StartPosition[2] = AsObject(pfVar17)->Position[2];
+  fVar27 = *pfVar8;
+  *pfVar12 = 0.0;
+  pfVar12[1] = 0.0;
+  *pfVar8 = local_60 + fVar27;
+  AsObject(pfVar17)->StartPosition[1] = local_5c + AsObject(pfVar17)->StartPosition[1];
+  AsObject(pfVar17)->StartPosition[2] = local_58 + AsObject(pfVar17)->StartPosition[2];
+  pfVar12[2] = AsObject(pfVar17)->Angle[2];
+  do {
+    Joint_Create(0x4e1,pfVar8,pfVar8,pfVar12,0xb,(intptr_t)pfVar17,50.0,-1,iVar9 == 1);
+    iVar9 = iVar9 + 1;
+  } while (iVar9 < 4);
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  { result = (float*)(pfVar17); return true; }
+  return false;
+}
+
 // IDA: CreateEffect (0x00460DC0)
 float * __cdecl
 CreateEffect(int param_1,float *param_2,float *param_3,float *param_4,float *param_5,float *param_6,
@@ -1360,43 +1475,14 @@ switchD_00461001_caseD_c7:
     if (CreateEffect_Type237(pfVar17, pfVar8, result)) return result;
     break;
   case 0xee:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 5;
-    *(char *)((char*)DAT_07cf1ffc + 1408) = *(char *)((char*)DAT_07cf1ffc + 1408) + 1;   // serial de proyectiles
-    return pfVar17;
+    if (CreateEffect_Type238(pfVar17, result)) return result;
+    break;
   case 0xef:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 25;
-    *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
-    return pfVar17;
-  case 0xf0:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 30;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    uVar10 = _rand() % 8;
-    param_8 = (float *)(uVar10 + 10);
-    pfVar12 = pfVar17 + 4;
-    AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
-    iVar9 = _rand();
-    param_8 = (float *)(iVar9 % 100 + 200);
-    *pfVar12 = (float)(int)(intptr_t)param_8 + *pfVar12;
-    iVar9 = _rand();
-    param_8 = (float *)(iVar9 % 100 + -0x32);
-    AsObject(pfVar17)->Position[1] = (float)(intptr_t)param_8 + AsObject(pfVar17)->Position[1];
-    iVar9 = _rand();
-    param_8 = (float *)(iVar9 % 500 + 300);
-    AsObject(pfVar17)->Position[2] = (float)(intptr_t)param_8 + AsObject(pfVar17)->Position[2];
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = 0.0;
-    iVar9 = _rand();
-    param_8 = (float *)(iVar9 % 0x32);
-    AsObject(pfVar17)->Direction[2] = _DAT_0055298c - (float)(intptr_t)param_8;
-    AsObject(pfVar17)->Angle[0] = 0.0;
-    AsObject(pfVar17)->Angle[1] = 20.0;
-    AsObject(pfVar17)->Angle[2] = 0.0;
-    pfVar17[0x10] = *pfVar12;
-    pfVar17[0x11] = AsObject(pfVar17)->Position[1];
-    pfVar17[0x12] = AsObject(pfVar17)->Position[2];
-    Joint_Create(0x4ea,pfVar12,pfVar12,AsObject(pfVar17)->Angle,5,(intptr_t)pfVar17,100.0,-1,0);
-    *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
-    return pfVar17;
+    if (CreateEffect_Type239(pfVar17, result)) return result;
+    break;
+  case MODEL_SKILL_BLAST:
+    if (CreateEffect_SkillBlast(param_8, iVar9, pfVar12, pfVar17, uVar10, result)) return result;
+    break;
   case 0xf1:
     *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
     AsObject(pfVar17)->Scale = 0.9;
@@ -1458,58 +1544,12 @@ switchD_00461001_caseD_c7:
     *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
     return (float *)Entity_FindNearby_SendPacket((uint)AsObject(pfVar17)->Skill,AsObject(pfVar17)->Position,400.0,
                                                  *(byte *)(pfVar17 + 0x22),AsObject(pfVar17)->PKKey);
-  case 0xf2:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 30;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
-    AsObject(pfVar17)->Scale = 1.0;
-    pfVar12 = pfVar17 + 4;
-    AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552980;
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = -70.0;
-    AsObject(pfVar17)->Direction[2] = 0.0;
-    pfVar17[0x10] = *pfVar12;
-    pfVar17[0x11] = AsObject(pfVar17)->Position[1];
-    pfVar17[0x12] = AsObject(pfVar17)->Position[2];
-    Joint_Create(0x4ea,pfVar12,pfVar12,AsObject(pfVar17)->Angle,5,(intptr_t)pfVar17,100.0,-1,0);
-    if (*(float *)&AsObject(pfVar17)->SubType != 0.0) {
-      CreateEffect(MODEL_PIERCING,pfVar12,AsObject(pfVar17)->Angle,AsObject(pfVar17)->Light,(float *)0x0,pfVar17,(float *)0xffffffff,
-                   (float *)0x0,0);
-      *(float *)&AsObject(pfVar17)->AttackPoint = 0.0;
-      AsObject(pfVar17)->Kind = 1;
-    }
-    *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
-    return pfVar17;
+  case MODEL_ARROW_DOUBLE:
+    if (CreateEffect_ArrowDouble(pfVar12, pfVar17, result)) return result;
+    break;
   case 0xf3:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 30;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
-    AsObject(pfVar17)->Scale = 1.0;
-    iVar9 = 0;
-    AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552980;
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = -30.0;
-    AsObject(pfVar17)->Direction[2] = 0.0;
-    Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
-    local_6c = -10.0;
-    local_68 = -100.0;
-    local_64 = 15.0;
-    Vector_Rotate(&local_6c,local_3c + 3,&local_60);
-    pfVar8 = AsObject(pfVar17)->StartPosition;
-    *pfVar8 = AsObject(pfVar17)->Position[0];
-    AsObject(pfVar17)->StartPosition[1] = AsObject(pfVar17)->Position[1];
-    AsObject(pfVar17)->StartPosition[2] = AsObject(pfVar17)->Position[2];
-    fVar27 = *pfVar8;
-    *pfVar12 = 0.0;
-    pfVar12[1] = 0.0;
-    *pfVar8 = local_60 + fVar27;
-    AsObject(pfVar17)->StartPosition[1] = local_5c + AsObject(pfVar17)->StartPosition[1];
-    AsObject(pfVar17)->StartPosition[2] = local_58 + AsObject(pfVar17)->StartPosition[2];
-    pfVar12[2] = AsObject(pfVar17)->Angle[2];
-    do {
-      Joint_Create(0x4e1,pfVar8,pfVar8,pfVar12,0xb,(intptr_t)pfVar17,50.0,-1,iVar9 == 1);
-      iVar9 = iVar9 + 1;
-    } while (iVar9 < 4);
-    *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
-    return pfVar17;
+    if (CreateEffect_Type243(fVar27, iVar9, local_3c, local_58, local_5c, local_60, local_64, local_68, local_6c, pfVar12, pfVar17, pfVar8, result)) return result;
+    break;
   case 0xf4:
     if (CreateEffect_Type244(iVar9, pfVar17, result)) return result;
     break;

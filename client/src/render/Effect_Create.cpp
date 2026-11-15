@@ -77,6 +77,383 @@ static void Tamachan_Create(char *o)
     }
 }
 
+// ── Handlers de CreateEffect (T9b) ────────────────────────────────────────────
+// Cada case limpio del switch principal (sin goto ni labels) vive en su propia
+// función.  Reciben por referencia las locales de CreateEffect que usan y
+// devuelven true cuando el case termina la función (con su valor en result).
+
+// IDA: CreateEffect (0x00460DC0), case 182.
+static bool CreateEffect_Type182(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 2;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  AsObject(pfVar17)->Scale = 10.0;
+  AsObject(pfVar17)->Position[1] = AsObject(pfVar17)->Position[1] + _DAT_0055285c;
+  AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] - _DAT_00552974;
+  AsObject(pfVar17)->LightEnable = 0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 185.
+static bool CreateEffect_Type185(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 1;
+  AsObject(pfVar17)->Alpha = 0.5;
+  AsObject(pfVar17)->Scale = 1.5;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_FIRE.
+static bool CreateEffect_Fire(float *& param_8, float& fVar27, intptr_t& iVar9, float*& pfVar17, float*& pfVar8, intptr_t& uVar10, float*& result)
+{
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 1;
+  fVar27 = *(float *)&AsObject(pfVar17)->SubType;
+  if (fVar27 == 0.0) {
+    *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+    uVar10 = _rand() % 8;
+    param_8 = (float *)(uVar10 + 10);
+    AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
+    uVar10 = _rand() % 32;
+  }
+  else {
+    if (*(int*)&fVar27 == 2) {
+      *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+      uVar10 = _rand() % 8;
+      AsObject(pfVar17)->Scale = (float)(int)(uVar10 + 10) * _DAT_005524f4;
+      AsObject(pfVar17)->Direction[0] = 0.0;
+      AsObject(pfVar17)->Direction[1] = 0.0;
+      AsObject(pfVar17)->Direction[2] = -50.0;
+      { result = (float*)((float *)0x0); return true; }
+    }
+    if (*(int*)&fVar27 == 3) {
+      *(int*)&pfVar17[EffectLifetimeIndex] = 80;
+      AsObject(pfVar17)->Scale = 0.3;
+      AsObject(pfVar17)->Direction[0] = 0.0;
+      AsObject(pfVar17)->Direction[1] = -12.0;
+      AsObject(pfVar17)->Direction[2] = 0.0;
+      { result = (float*)(pfVar8); return true; }
+    }
+    if (*(int*)&fVar27 == 4) {
+      *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+      iVar9 = _rand();
+      param_8 = (float *)(iVar9 % 10 + 0xf);
+      AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
+      uVar10 = _rand();
+      param_8 = (float*)(uVar10 % 32);
+      AsObject(pfVar17)->Position[0] = (float)(intptr_t)param_8 + AsObject(pfVar17)->Position[0] + _DAT_00552980;
+      AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552850;
+      AsObject(pfVar17)->Direction[0] = 0.0;
+      iVar9 = _rand();
+      param_8 = (float *)(iVar9 % 0x14);
+      AsObject(pfVar17)->Direction[1] = -((float)(intptr_t)param_8 + _DAT_00552488);
+      iVar9 = _rand();
+      AsObject(pfVar17)->Direction[2] = -((float)(iVar9 % 10) + _DAT_005524fc);
+      AsObject(pfVar17)->Angle[0] = 0.0;
+      AsObject(pfVar17)->Angle[1] = 20.0;
+      AsObject(pfVar17)->Angle[2] = 0.0;
+      { result = (float*)((float *)(iVar9 / 10)); return true; }
+    }
+    if (*(int*)&fVar27 == 5) {
+      *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+      AsObject(pfVar17)->Gravity = 5.0;
+      AsObject(pfVar17)->Direction[0] = 0.0;
+      AsObject(pfVar17)->Direction[1] = -30.0;
+      AsObject(pfVar17)->Direction[2] = 0.0;
+      { result = (float*)(pfVar8); return true; }
+    }
+    if (*(int*)&fVar27 != 6) {
+      *(int*)&pfVar17[EffectLifetimeIndex] = 60;
+      uVar10 = _rand() % 4;
+      AsObject(pfVar17)->Scale = (float)(int)(uVar10 + 8) * _DAT_005524f4;
+      AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552908;
+      AsObject(pfVar17)->Direction[0] = 0.0;
+      AsObject(pfVar17)->Direction[1] = -50.0;
+      AsObject(pfVar17)->Direction[2] = 0.0;
+      { result = (float*)((float *)0x0); return true; }
+    }
+    *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+    uVar10 = _rand() % 8;
+    param_8 = (float *)(uVar10 + 0xf);
+    AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
+    uVar10 = _rand() % 32;
+  }
+  AsObject(pfVar17)->Position[0] = (float)(int)uVar10 + AsObject(pfVar17)->Position[0] + _DAT_00552980;
+  AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552850;
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = 0.0;
+  AsObject(pfVar17)->Direction[2] = -50.0;
+  AsObject(pfVar17)->Angle[0] = 0.0;
+  AsObject(pfVar17)->Angle[1] = 20.0;
+  AsObject(pfVar17)->Angle[2] = 0.0;
+  { result = (float*)((float *)0x0); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_POISON.
+static bool CreateEffect_Poison(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 1;
+  *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+  AsObject(pfVar17)->Scale = 1.0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 194.
+static bool CreateEffect_Type194(float *& param_5, float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 50;
+  AsObject(pfVar17)->Scale = 0.7;
+  if (param_5 != (float *)0x0) {
+    *(int*)&pfVar17[EffectBlendMeshIndex] = -4;
+    AsObject(pfVar17)->Angle[0] = 0.0;
+    AsObject(pfVar17)->Angle[1] = 0.0;
+    AsObject(pfVar17)->Angle[2] = 45.0;
+    { result = (float*)(pfVar8); return true; }
+  }
+  *(int*)&pfVar17[EffectBlendMeshIndex] = -3;
+  AsObject(pfVar17)->Angle[0] = 0.0;
+  AsObject(pfVar17)->Angle[1] = 0.0;
+  AsObject(pfVar17)->Angle[2] = 45.0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 196.
+static bool CreateEffect_Type196(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 10;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_CIRCLE_LIGHT.
+static bool CreateEffect_CircleLight(float *& param_5, float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 40;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  if (param_5 != (float *)0x1) {
+    { result = (float*)((float *)0x0); return true; }
+  }
+  AsObject(pfVar17)->RenderType = 0x80;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 202.
+static bool CreateEffect_Type202(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 20;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_MAGIC2.
+static bool CreateEffect_Magic2(float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  *(int*)&pfVar17[EffectLifetimeIndex] = 20;
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = -60.0;
+  AsObject(pfVar17)->Direction[2] = 0.0;
+  if (AsObject(pfVar17)->SubType != 2) {                      // SubType (DWORD)
+    { result = (float*)((float*)(uintptr_t)AsObject(pfVar17)->SubType); return true; }
+  }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_STORM.
+static bool CreateEffect_Storm(float10& fVar24, float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 59;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = -10.0;
+  AsObject(pfVar17)->Direction[2] = 0.0;
+  // Se pasa (xf, yf) explícito — effect pos en AsObject(pfVar17)->Position[0]/[5]
+  fVar24 = (float10)RequestTerrainHeight(AsObject(pfVar17)->Position[0], AsObject(pfVar17)->Position[1]);
+  AsObject(pfVar17)->Position[2] = (float)fVar24;
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_LASER.
+static bool CreateEffect_Laser(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  if ((*(float *)&AsObject(pfVar17)->SubType == 0.0) || (AsObject(pfVar17)->SubType == 3)) {
+    *(int*)&pfVar17[EffectLifetimeIndex] = 1;
+  }
+  else {
+    *(int*)&pfVar17[EffectLifetimeIndex] = 30;
+    AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_0055297c;
+    AsObject(pfVar17)->Direction[0] = 0.0;
+    AsObject(pfVar17)->Direction[1] = -80.0;
+    AsObject(pfVar17)->Direction[2] = 0.0;
+    AsObject(pfVar17)->Light[0] = 1.0;
+    AsObject(pfVar17)->Light[1] = 0.0;
+    AsObject(pfVar17)->Light[2] = 0.0;
+  }
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  AsObject(pfVar17)->BlendMeshLight = AsObject(pfVar17)->Light[0];
+  AsObject(pfVar17)->Scale = 1.3;
+  AsObject(pfVar17)->RenderType = 0x80;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_SAW.
+static bool CreateEffect_Saw(float* const& local_3c, float& local_64, float& local_68, float& local_6c, float*& pfVar12, float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 10;
+  AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552980;
+  Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
+  local_6c = 0.0;
+  local_68 = -60.0;
+  local_64 = 0.0;
+  pfVar12 = (float *)Vector_Rotate(&local_6c,local_3c + 3,AsObject(pfVar17)->Direction);
+  { result = (float*)(pfVar12); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 212.
+static bool CreateEffect_Type212(float* const& local_3c, float& local_58, float& local_5c, float& local_60, float& local_64, float& local_68, float& local_6c, float*& pfVar12, float*& pfVar17, float*& result)
+{
+  Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
+  local_6c = 0.0;
+  local_68 = -40.0;
+  local_64 = 150.0;
+  pfVar12 = (float *)Vector_Rotate(&local_6c,local_3c + 3,&local_60);
+  AsObject(pfVar17)->Position[0] = local_60 + AsObject(pfVar17)->Position[0];
+  AsObject(pfVar17)->Position[1] = local_5c + AsObject(pfVar17)->Position[1];
+  AsObject(pfVar17)->Position[2] = local_58 + AsObject(pfVar17)->Position[2];
+  AsObject(pfVar17)->Direction[1] = -40.0;
+  AsObject(pfVar17)->Direction[2] = 10.0;    *(int*)&pfVar17[EffectLifetimeIndex] = 20;
+  AsObject(pfVar17)->Scale = 1.2;
+  { result = (float*)(pfVar12); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 215.
+static bool CreateEffect_Type215(float *& param_8, float* const& local_3c, float& local_58, float& local_5c, float& local_60, float& local_64, float& local_68, float& local_6c, float*& pfVar12, float*& pfVar17, intptr_t& uVar10, float*& result)
+{
+  uVar10 = _rand() % 16;
+  AsObject(pfVar17)->LifeTime = (int)(uVar10 + 0x18);   // lifetime: DWORD, no float
+  uVar10 = _rand() % 8;
+  param_8 = (float *)(uVar10 + 6);
+  AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
+  uVar10 = _rand();
+  param_8 = (float*)(uVar10 % 4);
+  AsObject(pfVar17)->Gravity = -(float)(intptr_t)param_8;
+  uVar10 = _rand() % 64;
+  param_8 = (float *)(uVar10 - 0x20);
+  local_6c = (float)(int)(intptr_t)param_8;
+  uVar10 = _rand() % 32;
+  param_8 = (float *)(uVar10 + 0x32);
+  local_68 = -(float)(int)(intptr_t)param_8;
+  uVar10 = _rand() % 128;
+  param_8 = (float *)(uVar10 + 200);
+  local_64 = (float)(int)(intptr_t)param_8;
+  Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
+  pfVar12 = (float *)Vector_Rotate(&local_6c,local_3c + 3,&local_60);
+  AsObject(pfVar17)->Position[0] = local_60 + AsObject(pfVar17)->Position[0];
+  AsObject(pfVar17)->Position[1] = local_5c + AsObject(pfVar17)->Position[1];
+  AsObject(pfVar17)->Position[2] = local_58 + AsObject(pfVar17)->Position[2];
+  { result = (float*)(pfVar12); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 225.
+static bool CreateEffect_Type225(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 10000;
+  AsObject(pfVar17)->Velocity = 0.3;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 228, 229, 230.
+static bool CreateEffect_Type228(float& fVar27, intptr_t& iVar9, float*& pfVar17, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 100;
+  iVar9 = _rand();
+  AsObject(pfVar17)->Scale = (float)(iVar9 % 10 + 4) * _DAT_005524f4;
+  fVar27 = _DAT_00552988;
+  AsObject(pfVar17)->Direction[0] = 0.0;
+  AsObject(pfVar17)->Direction[1] = fVar27 / AsObject(pfVar17)->Scale;
+  AsObject(pfVar17)->Direction[2] = _DAT_00552984 / AsObject(pfVar17)->Scale;
+  *(float *)&AsObject(pfVar17)->SubType = 1.4013e-45;
+  { result = (float*)((float *)(iVar9 / 10)); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_MAGIC_CIRCLE1.
+static bool CreateEffect_MagicCircle1(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 30;
+  AsObject(pfVar17)->Scale = 0.7;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
+  if (AsObject(pfVar17)->SubType != 1) {
+    AsObject(pfVar17)->Velocity = 0.1;
+    { result = (float*)(pfVar8); return true; }
+  }
+  *(int*)&pfVar17[EffectLifetimeIndex] = 20;
+  AsObject(pfVar17)->Velocity = 0.1;
+  *(float *)&AsObject(pfVar17)->HiddenMesh = 0.0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 237.
+static bool CreateEffect_Type237(float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 50;
+  AsObject(pfVar17)->Scale = 0.8;
+  AsObject(pfVar17)->Velocity = 1.0;
+  AsObject(pfVar17)->Angle[0] = 0.0;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  AsObject(pfVar17)->Direction[1] = -50.0;
+  AsObject(pfVar17)->Gravity = -10.0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case 244.
+static bool CreateEffect_Type244(intptr_t& iVar9, float*& pfVar17, float*& result)
+{
+  AsObject(pfVar17)->HeadAngle[0] = AsObject(pfVar17)->Angle[0];
+  AsObject(pfVar17)->HeadAngle[1] = AsObject(pfVar17)->Angle[1];
+  AsObject(pfVar17)->HeadAngle[2] = AsObject(pfVar17)->Angle[2];
+  AsObject(pfVar17)->StartPosition[0] = AsObject(pfVar17)->Position[0];
+  AsObject(pfVar17)->StartPosition[1] = AsObject(pfVar17)->Position[1];
+  AsObject(pfVar17)->StartPosition[2] = AsObject(pfVar17)->Position[2];
+  *(int*)&pfVar17[EffectLifetimeIndex] = 20;
+  iVar9 = _rand();
+  // IDA: `*((_DWORD *)i + 1) = rand() % 100;` -- el SubType es un DWORD.
+  // Guardarlo con una conversion a float dejaba los BITS del float en el
+  // campo, y MoveEffect lo lee por bits: el angulo de las grietas del
+  // suelo (IDA L2095) salia ~1.1e9 en vez de 0..99.
+  *(DWORD *)&AsObject(pfVar17)->SubType = (DWORD)(iVar9 % 100);
+  AsObject(pfVar17)->Angle[2] = AsObject(pfVar17)->Angle[2] + _DAT_00552978;
+  AsObject(pfVar17)->HeadAngle[0] = AsObject(pfVar17)->HeadAngle[0] + _DAT_00552878;
+  AsObject(pfVar17)->HeadAngle[2] = AsObject(pfVar17)->HeadAngle[2] + _DAT_005524ec;
+  AsObject(pfVar17)->Gravity = 50.0;
+  return false;
+}
+
+// IDA: CreateEffect (0x00460DC0), case MODEL_EARTHQUAKE.
+static bool CreateEffect_Earthquake(float *& param_7, float*& pfVar17, float*& pfVar8, float*& result)
+{
+  *(int*)&pfVar17[EffectLifetimeIndex] = 35;
+  AsObject(pfVar17)->Scale = (float)(int)(short)(uintptr_t)param_7 * _DAT_00552594;
+  *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
+  { result = (float*)(pfVar8); return true; }
+  return false;
+}
+
 // IDA: CreateEffect (0x00460DC0)
 float * __cdecl
 CreateEffect(int param_1,float *param_2,float *param_3,float *param_4,float *param_5,float *param_6,
@@ -140,6 +517,7 @@ CreateEffect(int param_1,float *param_2,float *param_3,float *param_4,float *par
   float &local_40 = __frame[11];
   float *const local_3c = &__frame[12];
   undefined4 *puStack_4;
+  float *result = nullptr;   // valor de retorno de los handlers
 
   pfVar12 = param_3;
 LAB_00460dd8:
@@ -629,20 +1007,13 @@ switchD_00464efe_caseD_4ab:
   }
   switch(param_1) {
   case 0xb6:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 2;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    AsObject(pfVar17)->Scale = 10.0;
-    AsObject(pfVar17)->Position[1] = AsObject(pfVar17)->Position[1] + _DAT_0055285c;
-    AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] - _DAT_00552974;
-    AsObject(pfVar17)->LightEnable = 0;
-    return pfVar8;
+    if (CreateEffect_Type182(pfVar17, pfVar8, result)) return result;
+    break;
   default:
     goto switchD_00460f25_caseD_101;
   case 0xb9:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 1;
-    AsObject(pfVar17)->Alpha = 0.5;
-    AsObject(pfVar17)->Scale = 1.5;
-    return pfVar8;
+    if (CreateEffect_Type185(pfVar17, pfVar8, result)) return result;
+    break;
   case 0xbe:
     fVar27 = *(float *)&AsObject(pfVar17)->SubType;
     if (fVar27 == 0.0) {
@@ -697,111 +1068,18 @@ LAB_00463e3d:
     AsObject(pfVar17)->StartPosition[1] = AsObject(pfVar17)->Position[1];
     AsObject(pfVar17)->StartPosition[2] = AsObject(pfVar17)->Position[2];
     return (float*)(uintptr_t)(int)AsObject(pfVar17)->Position[1];
-  case 0xbf:
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 1;
-    fVar27 = *(float *)&AsObject(pfVar17)->SubType;
-    if (fVar27 == 0.0) {
-      *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-      uVar10 = _rand() % 8;
-      param_8 = (float *)(uVar10 + 10);
-      AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
-      uVar10 = _rand() % 32;
-    }
-    else {
-      if (*(int*)&fVar27 == 2) {
-        *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-        uVar10 = _rand() % 8;
-        AsObject(pfVar17)->Scale = (float)(int)(uVar10 + 10) * _DAT_005524f4;
-        AsObject(pfVar17)->Direction[0] = 0.0;
-        AsObject(pfVar17)->Direction[1] = 0.0;
-        AsObject(pfVar17)->Direction[2] = -50.0;
-        return (float *)0x0;
-      }
-      if (*(int*)&fVar27 == 3) {
-        *(int*)&pfVar17[EffectLifetimeIndex] = 80;
-        AsObject(pfVar17)->Scale = 0.3;
-        AsObject(pfVar17)->Direction[0] = 0.0;
-        AsObject(pfVar17)->Direction[1] = -12.0;
-        AsObject(pfVar17)->Direction[2] = 0.0;
-        return pfVar8;
-      }
-      if (*(int*)&fVar27 == 4) {
-        *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-        iVar9 = _rand();
-        param_8 = (float *)(iVar9 % 10 + 0xf);
-        AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
-        uVar10 = _rand();
-        param_8 = (float*)(uVar10 % 32);
-        AsObject(pfVar17)->Position[0] = (float)(intptr_t)param_8 + AsObject(pfVar17)->Position[0] + _DAT_00552980;
-        AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552850;
-        AsObject(pfVar17)->Direction[0] = 0.0;
-        iVar9 = _rand();
-        param_8 = (float *)(iVar9 % 0x14);
-        AsObject(pfVar17)->Direction[1] = -((float)(intptr_t)param_8 + _DAT_00552488);
-        iVar9 = _rand();
-        AsObject(pfVar17)->Direction[2] = -((float)(iVar9 % 10) + _DAT_005524fc);
-        AsObject(pfVar17)->Angle[0] = 0.0;
-        AsObject(pfVar17)->Angle[1] = 20.0;
-        AsObject(pfVar17)->Angle[2] = 0.0;
-        return (float *)(iVar9 / 10);
-      }
-      if (*(int*)&fVar27 == 5) {
-        *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-        AsObject(pfVar17)->Gravity = 5.0;
-        AsObject(pfVar17)->Direction[0] = 0.0;
-        AsObject(pfVar17)->Direction[1] = -30.0;
-        AsObject(pfVar17)->Direction[2] = 0.0;
-        return pfVar8;
-      }
-      if (*(int*)&fVar27 != 6) {
-        *(int*)&pfVar17[EffectLifetimeIndex] = 60;
-        uVar10 = _rand() % 4;
-        AsObject(pfVar17)->Scale = (float)(int)(uVar10 + 8) * _DAT_005524f4;
-        AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552908;
-        AsObject(pfVar17)->Direction[0] = 0.0;
-        AsObject(pfVar17)->Direction[1] = -50.0;
-        AsObject(pfVar17)->Direction[2] = 0.0;
-        return (float *)0x0;
-      }
-      *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-      uVar10 = _rand() % 8;
-      param_8 = (float *)(uVar10 + 0xf);
-      AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
-      uVar10 = _rand() % 32;
-    }
-    AsObject(pfVar17)->Position[0] = (float)(int)uVar10 + AsObject(pfVar17)->Position[0] + _DAT_00552980;
-    AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552850;
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = 0.0;
-    AsObject(pfVar17)->Direction[2] = -50.0;
-    AsObject(pfVar17)->Angle[0] = 0.0;
-    AsObject(pfVar17)->Angle[1] = 20.0;
-    AsObject(pfVar17)->Angle[2] = 0.0;
-    return (float *)0x0;
-  case 0xc0:
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 1;
-    *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-    AsObject(pfVar17)->Scale = 1.0;
-    return pfVar8;
+  case MODEL_FIRE:
+    if (CreateEffect_Fire(param_8, fVar27, iVar9, pfVar17, pfVar8, uVar10, result)) return result;
+    break;
+  case MODEL_POISON:
+    if (CreateEffect_Poison(pfVar17, pfVar8, result)) return result;
+    break;
   case 0xc2:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 50;
-    AsObject(pfVar17)->Scale = 0.7;
-    if (param_5 != (float *)0x0) {
-      *(int*)&pfVar17[EffectBlendMeshIndex] = -4;
-      AsObject(pfVar17)->Angle[0] = 0.0;
-      AsObject(pfVar17)->Angle[1] = 0.0;
-      AsObject(pfVar17)->Angle[2] = 45.0;
-      return pfVar8;
-    }
-    *(int*)&pfVar17[EffectBlendMeshIndex] = -3;
-    AsObject(pfVar17)->Angle[0] = 0.0;
-    AsObject(pfVar17)->Angle[1] = 0.0;
-    AsObject(pfVar17)->Angle[2] = 45.0;
-    return pfVar8;
+    if (CreateEffect_Type194(param_5, pfVar17, pfVar8, result)) return result;
+    break;
   case 0xc4:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 10;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    return pfVar8;
+    if (CreateEffect_Type196(pfVar17, pfVar8, result)) return result;
+    break;
   case 0xc5:
   case 0xc6:
   case 0xd5:
@@ -830,66 +1108,24 @@ LAB_00463e3d:
     bVar6 = *(byte *)(pfVar17 + 0x22);
     fVar27 = 300.0;
     goto LAB_00463ca2;
-  case 0xc9:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    if (param_5 != (float *)0x1) {
-      return (float *)0x0;
-    }
-    AsObject(pfVar17)->RenderType = 0x80;
-    return pfVar8;
+  case MODEL_CIRCLE_LIGHT:
+    if (CreateEffect_CircleLight(param_5, pfVar17, pfVar8, result)) return result;
+    break;
   case 0xca:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 20;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    return pfVar8;
-  case 0xcb:
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    *(int*)&pfVar17[EffectLifetimeIndex] = 20;
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = -60.0;
-    AsObject(pfVar17)->Direction[2] = 0.0;
-    if (AsObject(pfVar17)->SubType != 2) {                      // SubType (DWORD)
-      return (float*)(uintptr_t)AsObject(pfVar17)->SubType;
-    }
+    if (CreateEffect_Type202(pfVar17, pfVar8, result)) return result;
     break;
-  case 0xcc:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 59;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = -10.0;
-    AsObject(pfVar17)->Direction[2] = 0.0;
-    // Se pasa (xf, yf) explícito — effect pos en AsObject(pfVar17)->Position[0]/[5]
-    fVar24 = (float10)RequestTerrainHeight(AsObject(pfVar17)->Position[0], AsObject(pfVar17)->Position[1]);
-    AsObject(pfVar17)->Position[2] = (float)fVar24;
+  case MODEL_MAGIC2:
+    if (CreateEffect_Magic2(pfVar17, result)) return result;
     break;
-  case 0xcd:
-    if ((*(float *)&AsObject(pfVar17)->SubType == 0.0) || (AsObject(pfVar17)->SubType == 3)) {
-      *(int*)&pfVar17[EffectLifetimeIndex] = 1;
-    }
-    else {
-      *(int*)&pfVar17[EffectLifetimeIndex] = 30;
-      AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_0055297c;
-      AsObject(pfVar17)->Direction[0] = 0.0;
-      AsObject(pfVar17)->Direction[1] = -80.0;
-      AsObject(pfVar17)->Direction[2] = 0.0;
-      AsObject(pfVar17)->Light[0] = 1.0;
-      AsObject(pfVar17)->Light[1] = 0.0;
-      AsObject(pfVar17)->Light[2] = 0.0;
-    }
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    AsObject(pfVar17)->BlendMeshLight = AsObject(pfVar17)->Light[0];
-    AsObject(pfVar17)->Scale = 1.3;
-    AsObject(pfVar17)->RenderType = 0x80;
-    return pfVar8;
-  case 0xd1:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 10;
-    AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552980;
-    Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
-    local_6c = 0.0;
-    local_68 = -60.0;
-    local_64 = 0.0;
-    pfVar12 = (float *)Vector_Rotate(&local_6c,local_3c + 3,AsObject(pfVar17)->Direction);
-    return pfVar12;
+  case MODEL_STORM:
+    if (CreateEffect_Storm(fVar24, pfVar17, result)) return result;
+    break;
+  case MODEL_LASER:
+    if (CreateEffect_Laser(pfVar17, pfVar8, result)) return result;
+    break;
+  case MODEL_SAW:
+    if (CreateEffect_Saw(local_3c, local_64, local_68, local_6c, pfVar12, pfVar17, result)) return result;
+    break;
   case 0xd2:
     AsObject(pfVar17)->Position[2] = AsObject(pfVar17)->Position[2] + _DAT_00552598;
   case 0xd3:
@@ -957,42 +1193,11 @@ switchD_00461001_caseD_c7:
     AsObject(pfVar17)->Gravity = (float)(int)(uVar10 + 8);
     return (float *)(uVar10 + 8);
   case 0xd4:
-    Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
-    local_6c = 0.0;
-    local_68 = -40.0;
-    local_64 = 150.0;
-    pfVar12 = (float *)Vector_Rotate(&local_6c,local_3c + 3,&local_60);
-    AsObject(pfVar17)->Position[0] = local_60 + AsObject(pfVar17)->Position[0];
-    AsObject(pfVar17)->Position[1] = local_5c + AsObject(pfVar17)->Position[1];
-    AsObject(pfVar17)->Position[2] = local_58 + AsObject(pfVar17)->Position[2];
-    AsObject(pfVar17)->Direction[1] = -40.0;
-    AsObject(pfVar17)->Direction[2] = 10.0;    *(int*)&pfVar17[EffectLifetimeIndex] = 20;
-    AsObject(pfVar17)->Scale = 1.2;
-    return pfVar12;
+    if (CreateEffect_Type212(local_3c, local_58, local_5c, local_60, local_64, local_68, local_6c, pfVar12, pfVar17, result)) return result;
+    break;
   case 0xd7:
-    uVar10 = _rand() % 16;
-    AsObject(pfVar17)->LifeTime = (int)(uVar10 + 0x18);   // lifetime: DWORD, no float
-    uVar10 = _rand() % 8;
-    param_8 = (float *)(uVar10 + 6);
-    AsObject(pfVar17)->Scale = (float)(intptr_t)param_8 * _DAT_005524f4;
-    uVar10 = _rand();
-    param_8 = (float*)(uVar10 % 4);
-    AsObject(pfVar17)->Gravity = -(float)(intptr_t)param_8;
-    uVar10 = _rand() % 64;
-    param_8 = (float *)(uVar10 - 0x20);
-    local_6c = (float)(int)(intptr_t)param_8;
-    uVar10 = _rand() % 32;
-    param_8 = (float *)(uVar10 + 0x32);
-    local_68 = -(float)(int)(intptr_t)param_8;
-    uVar10 = _rand() % 128;
-    param_8 = (float *)(uVar10 + 200);
-    local_64 = (float)(int)(intptr_t)param_8;
-    Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
-    pfVar12 = (float *)Vector_Rotate(&local_6c,local_3c + 3,&local_60);
-    AsObject(pfVar17)->Position[0] = local_60 + AsObject(pfVar17)->Position[0];
-    AsObject(pfVar17)->Position[1] = local_5c + AsObject(pfVar17)->Position[1];
-    AsObject(pfVar17)->Position[2] = local_58 + AsObject(pfVar17)->Position[2];
-    return pfVar12;
+    if (CreateEffect_Type215(param_8, local_3c, local_58, local_5c, local_60, local_64, local_68, local_6c, pfVar12, pfVar17, uVar10, result)) return result;
+    break;
   case 0xd8:
   case 0xd9:
   case 0xda:
@@ -1065,46 +1270,22 @@ switchD_00461001_caseD_c7:
     goto LAB_00462b8a;
   }
   case 0xe1:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 10000;
-    AsObject(pfVar17)->Velocity = 0.3;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    return pfVar8;
+    if (CreateEffect_Type225(pfVar17, pfVar8, result)) return result;
+    break;
   case 0xe2:
   case 0xe3:
     goto switchD_00461001_caseD_e2;
   case 0xe4:
   case 0xe5:
   case 0xe6:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 100;
-    iVar9 = _rand();
-    AsObject(pfVar17)->Scale = (float)(iVar9 % 10 + 4) * _DAT_005524f4;
-    fVar27 = _DAT_00552988;
-    AsObject(pfVar17)->Direction[0] = 0.0;
-    AsObject(pfVar17)->Direction[1] = fVar27 / AsObject(pfVar17)->Scale;
-    AsObject(pfVar17)->Direction[2] = _DAT_00552984 / AsObject(pfVar17)->Scale;
-    *(float *)&AsObject(pfVar17)->SubType = 1.4013e-45;
-    return (float *)(iVar9 / 10);
-  case 0xe9:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 30;
-    AsObject(pfVar17)->Scale = 0.7;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = -2;
-    if (AsObject(pfVar17)->SubType != 1) {
-      AsObject(pfVar17)->Velocity = 0.1;
-      return pfVar8;
-    }
-    *(int*)&pfVar17[EffectLifetimeIndex] = 20;
-    AsObject(pfVar17)->Velocity = 0.1;
-    *(float *)&AsObject(pfVar17)->HiddenMesh = 0.0;
-    return pfVar8;
+    if (CreateEffect_Type228(fVar27, iVar9, pfVar17, result)) return result;
+    break;
+  case MODEL_MAGIC_CIRCLE1:
+    if (CreateEffect_MagicCircle1(pfVar17, pfVar8, result)) return result;
+    break;
   case 0xed:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 50;
-    AsObject(pfVar17)->Scale = 0.8;
-    AsObject(pfVar17)->Velocity = 1.0;
-    AsObject(pfVar17)->Angle[0] = 0.0;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    AsObject(pfVar17)->Direction[1] = -50.0;
-    AsObject(pfVar17)->Gravity = -10.0;
-    return pfVar8;
+    if (CreateEffect_Type237(pfVar17, pfVar8, result)) return result;
+    break;
   case 0xee:
     *(int*)&pfVar17[EffectLifetimeIndex] = 5;
     param_8 = pfVar4;
@@ -1340,29 +1521,11 @@ LAB_004625aa:
     HashTable_Insert(&MAIN_HASH_CLASS,pvVar7,pfVar14);
     goto LAB_004625ca;
   case 0xf4:
-    AsObject(pfVar17)->HeadAngle[0] = AsObject(pfVar17)->Angle[0];
-    AsObject(pfVar17)->HeadAngle[1] = AsObject(pfVar17)->Angle[1];
-    AsObject(pfVar17)->HeadAngle[2] = AsObject(pfVar17)->Angle[2];
-    AsObject(pfVar17)->StartPosition[0] = AsObject(pfVar17)->Position[0];
-    AsObject(pfVar17)->StartPosition[1] = AsObject(pfVar17)->Position[1];
-    AsObject(pfVar17)->StartPosition[2] = AsObject(pfVar17)->Position[2];
-    *(int*)&pfVar17[EffectLifetimeIndex] = 20;
-    iVar9 = _rand();
-    // IDA: `*((_DWORD *)i + 1) = rand() % 100;` -- el SubType es un DWORD.
-    // Guardarlo con una conversion a float dejaba los BITS del float en el
-    // campo, y MoveEffect lo lee por bits: el angulo de las grietas del
-    // suelo (IDA L2095) salia ~1.1e9 en vez de 0..99.
-    *(DWORD *)&AsObject(pfVar17)->SubType = (DWORD)(iVar9 % 100);
-    AsObject(pfVar17)->Angle[2] = AsObject(pfVar17)->Angle[2] + _DAT_00552978;
-    AsObject(pfVar17)->HeadAngle[0] = AsObject(pfVar17)->HeadAngle[0] + _DAT_00552878;
-    AsObject(pfVar17)->HeadAngle[2] = AsObject(pfVar17)->HeadAngle[2] + _DAT_005524ec;
-    AsObject(pfVar17)->Gravity = 50.0;
+    if (CreateEffect_Type244(iVar9, pfVar17, result)) return result;
     break;
-  case 0xf5:
-    *(int*)&pfVar17[EffectLifetimeIndex] = 35;
-    AsObject(pfVar17)->Scale = (float)(int)(short)(uintptr_t)param_7 * _DAT_00552594;
-    *(int*)&pfVar17[EffectBlendMeshIndex] = 0;
-    return pfVar8;
+  case MODEL_EARTHQUAKE:
+    if (CreateEffect_Earthquake(param_7, pfVar17, pfVar8, result)) return result;
+    break;
   }
   pfVar12 = (float*)DAT_07cf1ffc;
   cVar5 = *(char *)((char*)DAT_07cf1ffc + 0x160);

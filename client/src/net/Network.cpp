@@ -132,7 +132,7 @@ void CNetwork::OnSocketEvent(WORD evt, WORD err)
         if (SceneFlag == 2 && !reconnecting) {
             g_bGameServerConnected = 0;
             CurrentProtocolState = 0;
-            DAT_083a7c14 = 0;
+            LoginSubState = 0;
             DAT_083a7c44 = 0;
             ErrorMessage = 0;
             NextErrorMessage = 0;

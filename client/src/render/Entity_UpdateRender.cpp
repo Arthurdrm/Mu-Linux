@@ -364,7 +364,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     //
     // Va ANTES del render del cuerpo y ANTES de la segunda escritura de luz
     // (la del PK, mas abajo), igual que en IDA: L786 el heroe, L2310 el PK.
-    if ((void *)param_1 == DAT_07abf5d8) {
+    if ((void *)param_1 == Hero) {
         float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
         const unsigned char drink = CharacterAttribute
             ? *((unsigned char *)(uintptr_t)CharacterAttribute + 40) : 0;
@@ -392,7 +392,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = local_60 + *(float *)(puVar13 + 0x3a);
     *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = local_5c + *(float *)(puVar13 + 0x3b);
     *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = local_58 + *(float *)(puVar13 + 0x3c);
-    if ((void *)param_1 == DAT_07abf5d8) {
+    if ((void *)param_1 == Hero) {
         // El heroe no usa la luz del terreno (ver el bloque de mas arriba).
         float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
         const unsigned char drink = CharacterAttribute
@@ -472,7 +472,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
                 // ── DIAG: log per-call to RenderPartObject (Entity_DrawAt) for char-select
                 // dump scale, model addr, animCount@26, and DAT_005524f8 (cull thresh).
                 if (SceneFlag == 4) {
-                    int csSlot = (int)(((uintptr_t)param_1_ - (uintptr_t)DAT_07abf5d0) / CHARACTER_STRIDE);
+                    int csSlot = (int)(((uintptr_t)param_1_ - (uintptr_t)CharactersClient) / CHARACTER_STRIDE);
                     if (csSlot >= 0 && csSlot < 5) {
                         static DWORD s_lastDA[5] = {0,0,0,0,0};
                         DWORD now = Platform::GetTimer().Ticks();
@@ -559,15 +559,15 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
             const short guildIndex = AsCharacter(cb)->GuildMarkIndex;
             if (guildIndex != -1) {
                 const char* guildName = Guild_GetMarkName(guildIndex);
-                if (EnableSoccer && DAT_07abf5d8) {
-                    const short heroGuild = *(short*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->GuildMarkIndex;
+                if (EnableSoccer && Hero) {
+                    const short heroGuild = *(short*)&((CHARACTER*)(uintptr_t)(Hero))->GuildMarkIndex;
                     if (heroGuild != -1 &&
                         (strcmp(Guild_GetMarkName(heroGuild), guildName) == 0 ||
                          strcmp(GuildWarName, guildName) == 0)) {
                         bCape = true;
                     }
                 }
-                if (DAT_05826d33 &&
+                if (SoccerObserver &&
                     (strcmp(SoccerTeamName[0], guildName) == 0 ||
                      strcmp(SoccerTeamName[1], guildName) == 0)) {
                     bCape = true;

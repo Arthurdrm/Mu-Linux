@@ -75,7 +75,7 @@ static bool IsEffectOwner(const void* owner)
 {
     if (!owner) return false;
     const auto allocation = (uintptr_t)DAT_055c9e48;
-    const auto characters = (uintptr_t)DAT_07abf5d0;
+    const auto characters = (uintptr_t)CharactersClient;
     if (allocation && characters >= allocation &&
         characters - allocation < 0x80u * CHARACTER_STRIDE &&
         (characters - allocation) % CHARACTER_STRIDE == 0 &&
@@ -118,7 +118,7 @@ constexpr float EffectTrailAlpha[] = { 0.6f, 0.5f, 0.4f, 0.3f };
 // Sound_LoadGameSamples).
 static void Tamachan_FaceHero(char *o)
 {
-    char *hero = (char *)DAT_07abf5d8;
+    char *hero = (char *)Hero;
     if (!hero) return;   // guard del port: el binario asume Hero
     float target = CreateAngle(*(float *)(o + 16), *(float *)(o + 20),
                                 *(float *)(hero + 16), *(float *)(hero + 20));
@@ -352,7 +352,7 @@ static bool MoveEffect_Storm(float *& param_1, const intptr_t& __cnt, bool& bVar
   local_364 = local_36c * _DAT_005529c0;
   local_360 = local_36c * _DAT_00552570;
   AddTerrainLight(*pfVar15,AsObject(param_1)->Position[1], (float*)&local_368,5, (float*)DAT_081cb608);
-  if (((AsObject(param_1)->LifeTime) % 0xf == 0) && ((char *)(intptr_t)AsObject(param_1)->Owner == DAT_07abf5d8)) {
+  if (((AsObject(param_1)->LifeTime) % 0xf == 0) && ((char *)(intptr_t)AsObject(param_1)->Owner == Hero)) {
     Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,pfVar15,150.0,*(byte *)(param_1 + 0x22),
                  AsObject(param_1)->PKKey);
   }
@@ -512,7 +512,7 @@ static bool MoveEffect_ArrowSteel(float *& param_1, float& fVar13, float10& fVar
       AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * _DAT_005528b4;
     }
     if ((AsObject(param_1)->LifeTime == 1) &&
-       (Effect_SpawnSmokeBurst(pfVar10,'\x01'), (char *)(intptr_t)AsObject(param_1)->Owner == DAT_07abf5d8)) {
+       (Effect_SpawnSmokeBurst(pfVar10,'\x01'), (char *)(intptr_t)AsObject(param_1)->Owner == Hero)) {
       Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,pfVar10,100.0,*(byte *)(param_1 + 0x22),
                    AsObject(param_1)->PKKey);
     }
@@ -694,7 +694,7 @@ static bool MoveEffect_Type239(float *& param_1, intptr_t& __owner_fVar13, bool&
     if ((int)uVar8 < 0) {
       bVar16 = (uVar8 - 1 | 0xfffffff8) == 0xffffffff;
     }
-    if ((bVar16) && ((char *)(intptr_t)AsObject(param_1)->Owner == DAT_07abf5d8)) {
+    if ((bVar16) && ((char *)(intptr_t)AsObject(param_1)->Owner == Hero)) {
       Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,pfVar15,150.0,*(byte *)(param_1 + 0x22),
                    AsObject(param_1)->PKKey);
     }
@@ -732,7 +732,7 @@ static bool MoveEffect_SkillBlast(float *& param_1, bool& bVar16, byte& bVar28, 
       CreateEffect(uVar8 + 0xc5,pfVar22,pfVar21,pfVar14,pfVar23,pfVar25,pfVar27,pfVar26,bVar28);
       iVar9 = iVar9 + -1;
     } while (iVar9 != 0);
-    bVar16 = (char *)(intptr_t)AsObject(param_1)->Owner == DAT_07abf5d8;
+    bVar16 = (char *)(intptr_t)AsObject(param_1)->Owner == Hero;
     *(undefined1 *)param_1 = 0;
     if (bVar16) {
       Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,pfVar10,150.0,*(byte *)(param_1 + 0x22),
@@ -980,7 +980,7 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
       local_348 = (float)((int)local_348 + 1);
       local_35c = pfVar10;
     } while ((int)local_348 < 4);
-    bVar16 = (char *)(intptr_t)AsObject(param_1)->Owner == DAT_07abf5d8;
+    bVar16 = (char *)(intptr_t)AsObject(param_1)->Owner == Hero;
     *(float *)&AsObject(param_1)->LifeTime = 0.0;
     if (bVar16) {
       Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,AsObject(param_1)->StartPosition,300.0,
@@ -1326,10 +1326,10 @@ LAB_00469772:
         iVar9 = 0;
         _DAT_083a0210 = (float)(int)(uVar8 - 4) * _DAT_005524f4;
         do {
-          local_348 = AsObject(param_1)->Position[0] - *(float *)(iVar9 + 0x10 + DAT_07abf5d0);
-          pcVar11 = (char *)(iVar9 + DAT_07abf5d0);
+          local_348 = AsObject(param_1)->Position[0] - *(float *)(iVar9 + 0x10 + CharactersClient);
+          pcVar11 = (char *)(iVar9 + CharactersClient);
           local_35c = (float *)(int)(AsObject(param_1)->Position[1] - AsObject(pcVar11)->Position[1]);
-          if ((((*pcVar11 != '\0') && (*(char *)&AsObject(pcVar11)->Visible != '\0')) && (pcVar11 != DAT_07abf5d8)) &&
+          if ((((*pcVar11 != '\0') && (*(char *)&AsObject(pcVar11)->Visible != '\0')) && (pcVar11 != Hero)) &&
              ((FieldAs(pcVar11, AsCharacter(pcVar11)->Dead) == '\0' &&
               (SQRT(local_348 * local_348 + (float)(int)(intptr_t)local_35c * (float)(int)(intptr_t)local_35c) <=
                _DAT_0055285c)))) {
@@ -2480,7 +2480,7 @@ void MoveEffect(float *param_1, int param_2)
           local_368 = local_36c;
           local_360 = 0.0;
           AddTerrainLight(*pfVar10,AsObject(param_1)->Position[1], (float*)&local_368,3, (float*)DAT_081cb608);
-          if (((char *)(intptr_t)AsObject(param_1)->Owner == DAT_07abf5d8) && ((AsObject(param_1)->LifeTime) % 0x14 == 0)) {
+          if (((char *)(intptr_t)AsObject(param_1)->Owner == Hero) && ((AsObject(param_1)->LifeTime) % 0x14 == 0)) {
             Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,pfVar10,150.0,
                          *(byte *)(param_1 + 0x22),AsObject(param_1)->PKKey);
           }

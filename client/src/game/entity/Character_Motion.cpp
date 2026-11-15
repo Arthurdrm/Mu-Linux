@@ -438,7 +438,7 @@ label_119:
         return;
     }
     // Sonido de movimiento aleatorizado (1/64 para el jugador, 1/16 para el resto)
-    if (param_1 == AsCharacter(DAT_07abf5d8)) {
+    if (param_1 == AsCharacter(Hero)) {
         if ((rand() & 0x3f) != 0) return;
     } else {
         if ((rand() & 0xf) != 0) return;
@@ -2027,7 +2027,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
         if (*(unsigned short *)&AsCharacter(entity_ptr)->Object.Type != 390) {
             MoveHead(AsCharacter(entity_ptr));
         }
-        if (entity_ptr != (intptr_t)DAT_07abf5d8 &&
+        if (entity_ptr != (intptr_t)Hero &&
             !AsCharacter(entity_ptr)->Dead && !(rand() % 32)) {
             float *headTarget = (float *)(entity_ptr + 52);
             headTarget[0] = (float)(rand() % 128 - 64);
@@ -2502,7 +2502,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
     // 004520C0 L1383-1396: los pasos del jugador local se eligen según las dos
     // animation-frame thresholds, once per walk/run cycle.
     if (*(unsigned short *)&AsCharacter(entity_ptr)->Object.Type == 390 &&
-        entity_ptr == (intptr_t)DAT_07abf5d8) {
+        entity_ptr == (intptr_t)Hero) {
         const unsigned char action = AsCharacter(entity_ptr)->Object.CurrentAction;
         if ((action >= 13 && action <= 33) || action == 79 || action == 80) {
             const float frame = AsCharacter(entity_ptr)->Object.AnimationFrame;
@@ -2532,7 +2532,7 @@ void __cdecl MoveMonsterClient(CHARACTER* character, OBJECT* object)
     BYTE* param_2 = reinterpret_cast<BYTE*>(object);
 
     // Sale si esto es el centinela de la entidad del jugador
-    if (character == AsCharacter(DAT_07abf5d8)) return;
+    if (character == AsCharacter(Hero)) return;
 
     // 00454CD0: el flag de teleport/altura tiene una única rama de actualización visual
     // antes de suprimir el walker normal de camino. El tipo 272 se mantiene sobre

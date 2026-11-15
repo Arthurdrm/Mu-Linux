@@ -356,14 +356,11 @@ struct SERVER_LIST_t
 // SceneFlag ya está declarado en stdafx.h; World en globals.h.
 
 // Character
-#define DAT_07abf5d8        Hero                // IDA: DAT_07abf5d8 (0x07ABF5D8)
-#define DAT_07abf5d0        CharactersClient    // IDA: DAT_07abf5d0 (0x07ABF5D0)
 #define HeroIndex        HeroIndex         // IDA: HeroIndex (0x05826CA0)
 #define g_SimpleModulusCS        g_SimpleModulusCS // IDA: g_SimpleModulusCS (0x05826C10)
 #define g_SimpleModulusSC        g_SimpleModulusSC // IDA: g_SimpleModulusSC (0x05826C58)
 #define ChatWhisperID        ChatWhisperID     // IDA: ChatWhisperID (0x05826CB4)
 #define HeroKey        HeroKey           // IDA: HeroKey (0x05826CAC)
-#define DAT_05826cb0        CurrentProtocolState // IDA: DAT_05826cb0 (0x05826CB0)
 #define CurrentSkill        CurrentSkill      // IDA: CurrentSkill (0x05826D10)
 #define BuyCost        BuyCost           // IDA: BuyCost (0x05826D18)
 #define ChatTime        ChatTime          // IDA: ChatTime (0x05826D08)
@@ -408,16 +405,7 @@ extern char* g_BitmapsRaw;
 
 // ── Companion-project aliases (IDA decompile compatibility) ──────────────────
 // Globals:
-#define DAT_00559c84         InputEnable          // IDA: DAT_00559c84 (0x00559C84)
-#define DAT_005616ac         SelectedHero         // IDA: DAT_005616ac (0x005616AC)
-#define DAT_083a7c14         LoginSubState        // IDA: DAT_083a7c14 (0x083A7C14)
 #define Attacking         Attacking            // IDA: Attacking (0x00559C58)
-#define DAT_05826d24         SummonLife           // IDA: DAT_05826d24 (0x05826D24)
-#define DAT_05826c08         SoccerTime           // IDA: DAT_05826c08 (0x05826C08)
-#define DAT_05826d33         SoccerObserver       // IDA: DAT_05826d33 (0x05826D33)
-#define DAT_07e11d6f         LockInputStatus      // IDA: DAT_07e11d6f (0x07E11D6F)
-#define DAT_07eaa138         RepairEnable         // IDA: DAT_07eaa138 (0x07EAA138)
-#define DAT_07e11998         SendGetItem          // IDA: DAT_07e11998 (0x07E11998)
 #define Teleport         Teleport             // IDA: Teleport (0x05826D14)
 // PrimaryTerrainLight es DAT_081cb608 (el buffer que lee el render y que
 // `Terrain_Water` (0x4F95E0) resetea por frame), NO `DAT_07eab250` (un DWORD

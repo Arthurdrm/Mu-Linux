@@ -472,7 +472,7 @@ void __cdecl CharMenu_RenderTextList(int param_1, int param_2, int param_3,
 // GlobalText[4*r + 16 + c]: 20..23 = clases base, 24..26 = segundas clases.
 void __cdecl ItemHelp_RequireClass(const BYTE* pItem)
 {
-    const BYTE* hero  = (const BYTE*)(uintptr_t)DAT_07abf5d8;
+    const BYTE* hero  = (const BYTE*)(uintptr_t)Hero;
     if (!pItem || !hero) return;
     if (TextNum > CHARMENU_ROW_MAX - 4) return;   // guard del buffer de 30 lineas
 

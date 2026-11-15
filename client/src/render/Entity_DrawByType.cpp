@@ -124,7 +124,7 @@ static void MoltSilhouette_BuildMesh(MoltSilhouette *s, short mesh, unsigned cha
 static void MoltSilhouette_Build(MoltSilhouette *s, unsigned char *verts,
                                  unsigned char *model, unsigned char *o)
 {
-    unsigned char *hero = (unsigned char *)DAT_07abf5d8;
+    unsigned char *hero = (unsigned char *)Hero;
     s->dir[0] = *(float *)(hero + 16) - _DAT_083a42d4;   // CameraPosition
     s->dir[1] = *(float *)(hero + 20) - _DAT_083a42d8;
     s->dir[2] = *(float *)(hero + 24) - _DAT_083a42dc;

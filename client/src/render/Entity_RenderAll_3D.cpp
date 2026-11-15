@@ -101,13 +101,13 @@ void Entity_RenderAll_3D(void)
     iVar2 = 0;
 
     do {
-        pcVar1 = (char *)(DAT_07abf5d0 + iVar3);
+        pcVar1 = (char *)(CharactersClient + iVar3);
 
 
         // DESVIACION: las branches del IDA original tienen condiciones que en nuestro
         // build nunca matchean (flag bit 2, visibility flag), así que el héroe se
         // detecta ANTES que cualquier otra cosa y se fuerza su render.
-        if (pcVar1 == DAT_07abf5d8 && SceneFlag == 5 && *pcVar1 != '\0') {
+        if (pcVar1 == Hero && SceneFlag == 5 && *pcVar1 != '\0') {
             // Reset velocity / motion fields (per IDA original).
             // Los bytes del binario son 00 00 7A 44 (1000.0f) y tres veces
             // 00 00 80 3F (1.0f).

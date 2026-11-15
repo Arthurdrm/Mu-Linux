@@ -257,18 +257,18 @@ LAB_00500f34:
 LAB_00501064:
 
     // ── Weather-mode: random rain effects (EnableEvent != 0) ─────────────────
-    const char* const rainHero = DAT_07abf5d8;
+    const char* const rainHero = Hero;
     if (EnableEvent != 0) {
         // Spawn occasional rain splash particle (1/40 chance)
         iVar12 = _rand();
         if (iVar12 % 0x28 == 0) {
             iVar12 = _rand();
             const int splashOffsetX = iVar12 % 600 - 200;
-            fStack_20 = (float)splashOffsetX + *(float *)(DAT_07abf5d8 + 0x10);
+            fStack_20 = (float)splashOffsetX + *(float *)(Hero + 0x10);
             iVar12 = _rand();
             const int splashOffsetY = iVar12 % 400 + 200;
-            fStack_1c = (float)splashOffsetY + *(float *)(DAT_07abf5d8 + 0x14);
-            fStack_18 = *(float *)(DAT_07abf5d8 + 0x18) + _DAT_00552900;
+            fStack_1c = (float)splashOffsetY + *(float *)(Hero + 0x14);
+            fStack_18 = *(float *)(Hero + 0x18) + _DAT_00552900;
             fStack_2c = 0.0f; fStack_28 = 0.0f; fStack_24 = 0.0f;
             fStack_38 = 1.0f; fStack_34 = 1.0f; fStack_30 = 1.0f;
             CreateEffect(MODEL_FIRE, &fStack_20, &fStack_2c, &fStack_38,
@@ -284,11 +284,11 @@ LAB_00501064:
     if ((gMapManager.GetCurrentMap() == MAP_ICARUS) && (_rand() % 10 == 0)) {
         iVar12 = _rand();
         const int cloudOffsetX = iVar12 % 5000 - 2500;
-        fStack_38 = (float)cloudOffsetX + *(float *)(DAT_07abf5d8 + 0x10);
+        fStack_38 = (float)cloudOffsetX + *(float *)(Hero + 0x10);
         iVar12 = _rand();
         const int cloudOffsetY = iVar12 % 5000 - 2500;
-        fStack_34 = (float)cloudOffsetY + *(float *)(DAT_07abf5d8 + 0x14);
-        fStack_30 = *(float *)(DAT_07abf5d8 + 0x18) - _DAT_00552ab8;
+        fStack_34 = (float)cloudOffsetY + *(float *)(Hero + 0x14);
+        fStack_30 = *(float *)(Hero + 0x18) - _DAT_00552ab8;
         fStack_20 = 1.0f; fStack_1c = 1.0f; fStack_18 = 1.0f;
         fStack_2c = 0.0f; fStack_28 = 0.0f; fStack_24 = 0.0f;
         CreateEffect(BITMAP_LIGHT, &fStack_38, &fStack_2c, &fStack_20,
@@ -297,8 +297,8 @@ LAB_00501064:
 
     // Get terrain tile at player position
     // IDA: Terrain_Load((std::int64_t)(Hero.x * 0.01), (std::int64_t)(Hero.y * 0.01)).
-    uVar8  = Terrain_GetTileIndex((uint)(long long)(*(float *)(DAT_07abf5d8 + 0x10) * 0.01f),
-                          (uint)(long long)(*(float *)(DAT_07abf5d8 + 0x14) * 0.01f));
+    uVar8  = Terrain_GetTileIndex((uint)(long long)(*(float *)(Hero + 0x10) * 0.01f),
+                          (uint)(long long)(*(float *)(Hero + 0x14) * 0.01f));
     iVar14 = 0;
     iVar12 = gMapManager.GetCurrentMap();
     uStack_48 = uVar8;
@@ -349,11 +349,11 @@ LAB_00501064:
                     if (iVar12 == 3)
                         WSLOT_DW(0x004) = 1;
                     iVar12 = _rand();
-                    WSF(DAT_0839bcc0, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 600 + -100) + *(float *)(DAT_07abf5d8 + 0x10));
+                    WSF(DAT_0839bcc0, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 600 + -100) + *(float *)(Hero + 0x10));
                     iVar11 = _rand();
-                    uVar8 = (intptr_t)DAT_07abf5d8;
+                    uVar8 = (intptr_t)Hero;
                     iVar12 = gMapManager.GetCurrentMap();
-                    WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar11 % 400 + 200) + *(float *)(DAT_07abf5d8 + 0x14));
+                    WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar11 % 400 + 200) + *(float *)(Hero + 0x14));
                     WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4)) = (float)(*(float *)(uVar8 + 0x18) + _DAT_00552900);
                 }
                 goto LAB_0050172b;
@@ -447,11 +447,11 @@ LAB_00501064:
                         (&DAT_0839bcd0)[iVar14 * (OBJECT_STRIDE / 4)] = 0;
                         WSF(DAT_0839bcd4, iVar14 * (OBJECT_STRIDE / 4)) = (float)(_rand() % 360);
                         WSF(DAT_0839bcc0, iVar14 * (OBJECT_STRIDE / 4)) =
-                            (float)(_rand() % 4000 - 2000) + *(float *)(DAT_07abf5d8 + 0x10);
+                            (float)(_rand() % 4000 - 2000) + *(float *)(Hero + 0x10);
                         WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) =
-                            (float)(_rand() % 4000 - 2000) + *(float *)(DAT_07abf5d8 + 0x14);
+                            (float)(_rand() % 4000 - 2000) + *(float *)(Hero + 0x14);
                         WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4)) =
-                            *(float *)(DAT_07abf5d8 + 0x18) - 600.0f;
+                            *(float *)(Hero + 0x18) - 600.0f;
                         return uVar8;
                     }
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0x10a;  // firefly
@@ -463,7 +463,7 @@ LAB_00501064:
                 } else if (iVar12 != 7) {
                     // Mundos 11-16 (Blood Castle): tipo 184.
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0xb8;
-                } else if (*(float *)(DAT_07abf5d8 + 0x14) * 0.01f < 128.0f) {
+                } else if (*(float *)(Hero + 0x14) * 0.01f < 128.0f) {
                     // Atlans, mitad sur: peces 182/183.
                     const short __fish = (short)(_rand() % 2);
                     *(unsigned int *)(&DAT_0839bd88 + iVar2) = 0x41700000;   // 15.0
@@ -494,8 +494,8 @@ LAB_00501064:
                 WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 0x13a) * _DAT_005524f8);
                 uVar8 = _rand(); uVar8 &= 0x800003ff;
                 if ((int)uVar8 < 0) uVar8 = (uVar8 - 1 | 0xfffffc00) + 1;
-                *pfVar1 = (float)(int)(uVar8 - 0x200) + *(float *)(DAT_07abf5d8 + 0x10);
-                uVar13 = _rand(); uVar8 = (intptr_t)DAT_07abf5d8;
+                *pfVar1 = (float)(int)(uVar8 - 0x200) + *(float *)(Hero + 0x10);
+                uVar13 = _rand(); uVar8 = (intptr_t)Hero;
                 uVar13 &= 0x800003ff;
                 if ((int)uVar13 < 0) uVar13 = (uVar13 - 1 | 0xfffffc00) + 1;
                 sVar5 = (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)];
@@ -548,7 +548,7 @@ LAB_00501734:
                              (float *)(&DAT_0839bdb8 + iVar2),
                              (float *)(&DAT_0839bdbc + iVar2),
                              &DAT_0839bdb6 + iVar2, fVar25);
-                uVar8 = (intptr_t)DAT_07abf5d8;
+                uVar8 = (intptr_t)Hero;
                 sVar5 = (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)];
 
                 // ── Update by type ────────────────────────────────────────────
@@ -560,8 +560,8 @@ LAB_00501734:
                         uVar8  = (uint)lVar24 & 0x80001fff;
                         if ((int)uVar8 < 0) uVar8 = (uVar8 - 1 | 0xffffe000) + 1;
                         if (((int)uVar8 < 0x800) &&
-                            (fVar25 = *pfVar1 - *(float *)(DAT_07abf5d8 + 0x10),
-                             fVar7  = WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) - *(float *)(DAT_07abf5d8 + 0x14),
+                            (fVar25 = *pfVar1 - *(float *)(Hero + 0x10),
+                             fVar7  = WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) - *(float *)(Hero + 0x14),
                              fVar25 = SQRT(fVar25*fVar25 + fVar7*fVar7),
                              _DAT_0055285c <= fVar25) && (fVar25 <= _DAT_00552850)) {
                             (&DAT_0839bdb4)[iVar2] = 1;
@@ -602,7 +602,7 @@ LAB_00501734:
                     }
                     if ((&DAT_0839bdb4)[iVar2] == '\x02') {
                         // Phase 2: descend when player animation is idle
-                        if (*(unsigned char *)&((OBJECT*)(uintptr_t)(DAT_07abf5d8))->CurrentAction < 0xd) {
+                        if (*(unsigned char *)&((OBJECT*)(uintptr_t)(Hero))->CurrentAction < 0xd) {
                             uVar8 = _rand(); uVar8 &= 0x800000ff;
                             bVar20 = (uVar8 == 0);
                             if ((int)uVar8 < 0) bVar20 = ((uVar8-1|0xffffff00)==0xffffffff);
@@ -727,7 +727,7 @@ LAB_00501cb5:
                     *pfVar1 = fVar7;
                     fVar25 = fStack_28 + WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4));
                     (&DAT_0839bcc4)[iVar14*(OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
-                    uVar8 = (intptr_t)DAT_07abf5d8;
+                    uVar8 = (intptr_t)Hero;
                     WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)(fStack_24 + WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)));
                     *(float *)(&DAT_0839bd70 + iVar2) = fStack_2c * _DAT_00552540 + fVar7;
                     *(float *)(&DAT_0839bd74 + iVar2) = fStack_28 * _DAT_00552540 + fVar25;
@@ -764,8 +764,8 @@ LAB_00501cb5:
                 (&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] = (int)(&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] - 1;
 
                 // Proximity effects (cloud type: chance to play sound/effect)
-                fVar25 = *pfVar1 - *(float *)(DAT_07abf5d8 + 0x10);
-                fVar7  = WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) - *(float *)(DAT_07abf5d8 + 0x14);
+                fVar25 = *pfVar1 - *(float *)(Hero + 0x10);
+                fVar7  = WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) - *(float *)(Hero + 0x14);
                 if (SQRT(fVar25*fVar25 + fVar7*fVar7) < _DAT_00552ab4) {
                     sVar5 = (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)];
                     pcVar19 = pcVar3;

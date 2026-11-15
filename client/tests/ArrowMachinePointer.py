@@ -17,7 +17,7 @@ SERVICES=r'''
 using WORD=std::uint16_t;
 #endif
 using byte=BYTE;
-void* DAT_07cf1ffc;BYTE* DAT_07abf5d8;DWORD CurrentSkill;
+void* DAT_07cf1ffc;BYTE* Hero;DWORD CurrentSkill;
 CONSTANTS
 struct OBJECT{};
 struct CharacterView{struct Part{short Type;}Weapon[2];}character;
@@ -57,7 +57,7 @@ std::uint64_t Run(BYTE* memory,BYTE* object,BYTE* identity,unsigned heroMode=0){
   BYTE* cm=static_cast<BYTE*>(DAT_07cf1ffc);const short a=types[t],b=types[(t*3+p)%20];std::memcpy(cm+536,&a,2);std::memcpy(cm+604,&b,2);serialBefore=serials[p];cm[1408]=serialBefore;
   character.Weapon[0].Type=Model(types[(t+3)%20]);character.Weapon[1].Type=Model(types[(t*7+2)%20]);const auto beforeCharacter=character;
   const auto heroAddress=heroMode==2?std::uint64_t(characterAddress)+0x100000000ull:std::uint64_t(characterAddress+(heroMode==1||!hero?1:0));
-  DAT_07abf5d8=reinterpret_cast<BYTE*>(static_cast<std::uintptr_t>(heroAddress));
+  Hero=reinterpret_cast<BYTE*>(static_cast<std::uintptr_t>(heroAddress));
   aliases=(p&1)!=0;wantedIndex=WORD((t*32767+p*8191)&65535);wantedKey=key;wantedSkill=skill;wantedPK=WORD(0x8000+t*31+p);
   std::memcpy(object+16+134,&wantedPK,2);
   const float original=float(int(t)-int(p))* .125f;std::memcpy(object+16+36,&original,4);
@@ -110,12 +110,12 @@ def harness(revision=None):
     source=read_source('src/game/combat/Combat_Projectiles.cpp',revision)
     # Sólo la referencia histórica conserva el cast32,con sintaxis aceptada
     # por GCC. El cuerpo actual se compila sin esta adaptación.
-    legacy='(DWORD)DAT_07abf5d8'
+    legacy='(DWORD)Hero'
     if legacy in source:
         assert source.count(legacy)==1
-        source=source.replace(legacy,'static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(DAT_07abf5d8))')
+        source=source.replace(legacy,'static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(Hero))')
     else:
-        assert 'reinterpret_cast<const void*>(static_cast<std::uintptr_t>(c)) == DAT_07abf5d8' in source
+        assert 'reinterpret_cast<const void*>(static_cast<std::uintptr_t>(c)) == Hero' in source
     globals_source=read_source('src/globals.cpp',revision)
     constants='\n'.join(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',globals_source,re.M).group(0) for name in ('_DAT_00552834','_DAT_0055284c','_DAT_00552ab0','_DAT_00552584'))
     constants+='\n'+re.search(r'^constexpr int ITEM_MODEL_BASE[^;]+;',read_source('src/game/item/ItemDefines.h',revision),re.M).group(0)

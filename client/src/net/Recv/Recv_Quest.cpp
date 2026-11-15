@@ -27,8 +27,8 @@ void NetRecv_A0(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // Fallback: CharacterAttribute+11, que el char-select ya dejo
     // seteado y es de donde Recv_JoinMapServer copia hero+444.
     int heroClass = -1;
-    if (DAT_07abf5d8 != 0)
-        heroClass = AsCharacter(DAT_07abf5d8)->Class;
+    if (Hero != 0)
+        heroClass = AsCharacter(Hero)->Class;
     else if (CharacterAttribute != nullptr)
         heroClass = *(BYTE*)((BYTE*)CharacterAttribute + 11);
     // El destino (CSQuest + 0x1C848) son 0x32 bytes: IDA hace
@@ -83,10 +83,10 @@ void NetRecv_A3(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     NetLog("NET:  → 0xA3 QuestPrize sub=0x%02X key=%d idx=%d val=%d",
            Msg[5], key, idx, Msg[6]);
     if (idx < 0 || idx >= 400) return;
-    if (DAT_07abf5d0 == 0) return;
+    if (CharactersClient == 0) return;
 
-    BYTE *c    = (BYTE*)(uintptr_t)DAT_07abf5d0 + (size_t)idx * CHARACTER_STRIDE;
-    BYTE *hero = (BYTE*)(uintptr_t)DAT_07abf5d8;
+    BYTE *c    = (BYTE*)(uintptr_t)CharactersClient + (size_t)idx * CHARACTER_STRIDE;
+    BYTE *hero = (BYTE*)(uintptr_t)Hero;
     BYTE *attr = (BYTE*)(uintptr_t)CharacterAttribute;
     // Clase codificada igual que en la lista de personajes:
     //   ((b >> 4) | (b & 0x10)) >> 1

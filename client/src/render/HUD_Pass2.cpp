@@ -52,7 +52,7 @@ extern "C" {
 // es el contador de debounce del walker (Player_InputTick.cpp).
 // (Pendiente: portar el F3/0x20 `SummonLife = ReceiveBuffer[4]`, el único
 //  productor del valor; hasta entonces queda en 0 y la barra no se dibuja.)
-#define SummonLife               DAT_05826d24
+#define SummonLife               SummonLife
 #define g_bEventChipDialogEnable _g_bEventChipDialogEnable
 #define byte_7E113E4         (*(char(*)[5][256])&DAT_07e113e4)
 #define flt_7E118E4_PTR      (((char*)&DAT_07e113e4) + 5*256)  // one past last
@@ -306,8 +306,8 @@ void Render_ChatBox(void) { Render_ChatBox_(); }
 // binario es sub_494520 (el bloque anti-tamper de IME/RC4).  Los escritores
 // (InitGame y los handlers F3/22 y F3/23) y este lector tienen que usar la
 // misma memoria.
-#define DAT_07e11e10_alias  DAT_05826c08   // SoccerTime
-#define DAT_07e11e14_alias  DAT_05826d33   // SoccerObserver
+#define DAT_07e11e10_alias  SoccerTime   // SoccerTime
+#define DAT_07e11e14_alias  SoccerObserver   // SoccerObserver
 
 extern "C" char __cdecl Render_CharInfoPanel_(void);
 char Render_CharInfoPanel_(void)
@@ -423,7 +423,7 @@ int RenderEquipedHelperLife_(bool a2)
     // equipado, no `char_class`.
     int retY = 15;                       // `mov esi, 0Fh` del prologo
 
-    const BYTE* hero = (const BYTE*)DAT_07abf5d8;
+    const BYTE* hero = (const BYTE*)Hero;
     const WORD helperType = hero ? *(const WORD*)&AsCharacter(hero)->Helper.Type : 0;
 
     DWORD backupBgTextColor = SetBackgroundTextColor;

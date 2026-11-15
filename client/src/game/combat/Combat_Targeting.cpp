@@ -12,7 +12,7 @@ bool __cdecl CheckTarget(CHARACTER* c) {
     // Otherwise: do terrain ray pick to find target position.
     // c = entity base pointer (character struct)
 
-    const std::uintptr_t base = DAT_07abf5d0;
+    const std::uintptr_t base = CharactersClient;
     int selIdx = SelectedCharacter;  // SelectedCharacter
 
     if (selIdx != -1) {

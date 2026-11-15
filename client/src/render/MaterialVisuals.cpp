@@ -128,7 +128,7 @@ void MaterialVisuals_TickWingPreviews() {
 
 void MaterialVisuals_TickUi() {
     const bool ready=SceneFlag==2 ? InitLogIn!=0 :
-        SceneFlag==4 ? CharSelectSceneInitialized && DAT_05826cb0>50 :
+        SceneFlag==4 ? CharSelectSceneInitialized && CurrentProtocolState>50 :
         SceneFlag==5 && EnableMainRender && LoadingWorld<=30;
     if (!ready) return;
     if (SceneFlag==5 && !gUserSettings.GetAntilag(ANTILAG_INTERFACE)) {

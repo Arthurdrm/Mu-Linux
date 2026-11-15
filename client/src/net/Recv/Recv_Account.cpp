@@ -58,7 +58,7 @@ void Recv_JoinServer(const BYTE* Msg, int Size)
         // (el Hero stale del slot 0) → fantasma renderizado + hover pegado.
         HeroKey   = g_HeroKey;
         CurrentProtocolState   = 2;
-        DAT_083a7c14   = 2;          // login sub-state = CredentialInput
+        LoginSubState   = 2;          // login sub-state = CredentialInput
         PlayBuffer(27, 0, 0);
         NetLog("NET:    JoinServer OK: HeroKey=%d state→2/2", g_HeroKey);
         // ── F1/05 HWID (desviación MuEmu) ──────────────────────────────────────────
@@ -110,8 +110,8 @@ void Recv_LoginResult(const BYTE* Msg)
         case 0xC2: case 0xD2: state = 36; break;
         default:   state = 27; break;
     }
-    DAT_05826cb0 = state;
-    DAT_083a7c14 = 3;
+    CurrentProtocolState = state;
+    LoginSubState = 3;
     // Log del resultado de login crudo por intento.  Msg[4]=code server,
     // state=nuestro DAT_05826cb0.
     NetLog("NET:  → F1/01 LOGIN-RESULT code=0x%02X -> state=%u (t=%lu)",
@@ -172,9 +172,9 @@ void Recv_LogOut(const BYTE* Msg)
             ReleaseMainData();
         }
         SceneFlag = 4;                // SceneFlag = CharSelect
-        DAT_083a7c14 = 0;                // sub-state reset (will be set to 0x14/0x15 by EnterWorldTick init)
+        LoginSubState = 0;                // sub-state reset (will be set to 0x14/0x15 by EnterWorldTick init)
         DAT_083a7c18 = 0;
-        DAT_05826cb0 = 50;               // CurrentProtocolState
+        CurrentProtocolState = 50;               // CurrentProtocolState
         // RESET de las guardas de init de escena. EnterWorldTick (state=4) y
         // CharSelectTick (state=5) tienen guardas de init (IDA: InitCharacterScene/4c) que
         // sólo permiten re-inicializar la escena la PRIMERA vez. Sin reset, el
@@ -186,7 +186,7 @@ void Recv_LogOut(const BYTE* Msg)
         EnableMainRender = 0;                // IDA: EnableMainRender (0x083A7C10)
         DAT_083a4299 = 0;                // double-click flag
         MouseLButtonPush = 0;                // single-click flag
-        DAT_005616ac = -1;               // selected slot
+        SelectedHero = -1;               // selected slot
         DAT_005616b0 = -1;               // creation slot
         // Manda el pedido de lista de personajes F3/00 vía gNetwork.Send para que
         // salga como C3 (encriptado) con el contador de serial correcto + chain-XOR. Los
@@ -205,7 +205,7 @@ void Recv_LogOut(const BYTE* Msg)
         // original — una desviación deliberada por el orden del JoinMapServer. Con el
         // World anterior y su heightmap todavía cargado, CreateCharacterPointer le
         // daría a cada personaje del char-select la altura del terreno de ese mapa.
-        DAT_05826cb0 = 0;                // CurrentProtocolState
+        CurrentProtocolState = 0;                // CurrentProtocolState
         InitGame();
         return;
     }
@@ -221,9 +221,9 @@ void Recv_LogOut(const BYTE* Msg)
         CWsctlc_Close(reinterpret_cast<uintptr_t>(SocketClient));  // Net_Disconnect (close socket)
         ReleaseCharacterSceneData(); // IDA: ReleaseCharacterSceneData (0x005102C0)
         SceneFlag = 2;                // SceneFlag = Login
-        DAT_083a7c14 = 0;                // sub-state = ServerSelect
+        LoginSubState = 0;                // sub-state = ServerSelect
         DAT_083a7c18 = 0;
-        DAT_05826cb0 = 0;                // CurrentProtocolState
+        CurrentProtocolState = 0;                // CurrentProtocolState
         DAT_083a7c48 = 0;                // ConnectionCheckEnable
         InitLogIn = 0;                // InitLogIn
         CharSelectSceneInitialized = 0;
@@ -330,8 +330,8 @@ void Recv_Redirect(const BYTE* Msg)
 // ---------------------------------------------------------------------------
 void Recv_BackToConnecting(void)
 {
-    DAT_05826cb0 = 1;
-    DAT_083a7c14 = 1;
+    CurrentProtocolState = 1;
+    LoginSubState = 1;
 }
 
 // 0xF1

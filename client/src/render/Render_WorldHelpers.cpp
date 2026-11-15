@@ -196,7 +196,7 @@ void __cdecl Entity_Render(void)
 
                 BYTE* model = (BYTE*)((uintptr_t)DAT_05828d58 + (uintptr_t)v5 * BMD_STRIDE);
                 AsModel(model)->CurrentAction = 0;
-                AsModel(model)->Skin = (char)((*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class) & 7);
+                AsModel(model)->Skin = (char)((*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class) & 7);
                 AsModel(model)->CurrentAction = AsObject(v1)->CurrentAction;
                 *(float*)&((BMD*)(uintptr_t)(model))->BodyOrigin[0] = *v2;
                 *(DWORD*)&((BMD*)(uintptr_t)(model))->BodyOrigin[1] = *(DWORD*)(v0 - 241);
@@ -682,7 +682,7 @@ void __cdecl RenderMonsterName(int /*unused*/, int /*unused*/, int /*unused*/, i
     // ── PASO 1: uno solo, por prioridad (IDA L28-155) ────────────────────────
     //   NPC  >  (item solo)  >  personaje.  Con personaje seleccionado y
     //   `Attacking != -1` (LABEL_8) se dibuja el item en vez del personaje.
-    char* base = (char*)(uintptr_t)DAT_07abf5d0;
+    char* base = (char*)(uintptr_t)CharactersClient;
     const int npc = (int)SelectedNpc;
     const int chr = (int)SelectedCharacter;
 
@@ -839,7 +839,7 @@ void __cdecl RenderFishs(int /*unused*/, int /*unused*/, int /*unused*/, int /*u
 // devuelve. Por eso guarda/restaura pos (16/20/24), angle (28/32/36) y type.
 void __cdecl RenderWheelWeapon(intptr_t o)
 {
-    if (!o || !DAT_05828d58 || !DAT_07abf5d8) return;
+    if (!o || !DAT_05828d58 || !Hero) return;
 
     // ── guardar el estado original del slot ──
     const int savedX     = *(int *)&AsObject(o)->Position[0];
@@ -874,7 +874,7 @@ void __cdecl RenderWheelWeapon(intptr_t o)
     BYTE* mdl = (BYTE*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * model_id;
     *(float*)(mdl + 116 + BMD_FIELD_SHIFT) = zUp;
     *(BYTE*) (mdl + 160 + BMD_FIELD_SHIFT) = sample ? sample->action : AsObject(o)->CurrentAction;                       // CurrentAction
-    *(BYTE*) (mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7); // clase
+    *(BYTE*) (mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7); // clase
     *(int*)  (mdl + 108 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[0];
     *(int*)  (mdl + 112 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[1];
 
@@ -1199,7 +1199,7 @@ void EffectPool_TickRenderState() {
         if (!o.Visible) continue;
         if ((o.Type==239 || (o.Type==244 && (float)o.LifeTime>_DAT_00552488)) && o.Owner) {
             const int model = *((BYTE *)o.Owner + 136) + ITEM_MODEL_BASE;
-            if (model >= 0 && model < 1024 && DAT_07abf5d8) {
+            if (model >= 0 && model < 1024 && Hero) {
                 if (o.Type==239) o.Direction[2] -= 30.0f;
                 MaterialVisuals_PrepareWeaponObject(&o,model);
             }

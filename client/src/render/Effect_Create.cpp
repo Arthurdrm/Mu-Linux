@@ -873,7 +873,7 @@ LAB_00460dd8:
     return pfVar8;
   }
   pfVar4 = (float*)DAT_07cf1ffc;
-  pfVar3 = (float*)DAT_07abf5d8;
+  pfVar3 = (float*)Hero;
   fVar27 = _DAT_00552580;
   if (0xf6 < param_1) {
     if (param_1 < 0x1f1) {
@@ -1438,7 +1438,7 @@ switchD_00461001_caseD_c7:
       *(float *)&AsObject(pfVar17)->AttackPoint = 0.0;
       AsObject(pfVar17)->Kind = 1;
     }
-    pfVar8 = (float*)DAT_07abf5d8;
+    pfVar8 = (float*)Hero;
     if ((param_1 == 0xd8) && (AsObject(pfVar17)->SubType == 3)) {
       *(int*)&pfVar17[EffectLifetimeIndex] = 40;
       fVar27 = pfVar8[5];
@@ -1534,7 +1534,7 @@ switchD_00461001_caseD_c7:
     // los bits, no convertir el float (eso destruia el puntero y la comparacion
     // con Hero nunca daba true).
     pfVar12 = (float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner;
-    if (pfVar12 != (float*)DAT_07abf5d8) {
+    if (pfVar12 != (float*)Hero) {
       return pfVar12;
     }
     if (1 < AsObject(pfVar17)->SubType) {                      // SubType (DWORD)
@@ -1622,8 +1622,8 @@ switchD_00465549_caseD_4ba:
 LAB_00465641:
   Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
   Vector_Rotate(&local_6c,local_3c + 3,AsObject(pfVar17)->Direction);
-  if ((float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner != (float*)DAT_07abf5d8) {
-    return (float*)DAT_07abf5d8;
+  if ((float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner != (float*)Hero) {
+    return (float*)Hero;
   }
   fVar27 = AsObject(pfVar17)->Position[1];
   fVar2 = AsObject(pfVar17)->Position[2];
@@ -1679,10 +1679,10 @@ void __cdecl Tamachan_Spawn(void)
   angle[0] = 0.0f;
   angle[1] = 0.0f;
   angle[2] = 0.0f;
-  if (DAT_07abf5d8)   // guard del port: el binario asume Hero
+  if (Hero)   // guard del port: el binario asume Hero
     angle[2] = CreateAngle(16284.0f, 12031.0f,
-                            *(float *)((char *)DAT_07abf5d8 + 16),
-                            *(float *)((char *)DAT_07abf5d8 + 20));
+                            *(float *)((char *)Hero + 16),
+                            *(float *)((char *)Hero + 20));
   CreateEffect(MODEL_TAMA, pos, angle, angle, (float *)0, (float *)0, (float *)-1,
                 (float *)0, 0);
 }

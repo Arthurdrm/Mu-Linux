@@ -17,7 +17,7 @@ extern void __cdecl operator_delete(void* ptr);
 extern "C" void __cdecl DeleteCharacter(int Key)
 {
     gHealthBar.Remove((WORD)Key);
-    uintptr_t v1 = DAT_07abf5d0;
+    uintptr_t v1 = CharactersClient;
     int v2 = 0;
     while (!*(BYTE*)v1 || *(short*)&((CHARACTER*)(uintptr_t)(v1))->Key != (short)Key) {
         ++v2;

@@ -422,7 +422,7 @@ void NetRecv_5C(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         return;
     }
     const int entitySlot = FindCharacterIndex(entityKey);
-    BYTE* base = (BYTE*)(uintptr_t)DAT_07abf5d0;
+    BYTE* base = (BYTE*)(uintptr_t)CharactersClient;
     if (base && entitySlot >= 0 && entitySlot < 400) {
         BYTE* entity = base + entitySlot * CHARACTER_STRIDE;
         AsCharacter(entity)->GuildMarkIndex = (short)row;
@@ -441,7 +441,7 @@ void NetRecv_5D(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     if (Size < 5) return;
     const WORD entityKey = (WORD)((Msg[3] << 8) | Msg[4]);
     const int entitySlot = FindCharacterIndex(entityKey);
-    BYTE* base = (BYTE*)(uintptr_t)DAT_07abf5d0;
+    BYTE* base = (BYTE*)(uintptr_t)CharactersClient;
     if (base && entitySlot >= 0 && entitySlot < 400)
         AsCharacter(base + entitySlot * CHARACTER_STRIDE)->GuildMarkIndex = -1;
     GuildOpened = 0;
@@ -509,7 +509,7 @@ void NetRecv_5B(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     BYTE count = Msg[4];
     NetLog("NET:  → 0x5B EntityGuildList count=%d", count);
     if (Size < 5 + count * 4) return;
-    BYTE* basePtr = (BYTE*)(uintptr_t)DAT_07abf5d0;
+    BYTE* basePtr = (BYTE*)(uintptr_t)CharactersClient;
     for (int i = 0; i < count; ++i) {
         const BYTE* e = Msg + 5 + i * 4;
         WORD entityId = (WORD)((e[0] << 8) | e[1]) & 0x7FFF;
@@ -527,8 +527,8 @@ void NetRecv_5B(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             AsCharacter(slot)->GuildTeam = 0;
             // Mismo guild que el heroe.  IDA no excluye al heroe: el
             // propio personaje tambien queda marcado con 1.
-            if (DAT_07abf5d8) {
-                const short heroGuild = AsCharacter((BYTE*)DAT_07abf5d8)->GuildMarkIndex;
+            if (Hero) {
+                const short heroGuild = AsCharacter((BYTE*)Hero)->GuildMarkIndex;
                 if (heroGuild != -1 && AsCharacter(slot)->GuildMarkIndex == heroGuild)
                     AsCharacter(slot)->GuildTeam = 1;
             }

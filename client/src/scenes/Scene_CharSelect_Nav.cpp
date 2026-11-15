@@ -1843,7 +1843,7 @@ label_26:
 // Devuelve el índice de slot 0-399, o 400 si no lo encontró.
 int __cdecl FindCharacterIndex(int param_1)
 {
-    char *pcVar2 = (char*)(uintptr_t)DAT_07abf5d0;
+    char *pcVar2 = (char*)(uintptr_t)CharactersClient;
     for (int iVar1 = 0; iVar1 <= 399; iVar1++, pcVar2 += CHARACTER_STRIDE) {
         if (*pcVar2 != '\0' && *(short*)&((CHARACTER*)(uintptr_t)(pcVar2))->Key == (short)param_1)
             return iVar1;
@@ -1867,7 +1867,7 @@ int __cdecl FindCharacterIndex(int param_1)
 void __cdecl ChangeCharacterExt(int Key, BYTE *Equipment) {
     // DAT_07abf5d0 guarda la dirección base del array de entidades como entero.
     // 916 (0x394) = entity stride. Slot at DAT_07abf5d0 + 916*Key.
-    intptr_t c = DAT_07abf5d0 + CHARACTER_STRIDE * Key;
+    intptr_t c = CharactersClient + CHARACTER_STRIDE * Key;
     if (*(WORD *)&AsCharacter(c)->Object.Type != 390) return;
     // 0.97.20: el CharSet sólo lleva vanilla; el único agregado que viaja es
     // el ala custom (más abajo).

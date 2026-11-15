@@ -65,7 +65,7 @@ void __cdecl ItemDrop_RenderGroundWeapon(intptr_t o) {
     if (_DAT_00552488 >= (float)AsObject(o)->LifeTime) return;
 
     const intptr_t owner = (intptr_t)((OBJECT*)(uintptr_t)(o))->Owner;
-    if (!owner || !DAT_05828d58 || !DAT_07abf5d8) return;
+    if (!owner || !DAT_05828d58 || !Hero) return;
 
     const int model_id = *(unsigned char*)(owner + 136) + ITEM_MODEL_BASE;
     if (model_id < 0 || model_id >= 1024) return;
@@ -79,7 +79,7 @@ void __cdecl ItemDrop_RenderGroundWeapon(intptr_t o) {
     *(int*) (mdl + 108 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[0];
     *(int*) (mdl + 112 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[1];
     *(int*) (mdl + 116 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[2];
-    *(BYTE*)(mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7);
+    *(BYTE*)(mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7);
     *(BYTE*)(mdl + 160 + BMD_FIELD_SHIFT) = sample ? sample->action : AsObject(o)->CurrentAction;
 
     const short savedType = AsObject(o)->Type;

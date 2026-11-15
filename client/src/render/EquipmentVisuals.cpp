@@ -42,7 +42,7 @@ bool drawing = false;
 
 int Slot(const void *entity) {
     if (entity == CharacterView) return 400;
-    const uintptr_t address = (uintptr_t)entity, base = (uintptr_t)DAT_07abf5d0;
+    const uintptr_t address = (uintptr_t)entity, base = (uintptr_t)CharactersClient;
     if (!base || address < base || address - base >= 400 * sizeof(CHARACTER)) return -1;
     const uintptr_t offset = address - base;
     return offset % sizeof(CHARACTER) ? -1 : (int)(offset / sizeof(CHARACTER));

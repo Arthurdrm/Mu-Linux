@@ -126,8 +126,8 @@ def harness(revision=None):
         prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
         prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
     aliases = header + read_source("src/structs.h", revision)
-    for name in ("DAT_07abf5d8", "_g_bEventChipDialogEnable"):
-        prefix += "\n" + re.search(rf"^#define\s+{name}\s+[^\n]+", aliases, re.M).group() + "\n"
+    for name in ("DAT_07abf5d8", "_g_bEventChipDialogEnable"):   # el primero sólo existe en revisiones viejas
+        prefix += "\n" + (lambda m: m.group() if m else "")(re.search(rf"^#define\s+{name}\s+[^\n]+", aliases, re.M)) + "\n"
     prefix += SERVICES
     scene = read_source("src/scenes/Scene_CharSelect_Nav.cpp", revision)
     for name in ("CSQuest_GetQuestState", "CSQuest_FindQuestContext", "CSQuest_CheckActCondition", "CSQuest_CheckRequestCondition", "CSQuest_CheckQuestState"):

@@ -205,8 +205,8 @@ static void WriteEquipmentSlot(int slotIdx, int type, int level, BYTE optByte, B
         memset(slot, 0, sizeof(ITEM));
         AsItem(slot)->Type  = -1;
         AsItem(slot)->Key = 0;
-        if (SceneFlag == 5 && DAT_07abf5d8) {
-            HeroEquipWatchdog(AsCharacter(DAT_07abf5d8));
+        if (SceneFlag == 5 && Hero) {
+            HeroEquipWatchdog(AsCharacter(Hero));
         }
         return;
     }
@@ -236,8 +236,8 @@ static void WriteEquipmentSlot(int slotIdx, int type, int level, BYTE optByte, B
     equip->x = (BYTE)slotIdx;
     equip->y = 0;
     equip->Color = 0;
-    if (SceneFlag == 5 && DAT_07abf5d8) {
-        HeroEquipWatchdog(AsCharacter(DAT_07abf5d8));
+    if (SceneFlag == 5 && Hero) {
+        HeroEquipWatchdog(AsCharacter(Hero));
     }
 }
 
@@ -391,8 +391,8 @@ extern "C" void __cdecl Recv_Inventory(const BYTE* Msg)
 
     SeedQuickPotionTypesFromInventory();
 
-    if (SceneFlag == 5 && DAT_07abf5d8) {
-        HeroEquipWatchdog(AsCharacter(DAT_07abf5d8));
+    if (SceneFlag == 5 && Hero) {
+        HeroEquipWatchdog(AsCharacter(Hero));
     }
 
 }

@@ -145,7 +145,7 @@ int Game_SceneUpdate(void)
     if (InitLogIn == '\0') {
         InitLogIn = 1;
         gMapManager.SetCurrentMap(0xffffffff);
-        DAT_05826cb0  = 0;
+        CurrentProtocolState  = 0;
 
         // NOTE: the canonical IDA init at 0x0051F900 lines 220-289 does NOT
         // call Net_Connect here. The socket is opened only when the user
@@ -182,7 +182,7 @@ int Game_SceneUpdate(void)
 
         // Clear 8 entity slots at base entity array + 0x168 (stride sizeof(CHARACTER))
         {
-            CHARACTER* chars = AsCharacter(DAT_07abf5d0);
+            CHARACTER* chars = AsCharacter(CharactersClient);
             for (int i = 7; i >= 0; i--)
                 chars[i].Object.Alpha = 0.0f;
         }
@@ -243,7 +243,7 @@ int Game_SceneUpdate(void)
         unsigned char* loginPreview1 = CreateHero(1, 1, 0, 0.0f, 0.0f, 0.0f);
         LoginScene_ClearPreviewEquipmentMeta(loginPreview1);
         {
-            intptr_t base = DAT_07abf5d0;
+            intptr_t base = CharactersClient;
             // Entity 0 (slot 0) — scale + position
             *(float*)(base + CHARACTER_STRIDE * 1 + 0xc) = 0.6f;
             *(int*)  (base + CHARACTER_STRIDE * 1 + 0x1c) = 0;
@@ -257,7 +257,7 @@ int Game_SceneUpdate(void)
         unsigned char* loginPreview2 = CreateHero(2, 0, 0, 0.0f, 0.0f, 0.0f);
         LoginScene_ClearPreviewEquipmentMeta(loginPreview2);
         {
-            intptr_t base = DAT_07abf5d0;
+            intptr_t base = CharactersClient;
             // Entity 2 (elf).
             // Ghidra @ 0x0051F900 línea 239: CharactersClient[2].Position[1] = -770.0
             *(float*)(base + CHARACTER_STRIDE * 2 + 0xc) = 0.6f;
@@ -272,7 +272,7 @@ int Game_SceneUpdate(void)
         unsigned char* loginPreview3 = CreateHero(3, 2, 0, 0.0f, 0.0f, 0.0f);
         LoginScene_ClearPreviewEquipmentMeta(loginPreview3);
         {
-            intptr_t base  = DAT_07abf5d0;
+            intptr_t base  = CharactersClient;
             intptr_t slot3 = base + CHARACTER_STRIDE * 3 + 0x0;  // entity 3 base
             *(float*)(base + CHARACTER_STRIDE * 3 + 0xc) = 0.6f;
             *(int*)  (base + CHARACTER_STRIDE * 3 + 0x1c) = 0;
@@ -285,7 +285,7 @@ int Game_SceneUpdate(void)
         }
 
         // Initialize state variables
-        DAT_083a7c14 = 0;       // state = ServerSelect
+        LoginSubState = 0;       // state = ServerSelect
         DAT_083a7c18 = 0;
         DAT_005616a4 = 0x1e0;   // dialog Y start
         DAT_005616a8 = (int)0xffffff38;
@@ -295,7 +295,7 @@ int Game_SceneUpdate(void)
         GuildInputEnable = 0;
         TabInputEnable = 0;
         GoldInputEnable = 0;
-        DAT_00559c84 = 1;
+        InputEnable = 1;
         ClearInput(1);        // CharSelect_Init
 
         // Copy version string → username buffer
@@ -361,7 +361,7 @@ int Game_SceneUpdate(void)
     // setea entity[+0x105], pero no animan).
     {
         for (int s = 0; s < 8; ++s) {
-            intptr_t e = (intptr_t)DAT_07abf5d0 + s * CHARACTER_STRIDE;
+            intptr_t e = (intptr_t)CharactersClient + s * CHARACTER_STRIDE;
             if (*(char*)e != '\0') {
                 MoveCharacterVisual(e);            // model.action ← entity.action
                 CharacterAnimation(e, e);   // advance entity[+0x108]
@@ -380,15 +380,15 @@ int Game_SceneUpdate(void)
     // the login scene nudges the three background characters into alternate
     // idle/gesture actions with a 1/128 chance each frame.
     {
-        std::uintptr_t e3 = DAT_07abf5d0 + CHARACTER_STRIDE * 3;  // entity 3
+        std::uintptr_t e3 = CharactersClient + CHARACTER_STRIDE * 3;  // entity 3
         if ((_rand() & 0x7f) == 0) SetAction(AsObject(e3), 113);
         if ((_rand() & 0x7f) == 0) SetAction(AsObject(e3), 99);
 
-        std::uintptr_t e2 = DAT_07abf5d0 + CHARACTER_STRIDE * 2;  // entity 2
+        std::uintptr_t e2 = CharactersClient + CHARACTER_STRIDE * 2;  // entity 2
         if ((_rand() & 0x7f) == 0) SetAction(AsObject(e2), 115);
         if ((_rand() & 0x7f) == 0) SetAction(AsObject(e2), 111);
 
-        std::uintptr_t e1 = DAT_07abf5d0 + CHARACTER_STRIDE;  // entity 1
+        std::uintptr_t e1 = CharactersClient + CHARACTER_STRIDE;  // entity 1
         if ((_rand() & 0x7f) == 0) SetAction(AsObject(e1), 101);
         if ((_rand() & 0x7f) == 0) SetAction(AsObject(e1), 111);
     }
@@ -398,12 +398,12 @@ int Game_SceneUpdate(void)
         PlayBuffer(4, 0, 0);
 
     // ── STATE 0: SERVER SELECT ────────────────────────────────────────────────
-    if (DAT_083a7c14 == 0) {
+    if (LoginSubState == 0) {
         CServerSelWin_UpdateWhileActive();  // Scene_Login_ServerSelect
     }
 
     // ── STATE 1 / 12: CONNECTING / ERROR ─────────────────────────────────────
-    if (DAT_083a7c14 == 1 || DAT_083a7c14 == 0xc) {
+    if (LoginSubState == 1 || LoginSubState == 0xc) {
         DWORD now = Platform::GetTimer().Ticks();
         DWORD elapsed = now - DAT_083a7ac8;
 
@@ -414,7 +414,7 @@ int Game_SceneUpdate(void)
             // Send keep-alive every 3000 ms
             if (DAT_083a4320 < (int)(clamped / 3000)) {
                 DAT_083a4320++;
-                if (DAT_083a7c14 == 1) {
+                if (LoginSubState == 1) {
                     // Build 6-byte keep-alive: [0xC1][6][0x05][seq][0][0]
                     BYTE pkt[6];
                     pkt[0] = 0xC1; pkt[1] = 6; pkt[2] = 0x05;
@@ -427,13 +427,13 @@ int Game_SceneUpdate(void)
                     UIChatLogWindow_AddText((const char*)&DAT_083a7c78, GlobalText[471], 1);
                 }
             }
-        } else if (DAT_083a7c14 == 1) {
+        } else if (LoginSubState == 1) {
             // Timeout: reset to ServerSelect
-            DAT_083a7c14 = 0;
+            LoginSubState = 0;
             DAT_083a7c44 = 0;
         } else {
             // state == 12: restart timestamp
-            if (DAT_083a7c14 == 0xc)
+            if (LoginSubState == 0xc)
                 DAT_083a7ac8 = Platform::GetTimer().Ticks();
         }
 
@@ -443,18 +443,18 @@ int Game_SceneUpdate(void)
             IsClickPushed())
         {
             MouseLButtonPush = '\0';
-            if (DAT_083a7c14 == 1) {
-                DAT_083a7c14 = 0;
+            if (LoginSubState == 1) {
+                LoginSubState = 0;
                 DAT_083a7c44 = 0;
-            } else if (DAT_083a7c14 == 0xc) {
+            } else if (LoginSubState == 0xc) {
                 if (DAT_083a4320 < 4) {
                     // Retry: disconnect and reconnect
                     goto LAB_00520fd8;
                 }
-                DAT_083a7c14 = 0;
+                LoginSubState = 0;
                 DAT_083a7c44 = 0;
                 Net_Disconnect(SocketClient);
-                DAT_05826cb0 = 0;
+                CurrentProtocolState = 0;
                 CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
                              (unsigned)g_ServerPort);
             }
@@ -463,7 +463,7 @@ int Game_SceneUpdate(void)
     }
 
     // ── STATE 2-3: CREDENTIAL INPUT / AWAIT LOGIN RESPONSE ───────────────────
-    if (DAT_083a7c14 >= 2 && DAT_083a7c14 <= 3) {
+    if (LoginSubState >= 2 && LoginSubState <= 3) {
         int dialogY = DAT_005616a4;
 
         // Account list click: entries at Y = dialogY+0x32, stride 0x14
@@ -503,7 +503,7 @@ int Game_SceneUpdate(void)
             loginTrigger = true;
         }
 
-        if (loginTrigger && DAT_05826cb0 != 0) {
+        if (loginTrigger && CurrentProtocolState != 0) {
             // Reset slot selection
             ErrorMessage = NextErrorMessage;
             NextErrorMessage = 0;
@@ -529,7 +529,7 @@ int Game_SceneUpdate(void)
 
         // Login packet send — ONLY when user actually pressed login.
         if (ErrorMessage == 0) {
-            int code = DAT_05826cb0;
+            int code = CurrentProtocolState;
             bool validCode = (code == 2 || code == 0xb || code == 0xc || code == 0xd ||
                               (code > 0x14 && code < 0x22));
             if (validCode) {
@@ -543,7 +543,7 @@ int Game_SceneUpdate(void)
                 int ulen = (int)strlen((char*)DAT_07db8710) + 1;
                 memcpy(LogInID, DAT_07db8710, ulen);
                 LogIn = 1;
-                DAT_05826cb0 = 0x13;
+                CurrentProtocolState = 0x13;
 
                 // Build login packet [0xC1][0xF1] + user(10) + pass(10) + tick(4) + 5 obf + 16 raw
                 BYTE user[10] = {0}, pass[10] = {0};
@@ -593,13 +593,13 @@ int Game_SceneUpdate(void)
                 // localized strings directly from the GlobalText[] pool.
                 UIChatLogWindow_AddText((const char*)&DAT_083a7c7c, GlobalText[472], 1);
                 UIChatLogWindow_AddText((const char*)&DAT_083a7c80, GlobalText[473], 1);
-                DAT_083a7c14 = 3;
+                LoginSubState = 3;
                 DAT_083a7c18 = 0xc;
             } else {
                 DAT_083a7c18 = 3;
             }
         } else {
-            DAT_083a7c14 = 3;
+            LoginSubState = 3;
             DAT_083a7c18 = 2;
         }
         PlayBuffer(0x1b, 0, 0);
@@ -623,7 +623,7 @@ int Game_SceneUpdate(void)
             ErrorMessage = NextErrorMessage;
             NextErrorMessage = 0;
             PlayBuffer(0x19, 0, 0);
-            DAT_083a7c14 = 3;
+            LoginSubState = 3;
             DAT_083a7c18 = 0x1d;
             DAT_083a7c1c = 1;
             DAT_083a7c20 = 0x32;
@@ -635,8 +635,8 @@ int Game_SceneUpdate(void)
     // ── STATE ANIMATION + SERVER RESPONSE SWITCH ─────────────────────────────
 LAB_00520fd8:
     {
-        int  state   = DAT_083a7c14;
-        int  respCode = DAT_05826cb0;
+        int  state   = LoginSubState;
+        int  respCode = CurrentProtocolState;
         int  slotA   = ErrorMessage;
         int  slotB   = NextErrorMessage;
         int  iVar11  = 0;
@@ -670,15 +670,15 @@ LAB_00520fd8:
             // ── SERVER RESPONSE HANDLER ──────────────────────────────────────
             switch (respCode) {
             case 0x0b: // Login OK
-                DAT_083a7c14 = 2;
+                LoginSubState = 2;
                 DAT_07e11d78 = 0;
                 InputNumber = 2;
                 if (respCode == 0) {
-                    NextErrorMessage = 0; DAT_05826cb0 = 2; ErrorMessage = slotB;
+                    NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
                 } else if (slotA == 0) {
-                    DAT_05826cb0 = 2; ErrorMessage = respCode;
+                    CurrentProtocolState = 2; ErrorMessage = respCode;
                 } else {
-                    DAT_05826cb0 = 2; NextErrorMessage = respCode;
+                    CurrentProtocolState = 2; NextErrorMessage = respCode;
                 }
                 break;
 
@@ -699,14 +699,14 @@ LAB_00520fd8:
                     ErrorMessage = r;
                 }
 state_fail_common:
-                DAT_05826cb0 = 2;
-                DAT_083a7c14 = 4;
+                CurrentProtocolState = 2;
+                LoginSubState = 4;
                 break;
 
             case 0x14: // Character list ready
                 CErrorReport_Write(&DAT_055c9bf0, "> Request Character list");
                 SceneFlag = 4;
-                DAT_05826cb0 = 0x32;
+                CurrentProtocolState = 0x32;
                 {
                     // Send 0xC1/0xF3/0x00 char-list request (4 bytes).
                     //
@@ -736,21 +736,21 @@ state_fail_common:
                 } else {
                     DAT_07e11d78 = 0;
                     if (respCode == 0) {
-                        DAT_083a7c14 = 2;
-                        NextErrorMessage = 0; DAT_05826cb0 = 2; ErrorMessage = slotB;
+                        LoginSubState = 2;
+                        NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
                         break;
                     }
                 }
                 if (slotA == 0) {
-                    DAT_083a7c14 = 2; DAT_05826cb0 = 2; ErrorMessage = respCode;
+                    LoginSubState = 2; CurrentProtocolState = 2; ErrorMessage = respCode;
                 } else {
-                    DAT_083a7c14 = 2; DAT_05826cb0 = 2; NextErrorMessage = respCode;
+                    LoginSubState = 2; CurrentProtocolState = 2; NextErrorMessage = respCode;
                 }
                 break;
 
             case 0x3c: // 0x3e
-                DAT_05826cb0 = 2;
-                DAT_083a7c14 = 8;
+                CurrentProtocolState = 2;
+                LoginSubState = 8;
                 PlayBuffer(0x1b, 0, 0);
                 ClearInput(1);
                 InputNumber = 2;
@@ -762,7 +762,7 @@ state_fail_common:
 
             case 0x3d: // 0x3f
                 if (respCode != 0) goto state_alt_error;
-                DAT_083a7c14 = 2; NextErrorMessage = 0; DAT_05826cb0 = 2; ErrorMessage = slotB;
+                LoginSubState = 2; NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
                 break;
 
             // Success variants 0x40-0x47
@@ -775,8 +775,8 @@ state_fail_common:
                     if (slotA != 0) { NextErrorMessage = respCode; r = slotA; }
                     ErrorMessage = r;
                 }
-                DAT_05826cb0 = 2;
-                DAT_083a7c14 = 2;
+                CurrentProtocolState = 2;
+                LoginSubState = 2;
                 PlayBuffer(0x1b, 0, 0);
                 ClearInput(1);
                 {
@@ -801,7 +801,7 @@ state_alt_error:
                     return DAT_083a7c18;
                 }
                 DAT_005616a0 = '\0';
-                DAT_083a7c14 = DAT_083a7c18;
+                LoginSubState = DAT_083a7c18;
                 break;
             }
 

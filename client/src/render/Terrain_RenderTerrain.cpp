@@ -89,7 +89,7 @@ static void Terrain_EndWavePass() {
 // DESVIACION: la pasada visual avanza el agua una vez por paso de 40 ms.
 // El picking conserva sus llamadas adicionales dentro de SIM.
 void Terrain_TickRenderWater() {
-    if (SceneFlag != 5 || LoadingWorld > 30 || !DAT_07abf5d8) return;
+    if (SceneFlag != 5 || LoadingWorld > 30 || !Hero) return;
     if (gMapManager.GetCurrentMap() != MAP_ICARUS && !gUserSettings.GetAntilag(ANTILAG_FLOOR)) {
         Terrain_BeginWavePass();
         Terrain_EndWavePass();

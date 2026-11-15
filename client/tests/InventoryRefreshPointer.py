@@ -13,7 +13,7 @@ from SceneObjectPointer import build_and_run, function, read_source
 
 SERVICES=r'''
 using uint=unsigned int;using ushort=unsigned short;using std::uintptr_t;
-DWORD MouseUpdateTimeMax,DAT_07d78094,MouseUpdateTime,InventoryStartY,InventoryStartX,TradeInventoryStartY,TradeInventoryStartX,DAT_07eaa0c8,DAT_07eaa0cc,DAT_07eaa138,MixState,DAT_07eaa164,MouseLButtonPush,MouseY,MouseX,GoldenArcherOpenType;
+DWORD MouseUpdateTimeMax,DAT_07d78094,MouseUpdateTime,InventoryStartY,InventoryStartX,TradeInventoryStartY,TradeInventoryStartX,DAT_07eaa0c8,DAT_07eaa0cc,RepairEnable,MixState,DAT_07eaa164,MouseLButtonPush,MouseY,MouseX,GoldenArcherOpenType;
 #define MouseOnWindow DAT_07d78094
 char InventoryOpened,ShopOpened,WarehouseOpened,ChaosMixOpened,TradeOpened,EventWindowOpened,DAT_07eaa134,CharacterOpened,PartyOpened;
 void *DAT_07cf1ffc,*CharacterAttribute;int MAIN_HASH_CLASS;
@@ -61,7 +61,7 @@ std::uint64_t Run(BYTE* m,BYTE* a,BYTE* n,BYTE* g){
   CharacterOpened=char(profile&1);PartyOpened=char(profile&2);click=(profile&4)!=0;
   ShopOpened=char(flags&1);WarehouseOpened=char(flags&2);ChaosMixOpened=char(flags&4);TradeOpened=char(flags&8);EventWindowOpened=char(flags&16);MixState=profile%3;GoldenArcherOpenType=flags&16?7:0;
   TradeInventoryStartX=240;TradeInventoryStartY=40;DAT_07eaa0c8=240;DAT_07eaa0cc=40;
-  DAT_07d78094=0x55;DAT_07eaa138=0x77;DAT_07eaa164=0x99;DAT_07eaa134=char(0x52);InventoryOpened=7;MouseUpdateTime=9;MouseUpdateTimeMax=10;MouseLButtonPush=1;
+  DAT_07d78094=0x55;RepairEnable=0x77;DAT_07eaa164=0x99;DAT_07eaa134=char(0x52);InventoryOpened=7;MouseUpdateTime=9;MouseUpdateTimeMax=10;MouseLButtonPush=1;
   const int origin=Origin(CharacterOpened||PartyOpened?Ui::InventoryPair:Ui::RightPanel);
   const int xs[]={-1,20,20,190,0,60,25,189},ys[]={-1,20,250,431,0,395,395,433};
   const int x=origin+xs[mouse],y=ys[mouse];MouseX=static_cast<DWORD>(x);MouseY=static_cast<DWORD>(y);
@@ -80,7 +80,7 @@ std::uint64_t Run(BYTE* m,BYTE* a,BYTE* n,BYTE* g){
   if(flags&8)onWindow=onWindow||Inside(x,y,240,40,190,433);
   events.clear();hashSlot=panelCalls=0;Inventory_HitTest();Check();
   Require(events==expectedEvents && hashSlot==12 && panelCalls==2);
-  Require(DAT_07d78094==(onWindow?1u:0x55u) && DAT_07eaa138==unsigned(repair) && DAT_07eaa164==0);
+  Require(DAT_07d78094==(onWindow?1u:0x55u) && RepairEnable==unsigned(repair) && DAT_07eaa164==0);
   const bool closed=buttons&&backHit&&click;
   Require(DAT_07eaa134==char(0x52^(repair&&repairHit&&click)) && InventoryOpened==(closed?0:7));
   Require(MouseUpdateTime==(closed?0u:9u) && MouseUpdateTimeMax==(closed?6u:10u) && MouseLButtonPush==((closed||(repair&&repairHit&&click))?0u:1u));

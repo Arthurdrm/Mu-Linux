@@ -50,7 +50,7 @@ std::uint64_t epoch=0;
 bool published=false;
 bool Ready() {
     return SceneFlag==2 ? InitLogIn!=0 : SceneFlag==4 ?
-        CharSelectSceneInitialized && DAT_05826cb0>50 :
+        CharSelectSceneInitialized && CurrentProtocolState>50 :
         SceneFlag==5 && EnableMainRender && LoadingWorld<=30;
 }
 bool Context() {

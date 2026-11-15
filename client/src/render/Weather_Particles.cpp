@@ -101,14 +101,14 @@ void WeatherParticles_Update(void)
                 // (0x7C62E9C - 0x7C5AB5C = 300 * 0x70).  Con 200 hojas nunca se
                 // llega, pero la direccion absoluta comparaba contra otra memoria.
                 if (((char*)pfVar10 - (char*)&DAT_07c5ab5c) / 0x70 < 300) {
-                    pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(DAT_07abf5d8 + 0x10);
-                    pfVar10[-6] = (float)(_rand() % 0x578 - 500) + *(float *)(DAT_07abf5d8 + 0x14);
+                    pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(Hero + 0x10);
+                    pfVar10[-6] = (float)(_rand() % 0x578 - 500) + *(float *)(Hero + 0x14);
                 } else {
-                    pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(DAT_07abf5d8 + 0x10);
-                    pfVar10[-6] = ((float)(_rand() % 300 + 1000) + *(float *)(DAT_07abf5d8 + 0x14))
+                    pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(Hero + 0x10);
+                    pfVar10[-6] = ((float)(_rand() % 300 + 1000) + *(float *)(Hero + 0x14))
                                   - (float)RainPosition;
                 }
-                pfVar10[-5] = (float)(_rand() % 200 + 300) + *(float *)(DAT_07abf5d8 + 0x18);
+                pfVar10[-5] = (float)(_rand() % 200 + 300) + *(float *)(Hero + 0x18);
 
                 // random horizontal direction: even=left, odd=left+wind
                 unsigned int r = (unsigned int)_rand() & 0x80000001u;
@@ -130,9 +130,9 @@ void WeatherParticles_Update(void)
             {
                 // Butterfly/bubble
                 pfVar10[-10] = 1.4013e-43f;
-                float fx = (float)(_rand() % 0x640 - 800) + *(float *)(DAT_07abf5d8 + 0x10);
-                float fy = (float)(_rand() % 0x578 - 500) + *(float *)(DAT_07abf5d8 + 0x14);
-                float fz = (float)(_rand() % 300 + 0x32)  + *(float *)(DAT_07abf5d8 + 0x18);
+                float fx = (float)(_rand() % 0x640 - 800) + *(float *)(Hero + 0x10);
+                float fy = (float)(_rand() % 0x578 - 500) + *(float *)(Hero + 0x14);
+                float fz = (float)(_rand() % 300 + 0x32)  + *(float *)(Hero + 0x18);
                 pfVar10[-7] = fx; pfVar10[-6] = fy; pfVar10[-5] = fz;
                 pfVar10[0xe] = fx; pfVar10[0xf] = fy; pfVar10[0x10] = fz;
 
@@ -160,10 +160,10 @@ void WeatherParticles_Update(void)
                 // Dense rain: limited active count
                 if (local_d4 < ((int)RainCurrent * 200) / 100) {
                     pfVar10[-10] = 1.42932e-43f;
-                    pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(DAT_07abf5d8 + 0x10);
-                    pfVar10[-6] = (float)(_rand() % 0x578 - 500) + *(float *)(DAT_07abf5d8 + 0x14);
+                    pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(Hero + 0x10);
+                    pfVar10[-6] = (float)(_rand() % 0x578 - 500) + *(float *)(Hero + 0x14);
                     pfVar10[-4] = -30.0f; pfVar10[-3] = 0.0f; pfVar10[-2] = 0.0f;
-                    float fz2 = *(float *)(DAT_07abf5d8 + 0x18);
+                    float fz2 = *(float *)(Hero + 0x18);
                     pfVar10[-5] = (float)(_rand() % 200 + 200) + fz2;
                     float loc[3] = { 0.0f, 0.0f, -(float)(_rand() % 0x18 + 0x14) };
                     float mat[12];
@@ -177,9 +177,9 @@ void WeatherParticles_Update(void)
                 pfVar10[-10] = 1.4013e-43f;
                 pfVar10[-8]  = 5.0f;
                 if (_rand() % 10 == 0) { pfVar10[-10] = 1.41531e-43f; pfVar10[-8] = 10.0f; }
-                pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(DAT_07abf5d8 + 0x10);
-                pfVar10[-6] = (float)(_rand() % 0x578 - 500) + *(float *)(DAT_07abf5d8 + 0x14);
-                float fz2   = *(float *)(DAT_07abf5d8 + 0x18);
+                pfVar10[-7] = (float)(_rand() % 0x640 - 800) + *(float *)(Hero + 0x10);
+                pfVar10[-6] = (float)(_rand() % 0x578 - 500) + *(float *)(Hero + 0x14);
+                float fz2   = *(float *)(Hero + 0x18);
                 pfVar10[-4] = -30.0f; pfVar10[-3] = 0.0f; pfVar10[-2] = 0.0f;
                 pfVar10[-5] = (float)(_rand() % 200 + 200) + fz2;
                 unsigned int ur = (unsigned int)_rand() & 0x8000000fu;
@@ -193,9 +193,9 @@ void WeatherParticles_Update(void)
             {
                 // Butterfly/bubble (in-game map states) — same as state 0
                 pfVar10[-10] = 1.4013e-43f;
-                float fx = (float)(_rand() % 0x640 - 800) + *(float *)(DAT_07abf5d8 + 0x10);
-                float fy = (float)(_rand() % 0x578 - 500) + *(float *)(DAT_07abf5d8 + 0x14);
-                float fz = (float)(_rand() % 300 + 0x32)  + *(float *)(DAT_07abf5d8 + 0x18);
+                float fx = (float)(_rand() % 0x640 - 800) + *(float *)(Hero + 0x10);
+                float fy = (float)(_rand() % 0x578 - 500) + *(float *)(Hero + 0x14);
+                float fz = (float)(_rand() % 300 + 0x32)  + *(float *)(Hero + 0x18);
                 pfVar10[-7] = fx; pfVar10[-6] = fy; pfVar10[-5] = fz;
                 pfVar10[0xe] = fx; pfVar10[0xf] = fy; pfVar10[0x10] = fz;
                 unsigned int ur;

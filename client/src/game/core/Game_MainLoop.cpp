@@ -306,7 +306,7 @@ void __cdecl Game_MainLoop(HDC param_1)
         int si  = (idx < 0x1e) ? idx : 0x1e;
         if (si < 0) si = 0;
         const char* serverName = (const char*)&DAT_083a45d8 + si * 0x21e;
-        const char* charName   = DAT_07abf5d8 ? EntityName::Get(DAT_07abf5d8) : "";
+        const char* charName   = Hero ? EntityName::Get(Hero) : "";
         // Copia defensiva con tope: %s puede ser largo si DAT_07abf5d8+0x1c1
         // apunta a bytes no-inicializados; wsprintfA no trunca.
         char srvTrim[32];  Platform::TextCopySecure(srvTrim, sizeof(srvTrim), serverName, 30); srvTrim[31] = 0;

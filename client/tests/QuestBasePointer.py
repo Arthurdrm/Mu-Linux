@@ -22,7 +22,7 @@ std::uint64_t RunBase(BYTE* memory) {
     for(unsigned flag=0;flag<256;++flag) {
         std::memset(memory,static_cast<BYTE>(flag^0x5a),size); quest[0x1c87f]=static_cast<BYTE>(flag);
         ResetBase(); PublishBase(quest); PublishBase(other);
-        Require(static_cast<std::uintptr_t>(g_csQuest)==reinterpret_cast<std::uintptr_t>(quest) && DAT_00583d8c==g_csQuest);
+        Require(static_cast<std::uintptr_t>(g_csQuest)==reinterpret_cast<std::uintptr_t>(quest));
         Require(IsQuestPanelOpen()==(flag!=0));
         activeQuest=quest; event=0; sends=0;
         BYTE expected[size]; std::memcpy(expected,memory,size); expected[16+0x1c87f]=0;
@@ -52,7 +52,7 @@ def harness(revision=None):
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     prefix += re.search(r"extern [^;\n]*\bg_csQuest\s*;", header).group()
     prefix += re.search(r"^[^/\n]*\bg_csQuest\s*=\s*[^;]+;", definitions, re.M).group()
-    prefix += "\n" + re.search(r"^#define DAT_00583d8c[^\n]+", header, re.M).group() + "\n"
+    prefix += "\n" + (lambda m: m.group() if m else "")(re.search(r"^#define DAT_00583d8c[^\n]+", header, re.M)) + "\n"   # alias de revisiones viejas
     source = read_source("src/net/Crypto.cpp", revision)
     init = function(source, "Quest_FullInit")
     publish = re.search(r"if \(g_csQuest == 0\) g_csQuest = [^;]+;", init).group()

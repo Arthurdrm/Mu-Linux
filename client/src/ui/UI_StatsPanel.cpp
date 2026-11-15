@@ -646,8 +646,8 @@ LAB_0051c13d:
     // expanding the localized invitation format.  The prior void stub lost
     // that return value, so the party prompt had no inviter name.
     const int characterIndex = FindCharacterIndex((int)DAT_07eaa0e4);
-    const char* inviterName = (characterIndex < 400 && DAT_07abf5d0)
-        ? EntityName::Get(DAT_07abf5d0 + characterIndex * CHARACTER_STRIDE)
+    const char* inviterName = (characterIndex < 400 && CharactersClient)
+        ? EntityName::Get(CharactersClient + characterIndex * CHARACTER_STRIDE)
         : "";
     Platform::TextFormatTruncated(local_c8, sizeof(local_c8), Platform::TruncateText,
                 (const char*)&DAT_07d486fc, inviterName);

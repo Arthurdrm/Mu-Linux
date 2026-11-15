@@ -105,7 +105,7 @@ extern intptr_t g_LocalEntity;            // DAT_07abf5d8 (player entity ptr)
 
 // g_EntityBase nunca apunta al array de entidades: la base real es DAT_07abf5d0
 // (la setea WinMain), y ENTITY la usa directo.
-#define ENTITY(idx)  ((BYTE*)DAT_07abf5d0 + (idx) * CHARACTER_STRIDE)
+#define ENTITY(idx)  ((BYTE*)CharactersClient + (idx) * CHARACTER_STRIDE)
 
 
 // ============================================================

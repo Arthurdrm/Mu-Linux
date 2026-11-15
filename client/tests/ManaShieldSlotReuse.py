@@ -34,7 +34,7 @@ constexpr int kJointPoolSize=500;
 JOINT Joints[kJointPoolSize];
 JOINT* AsJoint(JOINT* p){return p;}
 char entities[0x59740],butterflies[0x1158];
-std::uintptr_t DAT_07abf5d0=reinterpret_cast<std::uintptr_t>(entities);
+std::uintptr_t CharactersClient=reinterpret_cast<std::uintptr_t>(entities);
 char* DAT_083a1218=butterflies;
 // Nombre nuevo del pool (T9f) sobre el mismo buffer; el viejo queda para las revisiones anteriores.
 #define Butterfles (reinterpret_cast<OBJECT*>(DAT_083a1218))

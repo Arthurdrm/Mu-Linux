@@ -199,7 +199,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
             break;
         }
         if (event.character == 9) {           // Tab — rotate active slot
-            if (DAT_00559c84 && InputNumber > 1) {
+            if (InputEnable && InputNumber > 1) {
                 DAT_07e11d78 = (DAT_07e11d78 + 1) % InputNumber;
                 PlayBuffer(0x19, 0, 0);   // PlayBuffer(25) — click sfx
             }
@@ -232,7 +232,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
                 // UI_InGameMenu case 116 leyendo DAT_055ca038 el frame siguiente).
                 memset(goldBuf, 0, 0x100);
                 lens[0] = 0;
-                DAT_00559c84 = 0;                     // InputEnable = 0
+                InputEnable = 0;                     // InputEnable = 0
                 break;
             }
 
@@ -250,9 +250,9 @@ void Input_OnEvent(const Platform::InputEvent& event)
             if (SceneFlag == 5 && GuildInputEnable == 0 && !guildDeleteCodeDialog) {
                 bool empty = (lens[slot] == 0);
                 if (empty) {
-                    if (DAT_00559c84) {
+                    if (InputEnable) {
                         // Cierra el input de chat.
-                        DAT_00559c84 = 0;
+                        InputEnable = 0;
                     } else {
                         // Abre el input de chat — inicializa los campos de texto.
                         // Per IDA Game.cpp:4326-4327: InputTextMax[0]=42, [1]=10.
@@ -266,12 +266,12 @@ void Input_OnEvent(const Platform::InputEvent& event)
                         InputTextHide[0] = 0;
                         InputNumber = 2;                       // InputNumber = 2 (chat + whisper target)
                         // GoldInputEnable = 0 — ya está en 0 en el juego normal
-                        DAT_00559c84 = 1;                       // InputEnable = 1
+                        InputEnable = 1;                       // InputEnable = 1
                         DAT_07e11d78 = 0;                       // InputIndex = 0
                         ChatHistory::ResetBrowse();
                     }
                     PlayBuffer(0x19, 0, 0);   // click sfx
-                } else if (DAT_00559c84) {
+                } else if (InputEnable) {
                     // Con texto + chat abierto → envía la línea (slot 0), limpia y
                     // cierra. Refleja las líneas 2046-2120 del WndProc de IDA condensadas
                     // en un solo camino (el original de IDA separa /whisper +
@@ -285,14 +285,14 @@ void Input_OnEvent(const Platform::InputEvent& event)
                     if (Chat_TryAssignMacro(line)) {
                         memset(line, 0, 0x100);
                         lens[slot] = 0;
-                        DAT_00559c84 = 0;
+                        InputEnable = 0;
                         break;
                     }
                     // IDA WndProc L2265-2268: antes del SendChat (no en el
                     // susurro) revisa los gestos, salvo montado fuera de zona segura.
                     if (((const char*)&DAT_07db8810)[0] == '\0') {
-                        WORD helper = *(WORD*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Helper.Type;
-                        if ((helper != 818 && helper != 819) || *(char*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone)
+                        WORD helper = *(WORD*)&((CHARACTER*)(uintptr_t)(Hero))->Helper.Type;
+                        if ((helper != 818 && helper != 819) || *(char*)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone)
                             CheckChatText(line);
                     }
                     Chat_SendChatLine(line);
@@ -303,7 +303,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
                     // Cierra el chat (coincide con el comportamiento "enviar + autocerrar";
                     // la queja del usuario era que Enter-con-texto NO
                     // close).
-                    DAT_00559c84 = 0;
+                    InputEnable = 0;
                     PlayBuffer(0x19, 0, 0);   // click sfx
                 }
             }
@@ -318,7 +318,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
         // sub_4EB5D0) y con GoldInputEnable sólo se aceptan dígitos '0'..'9'.
         const bool guildDeleteCodeDialog =
             ErrorMessage == 126 || ErrorMessage == 152;
-        if (DAT_00559c84 || GoldInputEnable || GuildInputEnable || guildDeleteCodeDialog) {
+        if (InputEnable || GoldInputEnable || GuildInputEnable || guildDeleteCodeDialog) {
             // DESVIACION (Fase 4): Ctrl+V pega el portapapeles carácter por
             // carácter, con los mismos filtros y topes que el tipeo.
             if (event.character == 0x16) {

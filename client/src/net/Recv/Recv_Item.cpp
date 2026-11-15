@@ -640,7 +640,7 @@ void NetRecv_32(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // del port —IDA no lo hace acá—, pero hoy es lo que evita que
     // equipar/usar se trabe.  Se conserva hasta portar sus writers
     // reales (InitGame / ReceiveLife / ReceiveDurability).
-    DAT_05826d1c = 0;
+    EnableUse = 0;
 }
 
 // 0x33
@@ -654,11 +654,11 @@ void NetRecv_33(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     if (flag != 0) {
         if (flag == 0xFF || flag == 0xFE) {
             ItemMove_ClearPickedState();
-            DAT_05826d1c = 0;
+            EnableUse = 0;
             UIChatLogWindow_AddText(nullptr, GlobalText[733], 2);
         } else {
             ItemMove_ClearPickedState();
-            DAT_05826d1c = 0;
+            EnableUse = 0;
             if (Size >= 8 && DAT_07cf1ffc != 0) {
                 *(DWORD*)((BYTE*)DAT_07cf1ffc + 1352) = *(DWORD*)(Msg + 4);
             }
@@ -682,7 +682,7 @@ void NetRecv_33(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         // el mismo global de IDA 0x07EAA165), que si queda seteado
         // bloquea los drops siguientes.
         RestorePickedItemToSource();
-        DAT_05826d1c = 0;
+        EnableUse = 0;
     }
 }
 
@@ -702,7 +702,7 @@ void NetRecv_34(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             PlayBuffer(37, 0, 0);
         }
     }
-    DAT_05826d1c = 0;
+    EnableUse = 0;
 }
 
 // 0x81
@@ -956,7 +956,7 @@ void NetRecv_22(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
                       type == 399 || type == 470);
         PlayBuffer(jewel ? 49 : 29, AsObject(Hero), 0);
     }
-    DAT_07e11998 = -1;  // SendGetItem
+    SendGetItem = -1;  // SendGetItem
 }
 
 // 0x28

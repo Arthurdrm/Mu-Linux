@@ -38,9 +38,9 @@ inline float* AmbientPrevPos(OBJECT* o)  { return reinterpret_cast<float*>(reint
 inline BYTE*  AmbientFlag8A(OBJECT* o)   { return reinterpret_cast<BYTE*>(o) + 0x8A; }
 inline float* AmbientMatrix(OBJECT* o)   { return reinterpret_cast<float*>(reinterpret_cast<BYTE*>(o) + 0x90); }
 
-inline float HeroX() { return *(const float*)(DAT_07abf5d8 + 0x10); }
-inline float HeroY() { return *(const float*)(DAT_07abf5d8 + 0x14); }
-inline float HeroZ() { return *(const float*)(DAT_07abf5d8 + 0x18); }
+inline float HeroX() { return *(const float*)(Hero + 0x10); }
+inline float HeroY() { return *(const float*)(Hero + 0x14); }
+inline float HeroZ() { return *(const float*)(Hero + 0x18); }
 
 inline int TileAt(float x, float y)
 {
@@ -233,7 +233,7 @@ void AmbientMove(OBJECT* o, int slotIndex)
 
 void __cdecl AmbientParticles_Update(void)
 {
-    if (DAT_07abf5d8 == nullptr)
+    if (Hero == nullptr)
         return;   // guarda propia: el spawn se ancla en la posición del héroe
     for (int i = 0; i < 10; ++i) {
         OBJECT* o = AsObject((char*)&Fishs[i]);

@@ -56,14 +56,14 @@ static void Warrior_SendSkill1E(BYTE skill, BYTE x, BYTE y, BYTE direction,
 static void Warrior_CollectMultiTargets(const float* centre, float radius,
                                         WORD relationKey, int* keys, int* count, int maximum)
 {
-    if (!centre || !keys || !count || *count >= maximum || DAT_07abf5d0 == 0)
+    if (!centre || !keys || !count || *count >= maximum || CharactersClient == 0)
         return;
 
     const float radiusSquared = radius * radius;
-    BYTE* characters = (BYTE*)(uintptr_t)DAT_07abf5d0;
+    BYTE* characters = (BYTE*)(uintptr_t)CharactersClient;
     for (int index = 0; index < 400 && *count < maximum; ++index) {
         BYTE* candidate = characters + index * CHARACTER_STRIDE;
-        if (!AsCharacter(candidate)->Object.Live || !AsCharacter(candidate)->Object.Visible || candidate == (BYTE*)(uintptr_t)DAT_07abf5d8 || AsCharacter(candidate)->Dead)
+        if (!AsCharacter(candidate)->Object.Live || !AsCharacter(candidate)->Object.Visible || candidate == (BYTE*)(uintptr_t)Hero || AsCharacter(candidate)->Dead)
             continue;
 
         const int key = *(short *)&AsCharacter(candidate)->Key; // IDA: *(std::int16_t *)(v9 + 456)
@@ -179,7 +179,7 @@ void __cdecl Combat_UseWarriorSkill(intptr_t c /* IDA: c */, intptr_t o /* IDA: 
     // Native code indexes CharactersClient directly at 0x4859A9.  Attack and
     // Action establish this index before entering this helper; adding a local
     // rejection here changes the original tail (state + C1:11 confirmation).
-    char* targetEntity = (char*)(uintptr_t)DAT_07abf5d0 + targetIdx * CHARACTER_STRIDE; // IDA: v285 source
+    char* targetEntity = (char*)(uintptr_t)CharactersClient + targetIdx * CHARACTER_STRIDE; // IDA: v285 source
     AsCharacter(c)->TargetPosition[0] = *(float*)(targetEntity + 0x10); // TargetPosition.x
     AsCharacter(c)->TargetPosition[1] = *(float*)(targetEntity + 0x14); // TargetPosition.y
     AsCharacter(c)->TargetPosition[2] = *(float*)(targetEntity + 0x18); // TargetPosition.z
@@ -350,7 +350,7 @@ void __cdecl Entity_TeleportEnd(intptr_t entity_idx) {
     BYTE* puVar3 = (BYTE*)(uintptr_t)(int)entity_idx;
 
     // Local player: clear teleport in-flight state (hash-table ops are obfuscation noise)
-    if ((void*)entity_idx == (void*)DAT_07abf5d8) {
+    if ((void*)entity_idx == (void*)Hero) {
         *(short*)((char*)CharacterAttribute + 0x1c) = 0;
     }
 

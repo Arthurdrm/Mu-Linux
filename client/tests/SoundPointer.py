@@ -34,7 +34,6 @@ struct OBJECT {
 };
 static_assert(sizeof(void*) != 4 || (sizeof(OBJECT) == 444 && offsetof(OBJECT, Position) == 16));
 char* Hero;
-#define DAT_07abf5d8 Hero
 DWORD DAT_083a42c0;
 #define Ff(sym) (*(float*)&(sym))
 '''

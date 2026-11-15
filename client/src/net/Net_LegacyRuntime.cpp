@@ -54,14 +54,14 @@ void __stdcall InitGame(void)
 {
     // --- Phase 1: Reset game state globals ---
     EnableUse = 0;
-    DAT_07e11998 = -1;    // SendGetItem
+    SendGetItem = -1;    // SendGetItem
     // IDA InitGame L31 es `SummonLife = 0`, y SummonLife vive en 0x05826D24
     // (lo escriben InitGame, ReceiveRevival x3 y ProtocolCore, y lo lee
     // RenderEquipedHelperLife).  No confundir con DAT_07E11D28, que es
     // MouseUpdateTime -- el contador del debounce de movimiento de Player_InputTick.
-    DAT_05826d24 = 0;     // SummonLife
-    DAT_05826c08 = 0;     // SoccerTime    (IDA InitGame @0x4244B4)
-    DAT_05826d33 = 0;     // SoccerObserver (IDA InitGame @0x4244BA)
+    SummonLife = 0;     // SummonLife
+    SoccerTime = 0;     // SoccerTime    (IDA InitGame @0x4244B4)
+    SoccerObserver = 0;     // SoccerObserver (IDA InitGame @0x4244BA)
     // IDA InitGame L36-39 resetea los globals NOMBRADOS
     //   SelectedNpc / SelectedOperate / SelectedCharacter / SelectedItem,
     // que viven en 0x00559C4C / 54 / 50 / 48.  El port escribia DAT_07E11988..94,
@@ -99,9 +99,9 @@ void __stdcall InitGame(void)
     // 0x07E11D6F (xrefs: WndProc x4, InitGame, ReceiveJoinMapServer,
     // RenderIME_Status).  No confundir con DAT_07E11D1C, que es **LoadingWorld**
     // -- el contador que gatea el frame de render (`if (LoadingWorld > 30) return`).
-    DAT_07e11d6f = 0;     // LockInputStatus
+    LockInputStatus = 0;     // LockInputStatus
     DAT_07eaa134 = 0;     // RepairEnable_0 (IDA InitGame 0x4244FC)
-    DAT_07eaa138 = 0;     // RepairEnable   (IDA InitGame 0x424502)
+    RepairEnable = 0;     // RepairEnable   (IDA InitGame 0x424502)
     DAT_00559c6d = 0xff;
     DAT_0055a3e4 = 0xffffffff;
     ClearNotice();        // IDA: ClearNotice (0x0047FAC0).  Antes llamaba a FUN_0051d740,

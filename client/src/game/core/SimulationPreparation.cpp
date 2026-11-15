@@ -72,7 +72,7 @@ void PrepareCamera() {
         // DESVIACION: cámara y suavizado avanzan una vez por paso de 40 ms.
         MoveMainCamera();
         float origin[3] = {};
-        if (DAT_07abf5d8) memcpy(origin, AsObject(DAT_07abf5d8)->Position, sizeof(origin));
+        if (Hero) memcpy(origin, AsObject(Hero)->Position, sizeof(origin));
         const int width = gWindow.IsWide() ? 640 : GetScreenWidth();
         GL_BeginViewport(0, 0, width, 48);
         Camera_SetupFrustum(gWindow.ViewportFraction((int)width), origin);
@@ -125,13 +125,13 @@ void PrepareCharacter(CHARACTER &c) {
     if (*(short *)((char *)model + 0x26) == 0) return;
     // DESVIACION: la sincronización del equipo puede cambiar piezas/acción y
     // liberar tela. Debe preceder a su pose SIM y no ejecutarse desde el draw.
-    if (SceneFlag == 5 && (void *)&c == (void *)DAT_07abf5d8) {
+    if (SceneFlag == 5 && (void *)&c == (void *)Hero) {
         HeroEquipWatchdog(&c);
         model = (void *)(DAT_05828d58 + o.Type * BMD_STRIDE);
     }
     char context[sizeof(BMD)];
     memcpy(context, model, sizeof(context));
-    if ((void *)&c == (void *)DAT_07abf5d8 && SceneFlag == 5) o.Visible = 1;
+    if ((void *)&c == (void *)Hero && SceneFlag == 5) o.Visible = 1;
     ObjectPose_PrepareSimulation(AsObject(&c), 1);
     ObjectPose_TickMeshEvents(AsObject(&c), model,
         o.EnableBoneMatrix ? (float *)o.BoneMatrices : (float *)g_BoneScratch, 1);
@@ -139,8 +139,8 @@ void PrepareCharacter(CHARACTER &c) {
         o.EnableBoneMatrix ? (float *)o.BoneMatrices : (float *)g_BoneScratch, 1);
     MaterialVisuals_TickObjectDraw(&o);
     CharacterCloth_Tick(&c);
-    const int slot = (int)(((uintptr_t)&c - (uintptr_t)DAT_07abf5d0) / sizeof(CHARACTER));
-    const bool hero = (void *)&c == (void *)DAT_07abf5d8 && SceneFlag == 5;
+    const int slot = (int)(((uintptr_t)&c - (uintptr_t)CharactersClient) / sizeof(CHARACTER));
+    const bool hero = (void *)&c == (void *)Hero && SceneFlag == 5;
     const int highlighted = !hero && (slot == SelectedCharacter || slot == SelectedNpc);
     CharacterEffectScratch effects;
     Equipment_BeginCharacter(&c);
@@ -172,7 +172,7 @@ void PrepareCharacter(CHARACTER &c) {
 
 bool SceneReady() {
     if (SceneFlag == 2) return InitLogIn != 0;
-    if (SceneFlag == 4) return CharSelectSceneInitialized != 0 && DAT_05826cb0 > 50;
+    if (SceneFlag == 4) return CharSelectSceneInitialized != 0 && CurrentProtocolState > 50;
     return SceneFlag == 5 && EnableMainRender != 0 && LoadingWorld <= 30;
 }
 }
@@ -196,7 +196,7 @@ void Simulation_PrepareStep()
     WorldEffects_BeginStep();
     MoltSilhouette_BeginStep();
     camera.valid=false;
-    if (!SceneReady() || !DAT_07abf5d0 || !DAT_05828d58) return;
+    if (!SceneReady() || !CharactersClient || !DAT_05828d58) return;
     if (SceneFlag==4) SceneCharSelect_PrepareLighting();
     PrepareCamera();
     // BMD_Animation usa estos temporales compartidos; la publicación SIM sólo
@@ -213,13 +213,13 @@ void Simulation_PrepareStep()
     if (SceneFlag == 5) Particle_PrepareRender();
     Fauna_TickSprites();
     for (int slot = 0; slot < 400; ++slot) {
-        CHARACTER &c = ((CHARACTER *)DAT_07abf5d0)[slot];
+        CHARACTER &c = ((CHARACTER *)CharactersClient)[slot];
         const OBJECT &o = c.Object;
-        if (!o.Live || (!o.Visible && !((void *)&c == (void *)DAT_07abf5d8 && SceneFlag == 5))) continue;
+        if (!o.Live || (!o.Visible && !((void *)&c == (void *)Hero && SceneFlag == 5))) continue;
         PrepareCharacter(c);
     }
     // El panel de creación dibuja otra CHARACTER fuera del pool de 400.
-    if (SceneFlag == 4 && DAT_083a7c14 > 26 && DAT_083a7c14 < 29 && DAT_005616a4 >= 0) {
+    if (SceneFlag == 4 && LoginSubState > 26 && LoginSubState < 29 && DAT_005616a4 >= 0) {
         CHARACTER &preview = *(CHARACTER *)CharacterView;
         preview.Object.Angle[0] = 0.0f;
         preview.Object.Angle[1] = 5.0f;

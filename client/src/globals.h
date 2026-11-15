@@ -248,7 +248,6 @@ extern "C" DWORD SetTextColor_0;
 #else
 extern DWORD SetTextColor_0;
 #endif
-#define DAT_00559c7c SetTextColor_0
 extern DWORD   SetBackgroundTextColor;   // IDA: DAT_00559c80 (0x00559C80)
 extern char    DAT_00559b80[];  // GM/admin name substring (Entity_FindNearby filter string)
 extern DWORD   InputEnable; // IDA: DAT_00559c84 (0x00559C84)
@@ -399,7 +398,6 @@ extern char    s__s__s_00561924[];
 // es `unk_567500` (= DAT_00567500), que es a donde apunta.
 // Todos los consumidores lo usan como puntero (`(uintptr_t)DAT_00583d8c +
 // 0x1c87f`), por eso es un alias de g_csQuest y no un objeto propio.
-#define DAT_00583d8c   g_csQuest
 extern DWORD   DAT_00583dac;
 extern DWORD   DAT_00585e7c;
 extern DWORD   DAT_0058c780;
@@ -412,13 +410,7 @@ extern DWORD   DAT_00590924;
 // DAT_00590acc = SoundLoadCount                     — see declaration below in Sound section.
 // DAT_00590ad0 = g_lpDS (IDirectSound*)             — see declaration below in Sound section.
 // DAT_00590ad8 = wavefile (CWaveFile* being loaded) — see declaration below in Sound section.
-#define DAT_00590ac8  g_EnableSound
-#define DAT_00590ac9  g_Enable3DSound
-#define DAT_00590acc  SoundLoadCount
-#define DAT_00590ad0  g_lpDS
-#define DAT_00590ad8  wavefile
 // DAT_00583da8 = g_dwBufferBytes (current WAV data chunk size).
-#define DAT_00583da8  g_dwBufferBytes
 
 // ── Engine / Window handles (0x055c9xxx – 0x055caxxx) ─────────────────────────
 // Nota: g_hWnd y g_hDC viven en CWindow; el DC del texto (DAT_055c9fec) en CFont.
@@ -510,7 +502,6 @@ extern DWORD   ChatTime; // IDA: ChatTime (0x05826D08)
 // Skills_PacketHandler, sub_482BE0, sub_4D23B0...).
 // DAT_05826d04 es un alias para que Attack escriba el mismo global que leen los
 // demás (si no, el gate del Town Portal no se entera del teleport en curso).
-#define DAT_05826d04 Teleport
 extern char    DAT_05826adc[0x100]; // last-sent chat message buffer (rate-limit compare); 0.97.40: hasta 200 bytes
 extern char    Teleport; // IDA: Teleport (0x05826D14)
                                // 1=gate/teleport en curso.  La etiqueta vieja
@@ -519,7 +510,6 @@ extern DWORD   BuyCost; // IDA: BuyCost (0x05826D18)
                                // lo escribe ProtocolCore y lo lee sub_4D23B0.
 extern DWORD   EnableUse;      // IDA: EnableUse (0x05826D1C) — cooldown de equipar/usar item;
                                // lo ponen en 10 los usos y lo resetean las respuestas del server
-#define DAT_05826d1c   EnableUse   // mismo global: lo escriben los usos y lo leen los handlers
 extern DWORD   DAT_05826d20;
 extern DWORD   SummonLife; // IDA: DAT_05826d24 (0x05826D24)
 // AttackPlayer (IDA @0x05826D28): indice de slot del ULTIMO atacante.  Lo
@@ -1180,7 +1170,7 @@ extern char    s____s___005618c8[];// list entry format string (" %s " etc.)
 // ── Entity / animation tick globals ───────────────────────────────────────────
 extern float   WorldTime; // IDA: WorldTime (0x05826E08)
 // DAT_05826d31 — declared above
-extern char    DAT_05826d33;   // SoccerObserver (IDA @0x05826D33) - lo escriben
+extern char    SoccerObserver;   // SoccerObserver (IDA @0x05826D33) - lo escriben
                                // InitGame y el F3/23, y lo lee RenderCharacter.
                                // La etiqueta vieja ("guild name flag B") era falsa.
 extern char    lpString_05826bfc[0x50]; // player guild name A (wide->char cache)
@@ -2595,7 +2585,6 @@ extern int     DAT_07e11988;       // SelectedItem
 // m_bAutoAttack vive en 0x00559C5C (m_bAutoAttack, IDA InitGame L39).  El port
 // tenia ademas DAT_07e11e18: el toggle del menu y el hover escribian uno y el
 // combate / F3/30 leian el otro.  Ahora es un alias.
-#define DAT_07e11e18   m_bAutoAttack
 extern int     DAT_07e11d24;       // _CheckInventory
 // LoadingWorld already declared above (line ~553) as DWORD
 extern BYTE    DAT_00559c6d;       // UI alpha/state byte

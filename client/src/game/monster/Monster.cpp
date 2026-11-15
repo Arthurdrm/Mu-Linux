@@ -507,7 +507,7 @@ extern void __cdecl OpenNpc(int Type);
 CHARACTER* __cdecl CreateCharacter(int Key, int Type, unsigned char PosX,
                                    unsigned char PosY, float Rotation)
 {
-    BYTE* c = reinterpret_cast<BYTE*>(DAT_07abf5d0);
+    BYTE* c = reinterpret_cast<BYTE*>(CharactersClient);
     for (int i = 0; i < 400; ++i) {
         if (*(unsigned char*)c != 0 && *(short*)&((CHARACTER*)(uintptr_t)(c))->Key == (short)Key) {
             CreateCharacterPointer((unsigned char*)c, Type, PosX, PosY, Rotation);
@@ -517,11 +517,11 @@ CHARACTER* __cdecl CreateCharacter(int Key, int Type, unsigned char PosX,
     }
     // search again for an inactive slot
     int v7 = 0;
-    BYTE* i = reinterpret_cast<BYTE*>(DAT_07abf5d0);
+    BYTE* i = reinterpret_cast<BYTE*>(CharactersClient);
     while (*(unsigned char*)i != 0) {
         if (++v7 >= 400) {
             // all slots occupied — return sentinel slot at end (matches IDA)
-            return AsCharacter(DAT_07abf5d0 + 400 * CHARACTER_STRIDE);
+            return AsCharacter(CharactersClient + 400 * CHARACTER_STRIDE);
         }
         i += CHARACTER_STRIDE;
     }

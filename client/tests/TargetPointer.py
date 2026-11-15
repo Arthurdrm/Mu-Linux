@@ -106,7 +106,8 @@ def harness(revision=None):
     globals_source = read_source("src/globals.cpp", revision)
     declaration = re.search(r"extern [^;\n]*\bCharactersClient\s*;", header).group()
     definition = re.search(r"^[^/\n]*\bCharactersClient\s*=\s*[^;]+;", globals_source, re.M).group()
-    alias = re.search(r"^#define DAT_07abf5d0[^\n]+", read_source("src/structs.h", revision), re.M).group()
+    # El alias CharactersClient -> CharactersClient existe sólo en revisiones viejas.
+    alias = (lambda m: m.group() if m else "")(re.search(r"^#define DAT_07abf5d0[^\n]+", read_source("src/structs.h", revision), re.M))
     field = re.search(r"vec3_t\s+TargetPosition\s*;", read_source("src/game/entity/EntityTypes.h", revision)).group()
     target = function(read_source("src/game/combat/Combat_Targeting.cpp", revision), "CheckTarget")
     call = "CheckTarget(character)" if "CHARACTER* c" in target else "CheckTarget(static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(character)))"

@@ -15,7 +15,7 @@ from legacy_fields import lower_names
 SERVICES=r'''
 #include <cmath>
 using std::uintptr_t;
-void *CharacterAttribute,*DAT_07abf5d8,*DAT_07abf5d0;
+void *CharacterAttribute,*Hero,*CharactersClient;
 BYTE *memory,*target;BYTE before[512],expected[512];unsigned rngCalls,skillIndex;int firstRand,soundRand;bool packetHit;
 std::vector<int> events;
 void* AsObject(int value){return reinterpret_cast<void*>(static_cast<uintptr_t>(value));}
@@ -34,7 +34,7 @@ MAIN=r'''
 template<class T>void Put(BYTE* base,unsigned offset,T value){std::memcpy(base+offset,&value,sizeof(value));}
 constexpr unsigned poolBytes=400*916+32;
 std::uint64_t Run(BYTE* allocation,BYTE* attributes,BYTE* poolStorage){
- memory=allocation;target=allocation+16;BYTE* pool=poolStorage+16;DAT_07abf5d0=pool;DAT_07abf5d8=pool+916;
+ memory=allocation;target=allocation+16;BYTE* pool=poolStorage+16;CharactersClient=pool;Hero=pool+916;
  std::memset(poolStorage,0,poolBytes);
  for(unsigned i=0;i<6;++i){BYTE* entity=pool+i*916;entity[0]=i==2?0:1;entity[352]=i==3?0:1;entity[765]=i==4?1:0;Put(entity,16,123.5f+(i==5?101.0f:0.0f));Put(entity,20,-42.5f);}
  const BYTE skills[]={0,50,51,52,53,127,128,255};const short types[]={223,243,17,-1,32767};const int randoms[]={0,1,static_cast<int>(0x80000000u),-1};
@@ -48,7 +48,7 @@ std::uint64_t Run(BYTE* allocation,BYTE* attributes,BYTE* poolStorage){
   const bool directed=scenario<10;const short type=scenario==6||scenario==7?243:scenario==8?223:types[(profile+scenario)%5];const int subtype=scenario==6||scenario==7||scenario==8||scenario==11||scenario==12?2:0;
   const int cooldown=scenario==4?cooldowns[2+profile%2]:cooldowns[profile%2];
   firstRand=scenario==2?randoms[1+2*(profile%2)]:scenario==9?randoms[2]:0;soundRand=sounds[profile];packetHit=scenario!=5;
-  const std::intptr_t owner=reinterpret_cast<std::intptr_t>(scenario==3||!directed?pool:static_cast<BYTE*>(DAT_07abf5d8));   // Owner (+252) es un puntero completo
+  const std::intptr_t owner=reinterpret_cast<std::intptr_t>(scenario==3||!directed?pool:static_cast<BYTE*>(Hero));   // Owner (+252) es un puntero completo
   memory[16]=1;Put(target,2,type);Put(target,4,subtype);Put(target,16,123.5f);Put(target,20,-42.5f);Put(target,24,19.25f);
   target[132]=directed?1:0;target[133]=static_cast<BYTE>(skillIndex);Put(target,134,short(0x7f00|skillIndex));target[136]=static_cast<BYTE>(profile*31);Put(target,96,scenario==7?15:14);Put(target,244,cooldown);Put(target,252,owner);
   // La rama AOE salta dueño,héroe,inactivo,invisible,muerto y distancia101.

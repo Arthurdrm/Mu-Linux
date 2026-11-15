@@ -74,7 +74,7 @@ void __stdcall RenderIME_Status(void) {
     gFont.MeasureText(gFont.GetTextDC(), local_64, iVar1, &sz);
 
     // Line 4: Lock input status
-    sprintf(local_64, "LockInputStatus %d", (int)DAT_07e11d6f);
+    sprintf(local_64, "LockInputStatus %d", (int)LockInputStatus);
     RenderText(100, 0x82, local_64, 0, 1, NULL);
     iVar1 = Platform::TextLength(local_64);
     gFont.MeasureText(gFont.GetTextDC(), local_64, iVar1, &sz);

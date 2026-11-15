@@ -70,7 +70,7 @@ void Bind(int channel, int emote)
 bool ChannelInUse(int channel)
 {
     const int action = s_first + channel;
-    BYTE* base = (BYTE*)(uintptr_t)DAT_07abf5d0;
+    BYTE* base = (BYTE*)(uintptr_t)CharactersClient;
     if (!base) return false;
     for (int s = 0; s < 400; ++s) {
         BYTE* sp = base + s * CHARACTER_STRIDE;

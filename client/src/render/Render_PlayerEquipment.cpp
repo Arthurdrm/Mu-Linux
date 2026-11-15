@@ -488,7 +488,7 @@ extern "C" BYTE OffsetInventoryItems[];
 extern "C" void HeroEquipWatchdog(CHARACTER* c)
 {
     if (SceneFlag != 5) return;
-    if (!DAT_07abf5d8 || c != AsCharacter(DAT_07abf5d8)) return;
+    if (!Hero || c != AsCharacter(Hero)) return;
     unsigned char* be = (unsigned char*)c;
     static const int kBodyOff[6] = { 0x1e0, 0x1f8, 0x210, 0x228, 0x240, 0x258 };
     BYTE* cm = (BYTE*)(uintptr_t)DAT_07cf1ffc;
@@ -809,7 +809,7 @@ extern "C" void Render_PlayerWeaponLoop(intptr_t c, intptr_t o)
 
         // ── DIAG: log weapon render attempt for char-select ─────────────────
         if (SceneFlag == 4) {
-            int csSlot = (int)(((uintptr_t)c - (uintptr_t)DAT_07abf5d0) / CHARACTER_STRIDE);
+            int csSlot = (int)(((uintptr_t)c - (uintptr_t)CharactersClient) / CHARACTER_STRIDE);
             if (csSlot >= 0 && csSlot < 5) {
                 static DWORD s_lastWP[5][2] = {{0,0},{0,0},{0,0},{0,0},{0,0}};
                 DWORD now = Platform::GetTimer().Ticks();

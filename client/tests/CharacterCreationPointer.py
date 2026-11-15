@@ -33,7 +33,6 @@ OBJECT* AsObject(void* p) { return static_cast<OBJECT*>(p); }
 OBJECT* AsObject(std::uintptr_t p) { return reinterpret_cast<OBJECT*>(p); }
 CONSTANTS
 GLOBALS
-#define DAT_07abf5d0 CharactersClient
 DWORD HeroIndex;
 struct Map { int world; int GetCurrentMap() const { return world; } } gMapManager;
 BYTE* expectedSlot;

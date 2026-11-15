@@ -51,7 +51,7 @@ std::uint64_t RunMonster(CHARACTER* character, OBJECT* object, char* alias) {
         object->Type = Pick(types);
         for(int i = 0; i < 3; ++i) object->Position[i] = float(int(Input() % 1024) - 512);
         const int heroMode = trial % 3;
-        DAT_07abf5d8 = heroMode == 0 ? nullptr : heroMode == 1 ? reinterpret_cast<char*>(character) : alias;
+        Hero = heroMode == 0 ? nullptr : heroMode == 1 ? reinterpret_cast<char*>(character) : alias;
         advanceResult = Pick(results); routeResult = Pick(results);
         CHARACTER expected; OBJECT expectedObject;
         std::memcpy(&expected, character, sizeof(expected)); std::memcpy(&expectedObject, object, sizeof(expectedObject));

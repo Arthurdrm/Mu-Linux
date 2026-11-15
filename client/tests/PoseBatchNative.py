@@ -15,7 +15,7 @@ SERVICES=r'''
 #include <unordered_map>
 #include <algorithm>
 using vec34_t=float[3][4];
-uintptr_t DAT_05828d58,DAT_07abf5d0,DAT_07abf5d8;int SceneFlag,EditFlag,DAT_005597c4;DWORD MoveSceneFrame;
+uintptr_t DAT_05828d58,CharactersClient,Hero;int SceneFlag,EditFlag,DAT_005597c4;DWORD MoveSceneFrame;
 OBJECT* AsObject(void* p){return static_cast<OBJECT*>(p);}OBJECT* AsObject(uintptr_t p){return reinterpret_cast<OBJECT*>(p);}
 BMD* AsModel(uintptr_t p){return reinterpret_cast<BMD*>(p);}
 const BMD* AsModel(const void* p){return static_cast<const BMD*>(p);}
@@ -51,8 +51,8 @@ std::array<float,200*12> Consume(unsigned slot,bool hit){
  Require(std::memcmp(&expected,m,sizeof(BMD))==0&&std::memcmp(direct.data(),cached.data(),sizeof(direct))==0&&std::memcmp(expectedQ,globalQuats,sizeof(expectedQ))==0&&std::memcmp(expectedP,globalParent,sizeof(expectedP))==0);Hash(cached.data(),sizeof(cached));Hash(globalQuats,sizeof(globalQuats));Hash(globalParent,sizeof(globalParent));Hash(m->BodyAngle,12);Hash(&m->CurrentAnimation,6);Hash(&m->CurrentAction,1);Require(std::memcmp(o,&ownerBefore,sizeof(OBJECT))==0);++poseChecks;return cached;
 }
 int main(){
- DAT_07abf5d0=reinterpret_cast<uintptr_t>(characters);DAT_05828d58=reinterpret_cast<uintptr_t>(models);DAT_07abf5d8=reinterpret_cast<uintptr_t>(characters);quaternionGlobal=globalQuats;parentGlobal=globalParent;
- if(sizeof(void*)==8)Require(DAT_07abf5d0>0xffffffffull&&DAT_05828d58>0xffffffffull&&reinterpret_cast<uintptr_t>(descriptors)>0xffffffffull&&reinterpret_cast<uintptr_t>(actions)>0xffffffffull&&reinterpret_cast<uintptr_t>(keys)>0xffffffffull&&reinterpret_cast<uintptr_t>(vertices)>0xffffffffull&&reinterpret_cast<uintptr_t>(normals)>0xffffffffull);
+ CharactersClient=reinterpret_cast<uintptr_t>(characters);DAT_05828d58=reinterpret_cast<uintptr_t>(models);Hero=reinterpret_cast<uintptr_t>(characters);quaternionGlobal=globalQuats;parentGlobal=globalParent;
+ if(sizeof(void*)==8)Require(CharactersClient>0xffffffffull&&DAT_05828d58>0xffffffffull&&reinterpret_cast<uintptr_t>(descriptors)>0xffffffffull&&reinterpret_cast<uintptr_t>(actions)>0xffffffffull&&reinterpret_cast<uintptr_t>(keys)>0xffffffffull&&reinterpret_cast<uintptr_t>(vertices)>0xffffffffull&&reinterpret_cast<uintptr_t>(normals)>0xffffffffull);
  for(unsigned trial=0;trial<32;++trial){
   ObjectPose_EndBatch();std::memset(characters,0,sizeof(characters));std::memset(models,0,sizeof(models));std::memset(descriptors,0,sizeof(descriptors));std::memset(actions,0,sizeof(actions));std::memset(meshes,0,sizeof(meshes));
   SceneFlag=5;EditFlag=0;DAT_005597c4=int(trial%2);TransformWorkers::available=2;TransformWorkers::reverse=trial%2;

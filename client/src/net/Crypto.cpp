@@ -1342,8 +1342,8 @@ void __cdecl InitGuildWar(void) {
     DAT_00559684 = 0xffffffff;
     lpString_05826bfc[0] = '\0';
     // Re-enable party target markers for all live entities
-    unsigned char *puVar3 = (unsigned char*)&AsCharacter(DAT_07abf5d0)->GuildTeam;
-    char *pPlayer = DAT_07abf5d8;
+    unsigned char *puVar3 = (unsigned char*)&AsCharacter(CharactersClient)->GuildTeam;
+    char *pPlayer = Hero;
     int iVar4 = 400;
     do {
         if (*(puVar3 - offsetof(CHARACTER, GuildTeam)) != '\0') {

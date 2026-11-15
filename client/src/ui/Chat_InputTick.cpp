@@ -66,8 +66,8 @@ static char* Chat_FindPlayerInteractionTarget(const char* argument)
     while (*requestedName == ' ')
         ++requestedName;
 
-    if (*requestedName != '\0' && DAT_07abf5d0) {
-        char* candidate = (char*)(uintptr_t)DAT_07abf5d0;
+    if (*requestedName != '\0' && CharactersClient) {
+        char* candidate = (char*)(uintptr_t)CharactersClient;
         for (int i = 0; i < 400; ++i, candidate += CHARACTER_STRIDE) {
             if (candidate[0] && *(short*)(candidate + 2) == 390 &&
                 candidate[132] == 1 &&
@@ -76,13 +76,13 @@ static char* Chat_FindPlayerInteractionTarget(const char* argument)
                 break;
             }
         }
-    } else if (SelectedCharacter >= 0 && SelectedCharacter < 400 && DAT_07abf5d0) {
-        char* candidate = (char*)(uintptr_t)DAT_07abf5d0 + SelectedCharacter * CHARACTER_STRIDE;
+    } else if (SelectedCharacter >= 0 && SelectedCharacter < 400 && CharactersClient) {
+        char* candidate = (char*)(uintptr_t)CharactersClient + SelectedCharacter * CHARACTER_STRIDE;
         if (candidate[0] && *(short*)(candidate + 2) == 390 && candidate[132] == 1)
             entity = candidate;
     }
 
-    if (entity && entity != DAT_07abf5d8) {
+    if (entity && entity != Hero) {
         return entity;
     }
     return nullptr;
@@ -123,8 +123,8 @@ static bool Chat_TrySendPartyRequest(const char* text)
     if (!text || Platform::TextCompareIgnoreCase(text, "/party") != 0)
         return false;
 
-    char* const hero = DAT_07abf5d8;
-    char* const entities = (char*)(uintptr_t)DAT_07abf5d0;
+    char* const hero = Hero;
+    char* const entities = (char*)(uintptr_t)CharactersClient;
     if (!hero || !entities)
         return true;
 
@@ -292,8 +292,8 @@ extern "C" void Chat_SendChatLine(const char* text)
         pkt[2] = 0x00;                        // headcode = chat normal
         // name[40] = nombre del héroe: con el campo en CEROS el server descarta el
         // mensaje en silencio.
-        if (DAT_07abf5d8) {
-            NetText::ToServer(pkt + 3, NAME, EntityName::Get(DAT_07abf5d8));
+        if (Hero) {
+            NetText::ToServer(pkt + 3, NAME, EntityName::Get(Hero));
         }
     }
 
@@ -306,8 +306,8 @@ extern "C" void Chat_SendChatLine(const char* text)
     // IDA WndProc L2261: el server no le devuelve el susurro a quien lo
     // manda, asi que el cliente agrega la linea con el nombre propio y el
     // tipo 0 (colores del chat normal).
-    if (isWhisper && DAT_07abf5d8)
-        UIChatLogWindow_AddText(EntityName::Get(DAT_07abf5d8), text, 0);
+    if (isWhisper && Hero)
+        UIChatLogWindow_AddText(EntityName::Get(Hero), text, 0);
 
     // Update last-sent-cmp buffer + reset rate-limit (matches IDA).
     memcpy(&DAT_05826adc[0], text, tlen);
@@ -339,7 +339,7 @@ void __cdecl Chat_InputTick(void)
     // On match: copies table name to DAT_07db8810, updates DAT_07d780ac.
     {
         int  rowY  = 0;
-        char *base = (char *)&DAT_07abf5d8;   // local player entity ptr (as char*)
+        char *base = (char *)&Hero;   // local player entity ptr (as char*)
         for (int slot = 0; slot < 0x4e; ++slot)
         {
             // Con los aliases DAT_07df938b/948c/9494 apuntando al buffer real,
@@ -362,11 +362,11 @@ void __cdecl Chat_InputTick(void)
                 (leftEdge <= mouseX) &&
                 (mouseX < posX_scaled) &&
                 ((int)rowY <= mouseY) && (mouseY < (int)(rowY + 0xd)) &&
-                (DAT_00559c84 != '\0') &&
-                (*(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone != '\0'))
+                (InputEnable != '\0') &&
+                (*(char *)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone != '\0'))
             {
                 // Compare entity name at +0x1c1 against table name
-                const char *entityName = EntityName::Get(DAT_07abf5d8);
+                const char *entityName = EntityName::Get(Hero);
                 if (strcmp(tableName, entityName) != 0 && MouseRButtonPush != '\0')
                 {
                     MouseRButtonPush = '\0';
@@ -449,7 +449,7 @@ void __cdecl Chat_InputTick(void)
         // DESVIACION (Fase 4): con el chat abierto y el foco en el campo del
         // mensaje, las flechas recorren los últimos mensajes enviados. Con el
         // foco en el nombre (Tab) siguen con los nombres de susurro.
-        if (DAT_00559c84 && DAT_07e11d78 == 0) {
+        if (InputEnable && DAT_07e11d78 == 0) {
             if (ChatHistory::Browse(dir == 0)) PlayBuffer(0x19, 0, 0);
             continue;
         }
@@ -479,7 +479,7 @@ void __cdecl Chat_InputTick(void)
             (GuildInputEnable == '\0') &&
             (ErrorMessage != 0x7e) && (ErrorMessage != 0x98) &&
             (GoldenArcherOpenType == 0) &&
-            (*(char *)((uintptr_t)DAT_00583d8c + 0x1c87f) == '\0') &&
+            (*(char *)((uintptr_t)g_csQuest + 0x1c87f) == '\0') &&
             (ServerDivisionOpened == '\0'))
         {
             // ── Botones de la barra inferior (guild / party / personaje /
@@ -505,7 +505,7 @@ void __cdecl Chat_InputTick(void)
                 if ((0x12f < mouseX) && (mouseX < 0x150) &&
                     (0x1bb < mouseY) && (mouseY < 0x1e0))
                 {
-                    DAT_0055a3e4 = (DWORD)*(BYTE *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->CurrentSkill;
+                    DAT_0055a3e4 = (DWORD)*(BYTE *)&((CHARACTER*)(uintptr_t)(Hero))->CurrentSkill;
                     DAT_07ea840c = 0x140;
                     DAT_07ea8408 = 0x1bc;
                     MouseOnWindow = 1;
@@ -537,7 +537,7 @@ void __cdecl Chat_InputTick(void)
                                 DAT_0055a3e4 = uVar14;
                                 if (IsClickPushed()) {
                                     MouseLButtonPush = '\0';
-                                    *(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->CurrentSkill = (char)uVar14;
+                                    *(char *)&((CHARACTER*)(uintptr_t)(Hero))->CurrentSkill = (char)uVar14;
                                     DAT_07db870c = '\0';
                                     PlayBuffer(0x19, 0, 0);
                                     MouseUpdateTime = 0;
@@ -553,12 +553,12 @@ void __cdecl Chat_InputTick(void)
                                         int key = k % 10;          // 1..9, despues 0
                                         if (((unsigned short)Platform::GetInput().KeyState(0x30 + key) >> 8) == 0)
                                             continue;
-                                        int charRow = (int)DAT_005616ac;
+                                        int charRow = (int)SelectedHero;
                                         for (int j = 0; j < 0x14; ++j) {
                                             char *slot_ptr = (char *)CharacterAttribute + charRow * 0x40 + 0xd7 + j;
                                             if (*slot_ptr == (char)key) {
                                                 *slot_ptr = (char)0xff;
-                                                charRow = (int)DAT_005616ac;
+                                                charRow = (int)SelectedHero;
                                             }
                                         }
                                         *((char *)CharacterAttribute + charRow * 0x40 + 0xd7 + (int)uVar14) = (char)key;
@@ -580,7 +580,7 @@ void __cdecl Chat_InputTick(void)
             //           if (GetAsyncKeyState(n + 48) >> 8) sub_4B0E80(n);
             //       if (GetAsyncKeyState(48) >> 8)         sub_4B0E80(0);
             //   }
-            if ((DAT_00559c84 == 0) && (TabInputEnable == 0))
+            if ((InputEnable == 0) && (TabInputEnable == 0))
             {
                 if (((unsigned short)Platform::GetInput().KeyState(VK_MENU) >> 8) != 0x80)
                 {
@@ -624,9 +624,9 @@ void __cdecl Chat_InputTick(void)
                             continue;
 
                         // Validate input
-                        if (((*(short *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Helper.Type != 0x332) &&
-                             (*(short *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Helper.Type != 0x333)) ||
-                             (*(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone != '\0'))
+                        if (((*(short *)&((CHARACTER*)(uintptr_t)(Hero))->Helper.Type != 0x332) &&
+                             (*(short *)&((CHARACTER*)(uintptr_t)(Hero))->Helper.Type != 0x333)) ||
+                             (*(char *)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone != '\0'))
                             CheckChatText((char *)chBuf);   // IDA: sub_497C70
 
                         if ((char)Chat_Validate((char *)chBuf) != '\0')
@@ -656,14 +656,14 @@ void __cdecl Chat_InputTick(void)
                         // Player name length for name-match check
                         {
                             int pnLen = (int)strlen(&DAT_005592dc);
-                            int enLen = (int)strlen(EntityName::Get(DAT_07abf5d8));
+                            int enLen = (int)strlen(EntityName::Get(Hero));
                             // Try to find player name in entity name substring
                             // (tab-complete name match — sets up struct at DAT_005592d4/d8)
                             // Simplified: set name match refs
                         }
 
                         // Command parsing
-                        if (*(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Dead == '\0') {
+                        if (*(char *)&((CHARACTER*)(uintptr_t)(Hero))->Dead == '\0') {
                             if (chBuf[0] == '/') {
                                 if (Chat_TrySendPartyRequest((const char*)chBuf)) {
                                     goto chat_done;
@@ -720,9 +720,9 @@ void __cdecl Chat_InputTick(void)
                         // fixed PMSG_CHAT_RECV past the received packet.
                         if (DAT_07e108c8 == '\0')
                             goto whisper_done;
-                        if (((*(short *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Helper.Type != 0x332) &&
-                             (*(short *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Helper.Type != 0x333)) ||
-                             (*(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone != '\0'))
+                        if (((*(short *)&((CHARACTER*)(uintptr_t)(Hero))->Helper.Type != 0x332) &&
+                             (*(short *)&((CHARACTER*)(uintptr_t)(Hero))->Helper.Type != 0x333)) ||
+                             (*(char *)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone != '\0'))
                             CheckChatText(&DAT_07e108c8);   // IDA: sub_497C70
 
                         if ((char)Chat_Validate(&DAT_07e108c8) == '\0') {
@@ -782,7 +782,7 @@ void __cdecl Chat_InputTick(void)
     // hotbar (PMSG_ITEM_USE_RECV) y el server corta la conexión.  El flag que se
     // pone en 1 al abrir el chat es **`g_TextMode` (DAT_00559c84)**, el mismo que
     // usa `HUD_HotkeyTick` (Player_InputTick.cpp).
-    if (DAT_00559c84 != 0) return;   // g_TextMode  (input de texto activo)
+    if (InputEnable != 0) return;   // g_TextMode  (input de texto activo)
     if (TabInputEnable != 0) return;   // g_IME_Mode  (composición DBCS/coreano)
     if (TradeOpened != 0) return;   // TradeOpened
     if (GuildCreatorOpened != 0) return;   // GuildCreatorOpened

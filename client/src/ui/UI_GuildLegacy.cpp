@@ -38,7 +38,7 @@ int __cdecl RenderMatchScore(void)
 
     Gfx::Color3f(0.5f, 1.0f, 0.5f);
     UI_RenderText(229, 70, GlobalText[647], (LPSIZE)0, '\0', 0);
-    Platform::TextFormat(buf, GlobalText[648], EntityName::Get(DAT_07abf5d8));
+    Platform::TextFormat(buf, GlobalText[648], EntityName::Get(Hero));
     UI_RenderText(229, 86, buf, (LPSIZE)0, '\0', 0);
 
     // Encabezados 680..684.  El original SALTEA el 681 ("Personaje") y le suma

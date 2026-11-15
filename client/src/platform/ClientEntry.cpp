@@ -638,8 +638,8 @@ int main(int, char**)
 
     // Array de entidades — CRÍTICO, todo lo accede
     DAT_055c9e48 = reinterpret_cast<std::uintptr_t>(malloc(529 * CHARACTER_STRIDE));
-    DAT_07abf5d0 = DAT_055c9e48 + (rand() % 0x80) * CHARACTER_STRIDE;
-    memset((void*)DAT_07abf5d0, 0, 401 * CHARACTER_STRIDE);
+    CharactersClient = DAT_055c9e48 + (rand() % 0x80) * CHARACTER_STRIDE;
+    memset((void*)CharactersClient, 0, 401 * CHARACTER_STRIDE);
 
     // CharacterMachine / HashTable
     {
@@ -657,7 +657,7 @@ int main(int, char**)
     extern void* CharacterMachine;
     CharacterMachine = DAT_07cf1ffc;
     // CHARACTER_MACHINE_Init(DAT_07cf1ffc);   // HashTable_Init — TODO: implement
-    DAT_07abf5d8 = (char*)DAT_07abf5d0;  // player ptr = entity array slot 0
+    Hero = (char*)CharactersClient;  // player ptr = entity array slot 0
 
     // Contexto del pathfinder (DAT_05826df4).
     //

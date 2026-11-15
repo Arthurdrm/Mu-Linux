@@ -353,9 +353,9 @@ void UI_RenderChatLogOverlay(void)
       *(LONG *)((char *)&DAT_07df9494 + iVar5 * 0x118) = local_108.cx;
       uVar2 = SetBackgroundTextColor;
       if (((((bVar8) && (iVar3 < (int)((uint)(local_108.cx * 0x280) / gWindow.GetWidth()) + gWindow.PanelOrigin(Ui::WindowLeft))) &&
-           (iVar7 <= MouseY)) && ((MouseY < iVar7 + 0xd && (DAT_00559c84 != '\0')))) &&
-         (*(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone != '\0')) {
-        pbVar4 = (byte *)EntityName::Get(DAT_07abf5d8);
+           (iVar7 <= MouseY)) && ((MouseY < iVar7 + 0xd && (InputEnable != '\0')))) &&
+         (*(char *)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone != '\0')) {
+        pbVar4 = (byte *)EntityName::Get(Hero);
         do {
           bVar1 = *pbVar6;
           bVar8 = bVar1 < *pbVar4;
@@ -429,8 +429,8 @@ void UI_TickHoverBubbles(void)
         (MouseX < (int)((uint)(c->Width * 0x280) / gWindow.GetWidth() + c->x)) &&
         (c->y <= MouseY) &&
         (MouseY < (int)((uint)(c->Height * 0x1e0) / gWindow.GetHeight() + c->y)) &&
-        (DAT_00559c84 != '\0') && (AsCharacter(DAT_07abf5d8)->SafeZone != '\0') &&
-        strcmp(ChatDisplayName(c), EntityName::Get(DAT_07abf5d8)) != 0 &&
+        (InputEnable != '\0') && (AsCharacter(Hero)->SafeZone != '\0') &&
+        strcmp(ChatDisplayName(c), EntityName::Get(Hero)) != 0 &&
         (MouseRButtonPush != '\0')) {
       TextEngine::CopyTruncated((char *)DAT_07db8810, NetText::CharacterNameSize + 1, ChatDisplayName(c));
       DAT_07d780ac = (DWORD)strlen((char *)DAT_07db8810);
@@ -577,7 +577,7 @@ void ChatListBox_TickPresentation();
 // DESVIACION: parpadeos y alpha avanzan con los pasos SIM, no con los draws.
 void Chat_TickPresentation() {
     const bool ready = SceneFlag == 2 ? InitLogIn != 0 :
-        SceneFlag == 4 ? CharSelectSceneInitialized && DAT_05826cb0 > 50 :
+        SceneFlag == 4 ? CharSelectSceneInitialized && CurrentProtocolState > 50 :
         SceneFlag == 5 && EnableMainRender && LoadingWorld <= 30;
     if (!ready) return;
     if (!gUserSettings.GetAntilag(ANTILAG_INTERFACE)) ++DAT_07e11da0;
@@ -586,8 +586,8 @@ void Chat_TickPresentation() {
     // legacy del mismo renderer y pueden coincidir chat, diálogo y panel.
     const int index=DAT_07e11d78;
     int cursors=0;
-    if (SceneFlag==2 && DAT_083a7c14>1 && DAT_083a7c14<4 && (index==0 || index==1)) ++cursors;
-    if (SceneFlag==4 && DAT_083a7c14>26 && DAT_083a7c14<29 &&
+    if (SceneFlag==2 && LoginSubState>1 && LoginSubState<4 && (index==0 || index==1)) ++cursors;
+    if (SceneFlag==4 && LoginSubState>26 && LoginSubState<29 &&
         (int)DAT_005616b0>=0 && index==0) ++cursors;
     if (SceneFlag==5 && !gUserSettings.GetAntilag(ANTILAG_INTERFACE)) {
         if ((InputEnable || TabInputEnable) && (index==0 || index==1)) ++cursors;

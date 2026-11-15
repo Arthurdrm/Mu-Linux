@@ -122,7 +122,7 @@ static void Terrain_ProcessObjects(bool simulation)
     {
         int iVar = 0;
         do {
-            char *entity = (char*)(DAT_07abf5d0 + iVar);
+            char *entity = (char*)(CharactersClient + iVar);
             if (*entity != '\0') {
                 float ex = *(float*)(entity + 0x10) * _DAT_005524f8;
                 float ey = *(float*)(entity + 0x14) * _DAT_005524f8;

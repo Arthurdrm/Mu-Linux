@@ -18,7 +18,7 @@ void __cdecl CreateArrow(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, W
     int weaponType0 = (int)AsCharacter(c)->Weapon[0].Type;  // Weapon[0].Type
     int weaponType1 = (int)AsCharacter(c)->Weapon[1].Type;  // Weapon[1].Type
 
-    bool isHero = (reinterpret_cast<const void*>(static_cast<std::uintptr_t>(c)) == DAT_07abf5d8);
+    bool isHero = (reinterpret_cast<const void*>(static_cast<std::uintptr_t>(c)) == Hero);
 
     if (isHero) {
         // anti-tamper hash table — skipped (CharacterMachine encrypt/decrypt/lookup)

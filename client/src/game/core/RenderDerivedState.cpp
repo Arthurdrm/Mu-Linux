@@ -51,14 +51,14 @@ void SaveObject(void *address, std::size_t size, bool registered=false) {
 void RenderDerivedState_Begin() {
     active=false; used=0; savedObjects.Reset();
     const bool ready=SceneFlag==2 ? InitLogIn!=0 :
-        SceneFlag==4 ? CharSelectSceneInitialized && DAT_05826cb0>50 :
+        SceneFlag==4 ? CharSelectSceneInitialized && CurrentProtocolState>50 :
         SceneFlag==5 && EnableMainRender && LoadingWorld<=30;
     if (!ready) return;
     active=true; scene=SceneFlag; world=gMapManager.GetCurrentMap(); models=DAT_05828d58;
     // DESVIACION: los slots libres de personajes e items no se dibujan ni se
     // interpolan; copiar sólo los vivos.
-    if (DAT_07abf5d0) for (int slot=0; slot<400; ++slot) {
-        auto *character=(CHARACTER *)DAT_07abf5d0+slot;
+    if (CharactersClient) for (int slot=0; slot<400; ++slot) {
+        auto *character=(CHARACTER *)CharactersClient+slot;
         if (character->Object.Live) SaveObject(character,sizeof(CHARACTER));
     }
     SaveObject(CharacterView,sizeof(CHARACTER));

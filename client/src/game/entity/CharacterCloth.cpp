@@ -183,15 +183,15 @@ void CharacterCloth_Tick(CHARACTER* entity)
         const short guildIndex = AsCharacter(cb)->GuildMarkIndex;
         if (guildIndex != -1) {
             const char* guildName = Guild_GetMarkName(guildIndex);
-            if (EnableSoccer && DAT_07abf5d8) {
-                const short heroGuild = AsCharacter(DAT_07abf5d8)->GuildMarkIndex;
+            if (EnableSoccer && Hero) {
+                const short heroGuild = AsCharacter(Hero)->GuildMarkIndex;
                 if (heroGuild != -1 &&
                     (strcmp(Guild_GetMarkName(heroGuild), guildName) == 0 ||
                      strcmp(GuildWarName, guildName) == 0)) {
                     bCape = true;
                 }
             }
-            if (DAT_05826d33 &&
+            if (SoccerObserver &&
                 (strcmp(SoccerTeamName[0], guildName) == 0 ||
                  strcmp(SoccerTeamName[1], guildName) == 0)) {
                 bCape = true;

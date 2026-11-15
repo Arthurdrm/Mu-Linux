@@ -50,7 +50,7 @@ void Game_CharSelectTick(void)
         // name[40] completo con relleno en cero (el server copia el campo
         // entero y sin padding leeria basura del buffer).
         if (DAT_083a410c == 0) {
-            DAT_05826cb0 = 0x3c;   // CurrentProtocolState = 60
+            CurrentProtocolState = 0x3c;   // CurrentProtocolState = 60
             BYTE pkt[4 + NetText::CharacterNameSize] = { 0xC1, (BYTE)(4 + NetText::CharacterNameSize), 0xF3, 0x03 };
             NetText::ToServer(pkt + 4, NetText::CharacterNameSize, EntityName::Selected());
             gNetwork.SendC1(pkt, sizeof(pkt));
@@ -61,7 +61,7 @@ void Game_CharSelectTick(void)
         // IDA 0x525384: mov [CameraAngle+8], 0xC2340000 (= float -45.0).
         CameraAngle[2] = -45.0f;  // yaw = -45° (iso rotation around Z)
         ClearInput(1);
-        DAT_00559c84 = 0;
+        InputEnable = 0;
         TabInputEnable = 0;
         InputTextWidth = 0x100;
         // IDA: InputTextMax[0] = 42, [1] = 10. Desde 0.97.40 son caracteres:
@@ -99,7 +99,7 @@ void Game_CharSelectTick(void)
     // cuando JoinMapServer deja CurrentProtocolState en 61. Mientras tanto no
     // corre el tick ni el render (Game_RenderTick tiene el mismo gate), asi que
     // queda en pantalla el ultimo frame de la carga.
-    if (DAT_05826cb0 == 0x3d) {
+    if (CurrentProtocolState == 0x3d) {
         EnableMainRender = 1;
     } else if (EnableMainRender == 0) {
         return;
@@ -130,7 +130,7 @@ void Game_CharSelectTick(void)
             ((FnTick)vt[5])(obj, 0, 0);
         }
         Bisect_ChatMode("CST_post_chatLB");        UpdateWindowsMouse();
-        Bisect_ChatMode("CST_post_4ecb00");        Packet_ParseReceived((void*)(uintptr_t)DAT_00583d8c);
+        Bisect_ChatMode("CST_post_4ecb00");        Packet_ParseReceived((void*)(uintptr_t)g_csQuest);
         Bisect_ChatMode("CST_post_402fd0");        Chat_InputTick();
         Bisect_ChatMode("CST_post_4b14f0_ChatInputTick");
         // ── Reposición per-frame del ChatListBox ────────────────────────────
@@ -215,8 +215,8 @@ void Game_CharSelectTick(void)
     //   CharacterAnimation — avanza entity[+0x108] (frame counter). Para todos.
     // El loop manual de abajo está desactivado (`false &&`).
     {
-        intptr_t heroEnt = (intptr_t)DAT_07abf5d8;
-        intptr_t base = (intptr_t)DAT_07abf5d0;
+        intptr_t heroEnt = (intptr_t)Hero;
+        intptr_t base = (intptr_t)CharactersClient;
         MoveCharactersClient();
         for (int s = 0; false && s < 400; ++s) {
             intptr_t e = base + s * CHARACTER_STRIDE;

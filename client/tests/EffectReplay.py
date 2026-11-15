@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Repetición de CreateEffect + MoveEffect (T9a).
+"""Repetición de efectos (T9a) y partículas (T9d).
 
-Compila Effect_Create.cpp, MoveEffect.cpp y globals.cpp reales con los stubs de
-tests/EffectReplay.cpp y corre el recorrido de tipos x subtipos x owner.
+Compila los .cpp reales de la suite (--suite effects: Effect_Create.cpp y
+MoveEffect.cpp con tests/EffectReplay.cpp; --suite particles: Particle_Spawn.cpp
+y Particle_Move.cpp con tests/ParticleReplay.cpp) y corre el recorrido de tipos
+x subtipos x owner.
 
 Con --reference-ref REV compila además esa revisión (en una copia temporal del
 árbol, con el harness actual) y exige el mismo hash: es la red de la T9 para
@@ -18,12 +20,18 @@ import tempfile
 from pathlib import Path
 
 CLIENT = Path(__file__).resolve().parents[1]
-SOURCES = ["src/stdafx.cpp", "src/globals.cpp", "src/render/Effect_Create.cpp", "src/render/MoveEffect.cpp"]
+SUITES = {
+    # suite: (harness, fuentes reales que se enlazan con él)
+    "effects": ("EffectReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Effect_Create.cpp",
+                                     "src/render/MoveEffect.cpp"]),
+    "particles": ("ParticleReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Particle_Spawn.cpp",
+                                         "src/render/Particle_Move.cpp"]),
+}
 
 
 def build_and_run(root, harness, work, args):
     work.mkdir(parents=True)
-    files = " ".join(f'"{(root / s).as_posix()}"' for s in SOURCES)
+    files = " ".join(f'"{(root / s).as_posix()}"' for s in SUITES[args.suite][1])
     (work / "CMakeLists.txt").write_text(f"""cmake_minimum_required(VERSION 3.25)
 project(EffectReplay LANGUAGES CXX)
 add_executable(effect_replay "{harness.as_posix()}" {files})
@@ -53,7 +61,7 @@ endif()
         if binary.with_suffix(".map").exists():
             shutil.copy(binary.with_suffix(".map"), os.environ["EFFECT_REPLAY_KEEP"] + ".map")
     out = subprocess.check_output([str(binary)], text=True, cwd=work)
-    m = re.search(r"EffectReplay: .*", out)
+    m = re.search(r"\w+Replay: .*", out)
     if not m:
         sys.exit("EffectReplay: salida inesperada:\n" + out)
     return m.group(0)
@@ -64,8 +72,9 @@ def main():
     parser.add_argument("--architecture", choices=("Win32", "x64"), default="x64")
     parser.add_argument("--generator")
     parser.add_argument("--reference-ref")
+    parser.add_argument("--suite", choices=sorted(SUITES), default="effects")
     args = parser.parse_args()
-    harness = CLIENT / "tests" / "EffectReplay.cpp"
+    harness = CLIENT / "tests" / SUITES[args.suite][0]
     with tempfile.TemporaryDirectory(prefix="mu-effect-replay-") as temp:
         temp = Path(temp)
         current = build_and_run(CLIENT, harness, temp / "current", args)

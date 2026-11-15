@@ -10,6 +10,8 @@ from X86Views import object_view
 
 MAIN=r'''
 char* DAT_083a1218;
+// Nombre nuevo del pool (T9f) sobre el mismo buffer; el viejo queda para las revisiones anteriores.
+#define Butterfles (reinterpret_cast<OBJECT*>(DAT_083a1218))
 FUNCTION
 std::uint64_t Run(BYTE* memory){
     DAT_083a1218=reinterpret_cast<char*>(memory+16);std::uint64_t digest=14695981039346656037ull;

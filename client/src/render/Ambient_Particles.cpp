@@ -3,7 +3,7 @@
 //
 // Fauna ambiental que nada/camina cerca del héroe: los peces de Lorencia y
 // Atlans, y los bichos de Dungeon, Lost Tower y Tarkan. Comparte el pool con
-// RenderFishs (0x00502200): DAT_083a2e90, 10 slots × OBJECT_STRIDE. El binario
+// RenderFishs (0x00502200): Fishs, 10 slots × OBJECT_STRIDE. El binario
 // recorre el pool desde el ancla 0x083A2F78 (= slot + 0xE8), por eso el
 // decompile lee todos los campos con índices negativos; acá se usan los campos
 // del OBJECT.
@@ -168,7 +168,7 @@ void AmbientMove(OBJECT* o, int slotIndex)
 
     if ((type >= 181 && type <= 191) || o->LifeTime > 0) {
         SetAction(o, type == 178);
-        Particle_PathUpdate(o, slotIndex, DAT_083a2e90, 10);
+        Particle_PathUpdate(o, slotIndex, reinterpret_cast<char*>(Fishs), 10);
         Matrix_BuildFromEuler(o->Angle, AmbientMatrix(o));
 
         float step[3] = { (float)(rand() % 4 + 6) * o->Velocity, 0.0f, 0.0f };
@@ -236,7 +236,7 @@ void __cdecl AmbientParticles_Update(void)
     if (DAT_07abf5d8 == nullptr)
         return;   // guarda propia: el spawn se ancla en la posición del héroe
     for (int i = 0; i < 10; ++i) {
-        OBJECT* o = AsObject(DAT_083a2e90 + i * OBJECT_STRIDE);
+        OBJECT* o = AsObject((char*)&Fishs[i]);
         const int world = gMapManager.GetCurrentMap();
         // IDA L77: fuera de Atlans y Tarkan sólo se usan los 3 primeros slots.
         if (world != 7 && world != 8 && i >= 3)

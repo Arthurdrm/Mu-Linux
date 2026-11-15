@@ -54,7 +54,7 @@ void __cdecl RenderBoids(void)
     // anclados en +0x168 del slot: `v0 - 90` floats = la base del slot,
     // `*((BYTE*)v0 - 360)` = el flag de activo y `*((WORD*)v0 - 179)` = el tipo.
     // Ese 0x0839BE18 NO es un puntero suelto: es el campo +0x168 del slot 0 de
-    // `g_WeatherSlotPool` (base 0x0839BCB0; 0x839BE18 - 0x839BCB0 = 0x168).
+    // `Boids` (base 0x0839BCB0; 0x839BE18 - 0x839BCB0 = 0x168).
     // Atlans e Icarus son los dos mundos donde `Weather_Update` spawnea estas
     // criaturas (el DLL de inyeccion NOPea esas dos ramas en 0x00501292 con el
     // comentario "Fix Atlans and Icarus Goldens Overflow").
@@ -62,7 +62,7 @@ void __cdecl RenderBoids(void)
 
     // El bound de IDA es `< &unk_83A0378` = 40 slots; lo expresamos como un
     // contador para no construir un puntero fuera del array.
-    float* v0 = (float*)&g_WeatherSlotPool[0x168];
+    float* v0 = (float*)&reinterpret_cast<char*>(Boids)[0x168];
     for (int __slot = 0; __slot < 40; ++__slot) {
         WORD entType = *((WORD*)v0 - 179);
         // Pre-tick: angle adjust (+90° rotation per frame for non-266)
@@ -750,7 +750,7 @@ void __cdecl RenderMonsterName(int /*unused*/, int /*unused*/, int /*unused*/, i
 
 // RenderFishs @ 0x00502200 — RenderFishs
 // Renderiza peces decorativos (Lorencia ponds, Devias mountains, etc).
-// Pool: DAT_083a2e90 (10 entries × 0x1BC bytes = 4440 bytes total).
+// Pool: Fishs (10 entries × 0x1BC bytes = 4440 bytes total).
 // Cada slot:
 //   +0     active flag (byte)
 //   +2     type code (WORD)
@@ -767,7 +767,7 @@ void __cdecl RenderMonsterName(int /*unused*/, int /*unused*/, int /*unused*/, i
 //      to pos with terrain height, call sub_441F00 (shadow render).
 void __cdecl RenderFishs(int /*unused*/, int /*unused*/, int /*unused*/, int /*unused*/)
 {
-    char* base = (char*)&DAT_083a2e90[0];
+    char* base = (char*)Fishs;
     for (int i = 0; i < 10; ++i) {
         char* slot = base + i * OBJECT_STRIDE;
         // Increment rotation +90 (per IDA, applied unconditionally).
@@ -1154,7 +1154,7 @@ void Fauna_TickSprites() {
     if (!DAT_05828d58) return;
     if (SceneFlag == 5) {
         for (int i = 0; i < 40; ++i) {
-            intptr_t entity = (intptr_t)(g_WeatherSlotPool + i * OBJECT_STRIDE);
+            intptr_t entity = (intptr_t)((char*)&Boids[i]);
             OBJECT &o = *AsObject(entity);
             if (!o.Live) continue;
             o.Visible = (BYTE)TestFrustrum2D(o.Position[0] * 0.01f, o.Position[1] * 0.01f, -20.0f);
@@ -1178,7 +1178,7 @@ void Fauna_TickSprites() {
     }
     if (SceneFlag != 2 && SceneFlag != 4 && SceneFlag != 5) return;
     for (int i = 0; i < 10; ++i) {
-        intptr_t entity = (intptr_t)((char *)DAT_083a1218 + i * OBJECT_STRIDE);
+        intptr_t entity = (intptr_t)((char *)&Butterfles[i]);
         OBJECT &o = *AsObject(entity);
         if (!o.Live) continue;
         o.Visible = (BYTE)TestFrustrum2D(o.Position[0] * 0.01f, o.Position[1] * 0.01f, -20.0f);

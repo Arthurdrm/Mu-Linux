@@ -13,7 +13,7 @@
 // calls Render_DrawSprite to draw it, then clears the active flag.
 // Itera por índice acotado (1002 slots).
 void __cdecl Character_UpdateAll(void) {
-    char *pcVar2 = DAT_07c85890;
+    char *pcVar2 = reinterpret_cast<char*>(Sprites);
     for (int i = 0; i < kSpritePoolSize; ++i, pcVar2 += OBJECT_STRIDE) {
         if (*pcVar2 != '\0') {
             int blend = *(int*)(pcVar2 + 4);
@@ -29,7 +29,7 @@ void __cdecl Character_UpdateAll(void) {
 // Effect_UpdateAll @ 0x00479790 — marks all active particle entries dirty (+0x160 = 1).
 // Itera por índice acotado (1002 slots).
 void __cdecl Effect_UpdateAll(void) {
-    char *pcVar1 = DAT_07c85890;
+    char *pcVar1 = reinterpret_cast<char*>(Sprites);
     for (int i = 0; i < kSpritePoolSize; ++i, pcVar1 += OBJECT_STRIDE) {
         if (*pcVar1 != '\0')
             FieldAs(pcVar1, AsObject(pcVar1)->Visible) = '\x01';

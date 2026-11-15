@@ -255,7 +255,7 @@ void __stdcall MoveObjects(void) {
 // alpha, copia pos del owner, dispatch de acción por CurrentAction del owner,
 // avanza el BMD, y para el hada/uniria-helper (816/817) hace el follow-movement.
 //
-// Layout de entry (base = e, stride 0x1BC, 10 entries en DAT_083a1218):
+// Layout de entry (base = e, stride 0x1BC, 10 entries en Butterfles):
 //   +0x00 BYTE Live      +0x02 short type    +0x04 DWORD subType
 //   +0x10 posX +0x14 posY +0x18 posZ   +0x1c angleX +0x20 angleY +0x24 angleZ
 //   +0xC0 velX +0xC4 velY +0xC8 velZ   +0xCC animSpeed
@@ -331,7 +331,7 @@ static void CustomPet_Move(char* e, const BYTE* owner, const Proto::CATALOG_PET&
 void __stdcall MoveBugs(void) {
     extern unsigned char* TerrainWall;
 
-    char*  base = (char*)DAT_083a1218;
+    char*  base = (char*)reinterpret_cast<char*>(Butterfles);
     DWORD* v0   = (DWORD*)(base + 0xFC);      // = &unk_83A1314 (owner field de entry 0)
     for (int slot = 0; slot < 10; ++slot) {
         char* e = (char*)v0 - offsetof(OBJECT, Owner);           // v1 — entry base

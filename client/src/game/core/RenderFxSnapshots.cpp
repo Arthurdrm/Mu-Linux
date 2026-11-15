@@ -34,11 +34,11 @@ Pool *Pools() {
         {(unsigned char *)Joints,JOINT_STRIDE,kJointPoolSize,4,4,8,0x40},
         {(unsigned char *)Particles,PARTICLE_STRIDE,kParticlePoolSize,4,4,8,0x3c},
         {DAT_07c5ab3c,0x70,200,4,4,-1,-1},
-        {g_WeatherSlotPool,OBJECT_STRIDE,40,2,2,4,0xfc},
-        {DAT_083a1218,OBJECT_STRIDE,10,2,2,4,0xfc},
-        {DAT_083a2e90,OBJECT_STRIDE,10,2,2,4,0xfc},
+        {(unsigned char *)Boids,OBJECT_STRIDE,40,2,2,4,0xfc},
+        {(unsigned char *)Butterfles,OBJECT_STRIDE,10,2,2,4,0xfc},
+        {(unsigned char *)Fishs,OBJECT_STRIDE,10,2,2,4,0xfc},
         {g_RenderPool_07c608a8,0x2f0,100,4,4,-1,12},
-        {g_PlayerRenderPool,OBJECT_STRIDE,100,2,2,4,0xfc},
+        {(unsigned char *)Planes,OBJECT_STRIDE,100,2,2,4,0xfc},
         {g_PointerPool,0x70,100,4,4,-1,-1}
     };
     static_assert(sizeof(pools)/sizeof(pools[0])==(int)RenderFxPool::Count,"Pools FX");

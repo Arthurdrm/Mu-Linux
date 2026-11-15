@@ -3,7 +3,7 @@
 //
 // Pese al nombre del archivo, acá no hay sonido: son RenderSprites
 // (Render_DrawSpritePool) y RenderSprite (Render_DrawSprite), que recorren y
-// dibujan el pool de sprites en DAT_07c85890 (kSpritePoolSize slots, IDA: 1002;
+// dibujan el pool de sprites en Sprites (kSpritePoolSize slots, IDA: 1002;
 // +0 flag activo, +4 modo de blend), más los timers de avisos y de chat.
 
 #include "stdafx.h"
@@ -11,22 +11,22 @@
 #include "app/config/UserSettings.h"
 
 namespace {
-char simulationSprites[sizeof(DAT_07c85890)] = {};
+char simulationSprites[sizeof(Sprites)] = {};
 }
 // DESVIACION: conservar sprites efímeros creados durante cada paso SIM.
 // Su consumo por el render no borra la muestra para los renders sin paso.
 void Sprite_CaptureStep() {
-    memcpy(simulationSprites, DAT_07c85890, sizeof(simulationSprites));
-    for (int i = 0; i < kSpritePoolSize; ++i) DAT_07c85890[i * OBJECT_STRIDE] = 0;
+    memcpy(simulationSprites, reinterpret_cast<char*>(Sprites), sizeof(simulationSprites));
+    for (int i = 0; i < kSpritePoolSize; ++i) Sprites[i].Live = 0;
 }
 void Sprite_ReplayStep() {
     int destination = 0;
     for (int i = 0; i < kSpritePoolSize; ++i) {
         const char *sample = simulationSprites + i * OBJECT_STRIDE;
         if (!sample[0]) continue;
-        while (destination < kSpritePoolSize && DAT_07c85890[destination * OBJECT_STRIDE]) ++destination;
+        while (destination < kSpritePoolSize && Sprites[destination].Live) ++destination;
         if (destination == kSpritePoolSize) break;
-        char *out=DAT_07c85890+destination++*OBJECT_STRIDE;
+        char *out=(char*)&Sprites[destination++];
         memcpy(out,sample,OBJECT_STRIDE);
         // El sprite efímero conserva su alta/azar; sólo acompaña la traslación
         // visual de su dueño conocido. No se inventa identidad entre emisiones.
@@ -50,7 +50,7 @@ void Sprite_ReplayStep() {
 extern "C" void DbgLogPublic(const char* msg);
 void __cdecl Render_DrawSpritePool(void)
 {
-    char *pcVar2 = DAT_07c85890;
+    char *pcVar2 = reinterpret_cast<char*>(Sprites);
     for (int i = 0; i < kSpritePoolSize; ++i, pcVar2 += OBJECT_STRIDE) {
         if (*pcVar2 != '\0') {
             int blend = *(int*)(pcVar2 + 4);

@@ -654,10 +654,10 @@ extern DWORD   RainPosition;  // IDA: RainPosition (0x07C74AEC) - rain position 
 
 // ── Player render pool ─────────────────────────────────────────────────────────
 // El walker v1 de Player_Render arranca en DAT_07c74f54 y lee offsets NEGATIVOS
-// hasta -0xEC. El pool REAL es g_PlayerRenderPool[100 × 0x1BC] cubriendo todos
+// hasta -0xEC. El pool REAL es Planes[100] cubriendo todos
 // los slots; DAT_07c74f54 es un alias a offset +0xEC (donde v1 vive en cada slot).
-extern char    g_PlayerRenderPool[100 * OBJECT_STRIDE];
-extern DWORD*  DAT_07c74f54;   // = g_PlayerRenderPool + 0xEC (v1 anchor)
+extern OBJECT  Planes[100];   // IDA: unk_7C74E68 (0x07C74E68); nombre de MU 5.2
+extern DWORD*  DAT_07c74f54;   // = Planes + 0xEC (v1 anchor)
 
 // ── g_CharData XOR-encoded block (0x07cfxxxx) ─────────────────────────────────
 extern void   *CharacterAttribute;  // IDA: CharacterAttribute (0x07CF1FF4) - g_CharData sub-pointer (XOR-encoded)
@@ -953,7 +953,7 @@ extern DWORD   DAT_0839be18;
 // ── Scene / state machine vars (0x083a0xxx – 0x083bxxxx) ─────────────────────
 extern char    DAT_083a2370[0x960];   // Entity render-state pool (stride 0xc, 128 slots, 0x960 bytes)
 #define DAT_083a2cd0 DAT_083a2370[0x960-1]  // end-marker alias
-extern char    DAT_083a2e90[10 * OBJECT_STRIDE];   // Boids pool: 10 entries × 0x1bc bytes
+extern OBJECT  Fishs[10];   // IDA: unk_83A2E90 (0x083A2E90); nombre de MU 5.2
 // `Operates` de IDA = 0x083A2378 = DAT_083a2370 + 8, o sea el campo [2] (puntero
 // al objeto) de la ENTRADA 0 de la lista de objetos interactuables.  Los
 // consumidores lo indexan `Operates[3 * SelectedOperate]`, que salta de entrada
@@ -1209,7 +1209,7 @@ extern float  _DAT_00552954;   // sin animation frequency constant
 extern DamagePoint DAT_07c80110[kDamagePointCount];   // active-flag at +0; slot stride 0x70
 
 // ── Character/effect update pool (0x07c85890, stride 0x1BC, 1002 slots) ──────
-extern char    DAT_07c85890[kSpritePoolSize * OBJECT_STRIDE];  // pool array (was 1 byte → AUTO-SKIP)
+extern OBJECT  Sprites[kSpritePoolSize];   // IDA: unk_7C85890 (0x07C85890); nombre de MU 5.2
 extern int&    DAT_07c85894;   // alias = pool[+4] (Sound_Queue / Sigil_RenderAll)
 
 // ── Math / animation constants ────────────────────────────────────────────────
@@ -1550,7 +1550,7 @@ extern float   _DAT_00552a28;
 extern DWORD   _DAT_07e016f0;  // last FPS tick timestamp (timeGetTime value)
 
 // Pool en 0x083a1218 (array Butterfles; lo recorren SMD_Parser.cpp y Entity_Render.cpp, entre otros):
-extern char    DAT_083a1218[10 * OBJECT_STRIDE];   // Butterfles OBJECT array (10 entries × 0x1BC stride)
+extern OBJECT  Butterfles[10];   // IDA: unk_83A1218 (0x083A1218); nombre de MU 5.2
 
 // Float aliases for view/projection matrix globals (0x083a4xxx):
 // DWORD counterparts (DAT_083a414c etc.) are already declared above.
@@ -1829,43 +1829,43 @@ extern float   _DAT_00552980;
 extern float   _DAT_00552984;
 extern float   _DAT_00552988;
 extern float   _DAT_0055298c;
-// ── Weather particle pool (40 slots × 0x1bc bytes = 0x4560 bytes) ────────────
+// ── Boids (40 slots de OBJECT; IDA: sub_500E80 y su render) ─────────────────
 // Los 30+ globals DAT_0839bc?? son macros que indexan dentro de un único buffer
 // contiguo: Weather_Update y Particle_PathUpdate los acceden con stride 0x1bc
 // (slot stride) o 0x6f (int stride = 0x1bc/4).
-extern char    g_WeatherSlotPool[40 * OBJECT_STRIDE];
-#define DAT_0839bcb0  g_WeatherSlotPool[0x000]                              // slot[0] active flag (char)
-#define DAT_0839bcb2  (*(short        *)&g_WeatherSlotPool[0x002])          // slot[0] type (short, stride 0xde × short)
-#define DAT_0839bcb4  g_WeatherSlotPool[0x004]                              // slot[0] mode flag (char)
-#define DAT_0839bcbc  (*(unsigned int *)&g_WeatherSlotPool[0x00c])          // slot[0] angular speed (int/float)
-#define DAT_0839bcc0  (*(unsigned int *)&g_WeatherSlotPool[0x010])          // slot[0] pos_x (int/float)
-#define DAT_0839bcc4  (*(unsigned int *)&g_WeatherSlotPool[0x014])          // slot[0] pos_y (int/float)
-#define DAT_0839bcc8  (*(unsigned int *)&g_WeatherSlotPool[0x018])          // slot[0] pos_z (int/float)
-#define DAT_0839bccc  (*(unsigned int *)&g_WeatherSlotPool[0x01c])          // slot[0] vel_x (int/float)
-#define DAT_0839bcd0  (*(unsigned int *)&g_WeatherSlotPool[0x020])          // slot[0] vel_y (int/float)
-#define DAT_0839bcd4  (*(unsigned int *)&g_WeatherSlotPool[0x024])          // slot[0] phase (int/float)
-#define DAT_0839bd08  (*(unsigned int *)&g_WeatherSlotPool[0x058])          // slot[0] color R or -1 (int)
-#define DAT_0839bd10  (*(unsigned int *)&g_WeatherSlotPool[0x060])          // slot[0] color G/intensity (int)
-#define DAT_0839bd14  (*(unsigned int *)&g_WeatherSlotPool[0x064])          // slot[0] color B (int)
-#define DAT_0839bd30  (*(unsigned int *)&g_WeatherSlotPool[0x080])          // slot[0] rotation angle (int/float)
-#define DAT_0839bd40  g_WeatherSlotPool[0x090]                              // slot[0] direction vector base (3 floats)
-#define DAT_0839bd70  g_WeatherSlotPool[0x0c0]                              // slot[0] cached head pos X (float byte addr)
-#define DAT_0839bd74  g_WeatherSlotPool[0x0c4]                              // slot[0] cached head pos Y
-#define DAT_0839bd78  g_WeatherSlotPool[0x0c8]                              // slot[0] velocity Z (float)
-#define DAT_0839bd7c  (*(unsigned int *)&g_WeatherSlotPool[0x0cc])          // slot[0] scale (int/float)
-#define DAT_0839bd84  g_WeatherSlotPool[0x0d4]                              // slot[0] size (float byte addr)
-#define DAT_0839bd88  g_WeatherSlotPool[0x0d8]                              // slot[0] altitude limit (float byte addr)
-#define DAT_0839bd8c  (*(unsigned int *)&g_WeatherSlotPool[0x0dc])          // slot[0] render flag (int)
-#define DAT_0839bd98  g_WeatherSlotPool[0x0e8]                              // slot[0] color R float byte addr
-#define DAT_0839bd9c  g_WeatherSlotPool[0x0ec]                              // slot[0] color G float byte addr
-#define DAT_0839bda0  g_WeatherSlotPool[0x0f0]                              // slot[0] color B float byte addr
-#define DAT_0839bdb4  g_WeatherSlotPool[EntityOffset(0x104)]                              // slot[0] state byte (cloud life phase)
-#define DAT_0839bdb5  g_WeatherSlotPool[EntityOffset(0x105)]                              // slot[0] blend mode byte
-#define DAT_0839bdb6  g_WeatherSlotPool[EntityOffset(0x106)]                              // slot[0] field at +0x106
-#define DAT_0839bdb8  g_WeatherSlotPool[EntityOffset(0x108)]                              // slot[0] rotation float byte addr
-#define DAT_0839bdbc  g_WeatherSlotPool[EntityOffset(0x10c)]                              // slot[0] field at +0x10c
-#define DAT_0839be11  g_WeatherSlotPool[EntityOffset(0x161)]                              // slot[0] byte field
-#define DAT_0839be14  (*(unsigned int *)&g_WeatherSlotPool[EntityOffset(0x164)])          // slot[0] alpha fade (int/float)
+extern OBJECT  Boids[40];   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
+#define DAT_0839bcb0  (*(char *)&Boids[0].Live)                              // slot[0] active flag (char)
+#define DAT_0839bcb2  (*(short *)&Boids[0].Type)          // slot[0] type (short, stride 0xde × short)
+#define DAT_0839bcb4  (*(char *)&Boids[0].SubType)                              // slot[0] mode flag (char)
+#define DAT_0839bcbc  (*(unsigned int *)&Boids[0].Scale)          // slot[0] angular speed (int/float)
+#define DAT_0839bcc0  (*(unsigned int *)&Boids[0].Position[0])          // slot[0] pos_x (int/float)
+#define DAT_0839bcc4  (*(unsigned int *)&Boids[0].Position[1])          // slot[0] pos_y (int/float)
+#define DAT_0839bcc8  (*(unsigned int *)&Boids[0].Position[2])          // slot[0] pos_z (int/float)
+#define DAT_0839bccc  (*(unsigned int *)&Boids[0].Angle[0])          // slot[0] vel_x (int/float)
+#define DAT_0839bcd0  (*(unsigned int *)&Boids[0].Angle[1])          // slot[0] vel_y (int/float)
+#define DAT_0839bcd4  (*(unsigned int *)&Boids[0].Angle[2])          // slot[0] phase (int/float)
+#define DAT_0839bd08  (*(unsigned int *)&Boids[0].HiddenMesh)          // slot[0] color R or -1 (int)
+#define DAT_0839bd10  (*(unsigned int *)&Boids[0].LifeTime)          // slot[0] color G/intensity (int)
+#define DAT_0839bd14  (*(unsigned int *)&Boids[0].BlendMesh)          // slot[0] color B (int)
+#define DAT_0839bd30  (*(unsigned int *)&Boids[0].Timer)          // slot[0] rotation angle (int/float)
+#define DAT_0839bd40  reinterpret_cast<char*>(Boids)[0x090]                              // slot[0] direction vector base (3 floats)
+#define DAT_0839bd70  (*(char *)&Boids[0].Direction[0])                              // slot[0] cached head pos X (float byte addr)
+#define DAT_0839bd74  (*(char *)&Boids[0].Direction[1])                              // slot[0] cached head pos Y
+#define DAT_0839bd78  (*(char *)&Boids[0].Direction[2])                              // slot[0] velocity Z (float)
+#define DAT_0839bd7c  (*(unsigned int *)&Boids[0].Velocity)          // slot[0] scale (int/float)
+#define DAT_0839bd84  (*(char *)&Boids[0].ShadowScale)                              // slot[0] size (float byte addr)
+#define DAT_0839bd88  (*(char *)&Boids[0].Gravity)                              // slot[0] altitude limit (float byte addr)
+#define DAT_0839bd8c  (*(unsigned int *)&Boids[0].LightEnable)          // slot[0] render flag (int)
+#define DAT_0839bd98  (*(char *)&Boids[0].Light[0])                              // slot[0] color R float byte addr
+#define DAT_0839bd9c  (*(char *)&Boids[0].Light[1])                              // slot[0] color G float byte addr
+#define DAT_0839bda0  (*(char *)&Boids[0].Light[2])                              // slot[0] color B float byte addr
+#define DAT_0839bdb4  (*(char *)&Boids[0].AI)                              // slot[0] state byte (cloud life phase)
+#define DAT_0839bdb5  (*(char *)&Boids[0].CurrentAction)                              // slot[0] blend mode byte
+#define DAT_0839bdb6  (*(char *)&Boids[0].PriorAction)                              // slot[0] field at +0x106
+#define DAT_0839bdb8  (*(char *)&Boids[0].AnimationFrame)                              // slot[0] rotation float byte addr
+#define DAT_0839bdbc  (*(char *)&Boids[0].PriorAnimationFrame)                              // slot[0] field at +0x10c
+#define DAT_0839be11  (*(char *)&Boids[0].AlphaEnable)                              // slot[0] byte field
+#define DAT_0839be14  (*(unsigned int *)&Boids[0].AlphaTarget)          // slot[0] alpha fade (int/float)
 // ── Weather float constants ───────────────────────────────────────────────────
 extern float   _DAT_0055285c;  // weather float constant
 extern float   _DAT_0055286c;  // weather float constant
@@ -1987,7 +1987,7 @@ extern BYTE    DAT_07ea5240[0x44];
 
 // ── Effect_Tick globals ───────────────────────────────────────────────────────
 extern float   _DAT_00552aac;  // effect tick float constant
-// IDA: MovePlanes usa g_PlayerRenderPool +0x60; no tiene otra asignación.
+// IDA: MovePlanes usa Planes +0x60; no tiene otra asignación.
 extern char    g_PointerPool[100 * 0x70]; // IDA: Pointers (0x07C82CD0).
 
 // ── Terrain_Light globals ─────────────────────────────────────────────────────
@@ -2083,7 +2083,7 @@ extern DWORD   DAT_07ea9844;
 // Particle_PathUpdate es &unk_83A2E90. O sea es la MISMA tabla que los boids,
 // vista desde el ancla +0xE8. Como array propio, los campos con índice negativo
 // del slot 0 caían 0xE8 bytes antes y pisaban g_PhysicsManager.
-#define DAT_083a2f78   (DAT_083a2e90 + 0xE8)
+#define DAT_083a2f78   (reinterpret_cast<char*>(Fishs) + 0xE8)
 extern float   _DAT_00590af0;
 extern DWORD   g_PhysicsManager[4];   // IDA: g_PhysicsManager (0x083A4338)
 extern float   DAT_00590af4;   // 3D sound sin component (updated by Sound_UpdateChannel3D_Tick)
@@ -2526,8 +2526,6 @@ extern int     WhisperID_Num;           // IDA: WhisperID_Num (0x07E11DB0) — p
 // DAT_07c608b8 — campo int en el +16 del slot[0] de g_RenderPool_07c608a8 (ver arriba).
 #define DAT_07c608b8  (*(int*)(&g_RenderPool_07c608a8[16]))
 
-// Objetos mariposa/bicho — alias de DAT_083a1218 (misma dirección 0x083a1218 en el original)
-#define Butterfles  (*(DWORD*)DAT_083a1218)
 
 // ── Batch 3 globals ──────────────────────────────────────────────────────────
 // BST / std::map sentinel

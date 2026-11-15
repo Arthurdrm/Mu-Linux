@@ -145,7 +145,7 @@ void __cdecl Particle_PathUpdate(OBJECT* object, int param_2, const void* table,
 //
 // Effect_Spawn — allocates a free slot in the effect pool and initialises it.
 //
-// Scans the effect pool starting at DAT_07c85890 (stride 0x1bc = 444 bytes)
+// Scans the effect pool starting at Sprites (stride 0x1bc = 444 bytes)
 // for the first inactive slot (byte 0 == 0).  On finding one, fills fields:
 //   +0x02 (short) = param_1 (effect type)
 //   +0x04        = param_7
@@ -160,13 +160,13 @@ void __cdecl Particle_PathUpdate(OBJECT* object, int param_2, const void* table,
 // Returns slot index (0-based), or 0 if pool is full.
 //
 // Globals:
-//   DAT_07c85890 — effect pool base (stride 0x1bc, ends at 0x7cf1ef0)
+//   Sprites — effect pool base (stride 0x1bc, ends at 0x7cf1ef0)
 
 int __cdecl
 CreateSprite(unsigned short param_1, float *param_2, float param_3, float *param_4,
              intptr_t param_5, float param_6, int param_7)
 {
-  // El pool DAT_07c85890 (kSpritePoolSize slots; IDA: 1002) se itera por índice acotado, no
+  // El pool Sprites (kSpritePoolSize slots; IDA: 1002) se itera por índice acotado, no
   // por la dirección absoluta del binario.
 
   // DESVIACION: guard de NULL en param_2 (pos) y param_4 (dir); el binario no lo
@@ -185,7 +185,7 @@ CreateSprite(unsigned short param_1, float *param_2, float param_3, float *param
     return 0;
   }
   const int kPoolSlots = kSpritePoolSize;
-  char *pcVar2 = DAT_07c85890;
+  char *pcVar2 = reinterpret_cast<char*>(Sprites);
   for (int iVar1 = 0; iVar1 < kPoolSlots; ++iVar1, pcVar2 += OBJECT_STRIDE) {
     if (*pcVar2 == '\0') {
       *(unsigned short *)(pcVar2 + 2) = param_1;

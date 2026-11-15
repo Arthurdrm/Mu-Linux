@@ -234,12 +234,12 @@ lbl_skip_init:
     return puVar3;
 }
 // IDA: DeleteBug (0x004FFFA0)
-// Walk butterfly slot array (10 entries × 0x1BC stride at DAT_083a1218..DAT_083a1218+0x1158),
+// Walk butterfly slot array (10 entries × 0x1BC stride at Butterfles..Butterfles+0x1158),
 // clear active flag (slot[0]=0) on every slot whose owner field (slot+0xFC = DWORD index 63)
 // matches `Owner`. Each slot occupies 111 DWORDs (= 0x1BC bytes); we step in DWORD units.
 // Ported verbatim from IDA reference 0045C8C0_ChangeCharacterExt's helper.
 void __cdecl DeleteBug(intptr_t Owner) {
-    DWORD* Butterflies = (DWORD*)DAT_083a1218;
+    DWORD* Butterflies = (DWORD*)reinterpret_cast<char*>(Butterfles);
     for (int slot = 0; slot < 10; ++slot) {
         if (*(BYTE*)Butterflies) {
             if ((intptr_t)AsObject(Butterflies)->Owner == Owner) {
@@ -263,11 +263,11 @@ void __cdecl CreateBug(int param_1, void *param_2_v, void *param_3_v, int param_
     intptr_t param_3 = (intptr_t)param_3_v;
     if ((*(short*)(param_3 + 2) == 0x186) || (param_1 == 0x330)) {
         // El original corta en 0x83A236F (fin del pool en el binario); acá el
-        // pool es DAT_083a1218: 10 slots de 0x1BC.
-        char *pcVar5 = DAT_083a1218;
+        // pool es Butterfles: 10 slots de 0x1BC.
+        char *pcVar5 = reinterpret_cast<char*>(Butterfles);
         while (*pcVar5 != '\0') {
             pcVar5 += OBJECT_STRIDE;
-            if (pcVar5 >= DAT_083a1218 + 10 * OBJECT_STRIDE) return;
+            if (pcVar5 >= (char*)&Butterfles[10]) return;
         }
         RenderFxSnapshots_New(pcVar5);
         *(DWORD *)&AsObject(pcVar5)->SubType   = param_4;

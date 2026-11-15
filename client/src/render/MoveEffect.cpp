@@ -82,10 +82,10 @@ static bool IsEffectOwner(const void* owner)
         SceneObjects::IsSlot(owner, (void*)characters, 400 * CHARACTER_STRIDE, CHARACTER_STRIDE)) return true;
     return SceneObjects::Contains(owner) ||
         SceneObjects::IsSlot(owner, Effects, sizeof(Effects), OBJECT_STRIDE) ||
-        SceneObjects::IsSlot(owner, DAT_07c85890, sizeof(DAT_07c85890), OBJECT_STRIDE) ||
-        SceneObjects::IsSlot(owner, g_PlayerRenderPool, sizeof(g_PlayerRenderPool), OBJECT_STRIDE) ||
-        SceneObjects::IsSlot(owner, DAT_083a1218, sizeof(DAT_083a1218), OBJECT_STRIDE) ||
-        SceneObjects::IsSlot(owner, DAT_083a2e90, sizeof(DAT_083a2e90), OBJECT_STRIDE);
+        SceneObjects::IsSlot(owner, reinterpret_cast<char*>(Sprites), sizeof(Sprites), OBJECT_STRIDE) ||
+        SceneObjects::IsSlot(owner, reinterpret_cast<char*>(Planes), sizeof(Planes), OBJECT_STRIDE) ||
+        SceneObjects::IsSlot(owner, reinterpret_cast<char*>(Butterfles), sizeof(Butterfles), OBJECT_STRIDE) ||
+        SceneObjects::IsSlot(owner, reinterpret_cast<char*>(Fishs), sizeof(Fishs), OBJECT_STRIDE);
 }
 
 // IDA: MoveEffect (0x00466AD0), desvanecimiento 247/248/250/251.

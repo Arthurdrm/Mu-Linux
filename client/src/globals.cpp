@@ -744,11 +744,11 @@ DWORD    RainCurrent  = 0;  // IDA: RainCurrent (0x07C74AE4) - BGM track 1 enabl
 // a los primeros 0xEC bytes del slot. Por eso DAT_07c74f54 NO es el inicio
 // real del pool — el inicio es 0xEC bytes antes (= DAT_07c74e68).
 //
-// g_PlayerRenderPool cubre los 100 slots completos (cabecera de 0xEC bytes
+// Planes cubre los 100 slots completos (cabecera de 0xEC bytes
 // incluida) y DAT_07c74f54 es un alias dentro del array en el offset 0xEC
 // (= anchor v1 del slot 0).
-char     g_PlayerRenderPool[100 * OBJECT_STRIDE] = {};
-DWORD*   DAT_07c74f54 = (DWORD*)(g_PlayerRenderPool + 0xEC);
+OBJECT   Planes[100] = {};   // IDA: unk_7C74E68 (0x07C74E68); nombre de MU 5.2
+DWORD*   DAT_07c74f54 = (DWORD*)(reinterpret_cast<char*>(Planes) + 0xEC);
 
 // ── g_CharData XOR block ───────────────────────────────────────────────────────
 void    *DAT_07cf1ffc  = nullptr;  // g_CharData pointer (0x584-byte XOR-encoded)
@@ -1249,10 +1249,10 @@ DamagePoint DAT_07c80110[kDamagePointCount] = {};
 // Character/effect update pool — 1002 slots × 444 bytes = 0x6c660 (matches
 // binario original 0x07c85890..0x07cf1ef0). CreateSprite (Effect_Spawn) necesita
 // el pool real para spawnear (glow +9, wing FX, weapon glows, lightning crackles).
-char     DAT_07c85890[kSpritePoolSize * OBJECT_STRIDE] = {0};
+OBJECT   Sprites[kSpritePoolSize] = {};   // IDA: unk_7C85890 (0x07C85890); nombre de MU 5.2
 // DAT_07c85894 = mismo pool, offset +4 (Sound_Queue.cpp / Sigil_RenderAll).
 // Lo dejamos como referencia al int en pool[4..7] para compartir storage.
-int&     DAT_07c85894 = *reinterpret_cast<int*>(&DAT_07c85890[4]);
+int&     DAT_07c85894 = Sprites[0].SubType;
 
 // Math / animation constants
 float   _DAT_00552958 = 140.0f;
@@ -1361,7 +1361,7 @@ DWORD    MouseRButtonPush  = 0;
 char     DAT_083a2370[0x960]  = {};   // 200 x 0xc (0x083A2370..0x083A2CD0)
 // Pool de boids (fish/butterfly/bird flocking) @ 0x083a2e90.
 // Particle_PathUpdate itera 10 entries × stride 0x1bc = 0x1180 bytes.
-char     DAT_083a2e90[10 * OBJECT_STRIDE] = {};
+OBJECT   Fishs[10] = {};   // IDA: unk_83A2E90 (0x083A2E90); nombre de MU 5.2
 // DAT_083a2378 es ahora un alias dentro de DAT_083a2370 (ver globals.h).
 
 // Server select + char menu new globals
@@ -1561,7 +1561,7 @@ float    _DAT_005529fc = 18.0f;
 char     DAT_00558128[256]  = {};   // debug log format/data block
 char     DAT_0055a7c4  = 1;         // compressed-assets flag (alias: g_tex_ext_mode); 1=Data mode (plain Data\ folder, no pak)
 DWORD    _DAT_07e016f0 = 0;         // FPS tick timer (DWORD milliseconds)
-char     DAT_083a1218[10 * OBJECT_STRIDE]  = {};  // Butterfles OBJECT array (10 entries × 0x1BC stride = 0x1158 bytes)
+OBJECT   Butterfles[10] = {};   // IDA: unk_83A1218 (0x083A1218); nombre de MU 5.2
 // Float aliases for view/projection matrix — MUST alias the array slots
 // (see CameraMatrix[12] above). Definidos como referencias para compartir
 // memoria con CameraMatrix[3/7/11] y evitar stomping.
@@ -1857,7 +1857,7 @@ float   _DAT_0055298c = -50.0f;
 // ── Weather particle pool (40 × 0x1bc = 0x4560 bytes) ────────────────────────
 // Backing buffer único: Weather_Update recorre los slots 1..39 con stride 0x1bc.
 // Ver globals.h para los macros de field accessors.
-alignas(16) char g_WeatherSlotPool[40 * OBJECT_STRIDE] = {0};
+OBJECT   Boids[40] = {};   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
 // ── Weather float constants ───────────────────────────────────────────────────
 float   _DAT_0055285c = 200.0f;
 float   _DAT_0055286c = 360.0f;
@@ -1971,7 +1971,7 @@ BYTE    DAT_07ea5240[0x44] = { 0 };
 // ── Effect_Tick globals ───────────────────────────────────────────────────────
 float   _DAT_00552aac  = 0.0833333358f;
 // Fade-effect pool — Effect_TickFade itera 40 slots × 0x1bc bytes.
-// DAT_07c74ec8 es el anclaje +0x60 de g_PlayerRenderPool, no otro pool.
+// DAT_07c74ec8 es el anclaje +0x60 de Planes, no otro pool.
 // Flare effect pool — Effect_TickFlare itera 63 slots × 0x70 bytes.
 // IDA: Pointers (0x07C82CD0), 100 slots de 0x70 compartidos por alta/tick/draw.
 char    g_PointerPool[100 * 0x70] = {};
@@ -2078,7 +2078,7 @@ DWORD   InventoryStartY   = 0;  // IDA: InventoryStartY (0x07EA5284)
 DWORD   InventoryStartX   = 0;  // IDA: InventoryStartX (0x07EA5288)
 DWORD   DAT_07ea9844   = 0;
 // DAT_083a2f78 ya no es un array propio: es el ancla del walker de
-// Ambient_ParticleUpdate dentro de DAT_083a2e90 (ver globals.h).
+// Ambient_ParticleUpdate dentro de Fishs (ver globals.h).
 float   _DAT_00590af0  = 0.0f;   // IDA: flt_590AF0, magnitud del viento de la tela
 
 // IDA: g_PhysicsManager (0x083A4338) -- CPhysicsManager de 16 bytes
@@ -2571,7 +2571,6 @@ int    WhisperID_Num = 0;              // IDA: WhisperID_Num (0x07E11DB0)
 // DAT_07c608b8 — see globals.h. Defined as macro into g_RenderPool_07c608a8.
 // (The standalone declaration was a single int that backed nothing — MoveBlurs
 //  walked past it. Now the pool array is the storage and the macro projects.)
-// Butterfles is now a macro alias for DAT_083a1218 (same address 0x083a1218)
 
 // ── Batch 3 globals ──────────────────────────────────────────────────────────
 void  *DAT_055c9b98       = NULL;   // RB-tree sentinel (NIL)

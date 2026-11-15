@@ -183,7 +183,7 @@ Effect_DrawRing(int param_1,float *param_2,undefined4 param_3,undefined4 param_4
 void Effect_TickFade(void)
 {
   for (int index=0;index<100;++index) {
-    char *slot=g_PlayerRenderPool+index*OBJECT_STRIDE;
+    char *slot=(char*)&Planes[index];
     if (!slot[0]) continue;
     int &life=*(int *)(slot+0x60);
     --life;

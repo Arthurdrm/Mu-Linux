@@ -28,6 +28,8 @@ using uint = unsigned int;
 char* DAT_07abf5d8;
 std::uintptr_t DAT_05828d58;
 BYTE* DAT_083a2e90;
+// Nombre nuevo del pool (T9f) sobre el mismo buffer; el viejo queda para las revisiones anteriores.
+#define Fishs (reinterpret_cast<OBJECT*>(DAT_083a2e90))
 BYTE* pool;
 unsigned char layer1[65536], wall[65536];
 unsigned char* TerrainMappingLayer1 = layer1;

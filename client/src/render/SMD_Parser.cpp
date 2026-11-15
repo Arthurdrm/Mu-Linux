@@ -248,12 +248,12 @@ void __cdecl DeleteObjects(void) {
 // ClearCharacters @ 0x0045ABB0 — Entity_ClearByType(map_id)
 // Loops over entity array (base DAT_07abf5d0, stride 0x394).
 // For each active entity whose type (+0x1dc) != map_id: clears active flag,
-// also clears matching emitter pool entries (DAT_083a1218, stride 0x1bc).
+// also clears matching emitter pool entries (Butterfles, stride 0x1bc).
 // Then calls DeleteCloth on every slot.
 //
-// Cota del bucle interno: el binario usa el literal 0x83a2370 (= DAT_083a1218
+// Cota del bucle interno: el binario usa el literal 0x83a2370 (= Butterfles
 // + 0x1158, fin del array Butterfles); acá el array vive en otra dirección,
-// así que se usa DAT_083a1218 + 10 * OBJECT_STRIDE (end-pointer real).
+// así que se usa Butterfles + 10 * OBJECT_STRIDE (end-pointer real).
 void __cdecl ClearCharacters(int param_1) {
     gHealthBar.Clear();
     // DESVIACION: cerrar las extensiones al reconstruir el mapa, sin borrar catálogos.
@@ -261,7 +261,7 @@ void __cdecl ClearCharacters(int param_1) {
     gEventTimer.Close();
     gChaosMixRates.Reset();
     GoldenArcher_ResetCharacter();
-    char* butterflesEnd = DAT_083a1218 + 10 * OBJECT_STRIDE;
+    char* butterflesEnd = (char*)&Butterfles[10];
     for (int i = 0; i < 400 * CHARACTER_STRIDE; i += CHARACTER_STRIDE) {
         char* puVar1 = (char*)(i + DAT_07abf5d0);
         // El slot puede reutilizarse antes de que MoveJoint observe Live=0.
@@ -277,7 +277,7 @@ void __cdecl ClearCharacters(int param_1) {
         }
         if (*puVar1 != '\0' && *(short*)&AsCharacter(puVar1)->Key != (short)param_1) {
             *puVar1 = 0;
-            char* pcVar2 = DAT_083a1218;
+            char* pcVar2 = reinterpret_cast<char*>(Butterfles);
             do {
                 if (*pcVar2 != '\0' && *(void**)(pcVar2 + 0xfc) == puVar1)
                     *pcVar2 = '\0';

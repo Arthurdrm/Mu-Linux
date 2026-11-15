@@ -317,6 +317,10 @@ int main()
     const bool trace = std::getenv("EFFECT_REPLAY_TRACE") != nullptr;
     unsigned cases = 0, crashes = 0;
     if (const char* dump = std::getenv("EFFECT_REPLAY_DUMP")) g_dump = std::fopen(dump, "wb");
+    // EFFECT_REPLAY_CASES=archivo: el hash de cada caso por separado, para ubicar
+    // en qué combinación difieren dos revisiones.
+    FILE* perCase = nullptr;
+    if (const char* path = std::getenv("EFFECT_REPLAY_CASES")) perCase = std::fopen(path, "w");
     for (int type = 0; type < maxType; ++type)
     for (int sub = 0; sub < maxSub; ++sub)
     for (int ownerMode = 0; ownerMode < 3; ++ownerMode) {
@@ -328,6 +332,10 @@ int main()
         ClearPool();
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];
+        // Cada caso se hashea aparte y se pliega al total: una diferencia queda
+        // localizada en su caso en vez de arrastrarse a todos los siguientes.
+        const std::uint64_t total = g_hash;
+        g_hash = 14695981039346656037ull;
         MixU(0xC0DE0000u | (unsigned)type); MixU((unsigned)sub); MixU((unsigned)ownerMode);
         if (!RunGuarded({ type, sub, ownerMode, ticks, owner })) {
             ++crashes; MixU(0xDEAD0000u | (unsigned)type);
@@ -336,9 +344,14 @@ int main()
         if (g_dump) { int tag[4] = { -1, type, sub, ownerMode }; std::fwrite(tag, 4, 4, g_dump); }
         for (int i = 0; i < kEffectPoolSize; ++i) if (Active(i)) HashSlot(i);
         Mix(g_charMachine, sizeof(g_charMachine));
+        const std::uint64_t caseHash = g_hash;
+        if (perCase) std::fprintf(perCase, "%d %d %d %016llx\n", type, sub, ownerMode, (unsigned long long)caseHash);
+        g_hash = total;
+        Mix(&caseHash, sizeof(caseHash));
         ++cases;
     }
     ClearPool();
+    if (perCase) std::fclose(perCase);
     std::printf("EffectReplay: %u casos, %u crashes de combinaciones invalidas, %u llamadas a servicios, %016llx\n",
                 cases, crashes, g_calls, (unsigned long long)g_hash);
     return 0;

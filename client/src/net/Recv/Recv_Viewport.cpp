@@ -613,6 +613,7 @@ void NetRecv_13(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         //   e[3]=padding, e[4..5]=ViewSkillState (LE),
         //   e[6]=PosX, e[7]=PosY, e[8]=TargetX, e[9]=TargetY,
         //   e[10]=Path|Dir, e[11]=% de vida (protocolo 6; antes relleno).
+        const bool create = (e[0] & 0x80) != 0;   // IDA: CreateFlag = key >> 15
         WORD entityId = ((WORD)(e[0] & 0x7F) << 8) | e[1];
         BYTE type = e[2];
         BYTE x = e[6], y = e[7];
@@ -629,42 +630,31 @@ void NetRecv_13(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
                                       (int)entityId, 0);
         if (slotChar) {
             BYTE* slot = (BYTE*)slotChar;
-            // El facing va por separado — CreateMonster no lo setea.
-            AsCharacter(slot)->Object.Angle[2] = rot;
-            AsCharacter(slot)->Key = entityId;
-            gHealthBar.Set(entityId, (BYTE)EntityView::MonsterKind, e[11]);
-            // NO sobrescribir +0x84 (kind).  CreateMonster ya lo setea correcto por
-            // Type: 2=monster, 4=NPC (type>200), 8=ground-item.  Forzarlo a 2 haría
-            // que Target_Render muestre a los NPCs con el banner de monstruo
-            // (RenderCenteredText arriba) en vez del chat flotante de NPC (CreateChat).
-            AsCharacter(slot)->Object.Visible = 1;    // visible flag
-            AsCharacter(slot)->Object.LightEnable = 1;     // is_rendered sub-flag
-            AsCharacter(slot)->JumpTime = 0;
-            AsCharacter(slot)->TargetX = tx;
-            AsCharacter(slot)->TargetY = ty;
-            AsCharacter(slot)->PathNum = 0;
-            AsCharacter(slot)->PositionX = x;
-            AsCharacter(slot)->PositionY = y;
-            AsCharacter(slot)->Object.Live = 1;
-            // Init +0x168 (screen distance) a 1.0f para
-            // que mob sea targetable INMEDIATAMENTE (antes del primer
-            // frame de render). Sin esto, FUN_004afdc0 (hover detect)
-            // filtra mob por `_DAT_00552580 < ent[+0x168]` (= 0
-            // por default) → mob no es hovered hasta que sea
-            // rendered (1+ frame later).
-            AsCharacter(slot)->Object.Alpha = 1.0f;
-            // Init move speed (+0x2FA = +762 word).
-            // CreateMonster solo setea esto para case 11. Resto de
-            // los tipos quedan en 0 → CharacterMoveSpeed retorna 0 →
-            // sin movimiento. O queda en basura → mobs acelerados.
-            // 4 = "slow walk" baseline para mobs/NPCs (vs player ~12).
-            if (AsCharacter(slot)->MoveSpeed == 0) {
-                AsCharacter(slot)->MoveSpeed = 4;
-            }
+            CHARACTER* c = AsCharacter(slot);
+            // IDA ReceiveCreateMonsterViewport (0x0042A230), por entidad:
+            //   InsertBuffPhysicalEffect(ViewSkillState, c);
+            //   c->Object.Angle[2] = ((dir >> 4) - 1) * 45;
+            //   c->PositionX/Y = x, y;   c->TargetX/Y = x, y;
+            //   if (CreateFlag) AppearMonster(c);
+            //   else if (PathFinding2(x, y, tx, ty, c->Path, 0)) c->Movement = 1;
+            // CreateMonster -> CreateCharacterPointer ya deja Key, Live, Alpha 1,
+            // AlphaTarget 1, JumpTime 0 y MoveSpeed 10.
             ApplyPersistentSkillEffect97k(slot, viewSkillState, 1);
+            c->Object.Angle[2] = rot;
+            c->PositionX = x;
+            c->PositionY = y;
+            c->TargetX = x;
+            c->TargetY = y;
+            // Protocolo 6: el % de vida viaja en e[11] (no está en el 0.97k).
+            gHealthBar.Set(entityId, (BYTE)EntityView::MonsterKind, e[11]);
+            if (create) {
+                AppearMonster((intptr_t)slot);
+            } else if (Path_FindRoute(x, y, tx, ty, FieldAddress(slot, &c->PathCurrent), 0.0f)) {
+                c->Movement = 1;
+            }
             int spawnSlot = (int)((slot - basePtr) / CHARACTER_STRIDE);
-            NetLog("NET:    0x13 spawn monster slot=%d id=%d type=%d pos=(%d,%d) rot=%.0f",
-                   spawnSlot, entityId, type, x, y, rot);
+            NetLog("NET:    0x13 spawn monster slot=%d id=%d type=%d pos=(%d,%d) dst=(%d,%d) create=%d rot=%.0f",
+                   spawnSlot, entityId, type, x, y, tx, ty, create ? 1 : 0, rot);
         } else {
             NetLog("NET:    0x13 SKIP - CreateMonster returned NULL (type=%d)",
                    type);

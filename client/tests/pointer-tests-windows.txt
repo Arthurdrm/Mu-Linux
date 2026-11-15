@@ -250,3 +250,5 @@ tests/EffectReplay.py --suite particles --architecture Win32
 tests/EffectReplay.py --suite particles --architecture x64
 tests/EffectReplay.py --suite joints --architecture Win32
 tests/EffectReplay.py --suite joints --architecture x64
+tests/MonsterViewportPointer.py --architecture x64
+tests/MonsterViewportPointer.py --architecture Win32

@@ -209,7 +209,9 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
     AsJoint(pcVar14)->Scale = param_7;
     AsJoint(pcVar14)->MaxTails = 6;
   }
-  if (param_1 < 0x4e9) {
+  // 0x4E1 y 0x48E comparten el cuerpo de BITMAP_FLARE_BLUE y BITMAP_JOINT_LASER + 1
+  // (IDA salta a esos cases desde esta cadena): los atiende el switch de abajo.
+  if (param_1 < 0x4e9 && param_1 != 0x4e1 && param_1 != 0x48e) {
     if (param_1 == 0x4e8) {
       fVar24 = AsJoint(pcVar14)->TargetPosition[2] + _DAT_00552980;
       pcVar14[0xc] = '\0';
@@ -236,8 +238,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
     if (param_1 < 0x4e3) {
       if (param_1 != 0x4e2) {
         if (0x498 < param_1) {
-          if (param_1 != 0x4e1) return CreateJoint_Finish(pcVar14);
-          goto switchD_0046f0e4_caseD_4fd;
+          return CreateJoint_Finish(pcVar14);
         }
         if (param_1 == 0x498) {
           pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = 'd';
@@ -278,8 +279,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           return CreateJoint_Finish(pcVar14);
         }
         if (param_1 != 0x10a) {
-          if (param_1 != 0x48e) return CreateJoint_Finish(pcVar14);
-          goto switchD_0046f0e4_caseD_4ed;
+          return CreateJoint_Finish(pcVar14);
         }
         iVar6 = (intptr_t)AsJoint(pcVar14)->Target;
         *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[0] = *(undefined4 *)(iVar6 + 0x10);
@@ -392,7 +392,8 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           AsJoint(pcVar14)->Scale = param_7;
           return CreateJoint_Finish(pcVar14);
         default:
-          goto switchD_0046db06_default;
+          AsJoint(pcVar14)->Scale = param_7;
+          return CreateJoint_Finish(pcVar14);
         }
         pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '?';
         pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = 'B';
@@ -402,7 +403,6 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
         pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
         pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
         pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-switchD_0046db06_default:
         AsJoint(pcVar14)->Scale = param_7;
         return CreateJoint_Finish(pcVar14);
       }
@@ -511,7 +511,10 @@ switchD_0046db06_default:
           } while (iVar6 < AsJoint(pcVar14)->MaxTails);
         }
       default:
-        goto switchD_0046dd50_default;
+        AsJoint(pcVar14)->TargetPosition[0] = *param_3;
+        AsJoint(pcVar14)->TargetPosition[1] = param_3[1];
+        AsJoint(pcVar14)->TargetPosition[2] = param_3[2];
+        return CreateJoint_Finish(pcVar14);
       }
       fVar24 = param_7 * _DAT_005528f0;
       pcVar14[0x9c8 + JOINT_FIELD_SHIFT] = '\0';
@@ -523,7 +526,6 @@ switchD_0046db06_default:
       pcVar14[0x9ce + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x9cf + JOINT_FIELD_SHIFT] = '\0';
       AsJoint(pcVar14)->Direction[0] = fVar24;
-switchD_0046dd50_default:
       AsJoint(pcVar14)->TargetPosition[0] = *param_3;
       AsJoint(pcVar14)->TargetPosition[1] = param_3[1];
       AsJoint(pcVar14)->TargetPosition[2] = param_3[2];
@@ -870,7 +872,28 @@ switchD_0046dd50_default:
       iVar6 = _rand();
       pbVar10 = (byte *)(iVar6 % 10 + 6);
       local_94 = pbVar10;
-      goto LAB_0046f415;
+      // Misma cola que BITMAP_JOINT_SPARK SubType 0 (antes un goto a ese case).
+      AsJoint(pcVar14)->Velocity = (float)(intptr_t)pbVar10;
+      uVar9 = _rand();
+      uVar9 = uVar9 & 0x80000007;
+      if ((int)uVar9 < 0) {
+        uVar9 = (uVar9 - 1 | 0xfffffff8) + 1;
+      }
+      pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x02';
+      pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+      pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+      pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+      *(uint *)&AsJoint(pcVar14)->LifeTime = uVar9 + 8;
+      *pfVar3 = 1.0;
+      pcVar14[0x38] = '\0';
+      pcVar14[0x39] = '\0';
+      pcVar14[0x3a] = -0x80;
+      pcVar14[0x3b] = '?';
+      pcVar14[0x3c] = '\0';
+      pcVar14[0x3d] = '\0';
+      pcVar14[0x3e] = -0x80;
+      pcVar14[0x3f] = '?';
+      return CreateJoint_Finish(pcVar14);
     case 9:
       iVar6 = _rand();
       pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '\x1e';
@@ -1091,7 +1114,6 @@ LAB_0046e37e:
       iVar6 = _rand();
       pbVar10 = (byte *)(iVar6 % 0x14 + 6);
       local_98 = pbVar10;
-LAB_0046f415:
       AsJoint(pcVar14)->Velocity = (float)(intptr_t)pbVar10;
       uVar9 = _rand();
       uVar9 = uVar9 & 0x80000007;
@@ -1381,8 +1403,8 @@ LAB_0046f415:
     pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
     return CreateJoint_Finish(pcVar14);
+  case 0x48e:
   case BITMAP_JOINT_LASER + 1:
-switchD_0046f0e4_caseD_4ed:
     pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = ' ';
@@ -1463,8 +1485,8 @@ switchD_0046f0e4_caseD_4ed:
     break;
   default:
     return CreateJoint_Finish(pcVar14);
+  case 0x4e1:
   case BITMAP_FLARE_BLUE:
-switchD_0046f0e4_caseD_4fd:
     iVar6 = AsJoint(pcVar14)->SubType;
     pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = 'd';
     pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';

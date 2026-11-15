@@ -9,6 +9,42 @@
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
 
+// Salida común de CreateJoint (IDA 0x46D840: switchD_0046dee7_default): acota
+// MaxTails y completa el anillo de segmentos.
+static void* CreateJoint_Finish(char *pcVar14)
+{
+  if (0x32 < AsJoint(pcVar14)->MaxTails) {
+    pcVar14[0x54 + JOINT_FIELD_SHIFT] = '2';
+    pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+    pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+    pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+  }
+  {
+    // DESVIACION DOCUMENTADA (no esta en IDA 0x46D840).
+    //
+    // El binario inicializa UNICAMENTE la fila 0 del anillo de segmentos
+    // (`v11+22..v11+33` = 0x58..0x87, los 4 vertices) y deja el resto como
+    // estaba.  En el original el pool de joints se recicla sin parar y las filas
+    // altas conservan coordenadas plausibles del joint anterior.  Aca el pool es
+    // un global en BSS: la primera vez que se usa un slot esas filas valen 0 y el
+    // renderer (0x00473710) dibujaria un quad hasta el origen del mapa.
+    //
+    // Se replica la fila 0 en el resto del anillo (quads sobrantes degenerados
+    // sobre la posicion del joint), arrancando DESPUES de las filas que la
+    // creacion ya construyo (0..segCount) para no pisar los segmentos armados por
+    // los bucles de creacion (1254 sub 14 / 1253 sub 4 de las alas del MG, y
+    // cualquier subtipo que llame a sub_46FE90 dentro de CreateJoint).
+    const int __rowBytes = 0x30;
+    const int __maxRows  = MAX_JOINT_TAILS;
+    int __n = AsJoint(pcVar14)->MaxTails;
+    if (__n > __maxRows) __n = __maxRows;
+    const int __built = AsJoint(pcVar14)->NumTails;
+    for (int __r = __built + 1; __r < __n; ++__r)
+        memcpy(AsJoint(pcVar14)->Tails[__r], AsJoint(pcVar14)->Tails[0], __rowBytes);
+  }
+  return (void*)pcVar14;
+}
+
 // IDA: CreateJoint
 void * __cdecl
 Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4 param_5,intptr_t param_6
@@ -209,12 +245,12 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
       AsJoint(pcVar14)->TargetPosition[2] = fVar24;
       *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[0] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[0];
       *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1];
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (param_1 < 0x4e3) {
       if (param_1 != 0x4e2) {
         if (0x498 < param_1) {
-          if (param_1 != 0x4e1) goto switchD_0046dee7_default;
+          if (param_1 != 0x4e1) return CreateJoint_Finish(pcVar14);
           goto switchD_0046f0e4_caseD_4fd;
         }
         if (param_1 == 0x498) {
@@ -253,10 +289,10 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           pcVar14[0x3f] = '?';
           *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1] = *(undefined4 *)&AsJoint(pcVar14)->Position[1];
           *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[2] = *(undefined4 *)&AsJoint(pcVar14)->Position[2];
-          goto switchD_0046dee7_default;
+          return CreateJoint_Finish(pcVar14);
         }
         if (param_1 != 0x10a) {
-          if (param_1 != 0x48e) goto switchD_0046dee7_default;
+          if (param_1 != 0x48e) return CreateJoint_Finish(pcVar14);
           goto switchD_0046f0e4_caseD_4ed;
         }
         iVar6 = (intptr_t)AsJoint(pcVar14)->Target;
@@ -308,7 +344,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
           pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
           AsJoint(pcVar14)->Scale = param_7;
-          goto switchD_0046dee7_default;
+          return CreateJoint_Finish(pcVar14);
         case 3:
           if (iVar6 == 0) {
             *pfVar3 = 0.5;
@@ -368,7 +404,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
           pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
           AsJoint(pcVar14)->Scale = param_7;
-          goto switchD_0046dee7_default;
+          return CreateJoint_Finish(pcVar14);
         default:
           goto switchD_0046db06_default;
         }
@@ -382,7 +418,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
         pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
 switchD_0046db06_default:
         AsJoint(pcVar14)->Scale = param_7;
-        goto switchD_0046dee7_default;
+        return CreateJoint_Finish(pcVar14);
       }
       pcVar14[0x9d0 + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x9d1 + JOINT_FIELD_SHIFT] = '\0';
@@ -505,7 +541,7 @@ switchD_0046dd50_default:
       AsJoint(pcVar14)->TargetPosition[0] = *param_3;
       AsJoint(pcVar14)->TargetPosition[1] = param_3[1];
       AsJoint(pcVar14)->TargetPosition[2] = param_3[2];
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (param_1 == 0x4e5) {
       switch(*(undefined4 *)&AsJoint(pcVar14)->SubType) {
@@ -514,7 +550,24 @@ switchD_0046dd50_default:
         // proyectiles a Weapon (v11[2515] = CharacterMachine[1408]) y lo vuelve
         // a cifrar.  Este port no cifra CharacterMachine: queda la copia.
         *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
-        goto LAB_0046e970;
+        pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x74;
+        pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'B';
+        pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
+        pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
+          // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
+          // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
+          // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
+          // LifeTime = 49; Scale; MaxTails = 6.
+          AsJoint(pcVar14)->Scale = param_7;
+        pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x06';
+        pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+        return CreateJoint_Finish(pcVar14);
       case 1:
         pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
         pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
@@ -645,12 +698,29 @@ switchD_0046dd50_default:
         // proyectiles a Weapon (v11[2515] = CharacterMachine[1408]) y lo vuelve
         // a cifrar.  Este port no cifra CharacterMachine: queda la copia.
         *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
-        goto LAB_0046ee73;
+        pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x10;
+        pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'A';
+        pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
+        pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
+          // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
+          // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
+          // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
+          // LifeTime = 49; Scale; MaxTails = 6.
+          AsJoint(pcVar14)->Scale = param_7;
+        pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\f';
+        pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+        return CreateJoint_Finish(pcVar14);
       }
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (param_1 != 0x4e6) {
-      if (param_1 != 0x4e7) goto switchD_0046dee7_default;
+      if (param_1 != 0x4e7) return CreateJoint_Finish(pcVar14);
       pcVar14[0x54 + JOINT_FIELD_SHIFT] = '2';
       pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
@@ -1022,7 +1092,7 @@ LAB_0046e37e:
       *(undefined4 *)&AsJoint(pcVar14)->Position[1] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1];
       *(undefined4 *)&AsJoint(pcVar14)->Position[2] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[2];
     }
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   }
   switch(param_1) {
   case BITMAP_JOINT_SPARK:
@@ -1079,7 +1149,7 @@ LAB_0046f415:
           pcVar14[0x3e] = -0x80;
           pcVar14[0x3f] = '?';
         }
-        goto switchD_0046dee7_default;
+        return CreateJoint_Finish(pcVar14);
       }
       pcVar14[0xc] = '\0';
       pcVar14[0xd] = '\0';
@@ -1223,7 +1293,7 @@ LAB_0046f415:
       pcVar14[0x3e] = '\0';
       pcVar14[0x3f] = '?';
     }
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   case BITMAP_JOINT_HEALING:
     pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '\f';
     pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
@@ -1253,7 +1323,7 @@ LAB_0046f415:
       pcVar14[0x3d] = '\0';
       pcVar14[0x3e] = '\0';
       pcVar14[0x3f] = '?';
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (iVar6 == 7) {
       pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x04';
@@ -1269,7 +1339,7 @@ LAB_0046f415:
       pcVar14[0x3d] = '\0';
       pcVar14[0x3e] = '\0';
       pcVar14[0x3f] = '\0';
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (iVar6 == 4) {
       pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '\x1e';
@@ -1290,9 +1360,9 @@ LAB_0046f415:
       pcVar14[0x4e + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x4f + JOINT_FIELD_SHIFT] = '\0';
       AsJoint(pcVar14)->TargetPosition[0] = (float)(int)(uVar9 - 0x20);
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
-    if (iVar6 != 5) goto switchD_0046dee7_default;
+    if (iVar6 != 5) return CreateJoint_Finish(pcVar14);
     iVar6 = _rand();
     local_98 = (byte *)(iVar6 % 10 + -5);
     AsJoint(pcVar14)->Scale = (float)(intptr_t)local_98 + AsJoint(pcVar14)->Scale;
@@ -1324,7 +1394,7 @@ LAB_0046f415:
     pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   case BITMAP_JOINT_LASER + 1:
 switchD_0046f0e4_caseD_4ed:
     pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
@@ -1367,7 +1437,7 @@ switchD_0046f0e4_caseD_4ed:
         pcVar14[0x3e] = -0x80;
         pcVar14[0x3f] = '?';
       }
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     break;
   case BITMAP_MOTION_BLUR_R2:
@@ -1406,7 +1476,7 @@ switchD_0046f0e4_caseD_4ed:
     AsJoint(pcVar14)->Position[2] = *(float*)&local_88 + AsJoint(pcVar14)->Position[2];
     break;
   default:
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   case BITMAP_FLARE_BLUE:
 switchD_0046f0e4_caseD_4fd:
     iVar6 = AsJoint(pcVar14)->SubType;
@@ -1810,7 +1880,7 @@ LAB_0046f55a:
     AsJoint(pcVar14)->TargetPosition[0] = *param_3;
     AsJoint(pcVar14)->TargetPosition[1] = param_3[1];
     AsJoint(pcVar14)->TargetPosition[2] = param_3[2];
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   }
   *pfVar3 = 1.0;
   pcVar14[0x38] = '\0';
@@ -1821,75 +1891,7 @@ LAB_0046f55a:
   pcVar14[0x3d] = '\0';
   pcVar14[0x3e] = -0x80;
   pcVar14[0x3f] = '?';
-switchD_0046dee7_default:
-  if (0x32 < AsJoint(pcVar14)->MaxTails) {
-    pcVar14[0x54 + JOINT_FIELD_SHIFT] = '2';
-    pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
-    pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
-    pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-  }
-  {
-    // DESVIACION DOCUMENTADA (no esta en IDA 0x46D840).
-    //
-    // El binario inicializa UNICAMENTE la fila 0 del anillo de segmentos
-    // (`v11+22..v11+33` = 0x58..0x87, los 4 vertices) y deja el resto como
-    // estaba.  En el original el pool de joints se recicla sin parar y las filas
-    // altas conservan coordenadas plausibles del joint anterior.  Aca el pool es
-    // un global en BSS: la primera vez que se usa un slot esas filas valen 0 y el
-    // renderer (0x00473710) dibujaria un quad hasta el origen del mapa.
-    //
-    // Se replica la fila 0 en el resto del anillo (quads sobrantes degenerados
-    // sobre la posicion del joint), arrancando DESPUES de las filas que la
-    // creacion ya construyo (0..segCount) para no pisar los segmentos armados por
-    // los bucles de creacion (1254 sub 14 / 1253 sub 4 de las alas del MG, y
-    // cualquier subtipo que llame a sub_46FE90 dentro de CreateJoint).
-    const int __rowBytes = 0x30;
-    const int __maxRows  = MAX_JOINT_TAILS;
-    int __n = AsJoint(pcVar14)->MaxTails;
-    if (__n > __maxRows) __n = __maxRows;
-    const int __built = AsJoint(pcVar14)->NumTails;
-    for (int __r = __built + 1; __r < __n; ++__r)
-        memcpy(AsJoint(pcVar14)->Tails[__r], AsJoint(pcVar14)->Tails[0], __rowBytes);
-  }
-  return (void*)pcVar14;
-LAB_0046ee73:
-  pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x10;
-  pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'A';
-  pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
-  pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
-    // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
-    // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
-    // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
-    // LifeTime = 49; Scale; MaxTails = 6.
-    AsJoint(pcVar14)->Scale = param_7;
-  pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\f';
-  pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-  goto switchD_0046dee7_default;
-LAB_0046e970:
-  pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x74;
-  pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'B';
-  pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
-  pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
-    // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
-    // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
-    // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
-    // LifeTime = 49; Scale; MaxTails = 6.
-    AsJoint(pcVar14)->Scale = param_7;
-  pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x06';
-  pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-  goto switchD_0046dee7_default;
+  return CreateJoint_Finish(pcVar14);
 }
 
 // Puente de compatibilidad IDA: conserva el nombre ABI CreateJoint y delega en Joint_Create.

@@ -306,6 +306,1136 @@ static char* MoveJoint_Finish(undefined1 *param_1, uint param_2, float *local_30
     return (char *)(intptr_t)remainingLife;
 }
 
+// ── Handlers de MoveJoint (T9g) ───────────────────────────────────────────────
+// Cada tipo del despacho vive en su propia función.  Reciben por referencia
+// las locales de MoveJoint que usan y terminan siempre con MoveJoint_Finish.
+
+// IDA: MoveJoint (0x00470030): LABEL_301, tipos 1249 (0x4E1) y 1277 (0x4FD)
+static char* MoveJoint_Orbit(undefined1 *param_1, uint param_2, float* const local_30)
+{
+// ── IDA LABEL_301 — movimiento compartido por los tipos 1249 (0x4E1) y
+// 1277 (0x4FD). Es un switch sobre el SubType (+0x08).
+//
+// El subtipo 0 (el halo del set +11, spawneado por `Entity_UpdateRender`
+// sección 6) es un **círculo que sube**:
+//     a = (lifetime + phase) * 0.1        (PKKey == -1)
+//     Position.x = cos(a) * 40 + TargetPos.x
+//     Position.y = TargetPos.y - sin(a) * 40
+//     Position.z += riseSpeed
+//
+// TODOS los subtipos estan portados y verificados contra IDA.  El switch de
+// IDA (L1085) solo lleva los cases 0/2/3/10/14 y NO tiene default: el resto se
+// resuelve con ifs encadenados desde L1162, asi que no aparecen como `case`.
+// LABEL_438/439 no es anti-tamper sino la cola comun a la que saltan varios
+// subtipos (MoveJoint no tiene ruido de hash-table).
+{
+    const int  jsub  = AsJoint(param_1)->SubType;
+    float     *jposX = AsJoint(param_1)->Position;   // Position.x  (IDA v2)
+    const float tgtX = AsJoint(param_1)->TargetPosition[0];  // TargetPos.x (IDA v3)
+    const float tgtY = AsJoint(param_1)->TargetPosition[1];  // TargetPos.y (o + 72)
+
+    if (jsub == 0 || jsub == 10) {
+        short pk  = AsJoint(param_1)->PKKey;                 // PKKey
+        double t  = (double)AsJoint(param_1)->LifeTime            // lifetime
+                  + (double)AsJoint(param_1)->Direction[1];         // fase random
+        double a  = (pk == -1) ? (t * 0.1) : (t / (double)pk);
+        *jposX                     = (float)(fcos(a) * 40.0 + (double)tgtX);
+        AsJoint(param_1)->Position[1] = (float)((double)tgtY - fsin(a) * 40.0);
+        float rise = AsJoint(param_1)->Direction[2];
+        AsJoint(param_1)->Position[2] = (jsub != 0)
+            ? (AsJoint(param_1)->Position[2] - rise)
+            : (rise + AsJoint(param_1)->Position[2]);
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (jsub == 14) {
+        // 00470030 LABEL_301/case 14.
+        intptr_t owner = (intptr_t)AsJoint(param_1)->Target;
+        if (owner != 0) {
+            *(DWORD *)&AsJoint(param_1)->StartPosition[0] = *(DWORD*)&AsObject(owner)->PosSword[0];
+            *(DWORD *)&AsJoint(param_1)->StartPosition[1] = *(DWORD*)&AsObject(owner)->PosSword[1];
+        }
+        const int life = AsJoint(param_1)->LifeTime;
+        const short pk = AsJoint(param_1)->PKKey;
+        const double t = (double)life + (double)AsJoint(param_1)->Direction[1];
+        const double a = (pk == -1) ? t * 0.1 : t / (double)pk;
+        const float approach = (float)(100 - life) * 0.011111111f;
+        *jposX = (float)(fcos(a) * 15.0) +
+                  approach * tgtX + AsJoint(param_1)->StartPosition[0];
+        AsJoint(param_1)->Position[1] = AsJoint(param_1)->StartPosition[1] -
+                                      (float)(fsin(a) * 15.0) + approach * tgtY;
+        AsJoint(param_1)->Position[2] += AsJoint(param_1)->Direction[2];
+        if (AsJoint(param_1)->Position[2] >= 500.0f) {
+            AsJoint(param_1)->SubType = 1;
+            AsJoint(param_1)->LifeTime = (life > 10) ? 10 : life;
+        }
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (jsub == 2 || jsub == 13) {
+        if (AsJoint(param_1)->LifeTime > 25) return MoveJoint_Finish(param_1, param_2, local_30, true);
+        float step = AsJoint(param_1)->Direction[2] + (jsub == 2 ? 5.0f : 1.0f);
+        *jposX                     = tgtX;
+        AsJoint(param_1)->Position[1] = tgtY;
+        AsJoint(param_1)->Direction[2] = step;
+        AsJoint(param_1)->Position[2] = step + AsJoint(param_1)->Position[2];
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (jsub == 5) {
+        float step = AsJoint(param_1)->Direction[2] - 60.0f;
+        *jposX                      = tgtX;
+        AsJoint(param_1)->Position[1]  = tgtY;
+        AsJoint(param_1)->Direction[2] = step;
+        AsJoint(param_1)->Position[2]  = step + AsJoint(param_1)->Position[2];
+        AsJoint(param_1)->Scale  = (float)(_rand() % 4) + 6.0f;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (jsub == 4 || jsub == 6 || jsub == 12) {
+        // 00470030 LABEL_301 subtipos 4, 6 y 12: los tres convergen en
+        // LABEL_438/439 y solo cambian como calculan lateral/vertical.
+        //
+        // El 4 llega aca por el `if (v168 != 4)` de L1162, que SALTEA todo el bloque
+        // de los demas subtipos, asi que cae junto al 12 en L1681
+        // (`v16 = v168 == 12`).  Su rama es la del else de L1702.
+        const int life = AsJoint(param_1)->LifeTime;
+        const float phase = AsJoint(param_1)->Direction[0];
+        float lateral;
+        float vertical;
+        if (jsub == 4) {
+            // IDA L1702-1717: radio = clamp(life + 40, min 10) * 0.65
+            int c = life + 40;
+            if (c <= 10) c = 10;
+            const double r = (double)c * 0.64999998;
+            const double a = ((double)life + (double)phase) * 0.1;
+            lateral  = (float)(-fcos(a) * r);
+            vertical = (float)( fsin(a) * r);
+        } else if (jsub == 6) {
+            const float radius = (float)((life <= 1) ? 1 : life);
+            const double a = (double)life * 0.5 + (double)phase;
+            lateral = (float)(-fcos(a) * ((double)radius + (double)radius));
+            vertical = (float)(fsin(a) * ((double)radius + (double)radius));
+        } else {
+            const double a = ((double)life + (double)phase) * 0.1;
+            lateral = (float)(fcos(a) * -26.0);
+            vertical = (float)(fsin(a) * 26.0 - (double)(90 - life) * 0.3);
+        }
+        AsJoint(param_1)->TargetPosition[0] += AsJoint(param_1)->Direction[1];
+        AsJoint(param_1)->TargetPosition[1] += AsJoint(param_1)->Direction[2];
+        const float heading = (90.0f - AsJoint(param_1)->Angle[2]) * 0.017453292f;
+        *jposX = fsin(heading) * lateral + AsJoint(param_1)->TargetPosition[0];
+        AsJoint(param_1)->Position[1] = fcos(heading) * lateral + AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] = vertical + AsJoint(param_1)->TargetPosition[2];
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    // Los subtipos 8 y 9 usan una matriz APARTE (`v304`, declarada en L307), no
+    // `local_30`, que es el `in2` de IDA: la matriz que arma el prologo con
+    // `AngleMatrix((float *)(o + 40), in2)` (L319) y que el epilogo LABEL_487
+    // (L2228) le pasa a `sub_46FE90` para construir las 4 esquinas del segmento
+    // nuevo.
+    float jointMatrix_v304[12];               // IDA: v304[3][4]
+    if (jsub == 8) {
+        // 00470030 LABEL_301/case 8: rotate the fixed vertical offset
+        // by TargetPosition, anchor it at StartPosition, then advance TargetPosition[2].
+        float offset[3] = { 0.0f, -50.0f, 0.0f };   // IDA: in1
+        float rotated[3];                           // IDA: Position
+        Matrix_BuildFromEuler(AsJoint(param_1)->TargetPosition, jointMatrix_v304);
+        Vector_Rotate(offset, jointMatrix_v304, rotated);
+        *jposX                     = rotated[0] + AsJoint(param_1)->StartPosition[0];
+        AsJoint(param_1)->Position[1] = rotated[1] + AsJoint(param_1)->StartPosition[1];
+        AsJoint(param_1)->Position[2] = rotated[2] + AsJoint(param_1)->StartPosition[2];
+        Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_v304);
+        AsJoint(param_1)->TargetPosition[2] += 10.0f;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (jsub == 9) {
+        // 00470030 LABEL_301/case 9.
+        Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_v304);
+        const int segments = AsJoint(param_1)->MaxTails;   // IDA: *(int *)(o + 84)
+        for (int i = 0; i < segments; ++i) {             // IDA: v180 / iIndex
+            *jposX                     += AsJoint(param_1)->StartPosition[0];
+            AsJoint(param_1)->Position[1] += AsJoint(param_1)->StartPosition[1];
+            AsJoint(param_1)->Position[2] += AsJoint(param_1)->StartPosition[2];
+            Joint_SegmentTick((intptr_t)param_1, jointMatrix_v304);
+        }
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (jsub == 3) {
+        return MoveJoint_Finish(param_1, param_2, local_30, true);   // IDA: case 3 → LABEL_447 (sin movimiento)
+    }
+
+    // Subtipos 7 y 11 (IDA 0x00470030 L1302-1682).
+    //
+    // Estos dos NO caen en la helice generica de mas abajo: en LABEL_301
+    // `if (v168 != 7)` cierra en L1301 y la ejecucion sigue en L1302, dentro del
+    // bloque de `if (v168 != 12)`, que llega hasta L1683 y termina en
+    // `goto LABEL_447`.  Solo los subtipos 4 y 12 alcanzan la helice.
+    //
+    // Es un PROYECTIL que converge sobre el owner:
+    //   - la posicion sale de una espiral alrededor de TargetPosition, con
+    //     radio que crece de 0 a 150 a medida que baja la vida;
+    //   - un bucle de tres pasos (x, y, z) interpola esa posicion hacia el
+    //     owner con peso `w`, que decrece con la vida -> se va pegando al
+    //     objetivo;
+    //   - y emite tres CreateSprite por tick (1231 + dos 1150), que es lo
+    //     unico visible del efecto.
+    //
+    // Es el disparo del ataque de Alquamos: AttackEffect case 0x45 crea ocho
+    // 1249/sub7 con el heroe como owner.
+    if (jsub == 7 || jsub == 11) {
+        const int iIndex = (int)param_2;                 // indice de slot
+        const int msf    = (int)MoveSceneFrame;            // MoveSceneFrame
+        const int v203   = (iIndex % 2) ? msf : -msf;
+        float a1 = 0.061299998f, a2 = 0.1113f, v204 = 0.048f;
+        if (jsub == 11) { v204 = 0.071999997f; a1 = 0.091949999f; a2 = 0.16695f; }
+        const int    v205 = iIndex + v203 + 53730 * iIndex;
+        const double v207 = (double)v204 * (double)(v205 + 55555);
+        const int    life = AsJoint(param_1)->LifeTime;
+        const double v209 = fsin(v207);
+        const double v210 = (double)v205 * (double)a1;
+        const float  out0 = (float)(fcos(v210) * v209);
+        const float  out1 = (float)(fsin(v210) * v209);
+        const double v211 = fcos(v207);
+        const double v212 = (double)(v205 + 11111) * (double)a2;
+        const double s212 = fsin(v212), c212 = fcos(v212);
+        const float  A1 = (float)(c212 * v211 + s212 * (double)out1);
+        const float  A0 = (float)(c212 * (double)out1 - s212 * v211);
+
+        const double v295 = (double)life * 1.3333334;
+        // IDA elige aca entre dos formulas segun un flag que Hex-Rays
+        // perdio (v216/v219 quedan sin definir: son el resultado de una
+        // comparacion x87 que el decompilador no reconstruyo):
+        //     sub 11:  v217 = v215 * 4.0   ...o...  v215 + 60.0
+        //     resto:   v217 = v215 * 7.0   ...o...  v215 + 60.0
+        // El umbral se deduce de que las dos ramas tienen que empalmar sin
+        // salto: `v215*7 == v215+60` en v215 == 10, y `v215*4 == v215+60`
+        // en v215 == 20.  O sea es una funcion continua a trozos y la
+        // condicion perdida es `v215 < 10` (resp. `< 20`).
+        //
+        // Importa para el gameplay: `v217` define el peso `w` con el que la
+        // posicion se interpola hacia el owner, y con solo la rama `+60` el
+        // peso nunca baja de ~47, asi que el proyectil se quedaba en ~97%
+        // del camino y reventaba justo antes de tocar al jugador.  Con la
+        // rama corta, en los ultimos ~7 ticks el peso cae a ~9 y el disparo
+        // termina de cerrar sobre el objetivo.
+        const double v217 = (jsub == 11)
+                          ? ((v295 < 20.0) ? (v295 * 4.0) : (v295 + 60.0))
+                          : ((v295 < 10.0) ? (v295 * 7.0) : (v295 + 60.0));
+        const int    v294 = AsJoint(param_1)->MultiUse + 30;
+        const float  w    = (float)(v217 / (double)v294 * 30.0);
+        if (life == 30) PlayBuffer(46, 0, 0);
+
+        float v222;
+        if (jsub == 11) {
+            double v220 = v295 - 10.0;
+            const double v221 = (v220 >= 0.0) ? v220 : 0.0;
+            if (v221 * 5.0 < 150.0) { if (v220 < 0.0) v220 = 0.0; v222 = (float)(v220 * 5.0); }
+            else                    { v222 = 150.0f; }
+        } else {
+            double v223 = 40.0 - v295;
+            const double v224 = (v223 >= 0.0) ? v223 : 0.0;
+            if (v224 * 15.0 < 150.0) { if (v223 < 0.0) v223 = 0.0; v222 = (float)(v223 * 15.0); }
+            else                     { v222 = 150.0f; }
+        }
+        AsJoint(param_1)->Position[0] = v222 * A0   + AsJoint(param_1)->TargetPosition[0];
+        AsJoint(param_1)->Position[1] = v222 * A1   + AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] = v222 * out0 + AsJoint(param_1)->TargetPosition[2];
+
+        const intptr_t jowner = (intptr_t)AsJoint(param_1)->Target;
+        if (jowner) {
+            int v226 = 0;
+            // El subtipo 11 NO converge hacia `owner + 16/20/24` sino hacia
+            // `owner + 368/372/376`.  IDA lo escribe ofuscado --
+            // `LODWORD(v295) = 352 - o;` y luego
+            // `*(float *)(LODWORD(v295) + *(_DWORD *)(o + 64) + v228)` --
+            // pero 352 + {16,20,24} = {368,372,376}, que es la posicion
+            // DERIVADA del efecto de la flecha: la que fija CreateEffect
+            // case 243 (`i+92..94`) 100 unidades por delante y la que usa su
+            // propio AddTerrainLight.
+            //
+            // Con `owner + 16` la cosa se realimenta: el joint con SkillIndex==1
+            // escribe su posicion EN `owner + 16`, asi que convergeria hacia si mismo.
+            // SubType 11 sigue a StartPosition (0x170 = 352 + 16) y el resto a Position.
+            const float* src = (jsub == 11) ? AsObject(jowner)->StartPosition : AsObject(jowner)->Position;
+            for (int v228 = 16; v228 < 28; v228 += 4) {
+                const int    k    = iIndex + v226 + 51230 * iIndex + msf / 10;
+                const double v229 = fcos((double)k * 0.0099999998) * 25.0
+                                  + (double)src[(v228 - 16) / 4];
+                float *dst = (float *)(param_1 + v228);
+                *dst = (float)(((double)w * (double)*dst
+                                + v229 * (100.0 - (double)w)) * 0.0099999998);
+                v226 += 3711;
+            }
+        }
+        if (jsub != 11) AsJoint(param_1)->Position[2] += 100.0f;
+
+        float jangles[3] = { 0.5f, 0.5f, 1.0f };
+        if (jsub == 11) {
+            jangles[0] = 0.30000001f; jangles[1] = 0.30000001f; jangles[2] = 0.5f;
+            if (AsJoint(param_1)->Skill == 1 && jowner) {
+                *(int *)(jowner + 16) = *(int *)&AsJoint(param_1)->Position[0];
+                *(int *)(jowner + 20) = *(int *)&AsJoint(param_1)->Position[1];
+                *(int *)(jowner + 24) = *(int *)&AsJoint(param_1)->Position[2];
+                Effect_CollisionCheck(jowner);
+            }
+        }
+        {
+            float *ppos = AsJoint(param_1)->Position;
+            CreateSprite(BITMAP_SHINY + 1, ppos, (float)(_rand() % 2 + 8) * 0.1f,
+                         jangles, jowner, (float)(_rand() % 360), 0);
+            CreateSprite(BITMAP_LIGHT, ppos, (float)(_rand() % 2 + 8) * 0.18000001f,
+                         jangles, jowner, (float)(_rand() % 360), 0);
+            CreateSprite(BITMAP_LIGHT, ppos, (float)(_rand() % 2 + 8) * 0.18000001f,
+                         jangles, jowner, (float)(_rand() % 360), 0);
+            if (jsub != 11 && AsJoint(param_1)->LifeTime == 1) {
+                float jzero[3]  = { 0.0f, 0.0f, 0.0f };
+                float jwhite[3] = { 1.0f, 1.0f, 1.0f };
+                Particle_Spawn(BITMAP_EXPLOTION, ppos, jzero, jwhite, 1, 0.60000002f, 0);
+            }
+        }
+        return MoveJoint_Finish(param_1, param_2, local_30, false);   // IDA: LABEL_447 -> LABEL_487, saltea LABEL_182
+    }
+}
+
+// Cola real de LABEL_301 (IDA L1706-1724 -> LABEL_438 -> LABEL_439) para los
+// subtipos que no tienen bloque propio arriba (4/6/12 y 7/11 salen antes).
+// No llamar `Joint_SegmentTick` aca: el epilogo LABEL_487 ya lo llama.
+//
+// Es la MISMA helice que 4, 6 y 12, con otra formula de radio:
+//     v237 = *(_DWORD *)(o + 2488);                       // life
+//     v238 = ((double)v237 + *(float *)(o + 2500)) * 0.1;  // angulo
+//     v240 = v237 + 40;  v296 = (v240 <= 10) ? 10 : v240;  // radio
+//     v234 = -(cos(v238) * (v296 * 0.64999998));
+//     v236 =   v296 * 0.64999998;  v235 = sin(v238);
+//   LABEL_438: v239 = v235 * v236;
+//   LABEL_439: <ancla + heading + escritura de Pos>
+{
+    const int life = AsJoint(param_1)->LifeTime;              // IDA: v237
+    const float phase = AsJoint(param_1)->Direction[0];         // IDA: o + 2500
+    const double a = ((double)life + (double)phase) * 0.1;   // IDA: v238
+    int radius = life + 40;                                  // IDA: v240
+    if (radius <= 10) radius = 10;                           // IDA: v296 = 10
+    const double r65 = (double)radius * 0.64999998;
+    const float lateral  = (float)(-(fcos(a) * r65));        // IDA: v234
+    const float vertical = (float)(fsin(a) * r65);           // IDA: v239 = v235 * v236
+
+    // IDA LABEL_439 (compartido con los subtipos 6 y 12).
+    AsJoint(param_1)->TargetPosition[0] += AsJoint(param_1)->Direction[1];
+    AsJoint(param_1)->TargetPosition[1] += AsJoint(param_1)->Direction[2];
+    const float heading = (90.0f - AsJoint(param_1)->Angle[2]) * 0.017453292f;
+    AsJoint(param_1)->Position[0] = fsin(heading) * lateral + AsJoint(param_1)->TargetPosition[0];
+    AsJoint(param_1)->Position[1] = fcos(heading) * lateral + AsJoint(param_1)->TargetPosition[1];
+    AsJoint(param_1)->Position[2] = vertical + AsJoint(param_1)->TargetPosition[2];
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4e8
+static char* MoveJoint_Type4e8(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar14, float*& pfVar15)
+{
+    // IDA case 1256 (BITMAP_JOINT_FIRE en el source de MU 5.2,
+    // ZzzEffectJoint.cpp:4243):
+    //     Distance = MoveHumming(Position, Angle, TargetPosition, 0.f);
+    //     ... if (Distance <= o->Velocity) { o->Live = false; ... }
+    // IDA lo muestra como `sub_43E4A0(...); v295 = v4;` — `v4` es el retorno
+    // FPU que Hex-Rays no tipa; se usa el valor de retorno de MoveHumming.
+    const float dist_4e8 =
+        MoveHumming(pfVar15, AsJoint(param_1)->Angle, pfVar14, 0.0f);
+    float matrix_4e8[12];
+    Matrix_BuildFromEuler(AsJoint(param_1)->Angle, matrix_4e8);
+    Joint_SegmentTick((intptr_t)param_1, matrix_4e8);
+    if (dist_4e8 > AsJoint(param_1)->Velocity) {
+        const float brightness = (float)(rand() % 4 + 4) * 0.1f;
+        float light_4e8[3] = { brightness, brightness * 0.6f, brightness * 0.2f };
+        AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light_4e8, 4, (float*)&DAT_081cb608[0]);
+        float step_4e8[3] = { 0.0f, -AsJoint(param_1)->Velocity, 0.0f };
+        float rotated_4e8[3];
+        Vector_Rotate(step_4e8, matrix_4e8, rotated_4e8);
+        *pfVar15 += rotated_4e8[0];
+        AsJoint(param_1)->Position[1] += rotated_4e8[1];
+        AsJoint(param_1)->Position[2] += rotated_4e8[2];
+    } else {
+        *param_1 = 0;
+        Particle_Spawn(BITMAP_EXPLOTION, pfVar15, AsJoint(param_1)->Angle,
+                     AsJoint(param_1)->Light, 0, 1.0f, 0);
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4e2
+static char* MoveJoint_Type4e2(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar15)
+{
+    // IDA case 1250: three interpolated anchor steps, each offset by the
+    // rotating vector stored at +0x9c4.  Keep the joint rotation matrix
+    // separate from the entity angle matrix, as in the original.
+    char *owner_4e2 = ((char *)AsJoint(param_1)->Target);
+    if (*owner_4e2 == '\0') {
+        AsJoint(param_1)->LifeTime = -1;
+        *pfVar15 = AsJoint(param_1)->TargetPosition[0];
+        AsJoint(param_1)->Position[1] = AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] = AsJoint(param_1)->TargetPosition[2] + 50.0f;
+    } else {
+        float delta_4e2[3] = {
+            *(float *)(owner_4e2 + 0x10) - AsObject(owner_4e2)->StartPosition[0],
+            *(float *)(owner_4e2 + 0x14) - AsObject(owner_4e2)->StartPosition[1],
+            *(float *)(owner_4e2 + 0x18) - AsObject(owner_4e2)->StartPosition[2]
+        };
+        AsJoint(param_1)->TargetPosition[0] = AsObject(owner_4e2)->StartPosition[0];
+        AsJoint(param_1)->TargetPosition[1] = AsObject(owner_4e2)->StartPosition[1];
+        AsJoint(param_1)->TargetPosition[2] = AsObject(owner_4e2)->StartPosition[2];
+        float entityAngle_4e2[3] = { *(float *)(owner_4e2 + 0x28), *(float *)(owner_4e2 + 0x2c), *(float *)(owner_4e2 + 0x30) };
+        float jointMatrix_4e2[12];
+        Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_4e2);
+        delta_4e2[0] *= 1.0f / 3.0f;
+        delta_4e2[1] *= 1.0f / 3.0f;
+        delta_4e2[2] *= 1.0f / 3.0f;
+        entityAngle_4e2[1] += AsJoint(param_1)->Velocity - 90.0f;
+        for (int segment_4e2 = 0; segment_4e2 < 3; ++segment_4e2) {
+            entityAngle_4e2[1] += 30.0f;
+            AsJoint(param_1)->TargetPosition[0] += delta_4e2[0];
+            AsJoint(param_1)->TargetPosition[1] += delta_4e2[1];
+            AsJoint(param_1)->TargetPosition[2] += delta_4e2[2];
+            float entityMatrix_4e2[12], rotated_4e2[3];
+            Matrix_BuildFromEuler(entityAngle_4e2, entityMatrix_4e2);
+            Vector_Rotate(AsJoint(param_1)->Direction, entityMatrix_4e2, rotated_4e2);
+            *pfVar15 = rotated_4e2[0] + AsJoint(param_1)->TargetPosition[0];
+            AsJoint(param_1)->Position[1] = rotated_4e2[1] + AsJoint(param_1)->TargetPosition[1];
+            AsJoint(param_1)->Position[2] = rotated_4e2[2] + AsJoint(param_1)->TargetPosition[2];
+            if (AsJoint(param_1)->NumTails < AsJoint(param_1)->MaxTails - 1 || AsJoint(param_1)->Skill != 0)
+                Joint_SegmentTick((intptr_t)param_1, jointMatrix_4e2);
+        }
+        if (AsJoint(param_1)->LifeTime < 15) {
+            AsJoint(param_1)->Light[0] *= 2.0f / 3.0f;
+            AsJoint(param_1)->Light[1] *= 2.0f / 3.0f;
+            AsJoint(param_1)->Light[2] *= 2.0f / 3.0f;
+        }
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x498
+static char* MoveJoint_Type498(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar14, float*& pfVar15)
+{
+    if (AsJoint(param_1)->SubType == 0) {
+        float fVar28 = AsJoint(param_1)->Direction[2] + _DAT_00552660;
+        *pfVar15                         = *pfVar14;
+        *(undefined4 *)&AsJoint(param_1)->Position[1]  = *(undefined4 *)&AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Direction[2]      = fVar28;
+        AsJoint(param_1)->Position[2]       = fVar28 + AsJoint(param_1)->Position[2];
+    }
+    if (4 < AsJoint(param_1)->LifeTime) return MoveJoint_Finish(param_1, param_2, local_30, true);
+    AsJoint(param_1)->Light[0] *= _DAT_00552a90;
+    AsJoint(param_1)->Light[1] *= _DAT_00552a90;
+    {
+        float fVar28 = AsJoint(param_1)->Light[2] * _DAT_00552a90;
+        goto LAB_00473578_498;
+LAB_00473578_498:
+        AsJoint(param_1)->Light[2] = fVar28;
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x10a
+static char* MoveJoint_Type10a(undefined1 *param_1, uint param_2, bool& bVar21, double& fVar22, double& fVar23, double& fVar24, int& iVar13, intptr_t& iVar16, float* const local_30, float* const local_a8, float* const local_d8, float*& pfVar14, float*& pfVar15, uint& uVar7)
+{
+    iVar16 = AsJoint(param_1)->SubType;
+
+    if (iVar16 == 2) {
+        // Mode 2: interpolate towards bone target position
+        if ((((char *)AsJoint(param_1)->Target) == (char *)0x0) ||
+            (*((char *)AsJoint(param_1)->Target) == '\0'))
+        {
+            *(intptr_t*)&AsJoint(param_1)->Target = 0;
+        }
+        else {
+            AsJoint(param_1)->Scale =
+                (float)AsJoint(param_1)->LifeTime * _DAT_00552540;
+            // IDA L898-913: rampa de 1 a 0 en los últimos 10 ticks de vida;
+            // el joint viaja del punto de partida al de reunión.
+            float t_raw = (float)(AsJoint(param_1)->LifeTime + -10) * _DAT_00552a00;
+            float t;
+            if (t_raw >= _DAT_0055256c)      t = _DAT_0055256c;   // 1.0
+            else if (t_raw >= _DAT_00552580) t = t_raw;           // 0.0 <= t < 1.0
+            else                             t = 0.0f;
+            float inv_t = _DAT_0055256c - t;
+            Ring_ComputeOrbit(param_2 * 0x4539, local_d8, 1.4f);
+            iVar16 = (intptr_t)AsJoint(param_1)->Target;
+            local_d8[0] = local_d8[0] * _DAT_00552900 + *pfVar14;
+            local_d8[1] = local_d8[1] * _DAT_00552900 + AsJoint(param_1)->TargetPosition[1];
+            local_d8[2] = local_d8[2] * _DAT_00552900 + AsJoint(param_1)->TargetPosition[2];
+            local_a8[0] = AsObject(iVar16)->PosSword[0];
+            local_a8[1] = AsObject(iVar16)->PosSword[1];
+            local_a8[2] = AsObject(iVar16)->PosSword[2];
+            // Blend: out[i] = t * rand_pos[i] + inv_t * bone_pos[i]
+            pfVar15[0] = t * local_d8[0] + inv_t * local_a8[0];
+            pfVar15[1] = t * local_d8[1] + inv_t * local_a8[1];
+            pfVar15[2] = t * local_d8[2] + inv_t * local_a8[2];
+        }
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+
+    if (iVar16 == 3) {
+        // Mode 3: sinusoidal oscillation, kill if linked entity dead
+        if (*((char *)AsJoint(param_1)->Target) == '\0') {
+            goto LAB_0047036e;
+        }
+        int rand_roll = _rand();
+        int new_lifetime;
+        if (rand_roll % 5 == 0) {
+            new_lifetime = AsJoint(param_1)->LifeTime + -5;
+LAB_004702ce:
+            AsJoint(param_1)->LifeTime = new_lifetime;
+        }
+        else {
+            uVar7 = _rand();
+            uVar7 = uVar7 & 0x80000001;
+            bVar21 = (uVar7 == 0);
+            if ((int)uVar7 < 0) {
+                bVar21 = ((uVar7 - 1 | 0xfffffffe) == 0xffffffff);
+            }
+            if (bVar21) {
+                new_lifetime = AsJoint(param_1)->LifeTime + 1;
+                goto LAB_004702ce;
+            }
+        }
+        iVar16 = (intptr_t)AsJoint(param_1)->Target;
+        fVar22 = fsin(((double)AsJoint(param_1)->LifeTime -
+                       (double)AsJoint(param_1)->Direction[1]) * (double)_DAT_00552874);
+        fVar24 = (double)_DAT_00552540;
+        AsJoint(param_1)->Direction[0] = (float)(fVar22 * fVar24);
+        *pfVar15 = (float)(fVar22 * fVar24 + (double)*pfVar15);
+        if (iVar16 == 0) return MoveJoint_Finish(param_1, param_2, local_30, true);
+        {
+            int hp_val = AsObject(iVar16)->LifeTime;
+            float fVar28;
+            if (hp_val < 0x33) {
+                fVar28 = (float)hp_val * _DAT_00552a00;
+            }
+            else {
+                fVar28 = (float)(100 - hp_val) * _DAT_00552aa4;
+            }
+            if (_DAT_0055256c < fVar28) {
+                fVar28 = _DAT_0055256c;
+            }
+            AsJoint(param_1)->Scale = fVar28;
+        }
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+
+    // Modes 0, 1, 4: orbit / spiral with trig
+    if (*((char *)AsJoint(param_1)->Target) == '\0') {
+LAB_0047036e:
+        *(undefined4 *)&AsJoint(param_1)->LifeTime = 0;
+        *param_1 = 0;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (iVar16 == 4) {
+        if (((*(unsigned char *)((intptr_t)AsJoint(param_1)->Target + 0x78)) & 8) != 8)
+            goto LAB_0047036e;
+        *(undefined4 *)&AsJoint(param_1)->LifeTime = 100;
+    }
+
+    // Re-anclaje de la historia de segmentos por el delta del ancla: la
+    // estela acompana al owner cuando se mueve.  ESTA en el binario (el
+    // decompile lo pliega dentro de un `if`): resta en 0x004703A6 y suma en
+    // 0x0047040C, verificado con el disassembly.  Sin estos bucles el aura
+    // se deshace en tiras sueltas al caminar.
+    if ((iVar16 == 0) || (iVar16 == 4)) {
+        // Subtract anchor from segment positions (un-translate)
+        // Cubre segCount+1 filas, acotado a segMax: el renderer (0x00473710) dibuja
+        // segCount quads leyendo las filas segIdx y segIdx+1, o sea llega hasta la
+        // fila **segCount**, y `sub_46FE90` tambien escribe esa fila.
+        int seg_rows = AsJoint(param_1)->NumTails + 1;
+        {
+            const int seg_max = AsJoint(param_1)->MaxTails;
+            if (seg_rows > seg_max) seg_rows = seg_max;
+        }
+        if (seg_rows > 0) {
+            float *pfVar26 = &AsJoint(param_1)->Tails[seg_rows - 1][0][1];
+            do {
+                iVar13 = 4;
+                float *pf = pfVar26;
+                do {
+                    iVar13--;
+                    pf[-1] -= *pfVar14;
+                    *pf    -= AsJoint(param_1)->TargetPosition[1];
+                    pf[1]  -= AsJoint(param_1)->TargetPosition[2];
+                    pf += 3;
+                } while (iVar13 != 0);
+                pfVar26  += -0xc;
+                seg_rows--;
+            } while (seg_rows != 0);
+        }
+    }
+
+    // Update anchor from linked entity current position
+    iVar16   = (intptr_t)AsJoint(param_1)->Target;
+    *pfVar14 = AsObject(iVar16)->Position[0];
+    *(undefined4 *)&AsJoint(param_1)->TargetPosition[1] = *(undefined4*)&AsObject(iVar16)->Position[1];
+    AsJoint(param_1)->TargetPosition[2]      = AsObject(iVar16)->Position[2] + _DAT_00552488;
+
+    iVar16 = AsJoint(param_1)->SubType;
+
+    if ((iVar16 == 0) || (iVar16 == 4)) {
+        // Add anchor back to segment positions (re-translate)
+        // Cubre segCount+1 filas, acotado a segMax: el renderer (0x00473710) dibuja
+        // segCount quads leyendo las filas segIdx y segIdx+1, o sea llega hasta la
+        // fila **segCount**, y `sub_46FE90` tambien escribe esa fila.
+        int seg_rows = AsJoint(param_1)->NumTails + 1;
+        {
+            const int seg_max = AsJoint(param_1)->MaxTails;
+            if (seg_rows > seg_max) seg_rows = seg_max;
+        }
+        if (seg_rows > 0) {
+            float *pfVar26 = &AsJoint(param_1)->Tails[seg_rows - 1][0][1];
+            do {
+                iVar13 = 4;
+                float *pf = pfVar26;
+                do {
+                    iVar13--;
+                    pf[-1] += *pfVar14;
+                    *pf    += AsJoint(param_1)->TargetPosition[1];
+                    pf[1]  += AsJoint(param_1)->TargetPosition[2];
+                    pf += 3;
+                } while (iVar13 != 0);
+                pfVar26  += -0xc;
+                seg_rows--;
+            } while (seg_rows != 0);
+        }
+    }
+
+    /* HashTable obfuscation block skipped */
+    // (ref-count insert/remove on MAIN_HASH_CLASS/bcc/bd0/bd4 — not game logic)
+
+    // Harmonic oscillation seed for wispy movement
+    uVar7  = param_2 & 0x80000001;
+    bVar21 = (uVar7 == 0);
+    if ((int)uVar7 < 0) {
+        bVar21 = ((uVar7 - 1 | 0xfffffffe) == 0xffffffff);
+    }
+    // Semilla = MoveSceneFrame, el contador de frames (no el delta X
+    // Position.x - Target.x, que realimentaria la orbita).  IDA (0x470030 L1035-1039):
+    //     v49 = LODWORD(v297);                      // v297 = MoveSceneFrame
+    //     if ( !(iIndex % 2) ) v49 = -LODWORD(v297);
+    //     v52 = iIndex + v49 + 53730 * iIndex;
+    // Hex-Rays reusa el slot `v297` varias veces en esta funcion.
+    //
+    // `LODWORD` sobre un float toma sus BITS: MoveSceneFrame es un contador
+    // entero (MoveSceneFrame, DWORD) que Hex-Rays tipeo float, asi que el valor
+    // correcto es el entero directo — no `float_as_int` de un float negado,
+    // que solo invierte el bit de signo y da otra cosa.
+    //
+    // Ojo el sentido: IDA niega cuando el indice es PAR (`if (!(iIndex % 2))`).
+    const int frameSeed = (int)MoveSceneFrame;          // MoveSceneFrame
+    const int dc_signed = bVar21 ? -frameSeed : frameSeed;
+    iVar13 = dc_signed + (int)(param_2 * 0xd1e3);
+    local_a8[2] = 0.1113f;
+    iVar16 = AsJoint(param_1)->SubType;
+    float fFreq  = _DAT_00552a9c;
+    float fScale = _DAT_00552aa0;
+    if (iVar16 == 1) {
+        local_a8[2] = 0.05565f;
+        fFreq  = _DAT_00552a94;
+        fScale = _DAT_00552a98;
+    }
+    int seed1 = iVar13 + 0x2b67;
+    float ang0 = (float)iVar13 * fFreq;
+    fVar24 = (double)fScale * (double)(iVar13 + 0xd903);
+    fVar22 = fsin(fVar24);
+    fVar23 = fcos((double)ang0);
+    local_a8[3] = (float)(fVar23 * fVar22);
+    fVar23 = fsin((double)ang0);
+    local_a8[4] = (float)(fVar23 * fVar22);
+    fVar24 = fcos(fVar24);
+    fVar22 = fsin((double)seed1 * (double)local_a8[2]);
+    float sin_s1 = (float)fVar22;
+    fVar22 = fcos((double)seed1 * (double)local_a8[2]);
+    local_a8[1] = (float)(sin_s1 * (double)local_a8[4] + fVar22 * fVar24);
+    fVar24 = fVar22 * (double)local_a8[4] - (double)sin_s1 * fVar24;
+
+    if (iVar16 == 0 || iVar16 == 4) {
+        AsJoint(param_1)->Position[0] =
+            (float)(fVar24 * (double)_DAT_00552878 + (double)*pfVar14);
+        AsJoint(param_1)->Position[1] =
+            local_a8[1] * _DAT_00552878 + AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] =
+            local_a8[3] * _DAT_00552908 + AsJoint(param_1)->TargetPosition[2] + _DAT_005528fc;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (iVar16 == 1) {
+        AsJoint(param_1)->Light[0] = 0.2f;  // 0.2f
+        AsJoint(param_1)->Light[1] = 0.2f;
+        AsJoint(param_1)->Position[0] =
+            (float)(fVar24 * (double)_DAT_00552938 + (double)*pfVar14);
+        AsJoint(param_1)->Position[1] =
+            local_a8[1] * _DAT_00552938 + AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] =
+            local_a8[3] * _DAT_00552958 + AsJoint(param_1)->TargetPosition[2];
+        {
+            float fVar28 = sin_s1 * _DAT_005526e4 + _DAT_005528b4;
+            AsJoint(param_1)->Light[2] = fVar28;
+        }
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4e5
+static char* MoveJoint_JointSpirit(undefined1 *param_1, uint param_2, float* const local_30, float& local_dc_f, float& local_e4_f, float*& pfVar15)
+{
+    // IDA 00470030, case 1253 / subtypes 0 and 5.
+    const intptr_t subtype_4e5 = AsJoint(param_1)->SubType;
+    if (subtype_4e5 == 1) {
+        float light_4e5_1[3] = { 0.8f, 0.4f, 1.0f };
+        CreateSprite(BITMAP_LIGHT, pfVar15, 4.0f, light_4e5_1,
+                      (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (subtype_4e5 == 3) {
+        float orbit_4e5_3[3];
+        float light_4e5_3[3] = { 1.0f, 0.5f, 0.1f };
+        Ring_ComputeOrbit((int)param_2, orbit_4e5_3, 1.0f);
+        *pfVar15 += orbit_4e5_3[0] * 50.0f;
+        AsJoint(param_1)->Position[1] += orbit_4e5_3[1] * 50.0f;
+        AsJoint(param_1)->Position[2] += orbit_4e5_3[2] * 50.0f;
+        CreateSprite(BITMAP_LIGHT, pfVar15, 3.0f, light_4e5_3,
+                      (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
+        CreateSprite(BITMAP_SHINY + 1, pfVar15, 1.5f, light_4e5_3,
+                      (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (subtype_4e5 == 2) {
+        const int lifetime_4e5_2 = AsJoint(param_1)->LifeTime;
+        float light_4e5_2[3] = { 1.0f, 0.5f, 0.1f };
+        if (lifetime_4e5_2 >= 10) {
+            if (lifetime_4e5_2 > 18 && lifetime_4e5_2 < 20) {
+                float rotation_4e5_2[3] = { 0.0f, 0.0f, (float)(rand() % 360) };
+                // IDA `o + 28/32/36`: decimal, o sea StartPosition (0x1C), que
+                // CreateJoint carga con la posición inicial. No Angle (0x28).
+                float position_4e5_2[3] = {
+                    (float)(rand() % 200) + AsJoint(param_1)->StartPosition[0] - 100.0f,
+                    (float)(rand() % 200) + AsJoint(param_1)->StartPosition[1] - 100.0f,
+                    AsJoint(param_1)->StartPosition[2] - 200.0f
+                };
+                Joint_Create(1249, position_4e5_2, position_4e5_2, rotation_4e5_2,
+                              2, 0, 40.0f, -1, 0);
+            }
+        } else {
+            const float fade_4e5_2 = AsJoint(param_1)->Light[0] * (5.0f / 6.0f);
+            AsJoint(param_1)->Light[0] = fade_4e5_2;
+            AsJoint(param_1)->Light[1] = fade_4e5_2;
+            AsJoint(param_1)->Light[2] = fade_4e5_2;
+            light_4e5_2[0] = fade_4e5_2;
+            light_4e5_2[1] = fade_4e5_2;
+            light_4e5_2[2] = fade_4e5_2;
+        }
+        const float scale_4e5_2 = (float)((20 - lifetime_4e5_2) / 5) + 4.0f;
+        CreateSprite(BITMAP_LIGHT, pfVar15, scale_4e5_2, light_4e5_2,
+                      (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
+        AsJoint(param_1)->Velocity += 5.0f;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (subtype_4e5 == 0 || subtype_4e5 == 5) {
+        if (*(int *)&AsJoint(param_1)->Scale == 1117782016) {
+            CreateEffect(MODEL_LASER, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light,
+                         (float *)(subtype_4e5 == 5 ? 3 : 0), 0, (float *)-1, 0, 0);
+            if ((AsJoint(param_1)->LifeTime % 15) == 0 && (intptr_t)AsJoint(param_1)->Target == (intptr_t)Hero) {
+                Entity_FindNearby_SendPacket(AsJoint(param_1)->Skill, pfVar15, 150.0f,
+                              AsJoint(param_1)->Weapon, *(unsigned short *)&AsJoint(param_1)->PKKey);
+            }
+        }
+
+        const intptr_t owner_4e5 = (intptr_t)AsJoint(param_1)->Target;
+        AsJoint(param_1)->TargetPosition[0] = *(float *)(owner_4e5 + 0x10);
+        AsJoint(param_1)->TargetPosition[1] = *(float *)(owner_4e5 + 0x14);
+        AsJoint(param_1)->TargetPosition[2] = *(float *)(owner_4e5 + 0x18) + 80.0f;
+        const float horizontalDistance_4e5 = sqrtf(local_e4_f * local_e4_f + local_dc_f * local_dc_f);
+        MoveHumming(pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->TargetPosition,
+                      subtype_4e5 == 5 ? 2.0f : 10.0f);
+        if (AsJoint(param_1)->Collision == 0 && AsJoint(param_1)->Velocity * 2.0f >= horizontalDistance_4e5)
+            AsJoint(param_1)->Collision = 1;
+
+        if (subtype_4e5 != 5) {
+            AsJoint(param_1)->Direction[0] += (float)(rand() % 32 - 16) * 0.2f;
+            const float angleZ = (float)(rand() % 32 - 16) * 0.8f + AsJoint(param_1)->Direction[2];
+            AsJoint(param_1)->Angle[0] += AsJoint(param_1)->Direction[0];
+            AsJoint(param_1)->Angle[2] += angleZ;
+            AsJoint(param_1)->Direction[0] *= 0.6f;
+            AsJoint(param_1)->Direction[2] = angleZ * 0.8f;
+        }
+
+        const float terrain_4e5 = RequestTerrainHeight(*pfVar15, AsJoint(param_1)->Position[1]);
+        if (terrain_4e5 + 100.0f > AsJoint(param_1)->Position[2]) {
+            AsJoint(param_1)->Direction[0] = 0.0f;
+            AsJoint(param_1)->Angle[0] = -5.0f;
+        }
+        if (terrain_4e5 + 400.0f < AsJoint(param_1)->Position[2]) {
+            AsJoint(param_1)->Direction[0] = 0.0f;
+            AsJoint(param_1)->Angle[0] = 5.0f;
+        }
+        const float color_4e5 = (float)AsJoint(param_1)->LifeTime * 0.1f;
+        AsJoint(param_1)->Light[0] = color_4e5;
+        AsJoint(param_1)->Light[1] = color_4e5;
+        AsJoint(param_1)->Light[2] = color_4e5;
+        const float darkness_4e5 = (float)(rand() % 4 + 4) * -0.01f;
+        float light_4e5[3] = { darkness_4e5, darkness_4e5, darkness_4e5 };
+        AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light_4e5, 4, (float*)&DAT_081cb608[0]);
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+
+    // No default subtype branch exists in IDA for type 1253.
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4e6
+static char* MoveJoint_JointThunder(undefined1 *param_1, uint param_2, float* const local_30)
+{
+    MoveJoint_GenericTail(param_1);   // IDA: 1254 no tiene case -> cae en la cola generica
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4e7
+static char* MoveJoint_Type4e7(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar15)
+{
+    if (AsJoint(param_1)->LifeTime > 15) {
+        float target_4e7[3] = {
+            (float)(rand() % 200) + AsJoint(param_1)->TargetPosition[0] - 100.0f,
+            (float)(rand() % 100) + AsJoint(param_1)->TargetPosition[1] - 50.0f,
+            AsJoint(param_1)->TargetPosition[2]
+        };
+        // IDA (0x00470030 L1880-1886):
+        //     *v2 = *(float *)(o + 28);
+        //     *(_DWORD *)(o + 20) = *(_DWORD *)(o + 32);
+        //     *(_DWORD *)(o + 24) = *(_DWORD *)(o + 36);
+        // Esos 28/32/36 son DECIMALES = 0x1C/0x20/0x24, donde `CreateJoint`
+        // guarda el ORIGEN del rayo (LABEL_61: `*((float *)v11 + 7) = *v12`).
+        // No confundir con 0x28/0x2c/0x30, que es el vector Angle.
+        *pfVar15                   = AsJoint(param_1)->StartPosition[0];
+        AsJoint(param_1)->Position[1] = AsJoint(param_1)->StartPosition[1];
+        AsJoint(param_1)->Position[2] = AsJoint(param_1)->StartPosition[2];
+        const int segmentLimit_4e7 = AsJoint(param_1)->MaxTails;
+        for (int segment_4e7 = 0; segment_4e7 < segmentLimit_4e7; ++segment_4e7) {
+            const float speed_4e7 = (float)(rand() % 80) + 60.0f;
+            MoveHumming(pfVar15, AsJoint(param_1)->Angle, target_4e7, speed_4e7);
+            AsJoint(param_1)->Direction[0] = (float)(rand() % 1400 - 700) / AsJoint(param_1)->Scale;
+            AsJoint(param_1)->Direction[2] = (float)(rand() % 1400 - 700) / AsJoint(param_1)->Scale;
+            float angle_4e7[3] = {
+                AsJoint(param_1)->Angle[0] + AsJoint(param_1)->Direction[0],
+                AsJoint(param_1)->Angle[1] + AsJoint(param_1)->Direction[1],
+                AsJoint(param_1)->Angle[2] + AsJoint(param_1)->Direction[2]
+            };
+            float matrix_4e7[12], step_4e7[3] = { 0.0f, -speed_4e7, 0.0f }, rotated_4e7[3];
+            Matrix_BuildFromEuler(angle_4e7, matrix_4e7);
+            Joint_SegmentTick((intptr_t)param_1, matrix_4e7);
+            Vector_Rotate(step_4e7, matrix_4e7, rotated_4e7);
+            *pfVar15 += rotated_4e7[0];
+            AsJoint(param_1)->Position[1] += rotated_4e7[1];
+            AsJoint(param_1)->Position[2] += rotated_4e7[2];
+        }
+    } else {
+        AsJoint(param_1)->Light[2] -= 10.12f;
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4e9
+static char* MoveJoint_JointSpark(undefined1 *param_1, uint param_2, float* const local_30)
+{
+    // IDA case 1257: only subtype 1 changes state; all other subtypes
+    // proceed directly to the common epilogue.
+    if (AsJoint(param_1)->SubType == 1) {
+        AsJoint(param_1)->Velocity += 0.3f;
+        const float fade_4e9 = AsJoint(param_1)->Light[0] * (5.0f / 7.0f);
+        AsJoint(param_1)->Light[0] = fade_4e9;
+        AsJoint(param_1)->Light[1] = fade_4e9;
+        AsJoint(param_1)->Light[2] = fade_4e9;
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4ea
+static char* MoveJoint_JointEnergy(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar15)
+{
+    const int subtype_4ea = AsJoint(param_1)->SubType;
+    if (subtype_4ea == 0 || subtype_4ea == 1 || subtype_4ea == 6 || subtype_4ea == 9) {
+        if (AsJoint(param_1)->LifeTime < 100) {
+            AsJoint(param_1)->Velocity += 5.0f;
+            if (AsJoint(param_1)->Velocity >= 30.0f)
+                AsJoint(param_1)->Velocity = 30.0f;
+            const float originalAngleZ_4ea = AsJoint(param_1)->Angle[2];
+            float target_4ea[3];
+            if (subtype_4ea == 6 || subtype_4ea == 9) {
+                target_4ea[0] = AsJoint(param_1)->TargetPosition[0];
+                target_4ea[1] = AsJoint(param_1)->TargetPosition[1];
+                target_4ea[2] = AsJoint(param_1)->TargetPosition[2];
+            } else {
+                const intptr_t owner_4ea = (intptr_t)AsJoint(param_1)->Target;
+                target_4ea[0] = *(float *)(owner_4ea + 0x10);
+                target_4ea[1] = *(float *)(owner_4ea + 0x14);
+                target_4ea[2] = *(float *)(owner_4ea + 0x18) + 120.0f;
+                AsJoint(param_1)->TargetPosition[0] = target_4ea[0];
+                AsJoint(param_1)->TargetPosition[1] = target_4ea[1];
+                AsJoint(param_1)->TargetPosition[2] = target_4ea[2];
+            }
+            // `Distance` es el RETORNO de MoveHumming, no la Z del target (Hex-Rays
+            // tipaba MoveHumming como void, retorno en st0).  Confirmado contra el
+            // source de MU 5.2 (ZzzEffectJoint.cpp:3368).
+            const float dist_4ea =
+                MoveHumming(pfVar15, AsJoint(param_1)->Angle, target_4ea,
+                             AsJoint(param_1)->Velocity);
+            if (dist_4ea > 35.0f) {
+                if (dist_4ea <= 70.0f && fabsf(originalAngleZ_4ea - AsJoint(param_1)->Angle[2]) > 20.0f &&
+                    AsJoint(param_1)->Velocity >= 20.0f)
+                    AsJoint(param_1)->Velocity -= 10.0f;
+            } else {
+                *param_1 = 0;
+                Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 1, 1.0f, 0);
+                PlayBuffer(35, 0, 0);
+            }
+        } else {
+            if (subtype_4ea != 0) {
+                AsJoint(param_1)->Angle[2] -= 10.0f;
+                AsJoint(param_1)->Position[2] += 5.0f;
+            } else {
+                AsJoint(param_1)->Angle[2] += 10.0f;
+                AsJoint(param_1)->Position[2] += 6.0f;
+            }
+        }
+        const float brightness_4ea = (float)(rand() % 4 + 8) * 0.03f;
+        float terrainLight_4ea[3] = { brightness_4ea * 0.4f, brightness_4ea, brightness_4ea * 0.8f };
+        AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)terrainLight_4ea, 2, (float*)&DAT_081cb608[0]);
+        if (subtype_4ea == 6 || subtype_4ea == 9)
+            Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 3, 0.05f, 0);
+        else
+            Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (subtype_4ea == 2 || subtype_4ea == 3 || subtype_4ea == 4 || subtype_4ea == 5 || subtype_4ea == 8) {
+        const intptr_t owner_4ea = (intptr_t)AsJoint(param_1)->Target;
+        if (*(unsigned char *)owner_4ea == 0) {
+            *param_1 = 0;
+            return 0;
+        }
+        if (subtype_4ea == 3) {
+            *pfVar15 = *(float *)(owner_4ea + 0x4c);
+            AsJoint(param_1)->Position[1] = *(float *)(owner_4ea + 0x50);
+            AsJoint(param_1)->Position[2] = *(float *)(owner_4ea + 0x54);
+        } else {
+            *pfVar15 = *(float *)(owner_4ea + 0x40);
+            AsJoint(param_1)->Position[1] = *(float *)(owner_4ea + 0x44);
+            AsJoint(param_1)->Position[2] = *(float *)(owner_4ea + 0x48);
+            if (subtype_4ea == 8)
+                AsJoint(param_1)->Scale += 10.1f;
+        }
+        if (subtype_4ea == 2 || subtype_4ea == 3) {
+            const float pulse_4ea = sinf((float)WorldTime * 0.002f) * 0.3f + 0.8f;
+            float light_4ea[3] = { pulse_4ea * 0.5f, pulse_4ea * 0.1f, pulse_4ea };
+            Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, light_4ea, 0, 1.0f, 0);
+        }
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4eb
+static char* MoveJoint_JointHealing(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar15)
+{
+    const int subtype_4eb = AsJoint(param_1)->SubType;
+    const int lifetime_4eb = AsJoint(param_1)->LifeTime;
+    if (subtype_4eb == 4) {
+        const intptr_t owner_4eb = (intptr_t)AsJoint(param_1)->Target;
+        const float anchorX_4eb = AsJoint(param_1)->TargetPosition[0];
+        AsJoint(param_1)->Position[0] = *(float *)(owner_4eb + 0x10) + anchorX_4eb;
+        AsJoint(param_1)->Position[1] = *(float *)(owner_4eb + 0x14) + AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] = *(float *)(owner_4eb + 0x18) + AsJoint(param_1)->TargetPosition[2] + AsJoint(param_1)->Velocity;
+        AsJoint(param_1)->Velocity += 10.0f;
+        const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
+        AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
+        AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
+        AsJoint(param_1)->Light[2] = fade_4eb;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+    if (subtype_4eb == 5) {
+        const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
+        AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
+        AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
+        AsJoint(param_1)->Light[2] = fade_4eb;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    }
+
+    AsJoint(param_1)->Velocity += (subtype_4eb == 6 || subtype_4eb == 7) ? 2.0f : 4.0f;
+    float target_4eb[3];
+    if (subtype_4eb == 6 || subtype_4eb == 7) {
+        target_4eb[0] = AsJoint(param_1)->TargetPosition[0];
+        target_4eb[1] = AsJoint(param_1)->TargetPosition[1];
+        target_4eb[2] = AsJoint(param_1)->TargetPosition[2];
+    } else {
+        const intptr_t owner_4eb = (intptr_t)AsJoint(param_1)->Target;
+        target_4eb[0] = *(float *)(owner_4eb + 0x10);
+        target_4eb[1] = *(float *)(owner_4eb + 0x14);
+        target_4eb[2] = *(float *)(owner_4eb + 0x18) + 120.0f;
+        MoveHumming(pfVar15, AsJoint(param_1)->Angle, target_4eb, 10.0f);
+    }
+    const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
+    if (subtype_4eb == 1) {
+        AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
+        AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
+        AsJoint(param_1)->Light[2] = fade_4eb;
+    } else if (subtype_4eb == 2) {
+        AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
+        AsJoint(param_1)->Light[1] = fade_4eb;
+        AsJoint(param_1)->Light[2] = fade_4eb * 0.6f;
+    } else if (subtype_4eb == 3) {
+        AsJoint(param_1)->Light[0] = fade_4eb;
+        AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
+        AsJoint(param_1)->Light[2] = fade_4eb * 0.4f;
+    }
+    if (subtype_4eb == 6 && lifetime_4eb <= 10) {
+        const float pulse_4eb = (float)(6 - abs(lifetime_4eb - 6)) * 0.15f;
+        float light_4eb[3] = { pulse_4eb, pulse_4eb, pulse_4eb };
+        CreateSprite(BITMAP_SHINY + 1, target_4eb, (float)(rand() % 8 + 8) * 0.05f,
+                      light_4eb, (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
+    } else if (subtype_4eb != 7 && lifetime_4eb == 1) {
+        CreateSprite(BITMAP_SHINY + 1, target_4eb, (float)(rand() % 8 + 8) * 0.2f,
+                      AsJoint(param_1)->Light, (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4ec
+static char* MoveJoint_JointLaser(undefined1 *param_1, uint param_2, float* const local_30, float& local_dc_f, float& local_e4_f, float*& pfVar15)
+{
+    const intptr_t owner = (intptr_t)AsJoint(param_1)->Target;
+    AsJoint(param_1)->TargetPosition[0] = *(float *)(owner + 0x10);
+    AsJoint(param_1)->TargetPosition[1] = *(float *)(owner + 0x14);
+    AsJoint(param_1)->TargetPosition[2] = *(float *)(owner + 0x18) + 130.0f;
+
+    const float horizontalDistance = sqrtf(local_e4_f * local_e4_f + local_dc_f * local_dc_f);
+    const float turnStep = 3000.0f / horizontalDistance;
+    MoveHumming(pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->TargetPosition, turnStep);
+
+    if (AsJoint(param_1)->Collision == 0 &&
+        AsJoint(param_1)->Velocity * 2.0f >= horizontalDistance) {
+        AsJoint(param_1)->Collision = 1;
+        AsJoint(param_1)->LifeTime = 5;
+    }
+    const float color = (float)AsJoint(param_1)->LifeTime * 0.1f;
+    AsJoint(param_1)->Light[0] = color;
+    AsJoint(param_1)->Light[1] = color;
+    AsJoint(param_1)->Light[2] = color;
+
+    const float terrainLight = (float)(rand() % 4 + 4) * -0.01f;
+    float light[3] = { terrainLight, terrainLight, terrainLight };
+    AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light, 4, (float*)&DAT_081cb608[0]);
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4ed, case 0x48e
+static char* MoveJoint_Type4ed(undefined1 *param_1, uint param_2, intptr_t& iVar16, float* const local_30, float& local_e4_f, float*& pfVar15)
+{
+    const int type = iVar16;
+    const int segmentLimit = AsJoint(param_1)->MaxTails;
+    float targetDistance = local_e4_f;
+
+    for (int segment = 0; segment < segmentLimit; ++segment) {
+        if (AsJoint(param_1)->SubType != 2) {
+            const intptr_t owner = (intptr_t)AsJoint(param_1)->Target;
+            AsJoint(param_1)->TargetPosition[0] = *(float *)(owner + 0x10);
+            AsJoint(param_1)->TargetPosition[1] = *(float *)(owner + 0x14);
+            targetDistance = *(float *)(owner + 0x18) + 80.0f;
+            AsJoint(param_1)->TargetPosition[2] = targetDistance;
+        }
+
+        MoveHumming(pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->TargetPosition, 25.0f);
+        AsJoint(param_1)->Direction[0] = ((float)(rand() % 256 - 128) / AsJoint(param_1)->Scale + AsJoint(param_1)->Direction[0]) * 0.8f;
+        AsJoint(param_1)->Direction[1] *= 0.8f;
+        AsJoint(param_1)->Direction[2] = ((float)(rand() % 256 - 128) / AsJoint(param_1)->Scale + AsJoint(param_1)->Direction[2]) * 0.8f;
+
+        float angle[3] = { AsJoint(param_1)->Angle[0] + AsJoint(param_1)->Direction[0],
+                           AsJoint(param_1)->Angle[1] + AsJoint(param_1)->Direction[1],
+                           AsJoint(param_1)->Angle[2] + AsJoint(param_1)->Direction[2] };
+        float matrix[12], rotated[3];
+        Matrix_BuildFromEuler(angle, matrix);
+        Joint_SegmentTick((intptr_t)param_1, matrix);
+
+        if (AsJoint(param_1)->Velocity * 2.0f >= targetDistance) {
+            if ((rand() & 1) == 0) {
+                (void)rand(); (void)rand(); (void)rand();
+                Particle_Spawn(BITMAP_FIRE, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
+            }
+            break;
+        }
+
+        const float intensity = (float)(rand() % 4 + 4) * 0.05f;
+        float light[3];
+        if (type == 0x4ed) {
+            light[0] = intensity;
+            if (AsJoint(param_1)->SubType == 1) {
+                light[1] = intensity * 0.1f;
+                light[2] = light[1];
+            } else {
+                light[1] = intensity * 0.6f;
+                light[2] = intensity * 0.3f;
+            }
+        } else {
+            light[0] = 0.0f;
+            light[1] = intensity * 0.1f;
+            light[2] = intensity * 0.2f;
+        }
+        AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light, 2, (float*)&DAT_081cb608[0]);
+
+        float step[3] = { 0.0f, -AsJoint(param_1)->Velocity, 0.0f };
+        Vector_Rotate(step, matrix, rotated);
+        *pfVar15 += rotated[0];
+        AsJoint(param_1)->Position[1] += rotated[1];
+        AsJoint(param_1)->Position[2] += rotated[2];
+    }
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
+// IDA: MoveJoint (0x00470030): case 0x4ee
+static char* MoveJoint_MotionBlurR2(undefined1 *param_1, uint param_2, float* const local_30)
+{
+    // IDA 00470030, case 1262: rebuild eight linked segments.  The
+    // previous position is intentionally retained as the source of both
+    // 1254 joints before the anchor-relative position is updated.
+    float in1[3] = { 0.0f, -180.0f, 0.0f };
+    for (int i = 0; i < 8; ++i) {
+        if (AsJoint(param_1)->NumTails < AsJoint(param_1)->MaxTails - 1) {
+            float previousPosition[3] = {
+                AsJoint(param_1)->Position[0], AsJoint(param_1)->Position[1], AsJoint(param_1)->Position[2]
+            };
+            float matrix[12];
+            float rotated[3];
+
+            Matrix_BuildFromEuler(AsJoint(param_1)->Direction, matrix);
+            Vector_Rotate(in1, matrix, rotated);
+            AsJoint(param_1)->Position[0] = rotated[0] + AsJoint(param_1)->TargetPosition[0];
+            AsJoint(param_1)->Position[1] = rotated[1] + AsJoint(param_1)->TargetPosition[1];
+            AsJoint(param_1)->Position[2] = rotated[2] + AsJoint(param_1)->TargetPosition[2];
+
+            Matrix_BuildFromEuler(AsJoint(param_1)->Angle, matrix);
+            Joint_SegmentTick((intptr_t)param_1, matrix);
+            AsJoint(param_1)->Direction[2] -= 11.0f;
+            if ((rand() & 1) == 0) {
+                Particle_Spawn(BITMAP_FIRE, AsJoint(param_1)->Position,
+                             AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
+            }
+            Joint_Create(1254, previousPosition, AsJoint(param_1)->Position,
+                          AsJoint(param_1)->Angle, 3, 0, (float)(rand() % 10) + 5.0f, 5, 10);
+            Joint_Create(1254, previousPosition, AsJoint(param_1)->Position,
+                          AsJoint(param_1)->Angle, 3, 0, (float)(rand() % 8) + 4.0f, 5, 10);
+        }
+        if ((intptr_t)AsJoint(param_1)->Target == (intptr_t)Hero && AsJoint(param_1)->LifeTime > 18 && (i % 5) == 0) {
+            Entity_FindNearby_SendPacket(AsJoint(param_1)->Skill, AsJoint(param_1)->Position, 150.0f,
+                          AsJoint(param_1)->Weapon, *(unsigned short *)&AsJoint(param_1)->PKKey);
+        }
+    }
+    const int lifetime = AsJoint(param_1)->LifeTime;
+    const float fade = lifetime >= 10 ? (float)lifetime * (1.0f / 30.0f)
+                                      : AsJoint(param_1)->Light[0] * (2.0f / 3.0f);
+    AsJoint(param_1)->Light[0] = fade;
+    AsJoint(param_1)->Light[1] = fade;
+    AsJoint(param_1)->Light[2] = fade;
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
+}
+
 char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
 {
     uint    uVar7;
@@ -367,1135 +1497,63 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
     // ─────────────────────────────────────────────────────────────────
 
     // ── Type 0x4e8: Dragon/Smoke approach ────────────────────────────
-    if (iVar16 == 0x4e8) {
-        // IDA case 1256 (BITMAP_JOINT_FIRE en el source de MU 5.2,
-        // ZzzEffectJoint.cpp:4243):
-        //     Distance = MoveHumming(Position, Angle, TargetPosition, 0.f);
-        //     ... if (Distance <= o->Velocity) { o->Live = false; ... }
-        // IDA lo muestra como `sub_43E4A0(...); v295 = v4;` — `v4` es el retorno
-        // FPU que Hex-Rays no tipa; se usa el valor de retorno de MoveHumming.
-        const float dist_4e8 =
-            MoveHumming(pfVar15, AsJoint(param_1)->Angle, pfVar14, 0.0f);
-        float matrix_4e8[12];
-        Matrix_BuildFromEuler(AsJoint(param_1)->Angle, matrix_4e8);
-        Joint_SegmentTick((intptr_t)param_1, matrix_4e8);
-        if (dist_4e8 > AsJoint(param_1)->Velocity) {
-            const float brightness = (float)(rand() % 4 + 4) * 0.1f;
-            float light_4e8[3] = { brightness, brightness * 0.6f, brightness * 0.2f };
-            AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light_4e8, 4, (float*)&DAT_081cb608[0]);
-            float step_4e8[3] = { 0.0f, -AsJoint(param_1)->Velocity, 0.0f };
-            float rotated_4e8[3];
-            Vector_Rotate(step_4e8, matrix_4e8, rotated_4e8);
-            *pfVar15 += rotated_4e8[0];
-            AsJoint(param_1)->Position[1] += rotated_4e8[1];
-            AsJoint(param_1)->Position[2] += rotated_4e8[2];
-        } else {
-            *param_1 = 0;
-            Particle_Spawn(BITMAP_EXPLOTION, pfVar15, AsJoint(param_1)->Angle,
-                         AsJoint(param_1)->Light, 0, 1.0f, 0);
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    switch (iVar16) {
+    case 0x4e8:
+        return MoveJoint_Type4e8(param_1, param_2, local_30, pfVar14, pfVar15);
     // ── Type 0x4e2: Chain/rope follower ──────────────────────────────
-    if (iVar16 == 0x4e2) {
-        // IDA case 1250: three interpolated anchor steps, each offset by the
-        // rotating vector stored at +0x9c4.  Keep the joint rotation matrix
-        // separate from the entity angle matrix, as in the original.
-        char *owner_4e2 = ((char *)AsJoint(param_1)->Target);
-        if (*owner_4e2 == '\0') {
-            AsJoint(param_1)->LifeTime = -1;
-            *pfVar15 = AsJoint(param_1)->TargetPosition[0];
-            AsJoint(param_1)->Position[1] = AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Position[2] = AsJoint(param_1)->TargetPosition[2] + 50.0f;
-        } else {
-            float delta_4e2[3] = {
-                *(float *)(owner_4e2 + 0x10) - AsObject(owner_4e2)->StartPosition[0],
-                *(float *)(owner_4e2 + 0x14) - AsObject(owner_4e2)->StartPosition[1],
-                *(float *)(owner_4e2 + 0x18) - AsObject(owner_4e2)->StartPosition[2]
-            };
-            AsJoint(param_1)->TargetPosition[0] = AsObject(owner_4e2)->StartPosition[0];
-            AsJoint(param_1)->TargetPosition[1] = AsObject(owner_4e2)->StartPosition[1];
-            AsJoint(param_1)->TargetPosition[2] = AsObject(owner_4e2)->StartPosition[2];
-            float entityAngle_4e2[3] = { *(float *)(owner_4e2 + 0x28), *(float *)(owner_4e2 + 0x2c), *(float *)(owner_4e2 + 0x30) };
-            float jointMatrix_4e2[12];
-            Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_4e2);
-            delta_4e2[0] *= 1.0f / 3.0f;
-            delta_4e2[1] *= 1.0f / 3.0f;
-            delta_4e2[2] *= 1.0f / 3.0f;
-            entityAngle_4e2[1] += AsJoint(param_1)->Velocity - 90.0f;
-            for (int segment_4e2 = 0; segment_4e2 < 3; ++segment_4e2) {
-                entityAngle_4e2[1] += 30.0f;
-                AsJoint(param_1)->TargetPosition[0] += delta_4e2[0];
-                AsJoint(param_1)->TargetPosition[1] += delta_4e2[1];
-                AsJoint(param_1)->TargetPosition[2] += delta_4e2[2];
-                float entityMatrix_4e2[12], rotated_4e2[3];
-                Matrix_BuildFromEuler(entityAngle_4e2, entityMatrix_4e2);
-                Vector_Rotate(AsJoint(param_1)->Direction, entityMatrix_4e2, rotated_4e2);
-                *pfVar15 = rotated_4e2[0] + AsJoint(param_1)->TargetPosition[0];
-                AsJoint(param_1)->Position[1] = rotated_4e2[1] + AsJoint(param_1)->TargetPosition[1];
-                AsJoint(param_1)->Position[2] = rotated_4e2[2] + AsJoint(param_1)->TargetPosition[2];
-                if (AsJoint(param_1)->NumTails < AsJoint(param_1)->MaxTails - 1 || AsJoint(param_1)->Skill != 0)
-                    Joint_SegmentTick((intptr_t)param_1, jointMatrix_4e2);
-            }
-            if (AsJoint(param_1)->LifeTime < 15) {
-                AsJoint(param_1)->Light[0] *= 2.0f / 3.0f;
-                AsJoint(param_1)->Light[1] *= 2.0f / 3.0f;
-                AsJoint(param_1)->Light[2] *= 2.0f / 3.0f;
-            }
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4e2:
+        return MoveJoint_Type4e2(param_1, param_2, local_30, pfVar15);
     // ── Type 0x498: Quick fade-out ────────────────────────────────────
-    if (iVar16 == 0x498) {
-        if (AsJoint(param_1)->SubType == 0) {
-            float fVar28 = AsJoint(param_1)->Direction[2] + _DAT_00552660;
-            *pfVar15                         = *pfVar14;
-            *(undefined4 *)&AsJoint(param_1)->Position[1]  = *(undefined4 *)&AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Direction[2]      = fVar28;
-            AsJoint(param_1)->Position[2]       = fVar28 + AsJoint(param_1)->Position[2];
-        }
-        if (4 < AsJoint(param_1)->LifeTime) return MoveJoint_Finish(param_1, param_2, local_30, true);
-        AsJoint(param_1)->Light[0] *= _DAT_00552a90;
-        AsJoint(param_1)->Light[1] *= _DAT_00552a90;
-        {
-            float fVar28 = AsJoint(param_1)->Light[2] * _DAT_00552a90;
-            goto LAB_00473578_498;
-LAB_00473578_498:
-            AsJoint(param_1)->Light[2] = fVar28;
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x498:
+        return MoveJoint_Type498(param_1, param_2, local_30, pfVar14, pfVar15);
     // ── Type 0x10a: Wispy follower ────────────────────────────────────
-    if (iVar16 == 0x10a) {
-        iVar16 = AsJoint(param_1)->SubType;
-
-        if (iVar16 == 2) {
-            // Mode 2: interpolate towards bone target position
-            if ((((char *)AsJoint(param_1)->Target) == (char *)0x0) ||
-                (*((char *)AsJoint(param_1)->Target) == '\0'))
-            {
-                *(intptr_t*)&AsJoint(param_1)->Target = 0;
-            }
-            else {
-                AsJoint(param_1)->Scale =
-                    (float)AsJoint(param_1)->LifeTime * _DAT_00552540;
-                // IDA L898-913: rampa de 1 a 0 en los últimos 10 ticks de vida;
-                // el joint viaja del punto de partida al de reunión.
-                float t_raw = (float)(AsJoint(param_1)->LifeTime + -10) * _DAT_00552a00;
-                float t;
-                if (t_raw >= _DAT_0055256c)      t = _DAT_0055256c;   // 1.0
-                else if (t_raw >= _DAT_00552580) t = t_raw;           // 0.0 <= t < 1.0
-                else                             t = 0.0f;
-                float inv_t = _DAT_0055256c - t;
-                Ring_ComputeOrbit(param_2 * 0x4539, local_d8, 1.4f);
-                iVar16 = (intptr_t)AsJoint(param_1)->Target;
-                local_d8[0] = local_d8[0] * _DAT_00552900 + *pfVar14;
-                local_d8[1] = local_d8[1] * _DAT_00552900 + AsJoint(param_1)->TargetPosition[1];
-                local_d8[2] = local_d8[2] * _DAT_00552900 + AsJoint(param_1)->TargetPosition[2];
-                local_a8[0] = AsObject(iVar16)->PosSword[0];
-                local_a8[1] = AsObject(iVar16)->PosSword[1];
-                local_a8[2] = AsObject(iVar16)->PosSword[2];
-                // Blend: out[i] = t * rand_pos[i] + inv_t * bone_pos[i]
-                pfVar15[0] = t * local_d8[0] + inv_t * local_a8[0];
-                pfVar15[1] = t * local_d8[1] + inv_t * local_a8[1];
-                pfVar15[2] = t * local_d8[2] + inv_t * local_a8[2];
-            }
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-
-        if (iVar16 == 3) {
-            // Mode 3: sinusoidal oscillation, kill if linked entity dead
-            if (*((char *)AsJoint(param_1)->Target) == '\0') {
-                goto LAB_0047036e;
-            }
-            int rand_roll = _rand();
-            int new_lifetime;
-            if (rand_roll % 5 == 0) {
-                new_lifetime = AsJoint(param_1)->LifeTime + -5;
-LAB_004702ce:
-                AsJoint(param_1)->LifeTime = new_lifetime;
-            }
-            else {
-                uVar7 = _rand();
-                uVar7 = uVar7 & 0x80000001;
-                bVar21 = (uVar7 == 0);
-                if ((int)uVar7 < 0) {
-                    bVar21 = ((uVar7 - 1 | 0xfffffffe) == 0xffffffff);
-                }
-                if (bVar21) {
-                    new_lifetime = AsJoint(param_1)->LifeTime + 1;
-                    goto LAB_004702ce;
-                }
-            }
-            iVar16 = (intptr_t)AsJoint(param_1)->Target;
-            fVar22 = fsin(((double)AsJoint(param_1)->LifeTime -
-                           (double)AsJoint(param_1)->Direction[1]) * (double)_DAT_00552874);
-            fVar24 = (double)_DAT_00552540;
-            AsJoint(param_1)->Direction[0] = (float)(fVar22 * fVar24);
-            *pfVar15 = (float)(fVar22 * fVar24 + (double)*pfVar15);
-            if (iVar16 == 0) return MoveJoint_Finish(param_1, param_2, local_30, true);
-            {
-                int hp_val = AsObject(iVar16)->LifeTime;
-                float fVar28;
-                if (hp_val < 0x33) {
-                    fVar28 = (float)hp_val * _DAT_00552a00;
-                }
-                else {
-                    fVar28 = (float)(100 - hp_val) * _DAT_00552aa4;
-                }
-                if (_DAT_0055256c < fVar28) {
-                    fVar28 = _DAT_0055256c;
-                }
-                AsJoint(param_1)->Scale = fVar28;
-            }
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-
-        // Modes 0, 1, 4: orbit / spiral with trig
-        if (*((char *)AsJoint(param_1)->Target) == '\0') {
-LAB_0047036e:
-            *(undefined4 *)&AsJoint(param_1)->LifeTime = 0;
-            *param_1 = 0;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (iVar16 == 4) {
-            if (((*(unsigned char *)((intptr_t)AsJoint(param_1)->Target + 0x78)) & 8) != 8)
-                goto LAB_0047036e;
-            *(undefined4 *)&AsJoint(param_1)->LifeTime = 100;
-        }
-
-        // Re-anclaje de la historia de segmentos por el delta del ancla: la
-        // estela acompana al owner cuando se mueve.  ESTA en el binario (el
-        // decompile lo pliega dentro de un `if`): resta en 0x004703A6 y suma en
-        // 0x0047040C, verificado con el disassembly.  Sin estos bucles el aura
-        // se deshace en tiras sueltas al caminar.
-        if ((iVar16 == 0) || (iVar16 == 4)) {
-            // Subtract anchor from segment positions (un-translate)
-            // Cubre segCount+1 filas, acotado a segMax: el renderer (0x00473710) dibuja
-            // segCount quads leyendo las filas segIdx y segIdx+1, o sea llega hasta la
-            // fila **segCount**, y `sub_46FE90` tambien escribe esa fila.
-            int seg_rows = AsJoint(param_1)->NumTails + 1;
-            {
-                const int seg_max = AsJoint(param_1)->MaxTails;
-                if (seg_rows > seg_max) seg_rows = seg_max;
-            }
-            if (seg_rows > 0) {
-                float *pfVar26 = &AsJoint(param_1)->Tails[seg_rows - 1][0][1];
-                do {
-                    iVar13 = 4;
-                    float *pf = pfVar26;
-                    do {
-                        iVar13--;
-                        pf[-1] -= *pfVar14;
-                        *pf    -= AsJoint(param_1)->TargetPosition[1];
-                        pf[1]  -= AsJoint(param_1)->TargetPosition[2];
-                        pf += 3;
-                    } while (iVar13 != 0);
-                    pfVar26  += -0xc;
-                    seg_rows--;
-                } while (seg_rows != 0);
-            }
-        }
-
-        // Update anchor from linked entity current position
-        iVar16   = (intptr_t)AsJoint(param_1)->Target;
-        *pfVar14 = AsObject(iVar16)->Position[0];
-        *(undefined4 *)&AsJoint(param_1)->TargetPosition[1] = *(undefined4*)&AsObject(iVar16)->Position[1];
-        AsJoint(param_1)->TargetPosition[2]      = AsObject(iVar16)->Position[2] + _DAT_00552488;
-
-        iVar16 = AsJoint(param_1)->SubType;
-
-        if ((iVar16 == 0) || (iVar16 == 4)) {
-            // Add anchor back to segment positions (re-translate)
-            // Cubre segCount+1 filas, acotado a segMax: el renderer (0x00473710) dibuja
-            // segCount quads leyendo las filas segIdx y segIdx+1, o sea llega hasta la
-            // fila **segCount**, y `sub_46FE90` tambien escribe esa fila.
-            int seg_rows = AsJoint(param_1)->NumTails + 1;
-            {
-                const int seg_max = AsJoint(param_1)->MaxTails;
-                if (seg_rows > seg_max) seg_rows = seg_max;
-            }
-            if (seg_rows > 0) {
-                float *pfVar26 = &AsJoint(param_1)->Tails[seg_rows - 1][0][1];
-                do {
-                    iVar13 = 4;
-                    float *pf = pfVar26;
-                    do {
-                        iVar13--;
-                        pf[-1] += *pfVar14;
-                        *pf    += AsJoint(param_1)->TargetPosition[1];
-                        pf[1]  += AsJoint(param_1)->TargetPosition[2];
-                        pf += 3;
-                    } while (iVar13 != 0);
-                    pfVar26  += -0xc;
-                    seg_rows--;
-                } while (seg_rows != 0);
-            }
-        }
-
-        /* HashTable obfuscation block skipped */
-        // (ref-count insert/remove on MAIN_HASH_CLASS/bcc/bd0/bd4 — not game logic)
-
-        // Harmonic oscillation seed for wispy movement
-        uVar7  = param_2 & 0x80000001;
-        bVar21 = (uVar7 == 0);
-        if ((int)uVar7 < 0) {
-            bVar21 = ((uVar7 - 1 | 0xfffffffe) == 0xffffffff);
-        }
-        // Semilla = MoveSceneFrame, el contador de frames (no el delta X
-        // Position.x - Target.x, que realimentaria la orbita).  IDA (0x470030 L1035-1039):
-        //     v49 = LODWORD(v297);                      // v297 = MoveSceneFrame
-        //     if ( !(iIndex % 2) ) v49 = -LODWORD(v297);
-        //     v52 = iIndex + v49 + 53730 * iIndex;
-        // Hex-Rays reusa el slot `v297` varias veces en esta funcion.
-        //
-        // `LODWORD` sobre un float toma sus BITS: MoveSceneFrame es un contador
-        // entero (MoveSceneFrame, DWORD) que Hex-Rays tipeo float, asi que el valor
-        // correcto es el entero directo — no `float_as_int` de un float negado,
-        // que solo invierte el bit de signo y da otra cosa.
-        //
-        // Ojo el sentido: IDA niega cuando el indice es PAR (`if (!(iIndex % 2))`).
-        const int frameSeed = (int)MoveSceneFrame;          // MoveSceneFrame
-        const int dc_signed = bVar21 ? -frameSeed : frameSeed;
-        iVar13 = dc_signed + (int)(param_2 * 0xd1e3);
-        local_a8[2] = 0.1113f;
-        iVar16 = AsJoint(param_1)->SubType;
-        float fFreq  = _DAT_00552a9c;
-        float fScale = _DAT_00552aa0;
-        if (iVar16 == 1) {
-            local_a8[2] = 0.05565f;
-            fFreq  = _DAT_00552a94;
-            fScale = _DAT_00552a98;
-        }
-        int seed1 = iVar13 + 0x2b67;
-        float ang0 = (float)iVar13 * fFreq;
-        fVar24 = (double)fScale * (double)(iVar13 + 0xd903);
-        fVar22 = fsin(fVar24);
-        fVar23 = fcos((double)ang0);
-        local_a8[3] = (float)(fVar23 * fVar22);
-        fVar23 = fsin((double)ang0);
-        local_a8[4] = (float)(fVar23 * fVar22);
-        fVar24 = fcos(fVar24);
-        fVar22 = fsin((double)seed1 * (double)local_a8[2]);
-        float sin_s1 = (float)fVar22;
-        fVar22 = fcos((double)seed1 * (double)local_a8[2]);
-        local_a8[1] = (float)(sin_s1 * (double)local_a8[4] + fVar22 * fVar24);
-        fVar24 = fVar22 * (double)local_a8[4] - (double)sin_s1 * fVar24;
-
-        if (iVar16 == 0 || iVar16 == 4) {
-            AsJoint(param_1)->Position[0] =
-                (float)(fVar24 * (double)_DAT_00552878 + (double)*pfVar14);
-            AsJoint(param_1)->Position[1] =
-                local_a8[1] * _DAT_00552878 + AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Position[2] =
-                local_a8[3] * _DAT_00552908 + AsJoint(param_1)->TargetPosition[2] + _DAT_005528fc;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (iVar16 == 1) {
-            AsJoint(param_1)->Light[0] = 0.2f;  // 0.2f
-            AsJoint(param_1)->Light[1] = 0.2f;
-            AsJoint(param_1)->Position[0] =
-                (float)(fVar24 * (double)_DAT_00552938 + (double)*pfVar14);
-            AsJoint(param_1)->Position[1] =
-                local_a8[1] * _DAT_00552938 + AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Position[2] =
-                local_a8[3] * _DAT_00552958 + AsJoint(param_1)->TargetPosition[2];
-            {
-                float fVar28 = sin_s1 * _DAT_005526e4 + _DAT_005528b4;
-                AsJoint(param_1)->Light[2] = fVar28;
-            }
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x10a:
+        return MoveJoint_Type10a(param_1, param_2, bVar21, fVar22, fVar23, fVar24, iVar13, iVar16, local_30, local_a8, local_d8, pfVar14, pfVar15, uVar7);
     // ── Type 0x48e → redirect to 0x4ed ───────────────────────────────
     // ── Type 0x4e1 → redirect to 0x4fd ───────────────────────────────
-    if (iVar16 == 0x4e1) {
-        goto switchD_caseD_4fd;
-    }
-
+    case 0x4e1:   // BITMAP_FLARE
+        return MoveJoint_Orbit(param_1, param_2, local_30);
     // ── Type 0x4e5: Pet/butterfly orbit ──────────────────────────────
-    if (iVar16 == 0x4e5) {
-        // IDA 00470030, case 1253 / subtypes 0 and 5.
-        const intptr_t subtype_4e5 = AsJoint(param_1)->SubType;
-        if (subtype_4e5 == 1) {
-            float light_4e5_1[3] = { 0.8f, 0.4f, 1.0f };
-            CreateSprite(BITMAP_LIGHT, pfVar15, 4.0f, light_4e5_1,
-                          (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (subtype_4e5 == 3) {
-            float orbit_4e5_3[3];
-            float light_4e5_3[3] = { 1.0f, 0.5f, 0.1f };
-            Ring_ComputeOrbit((int)param_2, orbit_4e5_3, 1.0f);
-            *pfVar15 += orbit_4e5_3[0] * 50.0f;
-            AsJoint(param_1)->Position[1] += orbit_4e5_3[1] * 50.0f;
-            AsJoint(param_1)->Position[2] += orbit_4e5_3[2] * 50.0f;
-            CreateSprite(BITMAP_LIGHT, pfVar15, 3.0f, light_4e5_3,
-                          (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-            CreateSprite(BITMAP_SHINY + 1, pfVar15, 1.5f, light_4e5_3,
-                          (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (subtype_4e5 == 2) {
-            const int lifetime_4e5_2 = AsJoint(param_1)->LifeTime;
-            float light_4e5_2[3] = { 1.0f, 0.5f, 0.1f };
-            if (lifetime_4e5_2 >= 10) {
-                if (lifetime_4e5_2 > 18 && lifetime_4e5_2 < 20) {
-                    float rotation_4e5_2[3] = { 0.0f, 0.0f, (float)(rand() % 360) };
-                    // IDA `o + 28/32/36`: decimal, o sea StartPosition (0x1C), que
-                    // CreateJoint carga con la posición inicial. No Angle (0x28).
-                    float position_4e5_2[3] = {
-                        (float)(rand() % 200) + AsJoint(param_1)->StartPosition[0] - 100.0f,
-                        (float)(rand() % 200) + AsJoint(param_1)->StartPosition[1] - 100.0f,
-                        AsJoint(param_1)->StartPosition[2] - 200.0f
-                    };
-                    Joint_Create(1249, position_4e5_2, position_4e5_2, rotation_4e5_2,
-                                  2, 0, 40.0f, -1, 0);
-                }
-            } else {
-                const float fade_4e5_2 = AsJoint(param_1)->Light[0] * (5.0f / 6.0f);
-                AsJoint(param_1)->Light[0] = fade_4e5_2;
-                AsJoint(param_1)->Light[1] = fade_4e5_2;
-                AsJoint(param_1)->Light[2] = fade_4e5_2;
-                light_4e5_2[0] = fade_4e5_2;
-                light_4e5_2[1] = fade_4e5_2;
-                light_4e5_2[2] = fade_4e5_2;
-            }
-            const float scale_4e5_2 = (float)((20 - lifetime_4e5_2) / 5) + 4.0f;
-            CreateSprite(BITMAP_LIGHT, pfVar15, scale_4e5_2, light_4e5_2,
-                          (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-            AsJoint(param_1)->Velocity += 5.0f;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (subtype_4e5 == 0 || subtype_4e5 == 5) {
-            if (*(int *)&AsJoint(param_1)->Scale == 1117782016) {
-                CreateEffect(MODEL_LASER, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light,
-                             (float *)(subtype_4e5 == 5 ? 3 : 0), 0, (float *)-1, 0, 0);
-                if ((AsJoint(param_1)->LifeTime % 15) == 0 && (intptr_t)AsJoint(param_1)->Target == (intptr_t)Hero) {
-                    Entity_FindNearby_SendPacket(AsJoint(param_1)->Skill, pfVar15, 150.0f,
-                                  AsJoint(param_1)->Weapon, *(unsigned short *)&AsJoint(param_1)->PKKey);
-                }
-            }
-
-            const intptr_t owner_4e5 = (intptr_t)AsJoint(param_1)->Target;
-            AsJoint(param_1)->TargetPosition[0] = *(float *)(owner_4e5 + 0x10);
-            AsJoint(param_1)->TargetPosition[1] = *(float *)(owner_4e5 + 0x14);
-            AsJoint(param_1)->TargetPosition[2] = *(float *)(owner_4e5 + 0x18) + 80.0f;
-            const float horizontalDistance_4e5 = sqrtf(local_e4_f * local_e4_f + local_dc_f * local_dc_f);
-            MoveHumming(pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->TargetPosition,
-                          subtype_4e5 == 5 ? 2.0f : 10.0f);
-            if (AsJoint(param_1)->Collision == 0 && AsJoint(param_1)->Velocity * 2.0f >= horizontalDistance_4e5)
-                AsJoint(param_1)->Collision = 1;
-
-            if (subtype_4e5 != 5) {
-                AsJoint(param_1)->Direction[0] += (float)(rand() % 32 - 16) * 0.2f;
-                const float angleZ = (float)(rand() % 32 - 16) * 0.8f + AsJoint(param_1)->Direction[2];
-                AsJoint(param_1)->Angle[0] += AsJoint(param_1)->Direction[0];
-                AsJoint(param_1)->Angle[2] += angleZ;
-                AsJoint(param_1)->Direction[0] *= 0.6f;
-                AsJoint(param_1)->Direction[2] = angleZ * 0.8f;
-            }
-
-            const float terrain_4e5 = RequestTerrainHeight(*pfVar15, AsJoint(param_1)->Position[1]);
-            if (terrain_4e5 + 100.0f > AsJoint(param_1)->Position[2]) {
-                AsJoint(param_1)->Direction[0] = 0.0f;
-                AsJoint(param_1)->Angle[0] = -5.0f;
-            }
-            if (terrain_4e5 + 400.0f < AsJoint(param_1)->Position[2]) {
-                AsJoint(param_1)->Direction[0] = 0.0f;
-                AsJoint(param_1)->Angle[0] = 5.0f;
-            }
-            const float color_4e5 = (float)AsJoint(param_1)->LifeTime * 0.1f;
-            AsJoint(param_1)->Light[0] = color_4e5;
-            AsJoint(param_1)->Light[1] = color_4e5;
-            AsJoint(param_1)->Light[2] = color_4e5;
-            const float darkness_4e5 = (float)(rand() % 4 + 4) * -0.01f;
-            float light_4e5[3] = { darkness_4e5, darkness_4e5, darkness_4e5 };
-            AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light_4e5, 4, (float*)&DAT_081cb608[0]);
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-
-        // No default subtype branch exists in IDA for type 1253.
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4e5:   // BITMAP_JOINT_SPIRIT
+        return MoveJoint_JointSpirit(param_1, param_2, local_30, local_dc_f, local_e4_f, pfVar15);
     // El tipo 1254 NO tiene bloque propio en IDA MoveJoint (0x00470030) -- su
     // unica mencion en toda la funcion es la exclusion del epilogo (L2226) -- y
     // cae en la cola generica.  No agregarle un segundo `sub_46FE90` (el epilogo
     // ya lo llama: doble scroll de la estela) ni el fade
     // `if (lifetime < 5) color *= 0.76923078`, que en IDA es del tipo **1176**
     // (L785-791).
-    if (iVar16 == 0x4e6) {
-        MoveJoint_GenericTail(param_1);   // IDA: 1254 no tiene case -> cae en la cola generica
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4e6:   // BITMAP_JOINT_THUNDER
+        return MoveJoint_JointThunder(param_1, param_2, local_30);
     // ── Type 0x4e7: Scatter effect ────────────────────────────────────
-    if (iVar16 == 0x4e7) {
-        if (AsJoint(param_1)->LifeTime > 15) {
-            float target_4e7[3] = {
-                (float)(rand() % 200) + AsJoint(param_1)->TargetPosition[0] - 100.0f,
-                (float)(rand() % 100) + AsJoint(param_1)->TargetPosition[1] - 50.0f,
-                AsJoint(param_1)->TargetPosition[2]
-            };
-            // IDA (0x00470030 L1880-1886):
-            //     *v2 = *(float *)(o + 28);
-            //     *(_DWORD *)(o + 20) = *(_DWORD *)(o + 32);
-            //     *(_DWORD *)(o + 24) = *(_DWORD *)(o + 36);
-            // Esos 28/32/36 son DECIMALES = 0x1C/0x20/0x24, donde `CreateJoint`
-            // guarda el ORIGEN del rayo (LABEL_61: `*((float *)v11 + 7) = *v12`).
-            // No confundir con 0x28/0x2c/0x30, que es el vector Angle.
-            *pfVar15                   = AsJoint(param_1)->StartPosition[0];
-            AsJoint(param_1)->Position[1] = AsJoint(param_1)->StartPosition[1];
-            AsJoint(param_1)->Position[2] = AsJoint(param_1)->StartPosition[2];
-            const int segmentLimit_4e7 = AsJoint(param_1)->MaxTails;
-            for (int segment_4e7 = 0; segment_4e7 < segmentLimit_4e7; ++segment_4e7) {
-                const float speed_4e7 = (float)(rand() % 80) + 60.0f;
-                MoveHumming(pfVar15, AsJoint(param_1)->Angle, target_4e7, speed_4e7);
-                AsJoint(param_1)->Direction[0] = (float)(rand() % 1400 - 700) / AsJoint(param_1)->Scale;
-                AsJoint(param_1)->Direction[2] = (float)(rand() % 1400 - 700) / AsJoint(param_1)->Scale;
-                float angle_4e7[3] = {
-                    AsJoint(param_1)->Angle[0] + AsJoint(param_1)->Direction[0],
-                    AsJoint(param_1)->Angle[1] + AsJoint(param_1)->Direction[1],
-                    AsJoint(param_1)->Angle[2] + AsJoint(param_1)->Direction[2]
-                };
-                float matrix_4e7[12], step_4e7[3] = { 0.0f, -speed_4e7, 0.0f }, rotated_4e7[3];
-                Matrix_BuildFromEuler(angle_4e7, matrix_4e7);
-                Joint_SegmentTick((intptr_t)param_1, matrix_4e7);
-                Vector_Rotate(step_4e7, matrix_4e7, rotated_4e7);
-                *pfVar15 += rotated_4e7[0];
-                AsJoint(param_1)->Position[1] += rotated_4e7[1];
-                AsJoint(param_1)->Position[2] += rotated_4e7[2];
-            }
-        } else {
-            AsJoint(param_1)->Light[2] -= 10.12f;
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4e7:
+        return MoveJoint_Type4e7(param_1, param_2, local_30, pfVar15);
     // ── Type 0x4e9: Glow ring ────────────────────────────────────────
-    if (iVar16 == 0x4e9) {
-        // IDA case 1257: only subtype 1 changes state; all other subtypes
-        // proceed directly to the common epilogue.
-        if (AsJoint(param_1)->SubType == 1) {
-            AsJoint(param_1)->Velocity += 0.3f;
-            const float fade_4e9 = AsJoint(param_1)->Light[0] * (5.0f / 7.0f);
-            AsJoint(param_1)->Light[0] = fade_4e9;
-            AsJoint(param_1)->Light[1] = fade_4e9;
-            AsJoint(param_1)->Light[2] = fade_4e9;
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4e9:   // BITMAP_JOINT_SPARK
+        return MoveJoint_JointSpark(param_1, param_2, local_30);
     // ── Type 0x4ea: Crawling creature ────────────────────────────────
-    if (iVar16 == 0x4ea) {
-        const int subtype_4ea = AsJoint(param_1)->SubType;
-        if (subtype_4ea == 0 || subtype_4ea == 1 || subtype_4ea == 6 || subtype_4ea == 9) {
-            if (AsJoint(param_1)->LifeTime < 100) {
-                AsJoint(param_1)->Velocity += 5.0f;
-                if (AsJoint(param_1)->Velocity >= 30.0f)
-                    AsJoint(param_1)->Velocity = 30.0f;
-                const float originalAngleZ_4ea = AsJoint(param_1)->Angle[2];
-                float target_4ea[3];
-                if (subtype_4ea == 6 || subtype_4ea == 9) {
-                    target_4ea[0] = AsJoint(param_1)->TargetPosition[0];
-                    target_4ea[1] = AsJoint(param_1)->TargetPosition[1];
-                    target_4ea[2] = AsJoint(param_1)->TargetPosition[2];
-                } else {
-                    const intptr_t owner_4ea = (intptr_t)AsJoint(param_1)->Target;
-                    target_4ea[0] = *(float *)(owner_4ea + 0x10);
-                    target_4ea[1] = *(float *)(owner_4ea + 0x14);
-                    target_4ea[2] = *(float *)(owner_4ea + 0x18) + 120.0f;
-                    AsJoint(param_1)->TargetPosition[0] = target_4ea[0];
-                    AsJoint(param_1)->TargetPosition[1] = target_4ea[1];
-                    AsJoint(param_1)->TargetPosition[2] = target_4ea[2];
-                }
-                // `Distance` es el RETORNO de MoveHumming, no la Z del target (Hex-Rays
-                // tipaba MoveHumming como void, retorno en st0).  Confirmado contra el
-                // source de MU 5.2 (ZzzEffectJoint.cpp:3368).
-                const float dist_4ea =
-                    MoveHumming(pfVar15, AsJoint(param_1)->Angle, target_4ea,
-                                 AsJoint(param_1)->Velocity);
-                if (dist_4ea > 35.0f) {
-                    if (dist_4ea <= 70.0f && fabsf(originalAngleZ_4ea - AsJoint(param_1)->Angle[2]) > 20.0f &&
-                        AsJoint(param_1)->Velocity >= 20.0f)
-                        AsJoint(param_1)->Velocity -= 10.0f;
-                } else {
-                    *param_1 = 0;
-                    Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 1, 1.0f, 0);
-                    PlayBuffer(35, 0, 0);
-                }
-            } else {
-                if (subtype_4ea != 0) {
-                    AsJoint(param_1)->Angle[2] -= 10.0f;
-                    AsJoint(param_1)->Position[2] += 5.0f;
-                } else {
-                    AsJoint(param_1)->Angle[2] += 10.0f;
-                    AsJoint(param_1)->Position[2] += 6.0f;
-                }
-            }
-            const float brightness_4ea = (float)(rand() % 4 + 8) * 0.03f;
-            float terrainLight_4ea[3] = { brightness_4ea * 0.4f, brightness_4ea, brightness_4ea * 0.8f };
-            AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)terrainLight_4ea, 2, (float*)&DAT_081cb608[0]);
-            if (subtype_4ea == 6 || subtype_4ea == 9)
-                Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 3, 0.05f, 0);
-            else
-                Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (subtype_4ea == 2 || subtype_4ea == 3 || subtype_4ea == 4 || subtype_4ea == 5 || subtype_4ea == 8) {
-            const intptr_t owner_4ea = (intptr_t)AsJoint(param_1)->Target;
-            if (*(unsigned char *)owner_4ea == 0) {
-                *param_1 = 0;
-                return 0;
-            }
-            if (subtype_4ea == 3) {
-                *pfVar15 = *(float *)(owner_4ea + 0x4c);
-                AsJoint(param_1)->Position[1] = *(float *)(owner_4ea + 0x50);
-                AsJoint(param_1)->Position[2] = *(float *)(owner_4ea + 0x54);
-            } else {
-                *pfVar15 = *(float *)(owner_4ea + 0x40);
-                AsJoint(param_1)->Position[1] = *(float *)(owner_4ea + 0x44);
-                AsJoint(param_1)->Position[2] = *(float *)(owner_4ea + 0x48);
-                if (subtype_4ea == 8)
-                    AsJoint(param_1)->Scale += 10.1f;
-            }
-            if (subtype_4ea == 2 || subtype_4ea == 3) {
-                const float pulse_4ea = sinf((float)WorldTime * 0.002f) * 0.3f + 0.8f;
-                float light_4ea[3] = { pulse_4ea * 0.5f, pulse_4ea * 0.1f, pulse_4ea };
-                Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, light_4ea, 0, 1.0f, 0);
-            }
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4ea:   // BITMAP_JOINT_ENERGY
+        return MoveJoint_JointEnergy(param_1, param_2, local_30, pfVar15);
     // ── Type 0x4eb: Balloon/fireball ─────────────────────────────────
-    if (iVar16 == 0x4eb) {
-        const int subtype_4eb = AsJoint(param_1)->SubType;
-        const int lifetime_4eb = AsJoint(param_1)->LifeTime;
-        if (subtype_4eb == 4) {
-            const intptr_t owner_4eb = (intptr_t)AsJoint(param_1)->Target;
-            const float anchorX_4eb = AsJoint(param_1)->TargetPosition[0];
-            AsJoint(param_1)->Position[0] = *(float *)(owner_4eb + 0x10) + anchorX_4eb;
-            AsJoint(param_1)->Position[1] = *(float *)(owner_4eb + 0x14) + AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Position[2] = *(float *)(owner_4eb + 0x18) + AsJoint(param_1)->TargetPosition[2] + AsJoint(param_1)->Velocity;
-            AsJoint(param_1)->Velocity += 10.0f;
-            const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
-            AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
-            AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
-            AsJoint(param_1)->Light[2] = fade_4eb;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (subtype_4eb == 5) {
-            const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
-            AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
-            AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
-            AsJoint(param_1)->Light[2] = fade_4eb;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-
-        AsJoint(param_1)->Velocity += (subtype_4eb == 6 || subtype_4eb == 7) ? 2.0f : 4.0f;
-        float target_4eb[3];
-        if (subtype_4eb == 6 || subtype_4eb == 7) {
-            target_4eb[0] = AsJoint(param_1)->TargetPosition[0];
-            target_4eb[1] = AsJoint(param_1)->TargetPosition[1];
-            target_4eb[2] = AsJoint(param_1)->TargetPosition[2];
-        } else {
-            const intptr_t owner_4eb = (intptr_t)AsJoint(param_1)->Target;
-            target_4eb[0] = *(float *)(owner_4eb + 0x10);
-            target_4eb[1] = *(float *)(owner_4eb + 0x14);
-            target_4eb[2] = *(float *)(owner_4eb + 0x18) + 120.0f;
-            MoveHumming(pfVar15, AsJoint(param_1)->Angle, target_4eb, 10.0f);
-        }
-        const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
-        if (subtype_4eb == 1) {
-            AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
-            AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
-            AsJoint(param_1)->Light[2] = fade_4eb;
-        } else if (subtype_4eb == 2) {
-            AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
-            AsJoint(param_1)->Light[1] = fade_4eb;
-            AsJoint(param_1)->Light[2] = fade_4eb * 0.6f;
-        } else if (subtype_4eb == 3) {
-            AsJoint(param_1)->Light[0] = fade_4eb;
-            AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
-            AsJoint(param_1)->Light[2] = fade_4eb * 0.4f;
-        }
-        if (subtype_4eb == 6 && lifetime_4eb <= 10) {
-            const float pulse_4eb = (float)(6 - abs(lifetime_4eb - 6)) * 0.15f;
-            float light_4eb[3] = { pulse_4eb, pulse_4eb, pulse_4eb };
-            CreateSprite(BITMAP_SHINY + 1, target_4eb, (float)(rand() % 8 + 8) * 0.05f,
-                          light_4eb, (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-        } else if (subtype_4eb != 7 && lifetime_4eb == 1) {
-            CreateSprite(BITMAP_SHINY + 1, target_4eb, (float)(rand() % 8 + 8) * 0.2f,
-                          AsJoint(param_1)->Light, (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4eb:   // BITMAP_JOINT_HEALING
+        return MoveJoint_JointHealing(param_1, param_2, local_30, pfVar15);
     // ── Type 0x4ec: Seeker ───────────────────────────────────────────
-    if (iVar16 == 0x4ec) {
-        const intptr_t owner = (intptr_t)AsJoint(param_1)->Target;
-        AsJoint(param_1)->TargetPosition[0] = *(float *)(owner + 0x10);
-        AsJoint(param_1)->TargetPosition[1] = *(float *)(owner + 0x14);
-        AsJoint(param_1)->TargetPosition[2] = *(float *)(owner + 0x18) + 130.0f;
-
-        const float horizontalDistance = sqrtf(local_e4_f * local_e4_f + local_dc_f * local_dc_f);
-        const float turnStep = 3000.0f / horizontalDistance;
-        MoveHumming(pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->TargetPosition, turnStep);
-
-        if (AsJoint(param_1)->Collision == 0 &&
-            AsJoint(param_1)->Velocity * 2.0f >= horizontalDistance) {
-            AsJoint(param_1)->Collision = 1;
-            AsJoint(param_1)->LifeTime = 5;
-        }
-        const float color = (float)AsJoint(param_1)->LifeTime * 0.1f;
-        AsJoint(param_1)->Light[0] = color;
-        AsJoint(param_1)->Light[1] = color;
-        AsJoint(param_1)->Light[2] = color;
-
-        const float terrainLight = (float)(rand() % 4 + 4) * -0.01f;
-        float light[3] = { terrainLight, terrainLight, terrainLight };
-        AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light, 4, (float*)&DAT_081cb608[0]);
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4ec:   // BITMAP_JOINT_LASER
+        return MoveJoint_JointLaser(param_1, param_2, local_30, local_dc_f, local_e4_f, pfVar15);
     // ── Type 0x4ed: Firefly random wander ────────────────────────────
     // IDA 00470030 LABEL_286: types 0x4ED (1261) and 0x48E (1166)
     // share this guided chain.  0x4ED is not a random-wander branch.
-    if (iVar16 == 0x4ed || iVar16 == 0x48e) {
-        const int type = iVar16;
-        const int segmentLimit = AsJoint(param_1)->MaxTails;
-        float targetDistance = local_e4_f;
-
-        for (int segment = 0; segment < segmentLimit; ++segment) {
-            if (AsJoint(param_1)->SubType != 2) {
-                const intptr_t owner = (intptr_t)AsJoint(param_1)->Target;
-                AsJoint(param_1)->TargetPosition[0] = *(float *)(owner + 0x10);
-                AsJoint(param_1)->TargetPosition[1] = *(float *)(owner + 0x14);
-                targetDistance = *(float *)(owner + 0x18) + 80.0f;
-                AsJoint(param_1)->TargetPosition[2] = targetDistance;
-            }
-
-            MoveHumming(pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->TargetPosition, 25.0f);
-            AsJoint(param_1)->Direction[0] = ((float)(rand() % 256 - 128) / AsJoint(param_1)->Scale + AsJoint(param_1)->Direction[0]) * 0.8f;
-            AsJoint(param_1)->Direction[1] *= 0.8f;
-            AsJoint(param_1)->Direction[2] = ((float)(rand() % 256 - 128) / AsJoint(param_1)->Scale + AsJoint(param_1)->Direction[2]) * 0.8f;
-
-            float angle[3] = { AsJoint(param_1)->Angle[0] + AsJoint(param_1)->Direction[0],
-                               AsJoint(param_1)->Angle[1] + AsJoint(param_1)->Direction[1],
-                               AsJoint(param_1)->Angle[2] + AsJoint(param_1)->Direction[2] };
-            float matrix[12], rotated[3];
-            Matrix_BuildFromEuler(angle, matrix);
-            Joint_SegmentTick((intptr_t)param_1, matrix);
-
-            if (AsJoint(param_1)->Velocity * 2.0f >= targetDistance) {
-                if ((rand() & 1) == 0) {
-                    (void)rand(); (void)rand(); (void)rand();
-                    Particle_Spawn(BITMAP_FIRE, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
-                }
-                break;
-            }
-
-            const float intensity = (float)(rand() % 4 + 4) * 0.05f;
-            float light[3];
-            if (type == 0x4ed) {
-                light[0] = intensity;
-                if (AsJoint(param_1)->SubType == 1) {
-                    light[1] = intensity * 0.1f;
-                    light[2] = light[1];
-                } else {
-                    light[1] = intensity * 0.6f;
-                    light[2] = intensity * 0.3f;
-                }
-            } else {
-                light[0] = 0.0f;
-                light[1] = intensity * 0.1f;
-                light[2] = intensity * 0.2f;
-            }
-            AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light, 2, (float*)&DAT_081cb608[0]);
-
-            float step[3] = { 0.0f, -AsJoint(param_1)->Velocity, 0.0f };
-            Vector_Rotate(step, matrix, rotated);
-            *pfVar15 += rotated[0];
-            AsJoint(param_1)->Position[1] += rotated[1];
-            AsJoint(param_1)->Position[2] += rotated[2];
-        }
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4ed:
+    case 0x48e:   // BITMAP_MOTION_BLUR
+        return MoveJoint_Type4ed(param_1, param_2, iVar16, local_30, local_e4_f, pfVar15);
     // ── Type 0x4ee: Cannon/torpedo — 8-iter chain (no extra tick) ────
-    if (iVar16 == 0x4ee) {
-        // IDA 00470030, case 1262: rebuild eight linked segments.  The
-        // previous position is intentionally retained as the source of both
-        // 1254 joints before the anchor-relative position is updated.
-        float in1[3] = { 0.0f, -180.0f, 0.0f };
-        for (int i = 0; i < 8; ++i) {
-            if (AsJoint(param_1)->NumTails < AsJoint(param_1)->MaxTails - 1) {
-                float previousPosition[3] = {
-                    AsJoint(param_1)->Position[0], AsJoint(param_1)->Position[1], AsJoint(param_1)->Position[2]
-                };
-                float matrix[12];
-                float rotated[3];
-
-                Matrix_BuildFromEuler(AsJoint(param_1)->Direction, matrix);
-                Vector_Rotate(in1, matrix, rotated);
-                AsJoint(param_1)->Position[0] = rotated[0] + AsJoint(param_1)->TargetPosition[0];
-                AsJoint(param_1)->Position[1] = rotated[1] + AsJoint(param_1)->TargetPosition[1];
-                AsJoint(param_1)->Position[2] = rotated[2] + AsJoint(param_1)->TargetPosition[2];
-
-                Matrix_BuildFromEuler(AsJoint(param_1)->Angle, matrix);
-                Joint_SegmentTick((intptr_t)param_1, matrix);
-                AsJoint(param_1)->Direction[2] -= 11.0f;
-                if ((rand() & 1) == 0) {
-                    Particle_Spawn(BITMAP_FIRE, AsJoint(param_1)->Position,
-                                 AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
-                }
-                Joint_Create(1254, previousPosition, AsJoint(param_1)->Position,
-                              AsJoint(param_1)->Angle, 3, 0, (float)(rand() % 10) + 5.0f, 5, 10);
-                Joint_Create(1254, previousPosition, AsJoint(param_1)->Position,
-                              AsJoint(param_1)->Angle, 3, 0, (float)(rand() % 8) + 4.0f, 5, 10);
-            }
-            if ((intptr_t)AsJoint(param_1)->Target == (intptr_t)Hero && AsJoint(param_1)->LifeTime > 18 && (i % 5) == 0) {
-                Entity_FindNearby_SendPacket(AsJoint(param_1)->Skill, AsJoint(param_1)->Position, 150.0f,
-                              AsJoint(param_1)->Weapon, *(unsigned short *)&AsJoint(param_1)->PKKey);
-            }
-        }
-        const int lifetime = AsJoint(param_1)->LifeTime;
-        const float fade = lifetime >= 10 ? (float)lifetime * (1.0f / 30.0f)
-                                          : AsJoint(param_1)->Light[0] * (2.0f / 3.0f);
-        AsJoint(param_1)->Light[0] = fade;
-        AsJoint(param_1)->Light[1] = fade;
-        AsJoint(param_1)->Light[2] = fade;
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
-    }
-
+    case 0x4ee:   // BITMAP_MOTION_BLUR_R2
+        return MoveJoint_MotionBlurR2(param_1, param_2, local_30);
     // ── Type 0x4fd: Orbital ring ─────────────────────────────────────
-    if (iVar16 == 0x4fd) {
-        goto switchD_caseD_4fd;
-    }
-
-    // ─────────────────────────────────────────────────────────────────
-    // LABEL TARGETS for redirect cases
-    // ─────────────────────────────────────────────────────────────────
-
-switchD_caseD_4fd:
-    // ── IDA LABEL_301 — movimiento compartido por los tipos 1249 (0x4E1) y
-    // 1277 (0x4FD). Es un switch sobre el SubType (+0x08).
-    //
-    // El subtipo 0 (el halo del set +11, spawneado por `Entity_UpdateRender`
-    // sección 6) es un **círculo que sube**:
-    //     a = (lifetime + phase) * 0.1        (PKKey == -1)
-    //     Position.x = cos(a) * 40 + TargetPos.x
-    //     Position.y = TargetPos.y - sin(a) * 40
-    //     Position.z += riseSpeed
-    //
-    // TODOS los subtipos estan portados y verificados contra IDA.  El switch de
-    // IDA (L1085) solo lleva los cases 0/2/3/10/14 y NO tiene default: el resto se
-    // resuelve con ifs encadenados desde L1162, asi que no aparecen como `case`.
-    // LABEL_438/439 no es anti-tamper sino la cola comun a la que saltan varios
-    // subtipos (MoveJoint no tiene ruido de hash-table).
-    {
-        const int  jsub  = AsJoint(param_1)->SubType;
-        float     *jposX = AsJoint(param_1)->Position;   // Position.x  (IDA v2)
-        const float tgtX = AsJoint(param_1)->TargetPosition[0];  // TargetPos.x (IDA v3)
-        const float tgtY = AsJoint(param_1)->TargetPosition[1];  // TargetPos.y (o + 72)
-
-        if (jsub == 0 || jsub == 10) {
-            short pk  = AsJoint(param_1)->PKKey;                 // PKKey
-            double t  = (double)AsJoint(param_1)->LifeTime            // lifetime
-                      + (double)AsJoint(param_1)->Direction[1];         // fase random
-            double a  = (pk == -1) ? (t * 0.1) : (t / (double)pk);
-            *jposX                     = (float)(fcos(a) * 40.0 + (double)tgtX);
-            AsJoint(param_1)->Position[1] = (float)((double)tgtY - fsin(a) * 40.0);
-            float rise = AsJoint(param_1)->Direction[2];
-            AsJoint(param_1)->Position[2] = (jsub != 0)
-                ? (AsJoint(param_1)->Position[2] - rise)
-                : (rise + AsJoint(param_1)->Position[2]);
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (jsub == 14) {
-            // 00470030 LABEL_301/case 14.
-            intptr_t owner = (intptr_t)AsJoint(param_1)->Target;
-            if (owner != 0) {
-                *(DWORD *)&AsJoint(param_1)->StartPosition[0] = *(DWORD*)&AsObject(owner)->PosSword[0];
-                *(DWORD *)&AsJoint(param_1)->StartPosition[1] = *(DWORD*)&AsObject(owner)->PosSword[1];
-            }
-            const int life = AsJoint(param_1)->LifeTime;
-            const short pk = AsJoint(param_1)->PKKey;
-            const double t = (double)life + (double)AsJoint(param_1)->Direction[1];
-            const double a = (pk == -1) ? t * 0.1 : t / (double)pk;
-            const float approach = (float)(100 - life) * 0.011111111f;
-            *jposX = (float)(fcos(a) * 15.0) +
-                      approach * tgtX + AsJoint(param_1)->StartPosition[0];
-            AsJoint(param_1)->Position[1] = AsJoint(param_1)->StartPosition[1] -
-                                          (float)(fsin(a) * 15.0) + approach * tgtY;
-            AsJoint(param_1)->Position[2] += AsJoint(param_1)->Direction[2];
-            if (AsJoint(param_1)->Position[2] >= 500.0f) {
-                AsJoint(param_1)->SubType = 1;
-                AsJoint(param_1)->LifeTime = (life > 10) ? 10 : life;
-            }
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (jsub == 2 || jsub == 13) {
-            if (AsJoint(param_1)->LifeTime > 25) return MoveJoint_Finish(param_1, param_2, local_30, true);
-            float step = AsJoint(param_1)->Direction[2] + (jsub == 2 ? 5.0f : 1.0f);
-            *jposX                     = tgtX;
-            AsJoint(param_1)->Position[1] = tgtY;
-            AsJoint(param_1)->Direction[2] = step;
-            AsJoint(param_1)->Position[2] = step + AsJoint(param_1)->Position[2];
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (jsub == 5) {
-            float step = AsJoint(param_1)->Direction[2] - 60.0f;
-            *jposX                      = tgtX;
-            AsJoint(param_1)->Position[1]  = tgtY;
-            AsJoint(param_1)->Direction[2] = step;
-            AsJoint(param_1)->Position[2]  = step + AsJoint(param_1)->Position[2];
-            AsJoint(param_1)->Scale  = (float)(_rand() % 4) + 6.0f;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (jsub == 4 || jsub == 6 || jsub == 12) {
-            // 00470030 LABEL_301 subtipos 4, 6 y 12: los tres convergen en
-            // LABEL_438/439 y solo cambian como calculan lateral/vertical.
-            //
-            // El 4 llega aca por el `if (v168 != 4)` de L1162, que SALTEA todo el bloque
-            // de los demas subtipos, asi que cae junto al 12 en L1681
-            // (`v16 = v168 == 12`).  Su rama es la del else de L1702.
-            const int life = AsJoint(param_1)->LifeTime;
-            const float phase = AsJoint(param_1)->Direction[0];
-            float lateral;
-            float vertical;
-            if (jsub == 4) {
-                // IDA L1702-1717: radio = clamp(life + 40, min 10) * 0.65
-                int c = life + 40;
-                if (c <= 10) c = 10;
-                const double r = (double)c * 0.64999998;
-                const double a = ((double)life + (double)phase) * 0.1;
-                lateral  = (float)(-fcos(a) * r);
-                vertical = (float)( fsin(a) * r);
-            } else if (jsub == 6) {
-                const float radius = (float)((life <= 1) ? 1 : life);
-                const double a = (double)life * 0.5 + (double)phase;
-                lateral = (float)(-fcos(a) * ((double)radius + (double)radius));
-                vertical = (float)(fsin(a) * ((double)radius + (double)radius));
-            } else {
-                const double a = ((double)life + (double)phase) * 0.1;
-                lateral = (float)(fcos(a) * -26.0);
-                vertical = (float)(fsin(a) * 26.0 - (double)(90 - life) * 0.3);
-            }
-            AsJoint(param_1)->TargetPosition[0] += AsJoint(param_1)->Direction[1];
-            AsJoint(param_1)->TargetPosition[1] += AsJoint(param_1)->Direction[2];
-            const float heading = (90.0f - AsJoint(param_1)->Angle[2]) * 0.017453292f;
-            *jposX = fsin(heading) * lateral + AsJoint(param_1)->TargetPosition[0];
-            AsJoint(param_1)->Position[1] = fcos(heading) * lateral + AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Position[2] = vertical + AsJoint(param_1)->TargetPosition[2];
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        // Los subtipos 8 y 9 usan una matriz APARTE (`v304`, declarada en L307), no
-        // `local_30`, que es el `in2` de IDA: la matriz que arma el prologo con
-        // `AngleMatrix((float *)(o + 40), in2)` (L319) y que el epilogo LABEL_487
-        // (L2228) le pasa a `sub_46FE90` para construir las 4 esquinas del segmento
-        // nuevo.
-        float jointMatrix_v304[12];               // IDA: v304[3][4]
-        if (jsub == 8) {
-            // 00470030 LABEL_301/case 8: rotate the fixed vertical offset
-            // by TargetPosition, anchor it at StartPosition, then advance TargetPosition[2].
-            float offset[3] = { 0.0f, -50.0f, 0.0f };   // IDA: in1
-            float rotated[3];                           // IDA: Position
-            Matrix_BuildFromEuler(AsJoint(param_1)->TargetPosition, jointMatrix_v304);
-            Vector_Rotate(offset, jointMatrix_v304, rotated);
-            *jposX                     = rotated[0] + AsJoint(param_1)->StartPosition[0];
-            AsJoint(param_1)->Position[1] = rotated[1] + AsJoint(param_1)->StartPosition[1];
-            AsJoint(param_1)->Position[2] = rotated[2] + AsJoint(param_1)->StartPosition[2];
-            Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_v304);
-            AsJoint(param_1)->TargetPosition[2] += 10.0f;
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (jsub == 9) {
-            // 00470030 LABEL_301/case 9.
-            Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_v304);
-            const int segments = AsJoint(param_1)->MaxTails;   // IDA: *(int *)(o + 84)
-            for (int i = 0; i < segments; ++i) {             // IDA: v180 / iIndex
-                *jposX                     += AsJoint(param_1)->StartPosition[0];
-                AsJoint(param_1)->Position[1] += AsJoint(param_1)->StartPosition[1];
-                AsJoint(param_1)->Position[2] += AsJoint(param_1)->StartPosition[2];
-                Joint_SegmentTick((intptr_t)param_1, jointMatrix_v304);
-            }
-            return MoveJoint_Finish(param_1, param_2, local_30, true);
-        }
-        if (jsub == 3) {
-            return MoveJoint_Finish(param_1, param_2, local_30, true);   // IDA: case 3 → LABEL_447 (sin movimiento)
-        }
-
-        // Subtipos 7 y 11 (IDA 0x00470030 L1302-1682).
-        //
-        // Estos dos NO caen en la helice generica de mas abajo: en LABEL_301
-        // `if (v168 != 7)` cierra en L1301 y la ejecucion sigue en L1302, dentro del
-        // bloque de `if (v168 != 12)`, que llega hasta L1683 y termina en
-        // `goto LABEL_447`.  Solo los subtipos 4 y 12 alcanzan la helice.
-        //
-        // Es un PROYECTIL que converge sobre el owner:
-        //   - la posicion sale de una espiral alrededor de TargetPosition, con
-        //     radio que crece de 0 a 150 a medida que baja la vida;
-        //   - un bucle de tres pasos (x, y, z) interpola esa posicion hacia el
-        //     owner con peso `w`, que decrece con la vida -> se va pegando al
-        //     objetivo;
-        //   - y emite tres CreateSprite por tick (1231 + dos 1150), que es lo
-        //     unico visible del efecto.
-        //
-        // Es el disparo del ataque de Alquamos: AttackEffect case 0x45 crea ocho
-        // 1249/sub7 con el heroe como owner.
-        if (jsub == 7 || jsub == 11) {
-            const int iIndex = (int)param_2;                 // indice de slot
-            const int msf    = (int)MoveSceneFrame;            // MoveSceneFrame
-            const int v203   = (iIndex % 2) ? msf : -msf;
-            float a1 = 0.061299998f, a2 = 0.1113f, v204 = 0.048f;
-            if (jsub == 11) { v204 = 0.071999997f; a1 = 0.091949999f; a2 = 0.16695f; }
-            const int    v205 = iIndex + v203 + 53730 * iIndex;
-            const double v207 = (double)v204 * (double)(v205 + 55555);
-            const int    life = AsJoint(param_1)->LifeTime;
-            const double v209 = fsin(v207);
-            const double v210 = (double)v205 * (double)a1;
-            const float  out0 = (float)(fcos(v210) * v209);
-            const float  out1 = (float)(fsin(v210) * v209);
-            const double v211 = fcos(v207);
-            const double v212 = (double)(v205 + 11111) * (double)a2;
-            const double s212 = fsin(v212), c212 = fcos(v212);
-            const float  A1 = (float)(c212 * v211 + s212 * (double)out1);
-            const float  A0 = (float)(c212 * (double)out1 - s212 * v211);
-
-            const double v295 = (double)life * 1.3333334;
-            // IDA elige aca entre dos formulas segun un flag que Hex-Rays
-            // perdio (v216/v219 quedan sin definir: son el resultado de una
-            // comparacion x87 que el decompilador no reconstruyo):
-            //     sub 11:  v217 = v215 * 4.0   ...o...  v215 + 60.0
-            //     resto:   v217 = v215 * 7.0   ...o...  v215 + 60.0
-            // El umbral se deduce de que las dos ramas tienen que empalmar sin
-            // salto: `v215*7 == v215+60` en v215 == 10, y `v215*4 == v215+60`
-            // en v215 == 20.  O sea es una funcion continua a trozos y la
-            // condicion perdida es `v215 < 10` (resp. `< 20`).
-            //
-            // Importa para el gameplay: `v217` define el peso `w` con el que la
-            // posicion se interpola hacia el owner, y con solo la rama `+60` el
-            // peso nunca baja de ~47, asi que el proyectil se quedaba en ~97%
-            // del camino y reventaba justo antes de tocar al jugador.  Con la
-            // rama corta, en los ultimos ~7 ticks el peso cae a ~9 y el disparo
-            // termina de cerrar sobre el objetivo.
-            const double v217 = (jsub == 11)
-                              ? ((v295 < 20.0) ? (v295 * 4.0) : (v295 + 60.0))
-                              : ((v295 < 10.0) ? (v295 * 7.0) : (v295 + 60.0));
-            const int    v294 = AsJoint(param_1)->MultiUse + 30;
-            const float  w    = (float)(v217 / (double)v294 * 30.0);
-            if (life == 30) PlayBuffer(46, 0, 0);
-
-            float v222;
-            if (jsub == 11) {
-                double v220 = v295 - 10.0;
-                const double v221 = (v220 >= 0.0) ? v220 : 0.0;
-                if (v221 * 5.0 < 150.0) { if (v220 < 0.0) v220 = 0.0; v222 = (float)(v220 * 5.0); }
-                else                    { v222 = 150.0f; }
-            } else {
-                double v223 = 40.0 - v295;
-                const double v224 = (v223 >= 0.0) ? v223 : 0.0;
-                if (v224 * 15.0 < 150.0) { if (v223 < 0.0) v223 = 0.0; v222 = (float)(v223 * 15.0); }
-                else                     { v222 = 150.0f; }
-            }
-            AsJoint(param_1)->Position[0] = v222 * A0   + AsJoint(param_1)->TargetPosition[0];
-            AsJoint(param_1)->Position[1] = v222 * A1   + AsJoint(param_1)->TargetPosition[1];
-            AsJoint(param_1)->Position[2] = v222 * out0 + AsJoint(param_1)->TargetPosition[2];
-
-            const intptr_t jowner = (intptr_t)AsJoint(param_1)->Target;
-            if (jowner) {
-                int v226 = 0;
-                // El subtipo 11 NO converge hacia `owner + 16/20/24` sino hacia
-                // `owner + 368/372/376`.  IDA lo escribe ofuscado --
-                // `LODWORD(v295) = 352 - o;` y luego
-                // `*(float *)(LODWORD(v295) + *(_DWORD *)(o + 64) + v228)` --
-                // pero 352 + {16,20,24} = {368,372,376}, que es la posicion
-                // DERIVADA del efecto de la flecha: la que fija CreateEffect
-                // case 243 (`i+92..94`) 100 unidades por delante y la que usa su
-                // propio AddTerrainLight.
-                //
-                // Con `owner + 16` la cosa se realimenta: el joint con SkillIndex==1
-                // escribe su posicion EN `owner + 16`, asi que convergeria hacia si mismo.
-                // SubType 11 sigue a StartPosition (0x170 = 352 + 16) y el resto a Position.
-                const float* src = (jsub == 11) ? AsObject(jowner)->StartPosition : AsObject(jowner)->Position;
-                for (int v228 = 16; v228 < 28; v228 += 4) {
-                    const int    k    = iIndex + v226 + 51230 * iIndex + msf / 10;
-                    const double v229 = fcos((double)k * 0.0099999998) * 25.0
-                                      + (double)src[(v228 - 16) / 4];
-                    float *dst = (float *)(param_1 + v228);
-                    *dst = (float)(((double)w * (double)*dst
-                                    + v229 * (100.0 - (double)w)) * 0.0099999998);
-                    v226 += 3711;
-                }
-            }
-            if (jsub != 11) AsJoint(param_1)->Position[2] += 100.0f;
-
-            float jangles[3] = { 0.5f, 0.5f, 1.0f };
-            if (jsub == 11) {
-                jangles[0] = 0.30000001f; jangles[1] = 0.30000001f; jangles[2] = 0.5f;
-                if (AsJoint(param_1)->Skill == 1 && jowner) {
-                    *(int *)(jowner + 16) = *(int *)&AsJoint(param_1)->Position[0];
-                    *(int *)(jowner + 20) = *(int *)&AsJoint(param_1)->Position[1];
-                    *(int *)(jowner + 24) = *(int *)&AsJoint(param_1)->Position[2];
-                    Effect_CollisionCheck(jowner);
-                }
-            }
-            {
-                float *ppos = AsJoint(param_1)->Position;
-                CreateSprite(BITMAP_SHINY + 1, ppos, (float)(_rand() % 2 + 8) * 0.1f,
-                             jangles, jowner, (float)(_rand() % 360), 0);
-                CreateSprite(BITMAP_LIGHT, ppos, (float)(_rand() % 2 + 8) * 0.18000001f,
-                             jangles, jowner, (float)(_rand() % 360), 0);
-                CreateSprite(BITMAP_LIGHT, ppos, (float)(_rand() % 2 + 8) * 0.18000001f,
-                             jangles, jowner, (float)(_rand() % 360), 0);
-                if (jsub != 11 && AsJoint(param_1)->LifeTime == 1) {
-                    float jzero[3]  = { 0.0f, 0.0f, 0.0f };
-                    float jwhite[3] = { 1.0f, 1.0f, 1.0f };
-                    Particle_Spawn(BITMAP_EXPLOTION, ppos, jzero, jwhite, 1, 0.60000002f, 0);
-                }
-            }
-            return MoveJoint_Finish(param_1, param_2, local_30, false);   // IDA: LABEL_447 -> LABEL_487, saltea LABEL_182
-        }
-    }
-
-    // Cola real de LABEL_301 (IDA L1706-1724 -> LABEL_438 -> LABEL_439) para los
-    // subtipos que no tienen bloque propio arriba (4/6/12 y 7/11 salen antes).
-    // No llamar `Joint_SegmentTick` aca: el epilogo LABEL_487 ya lo llama.
-    //
-    // Es la MISMA helice que 4, 6 y 12, con otra formula de radio:
-    //     v237 = *(_DWORD *)(o + 2488);                       // life
-    //     v238 = ((double)v237 + *(float *)(o + 2500)) * 0.1;  // angulo
-    //     v240 = v237 + 40;  v296 = (v240 <= 10) ? 10 : v240;  // radio
-    //     v234 = -(cos(v238) * (v296 * 0.64999998));
-    //     v236 =   v296 * 0.64999998;  v235 = sin(v238);
-    //   LABEL_438: v239 = v235 * v236;
-    //   LABEL_439: <ancla + heading + escritura de Pos>
-    {
-        const int life = AsJoint(param_1)->LifeTime;              // IDA: v237
-        const float phase = AsJoint(param_1)->Direction[0];         // IDA: o + 2500
-        const double a = ((double)life + (double)phase) * 0.1;   // IDA: v238
-        int radius = life + 40;                                  // IDA: v240
-        if (radius <= 10) radius = 10;                           // IDA: v296 = 10
-        const double r65 = (double)radius * 0.64999998;
-        const float lateral  = (float)(-(fcos(a) * r65));        // IDA: v234
-        const float vertical = (float)(fsin(a) * r65);           // IDA: v239 = v235 * v236
-
-        // IDA LABEL_439 (compartido con los subtipos 6 y 12).
-        AsJoint(param_1)->TargetPosition[0] += AsJoint(param_1)->Direction[1];
-        AsJoint(param_1)->TargetPosition[1] += AsJoint(param_1)->Direction[2];
-        const float heading = (90.0f - AsJoint(param_1)->Angle[2]) * 0.017453292f;
-        AsJoint(param_1)->Position[0] = fsin(heading) * lateral + AsJoint(param_1)->TargetPosition[0];
-        AsJoint(param_1)->Position[1] = fcos(heading) * lateral + AsJoint(param_1)->TargetPosition[1];
-        AsJoint(param_1)->Position[2] = vertical + AsJoint(param_1)->TargetPosition[2];
-        return MoveJoint_Finish(param_1, param_2, local_30, true);
+    case 0x4fd:   // BITMAP_FLARE_BLUE
+        return MoveJoint_Orbit(param_1, param_2, local_30);
+    default:
+        // El port caía por fallthrough en el código de LABEL_301.
+        return MoveJoint_Orbit(param_1, param_2, local_30);
     }
 
     // ─────────────────────────────────────────────────────────────────

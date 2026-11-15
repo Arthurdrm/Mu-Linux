@@ -129,7 +129,7 @@ void __cdecl RenderBoids(void)
                     const Materials::InheritedBlendScope shadowBlend;
                     if(!shadowBlend){
                         Gfx::Enable(Gfx::Cap::Blend);
-                        DAT_083a412c = 1;   // referencia: no describe los factores reales
+                        AlphaBlendType = 1;   // referencia: no describe los factores reales
                     }
                     BufferedDraw::Color4f(0.0f, 0.0f, 0.0f, 0.2f);
                     float wx = v0[-86];

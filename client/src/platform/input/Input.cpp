@@ -46,7 +46,7 @@
 //   Flags de modo de input (todos en WM_CHAR guard):
 //   DAT_00559c84  g_TextMode           General text input active (login screen / chat)
 //   GuildInputEnable  g_ChatMode           Chat input mode
-//   DAT_07e11d71  g_IME_Mode           Korean/DBCS IME input active
+//   TabInputEnable  g_IME_Mode           Korean/DBCS IME input active
 //   GoldInputEnable  g_DigitOnly          Modo solo dígitos (0-9) — PIN/second password
 //   GoldenArcherLuckyNumberTicket  g_UppercaseOnly      Modo solo mayúsculas
 //   ErrorMessage  g_UIScene            Si == 0x7E o 0x98: texto activo aunque otras flags == 0
@@ -387,7 +387,7 @@ void Input_ProcessFunctionKeys(void)
   if ((char)((ushort)SVar3 >> 8) == -0x80) {
     if (DAT_07e11ab4 == 0) {
       DAT_07e11ab4 = 1;
-      DAT_00559bf0 = DAT_00559bf0 == '\0';
+      m_bBlockWhisper = m_bBlockWhisper == '\0';
       PlayBuffer(0x19,0,0);
     }
   }

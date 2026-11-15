@@ -4,7 +4,7 @@
 //
 // These functions configure the OpenGL blending state for particle/effect
 // rendering. Each one is a no-op if the blend mode is already current
-// (cached in DAT_083a412c).
+// (cached in AlphaBlendType).
 //
 // IMPORTANT: IDA shows these wrappers do not toggle GL_DEPTH_TEST. They only
 // switch blend func, cull face, depth mask, alpha test, texture-2D, and fog.
@@ -19,7 +19,7 @@
 // also toggles cull-face + depth-mask for the surfaces it's meant for.
 //
 // Globals:
-//   DAT_083a412c  — current cached blend mode (int)
+//   AlphaBlendType  — current cached blend mode (int)
 //   AlphaTestEnable  — alpha-test enabled cache
 //   TextureEnable  — texture-2D enabled cache
 //   FogEnable  — fog enabled cache
@@ -41,8 +41,8 @@ void GL_SetBlendAdditive(void)
 
 {
     if(Materials::Select(Materials::Preset::Add))return;
-  if (DAT_083a412c != 3) {
-    DAT_083a412c = 3;
+  if (AlphaBlendType != 3) {
+    AlphaBlendType = 3;
     Gfx::Enable(Gfx::Cap::Blend);
     Gfx::BlendFunc(Gfx::Factor::One, Gfx::Factor::One);
   }
@@ -67,8 +67,8 @@ void GL_SetBlendSrcAlpha(void)
 
 {
     if(Materials::Select(Materials::Preset::Attenuate))return;
-  if (DAT_083a412c != 4) {
-    DAT_083a412c = 4;
+  if (AlphaBlendType != 4) {
+    AlphaBlendType = 4;
     Gfx::Enable(Gfx::Cap::Blend);
     Gfx::BlendFunc(Gfx::Factor::Zero, Gfx::Factor::OneMinusSrcColor);
   }
@@ -131,8 +131,8 @@ void __cdecl GL_BindTextureSlot(int param_1)
 void __cdecl GL_SetBlendSrcOver(char param_1)
 {
     if(Materials::Select(Materials::Preset::Alpha,param_1 != 0))return;
-  if (DAT_083a412c != 2) {
-    DAT_083a412c = 2;
+  if (AlphaBlendType != 2) {
+    AlphaBlendType = 2;
     Gfx::Enable(Gfx::Cap::Blend);
     Gfx::BlendFunc(Gfx::Factor::SrcAlpha, Gfx::Factor::OneMinusSrcAlpha);
   }
@@ -242,8 +242,8 @@ void __cdecl SetErrorMessage(int param_1)
 void GL_ResetState(void)
 {
     if(Materials::Select(Materials::Preset::Opaque))return;
-  if (DAT_083a412c != 0) {
-    DAT_083a412c = 0;
+  if (AlphaBlendType != 0) {
+    AlphaBlendType = 0;
     Gfx::Disable(Gfx::Cap::Blend);
   }
   GL_EnableCullFace();
@@ -267,8 +267,8 @@ void GL_ResetState(void)
 // Sets blend mode GL_ZERO/GL_SRC_COLOR for lightmap overlay rendering.
 void GL_EnableLightMap(void) {
     if(Materials::Select(Materials::Preset::LightMap))return;
-    if (DAT_083a412c != 1) {
-        DAT_083a412c = 1;
+    if (AlphaBlendType != 1) {
+        AlphaBlendType = 1;
         Gfx::Enable(Gfx::Cap::Blend);
         Gfx::BlendFunc(Gfx::Factor::Zero, Gfx::Factor::SrcColor);
     }

@@ -62,8 +62,8 @@ void Game_CharSelectTick(void)
         CameraAngle[2] = -45.0f;  // yaw = -45° (iso rotation around Z)
         ClearInput(1);
         DAT_00559c84 = 0;
-        DAT_07e11d71 = 0;
-        DAT_00559c8c = 0x100;
+        TabInputEnable = 0;
+        InputTextWidth = 0x100;
         // IDA: InputTextMax[0] = 42, [1] = 10. Desde 0.97.40 son caracteres:
         // el mensaje entra en 199 bytes y el nombre del susurro en 40.
         Input_SetLimit(0, (int)NetText::ChatMessageSize - 1, 0x2a);

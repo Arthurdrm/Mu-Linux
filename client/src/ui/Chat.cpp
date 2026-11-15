@@ -116,7 +116,7 @@ void __cdecl UI_RenderInputField(int x, undefined4 y, int index)
         strcpy(text, input);
     }
 
-    const int width = (int)DAT_00559c8c;
+    const int width = (int)InputTextWidth;
     UI_DrawText(x, y, text, width, 1, 0, sizeof(text));
     gFont.MeasureText(gFont.GetTextDC(), text, Platform::TextLength(text), &g_TextExtent07E113D0);
     if (width > 0 && g_TextExtent07E113D0.cx > width)
@@ -590,7 +590,7 @@ void Chat_TickPresentation() {
     if (SceneFlag==4 && DAT_083a7c14>26 && DAT_083a7c14<29 &&
         (int)DAT_005616b0>=0 && index==0) ++cursors;
     if (SceneFlag==5 && !gUserSettings.GetAntilag(ANTILAG_INTERFACE)) {
-        if ((InputEnable || DAT_07e11d71) && (index==0 || index==1)) ++cursors;
+        if ((InputEnable || TabInputEnable) && (index==0 || index==1)) ++cursors;
         if (GuildCreatorOpened && g_iKeyPadEnable && index==0) ++cursors;
         if (GoldenArcherOpenType==3 && index==0) ++cursors;
     }

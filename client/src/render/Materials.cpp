@@ -35,8 +35,8 @@ void Toggle() {
 }
 bool Apply(const Material& m) {
     if(!enabled)return false;
-    if(m.blend!=Blend::Keep&&DAT_083a412c!=static_cast<int>(m.blend)) {
-        DAT_083a412c=static_cast<int>(m.blend);
+    if(m.blend!=Blend::Keep&&AlphaBlendType!=static_cast<int>(m.blend)) {
+        AlphaBlendType=static_cast<int>(m.blend);
         if(m.blend==Blend::Opaque)Gfx::Disable(Gfx::Cap::Blend);
         else {
             using F=Gfx::Factor;
@@ -89,18 +89,18 @@ bool BeginText(){
 void EndText(){Gfx::PopAttrib();}
 InheritedBlendScope::InheritedBlendScope(){
     if(!enabled)return;
-    active=true;wasEnabled=Gfx::IsEnabled(Gfx::Cap::Blend);previousBlend=DAT_083a412c;
+    active=true;wasEnabled=Gfx::IsEnabled(Gfx::Cap::Blend);previousBlend=AlphaBlendType;
     Gfx::Enable(Gfx::Cap::Blend);
     // No representa ningún preset: BMD__RenderBodyShadow no selecciona mezcla.
     // Invalidar temporalmente evita anunciar factores que no se establecieron.
-    DAT_083a412c=-1;
+    AlphaBlendType=-1;
 }
 InheritedBlendScope::~InheritedBlendScope(){
     if(!active)return;
     // La sombra no cambia factores. La barrera envía sus triángulos antes
     // de recuperar activación; los demás estados quedan como en referencia.
     Gfx::SetEnabled(Gfx::Cap::Blend,wasEnabled);
-    DAT_083a412c=previousBlend;
+    AlphaBlendType=previousBlend;
 }
 bool BeginOverlay(const OverlayState& s){
     if(!enabled)return false;

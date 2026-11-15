@@ -295,7 +295,7 @@ int Game_SceneUpdate(void)
         ServerSelectLo = -1;      // no channel selected
         DAT_083a7c44 = 0;
         GuildInputEnable = 0;
-        DAT_07e11d71 = 0;
+        TabInputEnable = 0;
         GoldInputEnable = 0;
         DAT_00559c84 = 1;
         ClearInput(1);        // CharSelect_Init

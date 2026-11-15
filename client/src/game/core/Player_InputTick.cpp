@@ -125,16 +125,16 @@ static void MouseOnWindow_Update(void)
     }
 
     if (HUD_IsGuildListRuntime()) {
-        int iconX = (int)((float)DAT_07e91788 + _DAT_00552464);
-        int iconY = (int)((float)DAT_07e91784 + _DAT_0055246c);
+        int iconX = (int)((float)GuildListStartX + _DAT_00552464);
+        int iconY = (int)((float)GuildListStartY + _DAT_0055246c);
         if (mx >= iconX && mx < iconX + 24 && my >= iconY && my < iconY + 24) {
             MouseOnWindow = 1; return;
         }
     }
 
     if (HUD_IsCharacterInfoRuntime()) {
-        int iconX = (int)DAT_07ea982c + 25;
-        int iconY = (int)DAT_07ea9830 + 395;
+        int iconX = (int)CharacterInfoStartX + 25;
+        int iconY = (int)CharacterInfoStartY + 395;
         if (mx >= iconX && mx < iconX + 24 && my >= iconY && my < iconY + 24) {
             MouseOnWindow = 1; return;
         }
@@ -339,13 +339,13 @@ static void ClampChatModeIME(const char* tag)
 {
     static int s_logs = 0;
     BYTE chat = (BYTE)GuildInputEnable;
-    BYTE ime  = (BYTE)DAT_07e11d71;
+    BYTE ime  = (BYTE)TabInputEnable;
     if (chat > 1 || ime > 1) {
         if (s_logs < 8) {
             s_logs++;
         }
         if (chat > 1) GuildInputEnable = 0;
-        if (ime  > 1) DAT_07e11d71 = 0;
+        if (ime  > 1) TabInputEnable = 0;
     }
 
     // Detector de la transición 0→1 de ChatMode: el clamp de arriba sólo atrapa
@@ -466,7 +466,7 @@ static void HUD_HotkeyTick(void)
 
     if (GuildInputEnable != '\0') return;  // g_ChatMode
     if (DAT_00559c84 != '\0') return;  // g_TextMode (login / dialog text)
-    if (DAT_07e11d71 != '\0') return;  // g_IME_Mode
+    if (TabInputEnable != '\0') return;  // g_IME_Mode
     // IDA Chat_InputTick L3976-3985: ANTES de mirar cualquier hotkey de panel,
     // el original corta la funcion entera con esta lista:
     //

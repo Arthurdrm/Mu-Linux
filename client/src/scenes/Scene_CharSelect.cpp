@@ -544,7 +544,7 @@ int Scene_CharSelect(void)
             }
 
             gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
-            DAT_00559c8c = 0x49;
+            InputTextWidth = 0x49;
             // IDA: `if (dword_5616B0 >= 0)`. DAT_005616b0 es DWORD (unsigned): comparar
             // con signo, `-1 < DAT_005616b0` sería siempre falso.
             if ((int)DAT_005616b0 >= 0)

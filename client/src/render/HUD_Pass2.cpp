@@ -40,9 +40,6 @@ extern "C" BYTE OffsetInventoryItems[];
 // only referenced by the HUD passes in this file.
 
 extern "C" {
-    int  InputTextWidth      = 0;       // chat input field width in pixels
-    BYTE m_bBlockWhisper     = 0;       // whisper-mute toggle (chat mute icon)
-    int  TabInputEnable      = 0;       // tab-targeting input mode flag
     // EventWindowOpened/PartyOpened/GuildOpened/GuildCreatorOpened/
     // WarehouseOpened/ChaosMixOpened/ShopOpened/TradeOpened/InventoryOpened/
     // CharacterOpened are now #define aliases for DAT_07eaa11x in globals.h
@@ -242,7 +239,7 @@ void Render_ChatBox_(void)
     Gfx::Color3f(1.0f, 1.0f, 1.0f);
     gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_NORMAL) ? gFont.GetFont(FONT_NORMAL) : gFont.GetFont(FONT_BOLD));
 
-    if (!(InputEnable || DAT_07e11d71)) { EmojiPicker::OnChatClosed(); return; }
+    if (!(InputEnable || TabInputEnable)) { EmojiPicker::OnChatClosed(); return; }
 
     GL_ResetState();   // DisableAlphaBlend
     GL_DrawTexture(248, 186.0f, 415.0f, 134.0f, 29.0f, 0.0f, 0.0f, 0.51953125f, 0.90625f, 1, 1);
@@ -279,7 +276,7 @@ void Render_ChatBox_(void)
         ++v1;
     }
 
-    if (DAT_00559bf0 != 0) {
+    if (m_bBlockWhisper != 0) {
         GL_DrawTexture(239, 432.0f, 420.0f, 15.0f, 16.0f, 0.0f, 0.0f, 0.9375f, 1.0f, 1, 1);
     }
     // DESVIACION (Fase 4): selector de emojis junto al campo de texto.

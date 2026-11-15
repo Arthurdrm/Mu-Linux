@@ -354,7 +354,7 @@ void __cdecl Game_MainLoop(HDC param_1)
     //
     // Defaults elegidos para coincidir con lo que GL_BeginViewport deja tras su
     // primer push (Scene_Login llama GL_BeginViewport como primera acción).
-    Gfx::Disable(Gfx::Cap::Blend);       DAT_083a412c = 0;    // blend OFF (setters lo activarán)
+    Gfx::Disable(Gfx::Cap::Blend);       AlphaBlendType = 0;    // blend OFF (setters lo activarán)
     Gfx::Enable(Gfx::Cap::CullFace);    CullFaceEnable = 1;
     Gfx::Enable(Gfx::Cap::Texture2D);   TextureEnable = 1;
     Gfx::Disable(Gfx::Cap::AlphaTest);  AlphaTestEnable = 0;

@@ -13,11 +13,11 @@
 void __stdcall GL_SetBlendInvSrcColor(void) {
     if(Materials::Select(Materials::Preset::InverseAdd))return;
     // 0x00511810 — factores reales: ONE_MINUS_SRC_COLOR, ONE.
-    // Cache de estado real (IDA): DAT_083a412c (AlphaBlendType), AlphaTestEnable
+    // Cache de estado real (IDA): AlphaBlendType (AlphaBlendType), AlphaTestEnable
     // (AlphaTestEnable), TextureEnable. Ojo: CheckInventory/164/168
     // son CheckInventory + punteros ITEM vecinos, NO estado GL.
-    if (DAT_083a412c != 5) {           // AlphaBlendType
-        DAT_083a412c = 5;
+    if (AlphaBlendType != 5) {           // AlphaBlendType
+        AlphaBlendType = 5;
         Gfx::Enable(Gfx::Cap::Blend);              // GL_BLEND
         Gfx::BlendFunc(Gfx::Factor::OneMinusSrcColor, Gfx::Factor::One);        // GL_ONE_MINUS_DST_COLOR, GL_ONE
     }

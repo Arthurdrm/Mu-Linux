@@ -5,8 +5,8 @@ namespace UIState {
 
 bool HasTextInput()
 {
-    // DLL Defines.h: CheckInputInterfaces; DAT_07e11d71 es TabInputEnable.
-    return InputEnable || GuildInputEnable || GoldInputEnable || DAT_07e11d71;
+    // DLL Defines.h: CheckInputInterfaces; TabInputEnable es TabInputEnable.
+    return InputEnable || GuildInputEnable || GoldInputEnable || TabInputEnable;
 }
 
 bool HasModalDialog() { return ErrorMessage != 0; } // ErrorMessage

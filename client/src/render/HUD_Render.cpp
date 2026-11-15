@@ -199,23 +199,23 @@
 // Render_ChatBox @ 54 líneas, COMPLETO
 // ══════════════════════════════════════════════════════════════════════════════
 //
-//   Renderiza la caja de chat (si DAT_00559c84 || DAT_07e11d71).
+//   Renderiza la caja de chat (si DAT_00559c84 || TabInputEnable).
 //
 //   void Render_ChatBox(void)
 //   {
 //     glColor3f(1,1,1);
 //     gFont.SelectFont(DC, font_normal);
-//     if (DAT_00559c84 != '\0' || DAT_07e11d71 != '\0') {
+//     if (DAT_00559c84 != '\0' || TabInputEnable != '\0') {
 //       GL_ResetBlend();
 //       Texture_Draw2D(0xf8, 186, 415, 134, 29, 0,0,0.520,0.906, ...); // input bg left
 //       Texture_Draw2D(0xf9, 320, 415, 134, 29, 0,0,0.520,0.906, ...); // input bg right
 //       GL_SetMode(1);
 //       // Font size proporcional al ancho de pantalla
-//       DAT_00559c8c = min((DAT_0056156c * 180) / 640, 0x100);
+//       InputTextWidth = min((DAT_0056156c * 180) / 640, 0x100);
 //       DrawInputCaret(0xbf, 0x1a6, 0);   // cursor en el input box de chat
-//       DAT_00559c8c = (DAT_0056156c * 50) / 640;
+//       InputTextWidth = (DAT_0056156c * 50) / 640;
 //       DrawInputCaret(0x178, 0x1a6, 1);
-//       DAT_00559c8c = 0x100;
+//       InputTextWidth = 0x100;
 //       DAT_00559c78 = 0xffc8c8c8;   // gris claro
 //       SetBackgroundTextColor = 0x64000000;   // transparente
 //       // Iterar historial de chat (array en &DAT_07e113e4, stride 0x100)
@@ -228,18 +228,18 @@
 //         lpString += 0x100;
 //         iVar2++;
 //       } while (lpString < 0x7e118e4);
-//       // Ícono de susurros activados (if m_bBlockWhisper = DAT_00559bf0)
-//       if (DAT_00559bf0 != '\0'):
+//       // Ícono de susurros activados (if m_bBlockWhisper = m_bBlockWhisper)
+//       if (m_bBlockWhisper != '\0'):
 //         Texture_Draw2D(0xef, 432, 420, 15, 16, 0,0,0.9375,1.0, ...);
 //     }
 //   }
 //
 //   Globals:
 //   DAT_00559c84   — chat input visible flag
-//   DAT_07e11d71   — chat overlay flag
+//   TabInputEnable   — chat overlay flag
 //   DAT_07e113e4   — chat history buffer (stride 0x100, ~10 entradas hasta 0x7e118e4)
 //   DAT_00559cc4   — índice del mensaje más reciente
-//   DAT_00559bf0   — m_bBlockWhisper: interruptor de susurros (F3)
+//   m_bBlockWhisper   — m_bBlockWhisper: interruptor de susurros (F3)
 //   0xf8/0xf9     → background del chat input box
 //   0xef          → ícono de desconexión
 //
@@ -372,8 +372,8 @@
 //     if (GuildOpened != '\0') {
 //       FUN_004f0810(0x1c2, 0);   // PrepareIconButton1(state)
 //       glColor3f(1,1,1);
-//       fVar1 = (float)DAT_07e91788 + _DAT_00552464;
-//       fVar2 = (float)DAT_07e91784 + _DAT_0055246c;
+//       fVar1 = (float)GuildListStartX + _DAT_00552464;
+//       fVar2 = (float)GuildListStartY + _DAT_0055246c;
 //       Texture_Draw2D(0x118, fVar1, fVar2, 24, 24, 0,0,0.75,0.75, ...);
 //       // Tooltip si hover: DAT_07d39ef4, posición (ftol()-13, ftol())
 //       if (mouse_in_rect(fVar1,fVar2,24,24)):
@@ -383,7 +383,7 @@
 //     // Botón ícono pequeño 2 (CharacterOpened != '\0')
 //     if (CharacterOpened != '\0') {
 //       FUN_004ecc60(0x1c2, 0);   // PrepareIconButton2(state)
-//       // similar al anterior pero con DAT_07ea982c/9830 y tooltip DAT_07d3a14c
+//       // similar al anterior pero con CharacterInfoStartX/9830 y tooltip DAT_07d3a14c
 //     }
 //
 //     FUN_004ef160(0x1c2, 0);   // RenderSkillSlot_0(state)
@@ -403,8 +403,8 @@
 //   GuildOpened   — flag icono 1 visible
 //   CharacterOpened   — flag icono 2 visible
 //   DAT_07ea5b1c/20 — posición X/Y botón 1
-//   DAT_07e91788/84 — posición X/Y icono 1
-//   DAT_07ea982c/30 — posición X/Y icono 2
+//   GuildListStartX/84 — posición X/Y icono 1
+//   CharacterInfoStartX/30 — posición X/Y icono 2
 //   DAT_07d39ef4   — tooltip string icono 1
 //   DAT_07d3a14c   — tooltip string icono 2
 //   0x118         → textura background botones

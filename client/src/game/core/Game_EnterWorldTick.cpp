@@ -227,11 +227,11 @@ void Game_EnterWorldTick(void)
         GuildCreatorOpened = 0; g_iKeyPadEnable = 0;
         DAT_07eaa14c = 0;
 
-        GuildInputEnable = 0; DAT_07e11d71 = 0; GoldInputEnable = 0;
+        GuildInputEnable = 0; TabInputEnable = 0; GoldInputEnable = 0;
         DAT_00559c84 = 1;
         ClearInput(1);
         DAT_07e11d78 = 0;
-        DAT_00559c8c = 0x5a;
+        InputTextWidth = 0x5a;
         InputNumber = 1;
 
         // 120× widget draw

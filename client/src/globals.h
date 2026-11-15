@@ -222,7 +222,7 @@ extern DWORD   DAT_005597c8;
 extern DWORD   DAT_0055987c;
 extern DWORD   DAT_005599b0;
 extern DWORD   DAT_005599e0;
-extern DWORD   DAT_00559bf0;   // IDA: m_bBlockWhisper (0x00559BF0), interruptor de susurros (F3)
+extern DWORD m_bBlockWhisper;   // IDA: m_bBlockWhisper (0x00559BF0)
 extern int    _DAT_00559b9c;   // wind speed result (fsin * tick, *10)
 extern DWORD   MouseUpdateTimeMax;  // IDA: MouseUpdateTimeMax (0x00559BEC) - movement cooldown threshold
 // Hover/selection state.  Names follow the 5.2 reference only where the
@@ -251,7 +251,7 @@ extern DWORD   SetBackgroundTextColor;   // IDA: DAT_00559c80 (0x00559C80)
 extern char    DAT_00559b80[];  // GM/admin name substring (Entity_FindNearby filter string)
 extern DWORD   InputEnable; // IDA: DAT_00559c84 (0x00559C84)
 extern DWORD   InputNumber;   // IDA: DAT_00559c88 (0x00559C88)
-extern DWORD   DAT_00559c8c;
+extern "C" int InputTextWidth;   // IDA: InputTextWidth (0x00559C8C)
 extern DWORD   DAT_00559c90;
 extern int     _InputTextMaxArr[8];
 // 0.97.40: tope en grapheme clusters por slot (0 = sólo el tope en bytes de
@@ -677,7 +677,7 @@ extern char    DAT_07e113e4[5 * 256];   // historial de chat: 5 entradas x 256B
 extern DWORD  _DAT_07e118e4;   // player facing angle (float, sent in movement packets)
 extern DWORD   DAT_07e118e8;   // world/map type
 extern char    GuildInputEnable;   // char-select init flag  [IDA 0x07E11D70]
-extern char    DAT_07e11d71;   // char-select flag B
+extern char TabInputEnable;   // IDA: TabInputEnable (0x07E11D71)
 extern char    GoldInputEnable;   // char-select flag C  [IDA 0x07E11D72]
 extern int     InputGold;   // gold / currency (checked vs 0x2faf081)  [IDA 0x07E11D74]
 extern DWORD   DAT_07e11d78;   // InputIndex — indice del campo de input activo (lo rota el Tab)
@@ -755,8 +755,8 @@ extern short   DAT_07e91394[10];   // IDA: word_7E91394
 extern char    DAT_07eaa1a4;       // IDA: byte_7EAA1A4
 extern DWORD   DAT_07e913a8;
 extern DWORD   DAT_07e91428;
-extern DWORD   DAT_07e91784;
-extern DWORD   DAT_07e91788;
+extern int GuildListStartY;   // IDA: GuildListStartY (0x07E91784)
+extern int GuildListStartX;   // IDA: GuildListStartX (0x07E91788)
 extern DWORD   DAT_07e919b8;
 // Tabla de nombres stride 80 (guild members / buffs). NO es un DWORD: los
 // consumidores (HUD_Pass2, HUD_Pass3, SecondPassword, SMD_Parser y el
@@ -794,8 +794,8 @@ extern char    DAT_07ea9815;
 extern char    DAT_07ea9816;
 extern char    DAT_07ea9817;
 
-extern DWORD   DAT_07ea982c;   // Screen3 panel origin X
-extern DWORD   DAT_07ea9830;   // Screen3 panel origin Y
+extern int CharacterInfoStartX;   // IDA: CharacterInfoStartX (0x07EA982C)
+extern int CharacterInfoStartY;   // IDA: CharacterInfoStartY (0x07EA9830)
 extern char    DAT_07ea9834[41];    // IDA: nombre remoto de Trade (0.97.40: 40 bytes del paquete + NUL)
 extern char    DAT_07ea983e;
 extern "C" int g_nGuildMemberCount;     // IDA: g_nGuildMemberCount (0x07EAA0D0)
@@ -1600,7 +1600,7 @@ extern float  _DAT_00552d44;   // UV scale U  (Texture_Draw2D)
 // Dialog text color control
 extern DWORD   DAT_00559c78;   // current text color ABGR (0xffffffff = white)
 // SetBackgroundTextColor — declared above as DWORD
-// DAT_00559c8c — declared above as DWORD
+// InputTextWidth — declarado arriba (int)
 // Toggle flags
 extern char    m_bAutoAttack;   // IDA: m_bAutoAttack (0x00559C5C)
 extern char    m_bWhisperSound;   // IDA: m_bWhisperSound (0x07E11D80) — aviso sonoro de susurros
@@ -1699,7 +1699,7 @@ extern char    lpString_07d55b18[300];     // dialog string 0x24
 extern char    lpString_07d5f94c[300];     // dialog string 0x8f (guild membership)
 
 // ── GL_State cached state globals ────────────────────────────────────────────
-extern int     DAT_083a412c;   // current blend mode (0=off 2=SrcOver 3=Add 4=SrcAlpha)
+extern int AlphaBlendType;   // IDA: AlphaBlendType (0x083A412C)
 extern char    AlphaTestEnable;  // IDA: AlphaTestEnable (0x083A411D) - cache (glEnable/Disable 0xBC0). El comentario viejo decia 'fog' y es FALSO: ver GL_SetAlphaTest/680.
 extern char    TextureEnable;  // IDA: TextureEnable (0x083A4125) - cache (glEnable/Disable 0xDE1 = GL_TEXTURE_2D). El comentario viejo decia 'depth test' y es FALSO.
 extern int     DAT_083a42f4;   // screenshot active flag

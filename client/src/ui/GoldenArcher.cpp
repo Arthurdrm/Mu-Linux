@@ -63,7 +63,7 @@ extern "C" int g_GoldenArcherCustom = 0;
 #define GA_InputGold         InputGold
 #define GA_StorageGoldFlag   StorageGoldFlag
 #define GA_InputNumber       InputNumber
-#define GA_InputTextWidth    DAT_00559c8c
+#define GA_InputTextWidth    InputTextWidth
 #define GA_InputIndex        DAT_07e11d78
 #define GA_WindowWidth       ((int)gWindow.GetWidth())
 #define GA_WindowHeight      ((int)gWindow.GetHeight())

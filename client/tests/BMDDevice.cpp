@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-int DAT_083a412c=0;
+int AlphaBlendType=0;
 char CullFaceEnable=0,AlphaTestEnable=0,TextureEnable=0,DepthTestEnable=0,FogEnable=0;
 DWORD DepthMaskEnable=0,DAT_00561574=0xffffffffu;
 char* g_BitmapsRaw=ResourceTables::TextureBase();
@@ -100,7 +100,7 @@ void SetupView(int view,bool alpha,unsigned texture){
     if(view%2){Gfx::Translate(.07f,.12f,0);const float scale[16]{.8f,0,0,0, 0,.7f,0,0, 0,0,1,0, 0,0,0,1};RenderState::MultiplyMatrix(scale);}
     Gfx::MatrixMode(Gfx::Matrix::ModelView);
     Gfx::ClearColor(.1f,.2f,.3f,.4f);Gfx::Clear(Gfx::ClearColorBuffer|Gfx::ClearDepthBuffer);
-    DAT_083a412c=alpha?2:0;CullFaceEnable=alpha?0:1;AlphaTestEnable=alpha?1:0;TextureEnable=1;DepthTestEnable=1;DepthMaskEnable=1;FogEnable=0;
+    AlphaBlendType=alpha?2:0;CullFaceEnable=alpha?0:1;AlphaTestEnable=alpha?1:0;TextureEnable=1;DepthTestEnable=1;DepthMaskEnable=1;FogEnable=0;
 }
 void CheckCoreProgram(){
     int program=0;glGetIntegerv(GL_CURRENT_PROGRAM,&program);assert(program);unsigned shaders[2]{};int count=0;glGetAttachedShaders(unsigned(program),2,&count,shaders);assert(count==2);

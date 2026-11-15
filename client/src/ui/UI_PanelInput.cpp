@@ -258,10 +258,10 @@ LAB_FUN_004e4760_end:
             typedef int (__fastcall *FnTick)(DWORD*, int /*edx*/, int);
             ((FnTick)vt[5])(obj, 0, 0);
         }
-        if ((int)(DAT_07e91788 + 0x19) <= (int)MouseX &&
-            (int)MouseX < (int)(DAT_07e91788 + 0x31) &&
-            (int)(DAT_07e91784 + 0x18b) <= (int)MouseY &&
-            (int)MouseY < (int)(DAT_07e91784 + 0x1a3) &&
+        if ((int)(GuildListStartX + 0x19) <= (int)MouseX &&
+            (int)MouseX < (int)(GuildListStartX + 0x31) &&
+            (int)(GuildListStartY + 0x18b) <= (int)MouseY &&
+            (int)MouseY < (int)(GuildListStartY + 0x1a3) &&
             IsClickPushed()) {
             MouseLButtonPush = '\0';
             GuildOpened = '\0';
@@ -321,7 +321,7 @@ void __cdecl Party_MemberClickHandler(void) {
 }
 // IDA: sub_4E5DE0 (0x004E5DE0) — hit-test del panel de personaje.
 // Envío del paquete de selección de personaje: por cada uno de los hasta 0x10 botones de personaje de la columna,
-// chequea si el mouse clickeó en el área de la fila [DAT_07ea982c+0x7d,+0x95) x [DAT_07ea9830+0x73+row*15, +0x18).
+// chequea si el mouse clickeó en el área de la fila [CharacterInfoStartX+0x7d,+0x95) x [CharacterInfoStartY+0x73+row*15, +0x18).
 // Guard de entrada: CharacterOpened tiene que ser distinto de cero. También chequea *(short*)(CharacterAttribute+0x54) != 0.
 // On click: sends 4-byte packet {0xC1,0x01,0x00,opcode_xored}.
 //   opcode plain byte = (byte)(row_index), XOR CNetwork::XorKey[3]=0x89, prev_plain_at[4]=4 → cipher = row^0x89^4
@@ -329,19 +329,19 @@ void __cdecl Party_MemberClickHandler(void) {
 //   El largo del paquete depende de los datos de cada fila. Clave: la misma de 32 bytes.
 // After click: PlayBuffer(0x19,0,0).
 // HashTable ref-count noise around DAT_07cf1ffc is anti-tamper, skipped.
-// Back button [DAT_07ea982c+0x19,+0x31) x [DAT_07ea9830+0x18b,+0x1a3):
+// Back button [CharacterInfoStartX+0x19,+0x31) x [CharacterInfoStartY+0x18b,+0x1a3):
 //   → clear CharacterOpened, PlayBuffer(0x19/0x1c), MouseUpdateTime=0, MouseUpdateTimeMax=6.
 void __cdecl CharacterInfo_HitTest(void) {
     // IDA sub_4E5DE0 = hit-test del panel Character, con CharacterInfoStartX/Y
-    // (DAT_07ea982c/30) como base. Mientras el origen no esté escrito (== 0) se
+    // (CharacterInfoStartX/30) como base. Mientras el origen no esté escrito (== 0) se
     // sale, para no disparar hit-tests fantasma del lado izquierdo.
-    if (CharacterOpened == '\0' || DAT_07ea982c == 0) return;
+    if (CharacterOpened == '\0' || CharacterInfoStartX == 0) return;
 
     // Mouse hover zone
-    if ((int)MouseX >= (int)DAT_07ea982c &&
-        (int)MouseX <  (int)(DAT_07ea982c + 0xbe) &&
-        (int)MouseY >= (int)DAT_07ea9830 &&
-        (int)MouseY <  (int)(DAT_07ea9830 + 0x1b1)) {
+    if ((int)MouseX >= (int)CharacterInfoStartX &&
+        (int)MouseX <  (int)(CharacterInfoStartX + 0xbe) &&
+        (int)MouseY >= (int)CharacterInfoStartY &&
+        (int)MouseY <  (int)(CharacterInfoStartY + 0x1b1)) {
         MouseOnWindow = 1;
     }
 
@@ -364,9 +364,9 @@ void __cdecl CharacterInfo_HitTest(void) {
     // Gate `*(short*)(CharacterAttribute + 0x54) != 0` = LevelUpPoint, fiel.
     if (*(short *)((BYTE*)CharacterAttribute + 0x54) != 0) {
         while (iRowAccum < 240) {
-            int rowY = iRowAccum + (int)DAT_07ea9830 + 115;
-            if (iX >= (int)(DAT_07ea982c + 125) &&
-                iX <  (int)(DAT_07ea982c + 149) &&
+            int rowY = iRowAccum + (int)CharacterInfoStartY + 115;
+            if (iX >= (int)(CharacterInfoStartX + 125) &&
+                iX <  (int)(CharacterInfoStartX + 149) &&
                 iY >= rowY && iY < rowY + 24 &&
                 IsClickPushed()) {
 
@@ -385,10 +385,10 @@ void __cdecl CharacterInfo_HitTest(void) {
     }
 
     // Back button
-    if ((int)iX >= (int)(DAT_07ea982c + 0x19) &&
-        (int)iX <  (int)(DAT_07ea982c + 0x31) &&
-        (int)MouseY >= (int)(DAT_07ea9830 + 0x18b) &&
-        (int)MouseY <  (int)(DAT_07ea9830 + 0x1a3) &&
+    if ((int)iX >= (int)(CharacterInfoStartX + 0x19) &&
+        (int)iX <  (int)(CharacterInfoStartX + 0x31) &&
+        (int)MouseY >= (int)(CharacterInfoStartY + 0x18b) &&
+        (int)MouseY <  (int)(CharacterInfoStartY + 0x1a3) &&
         IsClickPushed()) {
 
         MouseLButtonPush = '\0';

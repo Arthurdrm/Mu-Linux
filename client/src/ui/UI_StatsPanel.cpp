@@ -42,7 +42,7 @@ int RenderErrorMessage(void)
   char   local_c8 [100];  // text format buffer (was LPCSTR[25], corrected)
   CHAR local_64 [100];
 
-  DAT_00559c8c = 0x100;
+  InputTextWidth = 0x100;
   gOptionsMenu.OnErrorMessageFrame();   // DESVIACION (DLL OptionsMenu, hook 0x0051AF65)
   GL_ResetState();
   Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
@@ -329,14 +329,14 @@ LAB_0051c13d:
       local_d8 = 0x3c;
       GL_DrawTexture(0xf0,213.0,60.0,213.0,64.0,0.0,0.0,0.83203125,1.0,'\x01','\x01');
       if (ErrorMessage == 0x74) {
-        DAT_00559c8c = 100;
+        InputTextWidth = 100;
         UI_RenderInputField(0x116,0x62,0);
-        DAT_00559c8c = 0x100;
+        InputTextWidth = 0x100;
       }
       else if (((ErrorMessage == 0x72) || (ErrorMessage == 0x7e)) || (ErrorMessage == 0x98)) {
-        DAT_00559c8c = 100;
+        InputTextWidth = 100;
         UI_RenderInputField(0xf3,0x62,0);
-        DAT_00559c8c = 0x100;
+        InputTextWidth = 0x100;
         if (((MouseX < 0x143) || (0x16a < MouseX)) ||
            ((MouseY < 0x62 || (0x76 < MouseY)))) {
           iVar3 = 0xf1;

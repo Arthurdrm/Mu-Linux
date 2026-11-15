@@ -61,16 +61,12 @@ extern "C" void Net_SendNpcTalkClose(void);
 
 // Origen (esquina superior izquierda) de los paneles Character / Guild.
 //
-// Son los globals reales (CharacterInfoStartX/Y = DAT_07ea982c/30,
-// GuildListStartX/Y = DAT_07e91788/84), no copias locales: los hit-tests de
+// Son los globals reales (CharacterInfoStartX/Y = CharacterInfoStartX/30,
+// GuildListStartX/Y = GuildListStartX/84), no copias locales: los hit-tests de
 // cierre (GuildCreator_HitTest / CharacterInfo_HitTest en Net/SecondPassword,
 // port de sub_4E4760 L617-629 y sub_4E5DE0 L336-357) los leen, y
 // CharacterInfo_HitTest/Party_MemberClickHandler hacen early-return cuando el
 // origen es 0.
-#define CharacterInfoStartX  (*(int*)&DAT_07ea982c)
-#define CharacterInfoStartY  (*(int*)&DAT_07ea9830)
-#define GuildListStartX      (*(int*)&DAT_07e91788)
-#define GuildListStartY      (*(int*)&DAT_07e91784)
 // PartyStartX/Y (= Inventory[32].DamageMin / .SuccessfulBlocking en el IDA,
 // leídos por sub_4E5500 L168-175 para el botón de cerrar del panel de party).
 #define PartyStartX          (*(int*)&DAT_07ea5b24)

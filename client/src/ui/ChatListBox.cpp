@@ -121,7 +121,7 @@ static int Chat_BBoxHit(int x, int y, int w, int h, int mode)
 // DESVIACION: mientras se escribe, el campo de texto ocupa la franja de los botones
 // del popup (415..444) y el original los ocultaba. Ahora suben 20 px, quedan siempre
 // visibles y siguen respondiendo.
-static bool ChatTyping() { return DAT_00559c84 != 0 || DAT_07e11d71 != 0; }
+static bool ChatTyping() { return DAT_00559c84 != 0 || TabInputEnable != 0; }
 // Los 5 botones del popup (gestos, ver chat, tamano, transparencia, emotes) quedan centrados
 // en la pantalla de 640: el cluster original era de 3 y arrancaba en 295.
 static float ChatButtonsX() { return 320.0f - (4.0f * ChatListBox_TabButtonSpacing + 16.0f) * 0.5f; }

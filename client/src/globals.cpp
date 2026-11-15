@@ -256,7 +256,7 @@ DWORD    DAT_005599b0  = 0;
 DWORD    DAT_005599e0  = 0;
 // IDA: m_bBlockWhisper (0x00559BF0) -- interruptor de susurros (F3; icono 239
 // del chat).  En .data vale 1: arrancan activados.
-DWORD    DAT_00559bf0  = 1;
+DWORD    m_bBlockWhisper  = 1;   // IDA: m_bBlockWhisper (0x00559BF0)
 // DAT_00559c4c/50 are defined below in the named hover/targeting section.
 DWORD    DAT_00559c78  = 0xffffffff;
 // 0x00559C7C — IDA `SetTextColor_0`: color del PREFIJO (nombre de guild) en la
@@ -268,7 +268,7 @@ char     DAT_00559b80[64] = "";   // GM/admin name filter string (Entity_FindNea
 DWORD    SetBackgroundTextColor  = 0;
 DWORD    InputEnable  = 0; // IDA: DAT_00559c84 (0x00559C84)
 DWORD    InputNumber  = 0;
-DWORD    DAT_00559c8c  = 0;
+extern "C" int    InputTextWidth  = 0;   // IDA: InputTextWidth (0x00559C8C)
 DWORD    DAT_00559c90  = 0;
 // InputTextMax[] vive en 0x00559c94 en el binario original como UN array int
 // contiguo (stride 4): `(&InputTextMax)[1]` es el slot del password. Por eso todos
@@ -806,8 +806,8 @@ short    DAT_07e91394[10] = {0};   // digitos barajados del teclado del PIN
 char     DAT_07eaa1a4  = 0;        // IDA: byte_7EAA1A4 (prefijo del campo enmascarado)
 DWORD    DAT_07e913a8  = 0;
 DWORD    DAT_07e91428  = 0;
-DWORD    DAT_07e91784  = 0;
-DWORD    DAT_07e91788  = 0;
+int    GuildListStartY  = 0;   // IDA: GuildListStartY (0x07E91784)
+int    GuildListStartX  = 0;   // IDA: GuildListStartX (0x07E91788)
 DWORD    DAT_07e919b8  = 0;
 // Tabla de nombres (guild members / buffs), stride 80 (0x50). En el binario
 // va de 0x07E919BC al centinela dword_7EA51EC (0x07EA51EC) = 0x13C30 bytes.
@@ -847,8 +847,8 @@ DWORD    DAT_07ea9810  = 0;
 // en escalares sueltos, asi que lo que se tipeaba no llegaba a los lectores.
 char     DAT_07ea9814[16] = {0};
 // DAT_07ea9818 / 981c / 981e / 981f: alias dentro de DAT_07ea9814 (globals.h)
-DWORD    DAT_07ea982c  = 0;   // Screen3 panel origin X
-DWORD    DAT_07ea9830  = 0;   // Screen3 panel origin Y
+int    CharacterInfoStartX  = 0;   // IDA: CharacterInfoStartX (0x07EA982C)
+int    CharacterInfoStartY  = 0;   // IDA: CharacterInfoStartY (0x07EA9830)
 char     DAT_07ea9834[41] = {};   // 0.97.40: nombre de 40 bytes + NUL
 char     DAT_07ea983e  = 0;
 DWORD    GuildPlayerKey  = 0;  // IDA: GuildPlayerKey (0x07EAA0D8)
@@ -1158,7 +1158,7 @@ char     DAT_007eaa11  = 0;
 // d70/d71/d72 (si siguen en 0xCC, el escritor está más lejos).
 char     g_PadBeforeChatMode[64] = { static_cast<char>(0xCC) };
 char     GuildInputEnable  = 0;
-char     DAT_07e11d71  = 0;
+char     TabInputEnable  = 0;   // IDA: TabInputEnable (0x07E11D71)
 char     GoldInputEnable  = 0;
 char     g_PadAfterChatMode[64]  = { static_cast<char>(0xCC) };
 DWORD    DAT_07e11d78  = 0;
@@ -1612,7 +1612,7 @@ float   _DAT_00552d40 = 213.0f;
 float   _DAT_00552d44 = 0.0078125f;
 // DAT_00559c78 — defined above (DWORD); using 0xffffffff as initial value there
 // SetBackgroundTextColor — defined above (DWORD)
-// DAT_00559c8c — defined above (DWORD)
+// InputTextWidth — definido arriba (int)
 // m_bAutoAttack — defined above (char)
 char     m_bWhisperSound  = 0;
 // DAT_07d29d24 es un alias de GlobalText (ver globals.h): se recorre con
@@ -1721,7 +1721,7 @@ char     lpString_07d55b18[300] = {};
 char     lpString_07d5f94c[300] = {};
 
 // ── GL_State cached state ─────────────────────────────────────────────────────
-int     DAT_083a412c = 0;
+int     AlphaBlendType = 0;   // IDA: AlphaBlendType (0x083A412C)
 char    AlphaTestEnable = 0;  // IDA: AlphaTestEnable (0x083A411D)
 char    TextureEnable = 0;  // IDA: TextureEnable (0x083A4125)
 int     DAT_083a42f4 = 0;

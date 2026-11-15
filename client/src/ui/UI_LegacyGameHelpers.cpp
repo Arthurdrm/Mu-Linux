@@ -21,7 +21,7 @@ extern void MapFileDecrypt(BYTE* buf, int size);
 
 // UI/game helpers
 // Item_ReturnPickedItem @ 0x004CD3B0 — UI_ItemGrid_Fill
-// Fills 2D grid buffers with current item slot data (DAT_07e91350) for equipment display.
+// Fills 2D grid buffers with current item slot data (pPickedItem) for equipment display.
 // Dispatches by DAT_07ea9800; each grid entry = 0x11 dwords, selection flag at offset 0x38.
 //
 // IDA sub_4CD3B0:
@@ -35,9 +35,9 @@ extern void MapFileDecrypt(BYTE* buf, int size);
 // IDA: sub_4CD3B0 (0x004CD3B0)
 void __cdecl Item_ReturnPickedItem(void)
 {
-    if ((int)DAT_07e91388 < 1) return;
+    if ((int)pPickedItemKey < 1) return;
 
-    const int type = (int)*(short*)DAT_07e91350;           // (std::int16_t)pPickedItem
+    const int type = (int)*(short*)pPickedItem;           // (std::int16_t)pPickedItem
     const BYTE* attr = (const BYTE*)(uintptr_t)DAT_07d78068 + type * 0x40;
     const int w = attr[0x20];
     const int h = attr[0x21];
@@ -51,7 +51,7 @@ void __cdecl Item_ReturnPickedItem(void)
         for (int row = row0; row < row0 + h; ++row)
             for (int col = col0; col < col0 + w; ++col) {
                 BYTE* cell = pool + (col + row * 8) * 0x44;
-                memcpy(cell, DAT_07e91350, 0x44);
+                memcpy(cell, pPickedItem, 0x44);
                 *(int*)(cell + 0x38) = (row == selRow && col == selCol) ? 1 : 0;
             }
     };
@@ -66,10 +66,10 @@ void __cdecl Item_ReturnPickedItem(void)
             if (bug)
                 CreateBug(bug, (void*)(DAT_07abf5d8 + 0x10), (void*)DAT_07abf5d8, 0);
         }
-        memcpy((BYTE*)CharacterMachine + 68 * pos + 536, DAT_07e91350, 0x44);
+        memcpy((BYTE*)CharacterMachine + 68 * pos + 536, pPickedItem, 0x44);
     }
 
-    DAT_07e91388 = 0;
+    pPickedItemKey = 0;
     if (DAT_07abf5d8) SetCharacterClass(AsCharacter(DAT_07abf5d8));      // SetCharacterClass(Hero)
     PlayBuffer(29, 0, 0);                                  // PlayBuffer(29)
     // (bloques de hash-table anti-tamper omitidos)

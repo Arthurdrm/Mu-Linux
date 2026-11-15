@@ -606,7 +606,7 @@ extern "C" BOOL ChaosBoxRequestClose(void) {
         return TRUE;
     }
 
-    if (!ChaosBoxIsEmptyForClose() || DAT_07e91388 > 0) {
+    if (!ChaosBoxIsEmptyForClose() || pPickedItemKey > 0) {
         UIChatLogWindow_AddText("", GlobalText[593], 2);
         return FALSE;
     }

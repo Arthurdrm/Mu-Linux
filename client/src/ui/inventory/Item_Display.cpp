@@ -321,7 +321,7 @@ unsigned int __stdcall Inventory_DropItemEx(int origin_x, int origin_y,
     // Return value: low byte used as bool success flag by caller.
 
     // --- Alias Ghidra globals to readable names ---
-    // pPickedItem       = DAT_07e91350 (short, type of item being dragged)
+    // pPickedItem       = pPickedItem (short, type of item being dragged)
     // ItemAttribute     = DAT_07d78068 (ITEM_ATTRIBUTE*, stride 0x40)
     // OffsetInventoryItems = DAT_07ea8410 (inventory item array base)
     // OffsetWarehouseItems = DAT_07ea5b30 (warehouse item array base, char type in globals)
@@ -345,7 +345,7 @@ unsigned int __stdcall Inventory_DropItemEx(int origin_x, int origin_y,
     // EnableUse         = DAT_05826d1c (extern EnableUse)
 
 
-    short pickedType = *(short*)DAT_07e91350;
+    short pickedType = *(short*)pPickedItem;
     ITEM_ATTRIBUTE* pAttr = (ITEM_ATTRIBUTE*)DAT_07d78068;
     if (!pAttr || pickedType < 0) return 0;
     int itemWidth  = (int)pAttr[pickedType].Width;
@@ -609,7 +609,7 @@ unsigned int __stdcall Inventory_DropItemEx(int origin_x, int origin_y,
         EquipmentItem = '\x01';
         InventoryMove_SetPendingPools(sourceInvBase, invBase);
         SendRequestEquipmentItem(sourceMoveFlag, (int)DAT_07ea5b18,
-            (ITEM*)DAT_07e91350, targetMoveFlag, (int)DAT_07e11e78);
+            (ITEM*)pPickedItem, targetMoveFlag, (int)DAT_07e11e78);
         actionTaken = true;
         goto drop_done;
     }
@@ -633,7 +633,7 @@ unsigned int __stdcall Inventory_DropItemEx(int origin_x, int origin_y,
     EquipmentItem = '\x01';
     InventoryMove_SetPendingPools(sourceInvBase, invBase);
     SendRequestEquipmentItem(sourceMoveFlag, (int)DAT_07ea5b18,
-        (ITEM*)DAT_07e91350, targetMoveFlag, (int)DAT_07e11e78);
+        (ITEM*)pPickedItem, targetMoveFlag, (int)DAT_07e11e78);
     actionTaken = true;
 
 drop_done:

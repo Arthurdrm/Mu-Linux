@@ -204,7 +204,7 @@ static bool HUD_PanelTail97k(HudPanelTail kind)
         if (EquipmentItem) return false;                     // EquipmentItem
         InventoryOpened = 0;                                   // InventoryOpened
         CloseInventoryRelatedWindows();
-        if ((int)DAT_07e91388 > 0) Item_ReturnPickedItem();
+        if ((int)pPickedItemKey > 0) Item_ReturnPickedItem();
         const BYTE pkt[3] = { 0xC1, 0x03, 0x82 };
         gNetwork.SendC1(pkt, sizeof(pkt));
         return true;
@@ -423,7 +423,7 @@ static bool HUD_IsAnyRightPanelOpen(void)
 extern bool g_bAutoGetItem;
 static void HUD_PickUpNearestItem(void)
 {
-    if (!Hero || (int)DAT_07e91388 > 0) return;                 // item en el cursor
+    if (!Hero || (int)pPickedItemKey > 0) return;                 // item en el cursor
     if ((int)MouseX >= GetScreenWidth() || (int)MouseY >= 429) return;
     const float heroX = *(const float*)(Hero + 16);
     const float heroY = *(const float*)(Hero + 20);

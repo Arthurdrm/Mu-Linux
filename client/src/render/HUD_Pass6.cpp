@@ -84,8 +84,8 @@ extern "C" void   __cdecl CreateGuildMark(int nMarkIndex, bool blend);
 extern "C" void GuildMark_InitializePalette(bool blend);
 extern "C" int    InputTextWidth;
 extern "C" BYTE   InputTextHide[10];
-#define dword_7E91388 DAT_07e91388
-extern "C" DWORD DAT_07e91388;
+#define dword_7E91388 pPickedItemKey
+extern "C" DWORD pPickedItemKey;
 extern "C" char   DAT_07ea51f5[64];
 extern "C" char   DAT_07eaa0dc;
 // ShopOpened/WarehouseOpened/ChaosMixOpened/EventWindowOpened/PartyOpened/
@@ -103,20 +103,8 @@ extern "C" void   __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int gr
 #define ItemAttribute            ((ITEM_ATTRIBUTE*)DAT_07d78068)
 
 
-// pPickedItem global (item being dragged).  Stored as int (cast to short
-// in IDA).  Level / byte_7E9136B accompany it.
 extern "C" {
-    int   pPickedItem            = -1;
-    int   Level                  = 0;
-    BYTE  byte_7E9136B           = 0;
     int   RepairEnable_0         = 0;      // repair button enable
-}
-
-extern "C" void __cdecl SyncPickedItemVisualState(void)
-{
-    pPickedItem = (int)(short)*(short*)DAT_07e91350;
-    Level = *(int*)(DAT_07e91350 + 4);
-    byte_7E9136B = *(BYTE*)(DAT_07e91350 + 27);
 }
 
 // Aliases for IDA float constants used by sub_5126E0.
@@ -156,17 +144,19 @@ int __cdecl sub_4E9300_(void)
 extern "C" void __cdecl sub_4F6420(int /*a1*/, int /*a2*/, int /*a3*/, int /*a4*/);
 void __cdecl sub_4F6420(int, int, int, int)
 {
-    SyncPickedItemVisualState();
-    if (pPickedItem < 0) return;
+    // pPickedItem es el ITEM que lleva el cursor (IDA 0x07E91350): el tipo,
+    // el nivel y el byte de opciones se leen de ahi.
+    const ITEM* picked = (const ITEM*)pPickedItem;
+    if (picked->Type < 0) return;
     if (dword_7E91388 <= 0) return;
 
-    ITEM_ATTRIBUTE* v0 = &ItemAttribute[(short)pPickedItem];
+    ITEM_ATTRIBUTE* v0 = &ItemAttribute[picked->Type];
     float Width  = (float)((double)v0->Width  * 20.0);
     float Height = (float)((double)v0->Height * 20.0);
     float sx = (float)((double)MouseX - Width  * 0.5);
     float sy = (float)((double)MouseY - Height * 0.5);
     RenderItem3D(sx, sy, Width, Height,
-                 (short)pPickedItem, Level, byte_7E9136B, 0, 1);
+                 picked->Type, picked->Level, picked->Option1, 0, 1);
 }
 
 // =============================================================================
@@ -1855,7 +1845,7 @@ extern "C" void __cdecl RenderEventWindow(void)
         const int maxLevel = bloodCastle ? m_iBloodCastleLimitLevel[limitRow][1]
                                          : m_iDevilSquareLimitLevel[row][1];
 
-        const bool inRect = button.Contains((int)MouseX, (int)MouseY) && DAT_07e91388 == 0;
+        const bool inRect = button.Contains((int)MouseX, (int)MouseY) && pPickedItemKey == 0;
 
         if (bloodCastle) {
             const bool permitted = (charLevel <= (unsigned)maxLevel && charLevel >= (unsigned)minLevel);

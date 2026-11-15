@@ -436,7 +436,7 @@
 //     // Según modo de vista (GoldenArcherOpenType):
 //     if (GoldenArcherOpenType == 0 || GoldenArcherOpenType == 3):
 //       FUN_004f5ce0();    // Skill_RenderEffects()
-//       if (DAT_07e91388 > 0 && DAT_07eaa13c == 0):
+//       if (pPickedItemKey > 0 && DAT_07eaa13c == 0):
 //         FUN_004f6420();  // TeleportEffect_Render()
 //       // Renderizar skill hotbar (items con cooldown):
 //       for i in 0..N:
@@ -468,7 +468,7 @@
 //   CameraViewFar   — far_clip
 //   DAT_083a42d4/d8/dc — camera world position (X/Y/Z)
 //   GoldenArcherOpenType   — view mode (0=normal, 3=?, otras=PvP?)
-//   DAT_07e91388   — teleport effect active
+//   pPickedItemKey   — teleport effect active
 //   DAT_07eaa13c   — teleport flag
 //   DAT_07ea8410   — hotbar item array (stride 0x22*2 = item_id)
 //   DAT_07ea8414   — hotbar count array (stride 0x11*4)

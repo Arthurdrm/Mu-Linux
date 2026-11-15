@@ -39,7 +39,7 @@ void RenderInfomation3D(void)
   GL_EnableDepthWrites();
 
   level = DAT_07e91354;
-  itemType = *(short*)DAT_07e91350;
+  itemType = *(short*)pPickedItem;
   option1 = DAT_07e9136b;
   if (ErrorMessage == 0x99) {
     level = DAT_07ea5244;

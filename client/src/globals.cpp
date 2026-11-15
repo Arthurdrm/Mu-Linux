@@ -798,8 +798,8 @@ DWORD    DAT_07e127f8  = 0;
 // DAT_07e12840.
 unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE] = {};
 DWORD    DAT_07e12945  = 0;
-char     DAT_07e91350[0x44]  = {0};
-DWORD    DAT_07e91388  = 0;
+alignas(4) char pPickedItem[0x44] = {0};   // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
+DWORD    pPickedItemKey  = 0;   // IDA: pPickedItem.Key (0x07E91388); en el port es una variable aparte
 byte     DAT_07e9138e  = 0;   // UI grid selected column
 byte     DAT_07e9138f  = 0;   // UI grid selected row
 short    DAT_07e91394[10] = {0};   // digitos barajados del teclado del PIN

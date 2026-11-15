@@ -118,7 +118,7 @@ void Mouse_UpdateHoverTargets(void)
         if ((char)((unsigned short)altState >> 8) == (char)0x80)
         {
             // Alt held: item-on-ground first, then NPC, mob, player
-            if (DAT_07e91388 == 0)
+            if (pPickedItemKey == 0)
                 SelectedItem = ItemOnGround_HoverTest();
             if (SelectedItem == -1) {
                 SelectedNpc = Entity_SelectNearest(4);
@@ -175,7 +175,7 @@ void Mouse_UpdateHoverTargets(void)
                     if (SelectedCharacter != -1) goto done;
                     SelectedNpc = Entity_SelectNearest(4);  // NPC
                     if (SelectedNpc == -1) {
-                        if (DAT_07e91388 == 0)
+                        if (pPickedItemKey == 0)
                             SelectedItem = ItemOnGround_HoverTest();
                         if (SelectedItem == -1)
                             SelectedOperate = SpecialObject_HoverTest();

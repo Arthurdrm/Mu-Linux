@@ -626,7 +626,7 @@ void __cdecl EventEntrance_HitTest(void) {
         if (row >= 6) return;
 
         MouseLButtonPush = 0;
-        if (DAT_07e91388) return;
+        if (pPickedItemKey) return;
 
         const int itemSlot = GetItemSlot(434, row + 1);
         if (itemSlot == -1) { CreateOkMessageBox(GlobalText[854]); return; }
@@ -653,7 +653,7 @@ void __cdecl EventEntrance_HitTest(void) {
     if (row >= 4) return;
 
     MouseLButtonPush = 0;
-    if (DAT_07e91388) return;
+    if (pPickedItemKey) return;
 
     int playerLevel = *(WORD*)((BYTE*)CharacterAttribute + 14);
     if ((*((BYTE*)CharacterAttribute + 11) & 7) == 3)   // Magic Gladiator
@@ -763,7 +763,7 @@ void __cdecl ServerTransfer_HitTest(void) {
 //   0         → UIChatLogWindow_AddText(&DAT_07eaa1a0, &DAT_07d544d4, 2) — show wrong-PIN message
 //   1,2,3,4,5,6,7,8,0xb → Inventory_HasFreeSpace(0x7ea8410, 8, 8, iVar1, iVar3) — send auth
 //     sub-switch: cases 1,7,0xb → iVar1=5 iVar3=4; case 8 → iVar1=2 iVar3=2; else → iVar1=DAT_0055a3f8 iVar3=DAT_0055a3fc
-//     si tiene éxito (retorno distinto de cero) y DAT_07e91388 < 1: setea DAT_07eaa13c=2, DAT_00559f5e=0xff,
+//     si tiene éxito (retorno distinto de cero) y pPickedItemKey < 1: setea DAT_07eaa13c=2, DAT_00559f5e=0xff,
 //     call ShowCheckBox(1, 0x21b, 0x97)
 //   0xfffffff8, 0xfffffffe → UIChatLogWindow_AddText(&DAT_07eaa19c, &DAT_07d55c44, 2) — show error message
 // After switch: PlayBuffer(0x19,0,0).
@@ -805,7 +805,7 @@ void __cdecl ChaosMix_HitTest(void) {
             if ((char)uVar2 == '\0') {
                 UIChatLogWindow_AddText(&DAT_07eaa198, &DAT_07d54600, 2);
             } else {
-                if ((int)DAT_07e91388 < 1) {
+                if ((int)pPickedItemKey < 1) {
                     DAT_07eaa13c = 2;
                     DAT_00559f5e = 0xff;
                     ShowCheckBox(1, 0x21b, 0x97);
@@ -952,7 +952,7 @@ void __cdecl Trade_InputTick(void) {
     if (TradeMyWait > 0) --TradeMyWait;
 
     // Botón de confirmación: [x+97,x+121) × [y+390,y+414).
-    if (TradeMyWait == 0 && DAT_07e91388 == 0 &&
+    if (TradeMyWait == 0 && pPickedItemKey == 0 &&
         (int)(TradeInventoryStartX + 0x61) <= (int)MouseX &&
         (int)MouseX < (int)(TradeInventoryStartX + 0x79) &&
         (int)(TradeInventoryStartY + 0x186) <= (int)MouseY &&
@@ -992,7 +992,7 @@ void __cdecl Trade_InputTick(void) {
         IsClickPushed()) {
         MouseLButtonPush = '\0';
         PlayBuffer(0x19, 0, 0);
-        if (DAT_07e91388 == 0) {
+        if (pPickedItemKey == 0) {
             DAT_07eaa0e8 = '\0';
             // CGTradeCancelButtonRecv: C1:3D, no payload.
             BYTE pkt3[3] = { 0xC1, 0x03, 0x3D };
@@ -1183,7 +1183,7 @@ uint __cdecl Net_Disconnect_Clean(void)
     if (EquipmentItem != '\0') return 0;
     InventoryOpened = 0;
     CloseInventoryRelatedWindows();
-    if (0 < (int)DAT_07e91388) Item_ReturnPickedItem();
+    if (0 < (int)pPickedItemKey) Item_ReturnPickedItem();
     const char pkt[3] = { (char)0xC1, 3, (char)0x82 };
     gNetwork.SendRaw(pkt, 3);
     return 1;

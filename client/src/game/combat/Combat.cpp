@@ -476,12 +476,12 @@ static void SendMove_CloseWindows97k(void)
         if (!EquipmentItem) {                                 // EquipmentItem
             InventoryOpened = 0;
             CloseInventoryRelatedWindows();
-            if ((int)DAT_07e91388 > 0) Item_ReturnPickedItem();
+            if ((int)pPickedItemKey > 0) Item_ReturnPickedItem();
             const BYTE pkt[3] = { 0xC1, 0x03, 0x82 };        // cerrar baul
             gNetwork.SendC1(pkt, sizeof(pkt));
         }
     } else if (ChaosMixOpened) {
-        if (!Connection_Check(OffsetMixItems, 8, 4) || (int)DAT_07e91388 > 0) {
+        if (!Connection_Check(OffsetMixItems, 8, 4) || (int)pPickedItemKey > 0) {
             UIChatLogWindow_AddText("", GlobalText[593], 2);
         } else {
             const BYTE pkt[3] = { 0xC1, 0x03, 0x87 };        // cerrar Chaos Machine
@@ -546,7 +546,7 @@ static bool SendMove_ChaosBoxBlocks97k(const CHARACTER* character)
 {
     if ((const char*)character != (const char*)DAT_07abf5d8 || !ChaosMixOpened)
         return false;
-    if (Connection_Check(OffsetMixItems, 8, 4) && (int)DAT_07e91388 <= 0)
+    if (Connection_Check(OffsetMixItems, 8, 4) && (int)pPickedItemKey <= 0)
         return false;
     UIChatLogWindow_AddText("", GlobalText[593], 2);
     return true;
@@ -1318,7 +1318,7 @@ static void Attack_Label1585_97k(char* entity, int iType, bool hasTarget)
         return;                                               // IDA L9262
 
     if (iType == 6) {                                         // IDA L9266 — Teleport
-        if (DAT_07e91388 > 0)                                 // IDA L9268: pPickedItem
+        if (pPickedItemKey > 0)                                 // IDA L9268: pPickedItem
             return;
         const BYTE currentAction = (BYTE)*(char *)&AsObject(entity)->CurrentAction;         // IDA: v946
         if (*(WORD *)&AsObject(entity)->Type == 390) {
@@ -1364,7 +1364,7 @@ static void Attack_Label1585_97k(char* entity, int iType, bool hasTarget)
 
     if (iType == 15 && SelectedCharacter != -1) {             // IDA L9737
         char* const target = (char*)(uintptr_t)CharactersClient + CHARACTER_STRIDE * (int)SelectedCharacter;
-        if (PartyNumber <= 0 || DAT_07e91388 > 0) {   // IDA L9740
+        if (PartyNumber <= 0 || pPickedItemKey > 0) {   // IDA L9740
             return;
             }
         const char* const targetName = EntityName::Get(target);

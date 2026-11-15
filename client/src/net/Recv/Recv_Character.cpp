@@ -1106,7 +1106,7 @@ void NetRecv_F3(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             //   +4 slot  .  +5.. ItemInfo
             if (Size < 5 + ITEM_INFO_SIZE) break;
             NetLog("NET:  -> F3/14 ItemModify slot=%d", Msg[4]);
-            DAT_07e91388 = 0;            // suelta el item agarrado
+            pPickedItemKey = 0;            // suelta el item agarrado
             InsertInventoryItem(OffsetInventoryItems, 8, 8, Msg[4],
                          (BYTE*)Msg + 5, 0);
             PlayBuffer(49, 0, 0);

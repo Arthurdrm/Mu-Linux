@@ -63,9 +63,6 @@ extern "C" void DbgLogPublic(const char* msg);
 int __cdecl Entity_FindById(int entity_id);   // Entity/Entity_Lookup.cpp
 extern "C" void __cdecl UI_Main(int slot_idx, short* inv_base,
                                  unsigned int gridW);  // Item_ClickHandler.cpp
-extern "C" int  pPickedItem;
-extern "C" int  Level;
-extern "C" BYTE byte_7E9136B;
 extern "C" int __cdecl ConvertItemType(BYTE* Item);
 extern "C" void ChaosBoxCloseAck(void);
 

@@ -805,7 +805,7 @@ void __cdecl Chat_InputTick(void)
                 if (DAT_07eaa132 == '\0') {
                     return;
                 }
-                if (DAT_07e91388 != 0) {
+                if (pPickedItemKey != 0) {
                     return;
                 }
                 // IDA L6671-6682: se alterna el BYTE 2 de dword_7EAA150 (el
@@ -838,7 +838,7 @@ void __cdecl Chat_InputTick(void)
                 // reparacion directamente (LABEL_1507); si no, pide tienda
                 // cerrada, inventario abierto y nivel >= 80.  Al port le
                 // faltaban la primera rama y el `!ShopOpened` de la segunda.
-                if (ShopOpened != 0 && DAT_07eaa132 != 0 && DAT_07e91388 == 0) {
+                if (ShopOpened != 0 && DAT_07eaa132 != 0 && pPickedItemKey == 0) {
                     DAT_07eaa134 = (DAT_07eaa134 == 0) ? 1 : 0;
                     ((BYTE*)&DAT_07eaa150)[2] = (DAT_07eaa134 != 0) ? 2 : 0;
                 } else if (ShopOpened == 0 && InventoryOpened != 0 && CharacterAttribute != nullptr) {

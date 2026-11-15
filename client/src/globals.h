@@ -747,8 +747,12 @@ extern DWORD   DAT_07e127f8;
 constexpr int GROUND_ITEM_STRIDE = 0x48 + OBJECT_STRIDE;  // cabecera + OBJECT
 extern unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
 extern DWORD   DAT_07e12945;   // sprite render loop base (stride 0x204)
-extern char    DAT_07e91350[0x44];      // pPickedItem — sizeof(ITEM) = 0x44
-extern "C" DWORD   DAT_07e91388;
+extern char    pPickedItem[0x44];       // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
+// IDA: pPickedItem.Key (0x07E91388), "hay un item en el cursor".  En el
+// port es una variable aparte del campo Key de pPickedItem: el pickup con
+// click derecho y el auto-equipado de flechas copian el item con su Key
+// puesto y la bandera se prende recien cuando el pickup se concreta.
+extern "C" DWORD   pPickedItemKey;
 extern byte    DAT_07e9138e;   // UI grid selected column (byte, Item_ReturnPickedItem)
 extern byte    DAT_07e9138f;   // UI grid selected row (byte, Item_ReturnPickedItem)
 extern short   DAT_07e91394[10];   // IDA: word_7E91394
@@ -1967,7 +1971,7 @@ extern char    s__4d__4d_30__4d__4d__1_00559b58[]; // format string
 // IDA: pPickedItem.Level (0x07E91354) — el campo +4 del item levantado, no un
 // global aparte.  Como variable propia valía siempre 0 y los chequeos de
 // apilado comparaban contra nivel 0.
-#define DAT_07e91354 (*(DWORD*)&DAT_07e91350[4])
+#define DAT_07e91354 (*(DWORD*)&pPickedItem[4])
 extern char    DAT_07e9136a;   // picked item durability/option byte
 extern char    DAT_07e9136b;
 // Buffer del item del dialogo ShowCheckBox(153) -- 0x44 bytes, 0x07EA5240.

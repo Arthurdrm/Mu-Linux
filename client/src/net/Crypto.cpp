@@ -1346,10 +1346,10 @@ void __cdecl InitGuildWar(void) {
     char *pPlayer = DAT_07abf5d8;
     int iVar4 = 400;
     do {
-        if (*(puVar3 - EntityOffset(0x2e9)) != '\0') {
+        if (*(puVar3 - offsetof(CHARACTER, GuildTeam)) != '\0') {
             short sVar1 = AsCharacter(pPlayer)->GuildMarkIndex;
             *puVar3 = 0;
-            if ((sVar1 != -1) && (AsCharacter((char*)puVar3 - EntityOffset(0x2e9))->GuildMarkIndex == sVar1))
+            if ((sVar1 != -1) && (AsCharacter((char*)puVar3 - offsetof(CHARACTER, GuildTeam))->GuildMarkIndex == sVar1))
                 *puVar3 = 1;
         }
         puVar3 += CHARACTER_STRIDE;

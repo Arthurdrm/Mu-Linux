@@ -610,7 +610,7 @@ void __cdecl EventEntrance_HitTest(void) {
         if (!MouseLButtonPush) return;
 
         const WORD charLevel = *(WORD*)((BYTE*)CharacterAttribute + 14);
-        const int mgOffset = ((((const BYTE*)Hero)[EntityOffset(444)] & 7) == 3) ? 6 : 0;
+        const int mgOffset = ((AsCharacter(Hero)->Class & 7) == 3) ? 6 : 0;
 
         int row = 0;
         for (; row < 6; ++row) {

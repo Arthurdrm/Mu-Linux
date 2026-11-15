@@ -328,7 +328,7 @@ LAB_00501064:
                     OpenMonsterModel(0x1f);   // play thunder sound
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0x12d;  // type = lightning
                     iVar12 = _rand();
-                    (*(unsigned int*)&g_WeatherSlotPool[EntityOffset(0x168) + iVar14 * OBJECT_STRIDE]) = 0x3f800000;
+                    AsObject(&g_WeatherSlotPool[iVar14 * OBJECT_STRIDE])->Alpha = 1.0f;
                     (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                     (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f000000;
                     WSLOT_DW(0x0dc) = 1;
@@ -398,7 +398,7 @@ LAB_00501064:
                 *(unsigned int *)(&DAT_0839bd98 + iVar2) = 0x3f000000;
                 *(unsigned int *)(&DAT_0839bd9c + iVar2) = 0x3f000000;
                 *(unsigned int *)(&DAT_0839bda0 + iVar2) = 0x3f000000;
-                (*(unsigned int*)&g_WeatherSlotPool[EntityOffset(0x168) + iVar14 * OBJECT_STRIDE]) = 0;
+                AsObject(&g_WeatherSlotPool[iVar14 * OBJECT_STRIDE])->Alpha = 0.0f;
                 (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                 *(unsigned int *)(&DAT_0839bd88 + iVar2) = 0x41500000;
                 (&DAT_0839bdb4)[iVar2] = 0;
@@ -430,7 +430,7 @@ LAB_00501064:
                         OpenMonsterModel(0x1f);
                         (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0x12d;
                         const int __rScale = _rand();
-                        (*(unsigned int*)&g_WeatherSlotPool[EntityOffset(0x168) + iVar14 * OBJECT_STRIDE]) = 0x3f800000;
+                        AsObject(&g_WeatherSlotPool[iVar14 * OBJECT_STRIDE])->Alpha = 1.0f;
                         (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                         WSF(DAT_0839bcbc, iVar14 * (OBJECT_STRIDE / 4)) = (float)(__rScale % 3 + 6) * 0.050000001f;
                         WSF(DAT_0839bd7c, iVar14 * (OBJECT_STRIDE / 4)) = (float)(_rand() % 10 + 10) * 0.02f;

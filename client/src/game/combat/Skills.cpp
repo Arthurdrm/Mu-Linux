@@ -308,8 +308,8 @@ void PacketHandler_0x19(BYTE* pkt)
         // The alternating action is controlled by the caster-local counter
         // at +771, not by the current map/state.
         SetAction(AsObject(caster),
-                     (caster[EntityOffset(771)] & 1) ? 41 : skill_type + 37);
-        caster[EntityOffset(771)] += 1;
+                     (AsCharacter(caster)->SwordCount & 1) ? 41 : skill_type + 37);
+        AsCharacter(caster)->SwordCount += 1;
         PlayBuffer(85, 0, 0);
         goto common_tail;
     }
@@ -380,7 +380,7 @@ void PacketHandler_0x19(BYTE* pkt)
             CreateEffect(MODEL_ICE, (float*)(target + 16), angle, (float*)(target + 232),
                          (float*)2, (float*)target, (float*)-1, nullptr, 0);
             // Clear freeze offset (0x2BC byte at local +0xBB from struct base = 0xBB)
-            target[EntityOffset(748)] = 0;
+            AsCharacter(target)->Movement = 0;
             SetPlayerStop(AsCharacter(target));
             // Set ice status bit
             *(DWORD*)(target + 120) |= 0x20;

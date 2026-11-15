@@ -11,6 +11,7 @@ import re
 import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
+from legacy_fields import lower_names
 
 SERVICES=r'''
 void* DAT_07abf5d8;DWORD DAT_00559c84,MouseRButtonPush;int SelectedCharacter;
@@ -47,13 +48,13 @@ int main(){
 '''
 
 def condition(source,offset):
-    body=function(source,'Player_ProcessInput');matches=[]
+    body=lower_names(function(source,'Player_ProcessInput'));matches=[]
     for start in re.finditer(r'\bif\s*\(',body):
         first=start.end();end=first;depth=1
         while depth:
             depth+=(body[end]=='(')-(body[end]==')');end+=1
         expression=body[first:end-1]
-        if offset in expression and 'DAT_07abf5d8' in expression:matches.append(expression)
+        if (offset in expression or f'+ {int(offset,16)})' in expression) and 'DAT_07abf5d8' in expression:matches.append(expression)
     if len(matches)!=1:raise ValueError(f'Condición inesperada: {offset}')
     return matches[0]
 

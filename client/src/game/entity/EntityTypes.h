@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 #include "platform/PlatformHeaders.h"
 #include "types.h"
 #include <cstddef>
@@ -60,7 +61,8 @@ struct OBJECT {
     int      AttackPoint;           // 0x0F4  5.2: AttackPoint[0]
     BYTE     _unk0F8[4];
     OBJECT*  Owner;                 // 0x0FC  IDA: CreateEffect (0x00460DC0)
-    BYTE     _unk100[5];
+    BYTE     _unk100[4];
+    BYTE     AI;                    // 0x104  5.2: AI, el estado de los efectos con IA (Tamachan)
     BYTE     CurrentAction;         // 0x105
     BYTE     PriorAction;           // 0x106
     BYTE     _unk107;
@@ -118,7 +120,7 @@ struct CHARACTER {
     BYTE     Class;                 // 0x1BC  (Class & 7) = clase, (Class >> 3) = 2da clase
     BYTE     Skin;                  // 0x1BD  IDA: SetCharacterScale (0x0045C050)
     WORD     Level;                 // 0x1BE
-    BYTE     _unk1C0;
+    BYTE     CtlCode;               // 0x1C0  5.2: CtlCode, el nivel de GM que manda el server
     char     ID[11];                // 0x1C1  nombre
     BYTE     _unk1CC[0x0E];
     short    GuildMarkIndex;        // 0x1DA  -1 = sin guild
@@ -205,6 +207,8 @@ static_assert(EntityOffset(0x195) == offsetof(OBJECT, ActionStart));
 static_assert(EntityOffset(0x198) == offsetof(OBJECT, DownAngle));
 static_assert(EntityOffset(0x2F6) == offsetof(CHARACTER, Damage));
 static_assert(EntityOffset(0x391) == offsetof(CHARACTER, CurrentSkill));
+static_assert(EntityOffset(0x104) == offsetof(OBJECT, AI));
+static_assert(EntityOffset(0x1C0) == offsetof(CHARACTER, CtlCode));
 constexpr int OBJECT_FIELD_SHIFT = (int)sizeof(void*) - 4;   // campos posteriores a Owner
 struct CHARACTER;
 #if UINTPTR_MAX == 0xFFFFFFFFu
@@ -316,3 +320,23 @@ inline const CHARACTER* AsCharacter(const void* p) { return static_cast<const CH
 inline OBJECT* AsObject(uintptr_t p) { return reinterpret_cast<OBJECT*>(p); }
 inline OBJECT* AsObject(void* p) { return static_cast<OBJECT*>(p); }
 inline const OBJECT* AsObject(const void* p) { return static_cast<const OBJECT*>(p); }
+
+// Direccion de un campo con el mismo tipo que la base.  Para los sitios que
+// usan la direccion como entero (las claves de la tabla hash anti-tamper) o
+// como puntero a byte: FieldAddress(c, &AsCharacter(c)->Skill) vale lo mismo
+// que el viejo `c + EntityOffset(770)`.
+template <class B, class F> inline B FieldAddress(B, F* field)
+{
+    static_assert(std::is_integral<B>::value ||
+                  (std::is_pointer<B>::value && sizeof(std::remove_pointer_t<B>) == 1),
+                  "FieldAddress: la base tiene que avanzar de a un byte");
+    return (B)(uintptr_t)field;
+}
+// Un campo de un byte leido con el tipo de elemento de la base (char o BYTE),
+// para `base[EntityOffset(N)]` cuando la base y el campo difieren en signo.
+template <class B, class F> inline auto& FieldAs(B base, F& field)
+{
+    using E = std::remove_reference_t<decltype(base[0])>;
+    static_assert(sizeof(E) == sizeof(F), "FieldAs: el campo no es de un byte");
+    return reinterpret_cast<E&>(field);
+}

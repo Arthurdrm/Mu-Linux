@@ -570,7 +570,7 @@ float* __cdecl Entity_FindNearby_SendPacket(unsigned int param_1, float* param_2
             if (monsterType != 77 && monsterType != 75 && monsterType != 73 &&
                 monsterType != (char)-125 && monsterType != (char)-124 &&
                 monsterType != (char)-123 && monsterType != (char)-122)
-                pcEnt[EntityOffset(772)] = '\n';                         // IDA: v16[25] = 10
+                FieldAs(pcEnt, AsCharacter(pcEnt)->StormTime) = '\n';                         // IDA: v16[25] = 10
         }
 
         nearbyIds[count++] = sKey;                         // IDA L181

@@ -7,6 +7,7 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from X86Views import object_view
+from legacy_fields import lower_names
 SERVICES=r'''
 using uint=unsigned;
 using byte=unsigned char;
@@ -40,7 +41,7 @@ int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));Require(low);const
  std::printf("Particle ref: 32768 casos, modelo/hueso/bytes %016llx\n",static_cast<unsigned long long>(expected));}
 '''
 def harness(revision=None):
- code=function(read_source('src/render/Render_LegacyBillboards.cpp',revision),'ItemDrop_SetupRenderRef')
+ code=lower_names(function(read_source('src/render/Render_LegacyBillboards.cpp',revision),'ItemDrop_SetupRenderRef'))
  arg='slot' if 'BYTE* param_1' in code else 'static_cast<int>(reinterpret_cast<uintptr_t>(slot))'
  return PREAMBLE.split('char DAT_00559bb4',1)[0]+object_view(['BoneMatrices'],revision)+SERVICES+code+MAIN.replace('ARG',arg)
 def main():

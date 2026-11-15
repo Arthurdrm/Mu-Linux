@@ -97,7 +97,56 @@ for o, t, p, n, a in ch:
                 _characters[(f'{n}[{i}].{f}' if a else f'{n}.{f}')] = (o + 0x18 * i + rel, ty)
 
 
+# Formas de la T8f, en el orden en que hay que bajarlas (las que envuelven un
+# AsX(base)->Campo van antes que el reemplazo general):
+#   FieldAddress(b, &AsX(b)->Campo)        -> (b + off)        mismo tipo que b
+#   FieldAs(b, AsX(b)->Campo)              -> (b)[off]         tipo de elemento de b
+#   AsCharacter(b)->Weapon[i].Campo        -> indice en tiempo de ejecucion (PART_t)
+#   AsCharacter(b)[i].Campo                -> b + CHARACTER_STRIDE * i
+_BASE = r'(\w+(?:\s*\+\s*\w+)?)'
+_FIELD = r'(\w+(?:\[\d+\])?(?:\.\w+(?:\[\d+\])?)?)'
+_addr = re.compile(r'\bFieldAddress\(' + _BASE + r',\s*&(AsObject|AsCharacter)\(\1\)->' + _FIELD + r'\)')
+_as = re.compile(r'\bFieldAs\(' + _BASE + r',\s*(AsObject|AsCharacter)\(\1\)->' + _FIELD + r'\)')
+_part_dyn = re.compile(r'\bAsCharacter\(' + _BASE + r'\)->(\w+)\[([^\]]*[^\]\d][^\]]*)\]\.(\w+)')
+_pool = re.compile(r'\bAsCharacter\(' + _BASE + r'\)\[([^\]]+)\]\.(\w+)')
+
+
+def _offset(fn, field):
+    table = _objects if fn == 'AsObject' else _characters
+    hit = table.get(field)
+    if hit is None and fn == 'AsCharacter' and field.startswith('Object.'):
+        hit = _objects.get(field[len('Object.'):])
+    return hit
+
+
+def lower_t8f(source):
+    def addr(m):
+        hit = _offset(m[2], m[3])
+        return '((%s) + %d)' % (m[1], hit[0]) if hit else m.group(0)
+    def as_(m):
+        hit = _offset(m[2], m[3])
+        return '((%s)[%d])' % (m[1], hit[0]) if hit else m.group(0)
+    def part(m):
+        base, arr, idx, field = m.groups()
+        first = _characters.get(f'{arr}[0].{field}')
+        if first is None:
+            return m.group(0)
+        return '(*(%s*)((char*)(%s) + %d + 0x18 * (%s)))' % (first[1], base, first[0], idx)
+    def pool(m):
+        base, idx, field = m.groups()
+        hit = _characters.get(field)
+        if hit is None:
+            return m.group(0)
+        return '(*(%s*)((char*)(%s) + 0x394 * (%s) + %d))' % (hit[1], base, idx, hit[0])
+    source = _addr.sub(addr, source)
+    source = _as.sub(as_, source)
+    source = _part_dyn.sub(part, source)
+    return _pool.sub(pool, source)
+
+
+
 def lower_names(source):
+    source = lower_t8f(source)
     def r(m):
         amp, fn, base, field = m.groups()
         table = _objects if fn == 'AsObject' else _characters

@@ -74,7 +74,7 @@ void __cdecl CreateCharacterPointer(unsigned char *param_1, int Type,
     o->AlphaTarget             = 1.0f;
     *(int *)&o->Velocity       = 0;
     *(int *)&o->ShadowScale    = 0;
-    param_1[EntityOffset(0x194)] = 0;
+    AsObject(param_1)->HurtByOneToOne = 0;
 
     // Class: se limpia salvo para los tipos 0xaa..0xad
     if ((int)entity_type < 0xaa || 0xad < (int)entity_type) {

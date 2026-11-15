@@ -105,15 +105,13 @@ static void LoginScene_ClearPreviewEquipmentMeta(unsigned char* c)
 {
     if (!c) return;
 
-    const int bodyMetaOff[7] = {
-        0x1e2, 0x1fa, 0x212, 0x22a, 0x242, 0x25a, 0x272
-    };
-
-    for (int i = 0; i < 7; ++i) {
-        c[EntityOffset(bodyMetaOff[i]) + 0] = 0;
-        c[EntityOffset(bodyMetaOff[i]) + 1] = 0;
-        c[EntityOffset(bodyMetaOff[i]) + 2] = 0;
-        c[EntityOffset(bodyMetaOff[i]) + 3] = 0;
+    // Level, Option1, LinkBone y CurrentAction de las seis piezas del cuerpo y
+    // del arma 0 (los bytes +2..+5 de cada PART_t, 0x1E2..0x272 en x86).
+    CHARACTER* ch = AsCharacter(c);
+    PART_t* const parts[7] = { &ch->BodyPart[0], &ch->BodyPart[1], &ch->BodyPart[2], &ch->BodyPart[3],
+                               &ch->BodyPart[4], &ch->BodyPart[5], &ch->Weapon[0] };
+    for (PART_t* part : parts) {
+        part->Level = 0; part->Option1 = 0; part->LinkBone = 0; part->CurrentAction = 0;
     }
 
     AsCharacter(c)->Weapon[1].Level = 0;

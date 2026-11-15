@@ -109,21 +109,19 @@ void Entity_RenderAll_3D(void)
         // detecta ANTES que cualquier otra cosa y se fuerza su render.
         if (pcVar1 == DAT_07abf5d8 && SceneFlag == 5 && *pcVar1 != '\0') {
             // Reset velocity / motion fields (per IDA original).
-            pcVar1[EntityOffset(0x130)] = '\0'; pcVar1[EntityOffset(0x131)] = '\0';
-            pcVar1[EntityOffset(0x132)] = 'z';  pcVar1[EntityOffset(0x133)] = 'D';
-            pcVar1[EntityOffset(0x15c)] = '\0'; pcVar1[EntityOffset(0x15d)] = '\0';
-            pcVar1[EntityOffset(0x15e)] = -0x80; pcVar1[EntityOffset(0x15f)] = '?';
-            pcVar1[EntityOffset(0x14c)] = '\0'; pcVar1[EntityOffset(0x14d)] = '\0';
-            pcVar1[EntityOffset(0x14e)] = -0x80; pcVar1[EntityOffset(0x14f)] = '?';
-            pcVar1[EntityOffset(0x13c)] = '\0'; pcVar1[EntityOffset(0x13d)] = '\0';
-            pcVar1[EntityOffset(0x13e)] = -0x80; pcVar1[EntityOffset(0x13f)] = '?';
+            // Los bytes del binario son 00 00 7A 44 (1000.0f) y tres veces
+            // 00 00 80 3F (1.0f).
+            AsObject(pcVar1)->OBB[0]  = 1000.0f;
+            AsObject(pcVar1)->OBB[11] = 1.0f;
+            AsObject(pcVar1)->OBB[7]  = 1.0f;
+            AsObject(pcVar1)->OBB[3]  = 1.0f;
 
-            pcVar1[EntityOffset(0x160)] = 1;   // force visible flag
+            FieldAs(pcVar1, AsObject(pcVar1)->Visible) = 1;   // force visible flag
             // El 3er param de RenderCharacter es el flag de HOVER/highlight (dibuja el
             // borde de selección). El IDA pasa `(slot == SelectedCharacter || SelectedNpc)`
             // y el Hero está EXCLUIDO de esos: va 0.
             RenderCharacter((undefined4 *)pcVar1, (undefined4 *)pcVar1, (undefined4 *)0);
-        } else if ((*pcVar1 != '\0') && (pcVar1[EntityOffset(0x160)] != '\0')) {
+        } else if ((*pcVar1 != '\0') && (FieldAs(pcVar1, AsObject(pcVar1)->Visible) != '\0')) {
             DAT_07abf5d4 = DAT_07abf5d4 + 1;
             // is_local_player = (slot == SelectedCharacter || slot == SelectedNpc)
             puVar4 = ((iVar2 == SelectedCharacter) || (iVar2 == SelectedNpc))

@@ -93,7 +93,7 @@ void CreateMagicShiny97k(BYTE* entity, int hand)
     if (bones == 0) return;
 
     const WORD type = *(WORD*)(entity + 2);
-    const BYTE bone = entity[EntityOffset(628 + hand * 24)];
+    const BYTE bone = AsCharacter(entity)->Weapon[hand].LinkBone;
     float offset[3] = { 0.0f, 0.0f, 0.0f };
     float position[3];
     float light[3] = { 1.0f, 0.5f, 0.2f };
@@ -575,12 +575,12 @@ void NetRecv_1E(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // llama a AttackStage, que despacha sus efectos visuales desde
     // this exact byte (Evil Spirit included).
     AsCharacter(caster)->Skill = skill;
-    caster[EntityOffset(776)] = Msg[6];
-    caster[EntityOffset(777)] = Msg[7];
+    AsCharacter(caster)->SkillX = Msg[6];
+    AsCharacter(caster)->SkillY = Msg[7];
     if (caster == (BYTE*)DAT_07abf5d8) {
         AsCharacter(caster)->SkillStage = 1;
         *(WORD *)&AsCharacter(caster)->TargetCharacter = 0xFFFF;
-        caster[EntityOffset(756)] = 0;
+        AsCharacter(caster)->AttackFlag = 0;
         return;
     }
 
@@ -617,7 +617,7 @@ void NetRecv_1E(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     if (skill == 24 && *(WORD *)&AsCharacter(caster)->Object.Type == 390)
         AsCharacter(caster)->SkillStage = 15;
     *(WORD *)&AsCharacter(caster)->TargetCharacter = 0xFFFF;
-    caster[EntityOffset(756)] = 0;
+    AsCharacter(caster)->AttackFlag = 0;
 }
 
 // 0x1B
@@ -776,14 +776,14 @@ void NetRecv_17(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // El tile tiene que tener el bit 0x20 (TW_ACTION); la direccion
     // de la caida sale de si el tile de al lado (indice +1 o -1)
     // tiene 0x08 (TW_NOGROUND).
-    entity[EntityOffset(405)] = 0;
+    AsObject(entity)->ActionStart = 0;
     if (IsBloodCastleMap(gMapManager.GetCurrentMap())) {
         const int gx = (int)(AsCharacter(entity)->Object.Position[0] * 0.01f);
         const int gy = (int)(AsCharacter(entity)->Object.Position[1] * 0.01f);
         const int wallIndex = ((gy & 0xFF) << 8) | (gx & 0xFF);
         if ((TerrainWall[wallIndex] & 0x20) == 0x20) {
-            entity[EntityOffset(772)] = 0;
-            entity[EntityOffset(405)] = 1;
+            AsCharacter(entity)->StormTime = 0;
+            AsObject(entity)->ActionStart = 1;
             *(float*)(entity + 216) = (float)(rand() % 10) + 10.0f;
             AsCharacter(entity)->Object.Velocity = (float)(rand() % 20) + 20.0f;
             const float angle = (float)(rand() % 10) + 85.0f;
@@ -812,7 +812,7 @@ void NetRecv_17(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
 
     const int entitySlot = basePtr ? (int)((entity - basePtr) / CHARACTER_STRIDE) : -1;
     NetLog("NET:  → 0x17 Die id=%d slot=%d fall=%d",
-           entityId, entitySlot, entity[EntityOffset(405)]);
+           entityId, entitySlot, AsObject(entity)->ActionStart);
 }
 
 // 0x9C

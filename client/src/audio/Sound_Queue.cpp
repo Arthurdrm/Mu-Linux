@@ -34,7 +34,7 @@ void Sprite_ReplayStep() {
         if (RenderInterpolation_OwnerOffset(*(void **)(out+0xfc),offset))
             for (int axis=0;axis<3;++axis) {
                 *(float *)(out+0x10+4*axis)+=offset[axis];
-                *(float *)(out+EntityOffset(0x170)+4*axis)+=offset[axis];
+                AsObject(out)->StartPosition[axis]+=offset[axis];
             }
     }
 }

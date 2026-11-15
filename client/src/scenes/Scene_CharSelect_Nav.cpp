@@ -395,7 +395,7 @@ void Characters_FreeAllBMDBuffers()
 
   for ( i = 0; i < 400 * CHARACTER_STRIDE; i += CHARACTER_STRIDE )
   {
-    v1 = (LPVOID *)(i + CharactersClient + EntityOffset(276));
+    v1 = (LPVOID *)&AsObject(CharactersClient + i)->BoneMatrices;
     if ( *v1 )
     {
       delete__(*v1);
@@ -2069,7 +2069,7 @@ void CheckSprites(void)
     char *pcVar1 = DAT_07c85890;
     for (int i = 0; i < kSpritePoolSize; ++i, pcVar1 += OBJECT_STRIDE) {
         if (*pcVar1 != '\0')
-            pcVar1[EntityOffset(0x160)] = '\x01';
+            FieldAs(pcVar1, AsObject(pcVar1)->Visible) = '\x01';
     }
 }
 

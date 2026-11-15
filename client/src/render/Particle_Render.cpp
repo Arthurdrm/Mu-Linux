@@ -109,7 +109,7 @@ void Particle_PrepareRender() {
     for (int i = 0; i < kEffectPoolSize; ++i) {
         char *slot = (char *)DAT_07b11670 + i * OBJECT_STRIDE;
         ParticleSample &sample = samples[i];
-        sample.valid = slot[0] && slot[EntityOffset(352)];
+        sample.valid = slot[0] && FieldAs(slot, AsObject(slot)->Visible);
         if (!sample.valid) continue;
         sample.type = *(short *)(slot + 2);
         sample.variant = *(int *)(slot + 4);
@@ -147,7 +147,7 @@ void __cdecl Particle_RenderAll(void)
     for (int i = 0; i < kEffectPoolSize; ++i) {
         char* slot = base + i * OBJECT_STRIDE;
         if (slot[0] == 0) continue;          // inactive
-        if (slot[EntityOffset(352)] == 0) continue;         // not visible
+        if (FieldAs(slot, AsObject(slot)->Visible) == 0) continue;         // not visible
 
         WORD typeCode = *(WORD*)(slot + 2);
         int  variant  = *(int*)(slot + 4);

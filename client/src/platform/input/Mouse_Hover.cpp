@@ -66,7 +66,7 @@ void Mouse_UpdateHoverTargets(void)
         SelectedCharacter = -1;
         Attacking = -1;
     } else if (SelectedCharacter >= 0 &&
-               *(char *)(DAT_07abf5d0 + EntityOffset(0x2fd) + SelectedCharacter * CHARACTER_STRIDE) == '\0' &&
+               *(char *)(FieldAddress(DAT_07abf5d0, &AsCharacter(DAT_07abf5d0)->Dead) + SelectedCharacter * CHARACTER_STRIDE) == '\0' &&
                *(char *)(DAT_07abf5d0 + SelectedCharacter * CHARACTER_STRIDE + 0x84) == '\x02') {
         // Current hover target is a valid alive monster.
         // Keep the original transient hover state.  Leaving this selected
@@ -323,11 +323,11 @@ int __cdecl Entity_SelectNearest(int param_1_int)
     // Pass 1: set highlight flags and color tints for visible entities
     byte *pbVar4 = (byte *)(DAT_07abf5d0 + 0x84);
     for (int loop1 = 400; loop1 != 0; loop1--, pbVar4 += CHARACTER_STRIDE) {
-        if (((*pbVar4 & param_1) == *pbVar4) && (pbVar4[-0x84] != 0) && (pbVar4[EntityOffset(0x160) - 0x84] != 0) &&
-            (_DAT_00552580 < *(float *)(pbVar4 + EntityOffset(0x168) - 0x84))) {
+        if (((*pbVar4 & param_1) == *pbVar4) && (pbVar4[-0x84] != 0) && (AsObject(pbVar4 - 0x84)->Visible != 0) &&
+            (_DAT_00552580 < *(float *)(FieldAddress(pbVar4, &AsObject(pbVar4)->Alpha) - 0x84))) {
             pbVar4[0x58] = 1;
             float r, g, b;
-            switch (*(short *)(pbVar4 + EntityOffset(0x1BE) - 0x84)) {
+            switch (*(short *)(FieldAddress(pbVar4, &AsCharacter(pbVar4)->Level) - 0x84)) {
             case 0:  r =  0.2f; g =  0.2f; b =  0.2f; break;
             case 1:  r = -0.4f; g = -0.4f; b = -0.4f; break;
             case 2:  r =  0.2f; g = -0.6f; b = -0.6f; break;
@@ -335,7 +335,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
             case 4:  r =  0.3f; g =  0.2f; b = -0.5f; break;
             default: r =  0.0f; g =  0.0f; b =  0.0f; break;
             }
-            if (pbVar4[EntityOffset(0x2EA) - 0x84] > 5) { r = -0.4f; g = -0.4f; b = -0.4f; }
+            if (AsCharacter(pbVar4 - 0x84)->PK > 5) { r = -0.4f; g = -0.4f; b = -0.4f; }
             *(float *)(pbVar4 + 0x64) = r;
             *(float *)(pbVar4 + 0x68) = g;
             *(float *)(pbVar4 + 0x6c) = b;
@@ -360,7 +360,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
             }
         }
         if ((*ent == '\0') || (*(char *)&AsObject(ent)->Visible == '\0') ||
-            (!(_DAT_00552580 < AsObject(ent)->Alpha)) || (ent[EntityOffset(0x2fd)] != '\0'))
+            (!(_DAT_00552580 < AsObject(ent)->Alpha)) || (FieldAs(ent, AsCharacter(ent)->Dead) != '\0'))
             continue;
 
         // Party name matching for DarkLord entities
@@ -465,7 +465,7 @@ int __cdecl ItemOnGround_HoverTest(void)
     // Pass 1: atenuar todos los items activos + visibles.
     for (int i = 0; i < 1000; ++i) {
         BYTE* base = pool + i * GROUND_ITEM_STRIDE;
-        if (base[72] && base[72 + EntityOffset(0x160)]) {
+        if (base[72] && AsObject(base + 72)->Visible) {
             *(DWORD*)(base + 304) = 0x3E4CCCCD;   // 0.2f
             *(DWORD*)(base + 308) = 0x3E4CCCCD;
             *(DWORD*)(base + 312) = 0x3E4CCCCD;
@@ -481,7 +481,7 @@ int __cdecl ItemOnGround_HoverTest(void)
     int best = -1, bestD = 24 * 24 + 1;
     for (int i = 0; i < 1000; ++i) {
         BYTE* base = pool + i * GROUND_ITEM_STRIDE;
-        if (base[72] && base[72 + EntityOffset(0x160)]) {
+        if (base[72] && AsObject(base + 72)->Visible) {
             int sx = *(short*)(base + 72 + 92);   // = v1+92
             int sy = *(short*)(base + 72 + 94);
             int dx = sx - mouseX, dy = sy - mouseY;

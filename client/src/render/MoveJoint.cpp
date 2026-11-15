@@ -1375,11 +1375,12 @@ switchD_caseD_4fd:
                 //
                 // Con `owner + 16` la cosa se realimenta: el joint con SkillIndex==1
                 // escribe su posicion EN `owner + 16`, asi que convergeria hacia si mismo.
-                const int srcBase = (jsub == 11) ? 352 : 0;
+                // SubType 11 sigue a StartPosition (0x170 = 352 + 16) y el resto a Position.
+                const float* src = (jsub == 11) ? AsObject(jowner)->StartPosition : AsObject(jowner)->Position;
                 for (int v228 = 16; v228 < 28; v228 += 4) {
                     const int    k    = iIndex + v226 + 51230 * iIndex + msf / 10;
                     const double v229 = fcos((double)k * 0.0099999998) * 25.0
-                                      + (double)*(float *)(jowner + EntityOffset(srcBase + v228));
+                                      + (double)src[(v228 - 16) / 4];
                     float *dst = (float *)(param_1 + v228);
                     *dst = (float)(((double)w * (double)*dst
                                     + v229 * (100.0 - (double)w)) * 0.0099999998);

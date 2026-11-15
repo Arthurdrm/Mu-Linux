@@ -82,7 +82,7 @@ static void Terrain_ProcessObjects(bool simulation)
                         vis = TestFrustrum2D(ex, ey, ez);
                         // DESVIACION: distancia de dibujado; lejos, sólo el terreno.
                         if (vis && !DrawDistance::Detailed(*(float*)(entity + 0x10), *(float*)(entity + 0x14))) vis = 0;
-                        if (simulation) entity[EntityOffset(0x160)] = (char)vis;
+                        if (simulation) AsObject(entity)->Visible = (BYTE)vis;
 
                         if ((char)vis != '\0' || CameraTopViewEnabled != '\0')
                         {
@@ -128,7 +128,7 @@ static void Terrain_ProcessObjects(bool simulation)
                 float ey = *(float*)(entity + 0x14) * _DAT_005524f8;
                 float ez = z_offset + *(float*)(entity + 0xd0);
                 unsigned short vis = TestFrustrum2D(ex, ey, ez);
-                entity[EntityOffset(0x160)] = (char)vis;
+                FieldAs(entity, AsObject(entity)->Visible) = (char)vis;
             }
             iVar += CHARACTER_STRIDE;
         } while (iVar < 400 * CHARACTER_STRIDE);

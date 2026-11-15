@@ -307,7 +307,7 @@ void __cdecl Entity_RenderSlotWith(void *param_1,void *param_2_v,int param_3,cha
   // the bit pattern (cast through uint) so we don't do an int→float conversion.
   *(unsigned int *)&_DAT_005597c8 = (unsigned int)param_5;
   if (*(char *)&AsObject(param_2)->EnableBoneMatrix == '\x01') {
-    puVar1 = *(undefined **)(param_2 + EntityOffset(0x114));
+    puVar1 = (undefined*)AsObject(param_2)->BoneMatrices;
   }
   else {
     param_4 = '\0';

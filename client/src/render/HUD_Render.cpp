@@ -403,7 +403,7 @@
 //   GuildOpened   — flag icono 1 visible
 //   CharacterOpened   — flag icono 2 visible
 //   DAT_07ea5b1c/20 — posición X/Y botón 1
-//   GuildListStartX/84 — posición X/Y icono 1
+//   GuildListStartX/Y — posición X/Y icono 1
 //   CharacterInfoStartX/30 — posición X/Y icono 2
 //   DAT_07d39ef4   — tooltip string icono 1
 //   DAT_07d3a14c   — tooltip string icono 2

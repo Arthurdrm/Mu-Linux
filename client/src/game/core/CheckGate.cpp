@@ -58,12 +58,12 @@ void __cdecl CheckGate(void)
         const int heroY = *(const int*)&((CHARACTER*)(uintptr_t)(hero))->PositionY;
         if (heroX < gate[2] || heroY < gate[3] || heroX > gate[4] || heroY > gate[5])
             continue;
-        if (LoadingWorld != 0 || hero[EntityOffset(773)] != 0)          // LoadingWorld
+        if (LoadingWorld != 0 || AsCharacter(hero)->JumpTime != 0)          // LoadingWorld
             continue;
 
         // DESVIACION (Fase 5): con gates del server el nivel viene en 16 bits.
         unsigned int requiredLevel = (unsigned int)gContentCatalog.GetGateLevel(gateIndex, gate[8]);
-        if ((hero[EntityOffset(444)] & 7) == 3) // Magic Gladiator: dos tercios.
+        if ((AsCharacter(hero)->Class & 7) == 3) // Magic Gladiator: dos tercios.
             requiredLevel = (requiredLevel * 2) / 3;
 
         // El gate 28 no entra a la rama comun si no llega al nivel.

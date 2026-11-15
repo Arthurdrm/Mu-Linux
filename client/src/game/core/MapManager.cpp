@@ -59,7 +59,7 @@ bool ValidMusicName(const char* name)
 
 bool InSafeZone()
 {
-    return Hero && *(Hero + EntityOffset(0x34E)) != 0;   // c->SafeZone
+    return Hero && *(FieldAddress(Hero, &AsCharacter(Hero)->SafeZone)) != 0;   // c->SafeZone
 }
 
 // IDA Game_MainLoop: la catedral de Devias es el rectángulo de celdas

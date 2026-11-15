@@ -306,11 +306,11 @@ void Entity_UpdateTradeFlag(BYTE* entity)
 
     if (*entity == 0) return;  // entity not active
 
-    entity[EntityOffset(0x2e9)] = 0;
+    AsCharacter(entity)->GuildTeam = 0;
 
     SHORT local_slot = *(SHORT*)&((CHARACTER*)(uintptr_t)(local))->GuildMarkIndex;
     if (local_slot != -1 && *(SHORT*)&((CHARACTER*)(uintptr_t)(entity))->GuildMarkIndex == local_slot)
-        entity[EntityOffset(0x2e9)] = 1;
+        AsCharacter(entity)->GuildTeam = 1;
 
     if (g_trade_active)
     {
@@ -320,7 +320,7 @@ void Entity_UpdateTradeFlag(BYTE* entity)
             g_cached_shop_slot = Shop_FindSlotByName((BYTE*)g_active_shop_name);
         }
         if (g_cached_shop_slot >= 0 && *(SHORT*)&((CHARACTER*)(uintptr_t)(entity))->GuildMarkIndex == g_cached_shop_slot)
-            entity[EntityOffset(0x2e9)] = 2;
+            AsCharacter(entity)->GuildTeam = 2;
     }
 }
 
@@ -391,14 +391,14 @@ static void LegacyMisclassified_TradeRequestResult(BYTE* pkt)
         g_cached_shop_slot = -1;
         g_active_shop_name[0] = 0;
 
-        BYTE* ent = g_EntityBase + EntityOffset(0x2e9);
+        BYTE* ent = FieldAddress(g_EntityBase, &AsCharacter(g_EntityBase)->GuildTeam);
         for (int i = 400; i > 0; i--, ent += CHARACTER_STRIDE)
         {
-            if (*(ent - EntityOffset(0x2e9)) != 0)  // entity is active
+            if (*(ent - offsetof(CHARACTER, GuildTeam)) != 0)  // entity is active
             {
                 SHORT local_slot = *(SHORT*)&((CHARACTER*)(uintptr_t)(g_LocalEntity))->GuildMarkIndex;
                 *ent = 0;
-                if (local_slot != -1 && *(SHORT*)&AsCharacter(ent - EntityOffset(0x2e9))->GuildMarkIndex == local_slot)
+                if (local_slot != -1 && *(SHORT*)&AsCharacter(ent - offsetof(CHARACTER, GuildTeam))->GuildMarkIndex == local_slot)
                     *ent = 1;
             }
         }
@@ -477,16 +477,16 @@ static void LegacyMisclassified_TradeOpen(BYTE* pkt)
     g_cached_shop_slot = -1;
 
     // Update trade flags for all active entities
-    BYTE* ent = g_EntityBase + EntityOffset(0x2e9);
+    BYTE* ent = FieldAddress(g_EntityBase, &AsCharacter(g_EntityBase)->GuildTeam);
     for (int i = 400; i > 0; i--, ent += CHARACTER_STRIDE)
     {
-        if (*(ent - EntityOffset(0x2e9)) != 0)
+        if (*(ent - offsetof(CHARACTER, GuildTeam)) != 0)
         {
             SHORT local_slot = *(SHORT*)&((CHARACTER*)(uintptr_t)(g_LocalEntity))->GuildMarkIndex;
             *ent = 0;
-            if (local_slot != -1 && *(SHORT*)&AsCharacter(ent - EntityOffset(0x2e9))->GuildMarkIndex == local_slot)
+            if (local_slot != -1 && *(SHORT*)&AsCharacter(ent - offsetof(CHARACTER, GuildTeam))->GuildMarkIndex == local_slot)
                 *ent = 1;
-            if (g_cached_shop_slot >= 0 && *(SHORT*)&AsCharacter(ent - EntityOffset(0x2e9))->GuildMarkIndex == g_cached_shop_slot)
+            if (g_cached_shop_slot >= 0 && *(SHORT*)&AsCharacter(ent - offsetof(CHARACTER, GuildTeam))->GuildMarkIndex == g_cached_shop_slot)
                 *ent = 2;
         }
     }
@@ -551,9 +551,9 @@ static void LegacyMisclassified_TradeItemUpdate(BYTE* pkt)
         if (*ent != 0)
         {
             SHORT local_slot = *(SHORT*)&((CHARACTER*)(uintptr_t)(local))->GuildMarkIndex;
-            ent[EntityOffset(0x2e9)] = 0;
+            AsCharacter(ent)->GuildTeam = 0;
             if (local_slot != -1 && *(SHORT*)&((CHARACTER*)(uintptr_t)(ent))->GuildMarkIndex == local_slot)
-                ent[EntityOffset(0x2e9)] = 1;
+                AsCharacter(ent)->GuildTeam = 1;
         }
     }
 

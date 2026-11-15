@@ -89,10 +89,10 @@ static char ItemEquip_UseSelectedTargetSkill(intptr_t character /* IDA: sy */,
     if (dx * dx + dy * dy > reach * reach * 10000.0f) {   // IDA L106: v12*100 < sqrt(...)
         // IDA L145-146: el pathfind usa routeReach, NO el override de 1.8.
         if (!Path_FindRoute(AsCharacter(character)->PositionX, AsCharacter(character)->PositionY,
-                            targetX, targetY, caster + EntityOffset(852), routeReach))
+                            targetX, targetY, FieldAddress(caster, &AsCharacter(caster)->PathCurrent), routeReach))
             return 0;                                 // IDA: goto LABEL_33 con v30 = 0
-        caster[EntityOffset(748)] = 1;                              // IDA L150
-        caster[EntityOffset(749)] = 5;                              // IDA L151
+        AsCharacter(caster)->Movement = 1;                              // IDA L150
+        AsCharacter(caster)->MovementType = 5;                              // IDA L151
         // IDA: sub_483780 (0x00483780).
         // DESVIACION (fix del DLL, Patchs.cpp 0x00483AC5): avisar al server del camino al perseguir para atacar.
         Combat_SendMovePathPacket(AsCharacter(character), AsObject(character));
@@ -136,7 +136,7 @@ static char ItemEquip_DispatchFromItemSkillList(intptr_t character, intptr_t obj
         switch (skill) {
         case 0x12: {                                  // IDA L565: skill 18
             // El objetivo es la key del propio heroe, no SelectedCharacter.
-            *(BYTE*)(uintptr_t)(character + EntityOffset(748)) = 0;
+            *(BYTE*)(uintptr_t)(FieldAddress(character, &AsCharacter(character)->Movement)) = 0;
             if (*(WORD*)(uintptr_t)(character + 2) == 390)
                 SetAction(AsObject(character), 92);     // IDA: SetAction(v4, 92)
             else
@@ -177,7 +177,7 @@ char __cdecl Item_Equip(intptr_t character /* IDA: o */, intptr_t object /* IDA:
     BYTE* const item   = (BYTE*)(uintptr_t)object;
 
     const WORD type   = *(WORD*)(caster + 2);          // IDA: *(_WORD *)(o + 2)
-    const BYTE action = caster[EntityOffset(261)];                   // IDA: v5
+    const BYTE action = AsObject(caster)->CurrentAction;                   // IDA: v5
 
     // IDA L201-212: rechaza las animaciones de arranque de ataque.
     if (type == 390) {

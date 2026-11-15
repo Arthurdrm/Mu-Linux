@@ -176,7 +176,7 @@ void Recv_CharList(const BYTE* Msg, int Size)
     // con el mismo personaje, sin pasar por char-select.
     if (gReconnect.OnCharacterList()) return;
     const int CHAR_STRIDE  = CHARACTER_STRIDE;
-    const int CHAR_SLOT_AT = (int)EntityOffset(0x2D2);   // entity+0x2D2 = "selected" flag
+    const int CHAR_SLOT_AT = (int)offsetof(CHARACTER, Flag.Level);   // entity+0x2D2 = "selected" flag
     const int MAX_PREVIEW  = 5;            // slots renderizados en char-select
 
     // 1) Limpiar flags de los 5 slots previos
@@ -224,8 +224,7 @@ void Recv_CharList(const BYTE* Msg, int Size)
 
         // entity+0x1BE = Level (WORD)
         AsCharacter(c)->Level = level;
-        // entity+0x1C0 = CtlCode (BYTE)
-        c[EntityOffset(0x1C0)] = ctlCode;
+        AsCharacter(c)->CtlCode = ctlCode;
         char name[EntityName::Capacity];
         NetText::FromServer(name, sizeof(name), rec + 1, NAME);
         EntityName::Set(c, name);
@@ -549,7 +548,7 @@ void Recv_JoinMapServer(const BYTE* Msg, int bEncrypted)
     AsCharacter(heroPtr)->Object.Light[2] = 0.3f;
     AsCharacter(heroPtr)->Skin = 0;
     AsCharacter(heroPtr)->PK = Msg[44];      // skill bonus / curse-of-equipment slot
-    heroPtr[EntityOffset(448)] = Msg[45];      // magic bonus / second-pwd flag
+    AsCharacter(heroPtr)->CtlCode = Msg[45];   // 0x1C0
     AsCharacter(heroPtr)->Object.Kind = 1;            // alive flag
     DAT_07abf5d8 = (char*)heroPtr;   // bind global Hero pointer
 
@@ -579,7 +578,7 @@ void Recv_JoinMapServer(const BYTE* Msg, int bEncrypted)
     *(DWORD*)(heroPtr + 0x78) &= ~2u;
 
     // (9) entity+459 = 0 (status flag) + teleport-in effect 1265.
-    heroPtr[EntityOffset(459)] = 0;
+    FieldAs(heroPtr, AsCharacter(heroPtr)->ID[10]) = 0;
     // CreateEffect(1265, Hero.Position, Hero.Angle, Hero+232, 0, Hero, -1, 0, 0)
     // Effect_Spawn signature: see src/render/Particle_Spawn.cpp / Particle_Spawn.
     // Wire-up TODO: nuestro Effect_Spawn aún no está parameterizado igual; la
@@ -700,7 +699,7 @@ void Recv_Revival(const BYTE* Msg, int Size)
     BYTE saved746  = 0;
     if (DAT_07abf5d8) {
         savedW474 = *(const WORD*)&AsCharacter((BYTE*)DAT_07abf5d8)->GuildMarkIndex;
-        saved746  = *((const BYTE*)DAT_07abf5d8 + EntityOffset(746));
+        saved746  = AsCharacter(DAT_07abf5d8)->PK;
     }
 
     // (5) Re-crea al héroe EN EL MISMO SLOT (HeroIndex no cambia).
@@ -1257,7 +1256,7 @@ void NetRecv_F3(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
                 CA[86] = (BYTE)total;
                 if (DAT_07abf5d8) {
                     BYTE* hero = (BYTE*)(uintptr_t)DAT_07abf5d8;
-                    if (hero[EntityOffset(913)] >= 20) hero[EntityOffset(913)] = 0;
+                    if (AsCharacter(hero)->CurrentSkill >= 20) AsCharacter(hero)->CurrentSkill = 0;
                 }
                 NetLog("NET:    F3/11 Skill%s slot=%d skill=%d total=%d",
                        (count == 0xFE) ? "Add" : "Del", slot, skill, total);
@@ -1287,7 +1286,7 @@ void NetRecv_F3(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             CA[86] = count;
             if (DAT_07abf5d8) {
                 BYTE* hero = (BYTE*)(uintptr_t)DAT_07abf5d8;
-                if (hero[EntityOffset(913)] >= 20) hero[EntityOffset(913)] = 0;
+                if (AsCharacter(hero)->CurrentSkill >= 20) AsCharacter(hero)->CurrentSkill = 0;
             }
             if ((DWORD)DAT_005616ac > 4) DAT_005616ac = 0;   // 5 slots: 0..4 (era >= 4, pisaba el quinto)
             // La lista recien ahora esta completa: re-traducir las

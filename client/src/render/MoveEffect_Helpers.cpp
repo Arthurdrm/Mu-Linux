@@ -141,7 +141,7 @@ void __cdecl Effect_SpawnProximityHit(intptr_t param_1)
 
   pcVar3 = *(char **)&((OBJECT*)(uintptr_t)(param_1))->Owner;
   // Check: target valid, active, alive, and within distance threshold
-  if ((((pcVar3 != (char *)0x0) && (*pcVar3 != '\0')) && (pcVar3[EntityOffset(0x160)] != '\0')) &&
+  if ((((pcVar3 != (char *)0x0) && (*pcVar3 != '\0')) && (FieldAs(pcVar3, AsObject(pcVar3)->Visible) != '\0')) &&
       (fVar4 = *(float *)(param_1 + 0x10) - *(float *)(pcVar3 + 0x10),
        pfVar1 = (float *)(param_1 + 0x10),
        fVar5 = *(float *)(param_1 + 0x14) - *(float *)(pcVar3 + 0x14),

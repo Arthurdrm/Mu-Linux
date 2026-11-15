@@ -685,7 +685,7 @@ extern "C" int RenderCharacterBackItem(intptr_t c, intptr_t o)
         }
 
         g_BackItemHand = i;      // lo lee la tabla de poses de RenderLinkObject
-        RenderLinkObject(0.0f, 0.0f, 15.0f, c, c + EntityOffset(0x2A0),
+        RenderLinkObject(0.0f, 0.0f, 15.0f, c, FieldAddress(c, &AsCharacter(c)->Wing.Type),
                      iType, (char)iLevel, (unsigned int)iOption1,
                      Link, '\x01', 0);
         g_BackItemHand = 0;
@@ -709,7 +709,7 @@ extern "C" void Render_PlayerHelper(intptr_t c, intptr_t o)
     unsigned char v215 = AsCharacter(c)->Helper.Option1;   // Option1
     AsCharacter(c)->Helper.LinkBone = 34;                   // LinkBone = 34
     AsCharacter(c)->Helper.PlaySpeed = 0.5f;                     // PlaySpeed = 0.5f
-    RenderLinkObject(20.0f, 0.0f, 0.0f, c, c + EntityOffset(0x2B8),
+    RenderLinkObject(20.0f, 0.0f, 0.0f, c, FieldAddress(c, &AsCharacter(c)->Helper.Type),
                  817, (char)v101, (unsigned int)v215, '\0', '\x01', 0);
 
     // Sprite glow at transformed position (20, 0, 15) in bone[34]
@@ -757,7 +757,7 @@ extern "C" void Render_PlayerWeaponLoop(intptr_t c, intptr_t o)
 
         {
         int v119  = 3 * v234 + 78;
-        intptr_t v121  = c + EntityOffset(8 * v119);            // weapon slot ptr (c+624 o c+648)
+        intptr_t v121  = (intptr_t)&AsCharacter(c)->Weapon[v234];   // v119 = 3*v234 + 78: c+624 o c+648
         short v120 = *(short*)v121;          // weapon Type
 
         if (v120 == -1 || v120 == 535 || v120 == 543) {

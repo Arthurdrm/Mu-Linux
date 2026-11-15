@@ -429,7 +429,7 @@ static void HUD_PickUpNearestItem(void)
     const float heroY = *(const float*)(Hero + 20);
     for (int i = 0; i < 1000; ++i) {
         const BYTE* item = &DAT_07e12840[0] + (size_t)i * GROUND_ITEM_STRIDE;
-        if (!item[72] || !item[72 + EntityOffset(0x160)]) continue;                   // vivo y visible
+        if (!item[72] || !AsObject(item + 72)->Visible) continue;                   // vivo y visible
         const float dx = *(const float*)(item + 88) - heroX;
         const float dy = *(const float*)(item + 92) - heroY;
         if (dx * dx + dy * dy >= 300.0f * 300.0f) continue;
@@ -621,7 +621,7 @@ void __cdecl Player_ProcessInput(void)
     // (0x4B14F0), que es donde los tiene el binario.
 
     // ── Guard: entity visibility / renderable flag ─────────────────────────────
-    if (*(static_cast<const char*>(DAT_07abf5d8) + EntityOffset(0x2fd)) != '\0')
+    if (AsCharacter(DAT_07abf5d8)->Dead != 0)
         return;
 
     // ── LoadingWorld cooldown ────────────────────────────────────────────────
@@ -642,7 +642,7 @@ void __cdecl Player_ProcessInput(void)
     //   copy entity name (entity+0x1c1) to password buffer DAT_07db8810,
     //   después poner en cero y volver a copiar vía el buffer intermedio DAT_07e113e4.
     if (DAT_00559c84 != '\0'
-        && *(static_cast<const char*>(DAT_07abf5d8) + EntityOffset(0x34e)) != '\0'
+        && AsCharacter(DAT_07abf5d8)->SafeZone != 0
         && SelectedCharacter != -1
         && MouseRButtonPush != '\0')
     {
@@ -828,7 +828,7 @@ void __cdecl Player_ProcessInput(void)
     // inmediato; mientras se mueve se mantiene el gate por tiempo para no spamear
     // el server con paths intermedios.
     { // El salto de salida no entra en el ámbito de estas variables.
-    bool walkerIdle = (((unsigned char*)DAT_07abf5d8)[EntityOffset(0x356)] == 0);
+    bool walkerIdle = (AsCharacter(DAT_07abf5d8)->PathNum == 0);
     // DAT_07e11dc0 ("movement lock flag B"): según IDA solo lo escriben Attack
     // (0x49CC50) y Chat_InputTick (0x4B6630). Attack es stub vacío en nuestro build
     // y el port de Chat_InputTick no tiene ese write, así que su valor fiel es 0;
@@ -1197,7 +1197,7 @@ void __cdecl Player_ProcessInput(void)
                     // Muerto = +0x2FD (IDA ReceiveDie:18). No usar +0x2EC (state flag que el
                     // server también pone en 0 en ReceiveAction) ni +0x34E (es SafeZone: dejaría
                     // sin targetear a todo NPC del pueblo).
-                    if (hoverEnt[EntityOffset(0x2FD)] != 0) {
+                    if (AsCharacter(hoverEnt)->Dead != 0) {
                         // Muerto — limpia el estado de hover para que el click siguiente no quede
                         // pegado al cadáver, y sale.
                         SelectedCharacter = -1;
@@ -1269,7 +1269,7 @@ void __cdecl Player_ProcessInput(void)
                     // elfa se acercara al cuerpo a cuerpo para poder pegar.
                     unsigned int ok2 = Path_FindRoute(srcX, srcY,
                                                      dstX, dstY,
-                                                     ent + EntityOffset(0x354), 0.0f);
+                                                     FieldAddress(ent, &AsCharacter(ent)->PathCurrent), 0.0f);
                     if ((char)ok2 == 0) {
                         // Sin ruta (ya esta al lado, o inalcanzable) -> atacar.
                         if (Combat_CheckArrowRequirement() == 0)
@@ -1368,7 +1368,7 @@ void __cdecl Player_ProcessInput(void)
                     const int srcY = AsCharacter(ent)->PositionY;
                     unsigned int ok = Path_FindRoute(srcX, srcY,
                                                      TargetX, TargetY,
-                                                     ent + EntityOffset(0x354), 0.0f);
+                                                     FieldAddress(ent, &AsCharacter(ent)->PathCurrent), 0.0f);
                     if ((char)ok == 0) {
                         // LABEL_312: sin camino (ya estamos al lado) ->
                         // ejecutar la accion ahora.  El port mandaba otro
@@ -1409,7 +1409,7 @@ void __cdecl Player_ProcessInput(void)
 
                     unsigned int ok = Path_FindRoute(srcX, srcY,
                                                     dstX, dstY,
-                                                    ent + EntityOffset(0x354), 0.0f);
+                                                    FieldAddress(ent, &AsCharacter(ent)->PathCurrent), 0.0f);
                     if ((char)ok == '\0') {
                         // IDA L1210: sin camino -> LABEL_312 (Action manda el 0x30).
                         Action((intptr_t)ent, (intptr_t)ent);
@@ -1442,7 +1442,7 @@ void __cdecl Player_ProcessInput(void)
 
                 unsigned int ok = Path_FindRoute(srcX, srcY,
                                                 dstX, dstY,
-                                                ent + EntityOffset(0x354), 0.0f);
+                                                FieldAddress(ent, &AsCharacter(ent)->PathCurrent), 0.0f);
                 if ((char)ok == '\0') {
                     // IDA L1318: sin camino -> Action y cola en 0.
                     Action((intptr_t)ent, (intptr_t)ent);
@@ -1578,7 +1578,7 @@ void __cdecl Player_ProcessInput(void)
 
                             unsigned int ok = Path_FindRoute(srcX, srcY,
                                                             TargetX, TargetY,
-                                                            ent + EntityOffset(0x354), 0.0f);
+                                                            FieldAddress(ent, &AsCharacter(ent)->PathCurrent), 0.0f);
                             if ((char)ok != '\0') {
                                 AsCharacter(ent)->MovementType = 0;
                                 Combat_SendMovePathPacket(AsCharacter(ent), AsObject(ent));

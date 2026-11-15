@@ -6,6 +6,7 @@ from pathlib import Path
 import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
+from legacy_fields import lower_names
 SERVICES=r'''
 #define CHARMENU_ROW_MAX 28
 #define crt_sprintf std::sprintf
@@ -47,7 +48,7 @@ int main(){for(unsigned i=0;i<1040;++i)std::sprintf(GlobalText[i],"g%04u",i);std
  std::printf("Item class: 65536 casos, texto/colores/filas %016llx\n",static_cast<unsigned long long>(expected));}
 '''
 def harness(revision=None):
- code=function(read_source('src/ui/CharMenu_Build.cpp',revision),'ItemHelp_RequireClass')
+ code=lower_names(function(read_source('src/ui/CharMenu_Build.cpp',revision),'ItemHelp_RequireClass'))
  arg='item' if 'const BYTE* pItem)' in code else 'static_cast<int>(reinterpret_cast<uintptr_t>(item))'
  return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES+code+MAIN.replace('ARG',arg)
 def main():

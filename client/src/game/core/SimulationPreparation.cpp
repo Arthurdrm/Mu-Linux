@@ -99,7 +99,7 @@ void PrepareItems() {
         if (!base[72]) continue;
         OBJECT &o = *(OBJECT *)(base + 72);
         const char visible = (char)Frustum_TestSphere(o.Position, 400.0f);
-        base[72 + EntityOffset(0x160)] = visible;
+        AsObject(base + 72)->Visible = visible;
         if (!visible) continue;
         int type = o.Type;
         if (type >= 624 && type < 784) type = 390;

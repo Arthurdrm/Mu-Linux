@@ -371,7 +371,7 @@ int Scene_CharSelect(void)
                             s_lastNO[slotIdx2] = now3;
                         }
                     }
-                    bVar2 = ((byte*)DAT_07abf5d0)[iVar9 + EntityOffset(0x1c0)];
+                    bVar2 = AsCharacter(DAT_07abf5d0 + iVar9)->CtlCode;
                     // Color by class/flags
                     if      (bVar2 & 1)    { SetBackgroundTextColor = 0x8000ffff; DAT_00559c78 = 0xff000000; }
                     else if (bVar2 & 0x12) { SetBackgroundTextColor = 0x80ffff00; DAT_00559c78 = 0xff000000; }
@@ -401,7 +401,7 @@ int Scene_CharSelect(void)
                     SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xffffffff;
                     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
                     {
-                        BYTE klass = ((BYTE*)DAT_07abf5d0)[iVar9 + EntityOffset(0x1bc)];
+                        BYTE klass = ((BYTE*)DAT_07abf5d0)[FieldAddress(iVar9, &AsCharacter(iVar9)->Class)];
                         WORD lvl   = AsCharacter((BYTE*)DAT_07abf5d0 + iVar9)->Level;
                         int  cidx  = (klass & 7) + 4 * (klass >> 3);
                         // 0.97k tiene DW/DK/ELF/MG y evolved SM/BK/ME (no DL).

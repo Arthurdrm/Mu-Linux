@@ -138,14 +138,14 @@ static void Tamachan_Move(char *o, int life)
         *o = 0;
         return;
     }
-    switch ((unsigned char)o[EntityOffset(260)]) {
+    switch ((unsigned char)AsObject(o)->AI) {
     case 0:
         if (life < 10) {
             *(int *)(o + 216) = 0;
             int state = rand() % 2 + 1;
-            o[EntityOffset(260)] = (char)state;
+            AsObject(o)->AI = (char)state;
             SetAction(AsObject(o), state);
-            if (o[EntityOffset(260)] == 2) goto walk;       // LABEL_312
+            if (AsObject(o)->AI == 2) goto walk;       // LABEL_312
             goto newLife;                     // LABEL_313
         }
         *(float *)(o + 24) = *(float *)(o + 60) + *(float *)(o + 216);
@@ -157,9 +157,9 @@ static void Tamachan_Move(char *o, int life)
     case 1:
         if (life < 10) {
             *(float *)(o + 216) = 40.0f;
-            o[EntityOffset(260)] = 0;
+            AsObject(o)->AI = 0;
             SetAction(AsObject(o), 0);
-            if (o[EntityOffset(260)] == 2) goto walk;
+            if (AsObject(o)->AI == 2) goto walk;
             goto newLife;
         }
         *(float *)(o + 24) = *(float *)(o + 60) + *(float *)(o + 216);
@@ -194,9 +194,9 @@ static void Tamachan_Move(char *o, int life)
                 ((float*)&AsObject(o)->StartPosition[0])[i] = rotated[i] + ((float *)(o + 52))[i];
             *(int *)(o + 96) = rand() % 100 + 50;
             int state = rand() % 3;
-            o[EntityOffset(260)] = (char)state;
+            AsObject(o)->AI = (char)state;
             SetAction(AsObject(o), state);
-            if (o[EntityOffset(260)] != 2) {
+            if (AsObject(o)->AI != 2) {
                 *(float *)(o + 192) = 0.0f;
                 *(float *)(o + 196) = 0.0f;
                 *(float *)(o + 200) = 0.0f;
@@ -671,7 +671,7 @@ void MoveEffect(float *param_1, int param_2)
             local_318 = 0;
             local_314 = 0x41200000;
             if (!validOwner(owner)) return;
-            intptr_t ownerBones = *(intptr_t *)((intptr_t)AsObject(param_1)->Owner + EntityOffset(0x114));
+            intptr_t ownerBones = (intptr_t)AsObject(param_1)->Owner->BoneMatrices;
             if (!SceneObjects::HasBoneRange(owner, (void*)(uintptr_t)ownerBones, 0x630, 12)) {
               *(char*)param_1 = 0; return;
             }
@@ -1065,7 +1065,7 @@ LAB_00469772:
               pcVar11 = (char *)(iVar9 + DAT_07abf5d0);
               local_35c = (float *)(int)(AsObject(param_1)->Position[1] - AsObject(pcVar11)->Position[1]);
               if ((((*pcVar11 != '\0') && (*(char *)&AsObject(pcVar11)->Visible != '\0')) && (pcVar11 != DAT_07abf5d8)) &&
-                 ((pcVar11[EntityOffset(0x2fd)] == '\0' &&
+                 ((FieldAs(pcVar11, AsCharacter(pcVar11)->Dead) == '\0' &&
                   (SQRT(local_348 * local_348 + (float)(int)(intptr_t)local_35c * (float)(int)(intptr_t)local_35c) <=
                    _DAT_0055285c)))) {
                 if (AsObject(pcVar11)->Type == 0x186) {

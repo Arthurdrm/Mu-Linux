@@ -290,11 +290,11 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
             *(short *)(o + 2) == 390)
         {
             const unsigned short helper = *(unsigned short *)&((CHARACTER*)(uintptr_t)(param_1))->Helper.Type;
-            if (helper < 818 || helper > 819 || *((char *)param_1 + EntityOffset(846)) != 0) {
+            if (helper < 818 || helper > 819 || AsCharacter(param_1)->SafeZone != 0) {
                 // Blood Castle (11..16): si esta muerto sobre el puente, la
                 // sombra se pega al terreno en vez de quedar flotando.
                 if (IsBloodCastleMap(gMapManager.GetCurrentMap()) &&
-                    *(BYTE *)&((OBJECT*)(uintptr_t)(o))->ActionStart != 0 && *((BYTE *)param_1 + EntityOffset(765)) != 0)
+                    *(BYTE *)&((OBJECT*)(uintptr_t)(o))->ActionStart != 0 && AsCharacter(param_1)->Dead != 0)
                 {
                     float th = RequestTerrainHeight(*(float *)(o + 16), *(float *)(o + 20));
                     if (th < *(float *)(o + 24)) *(float *)(o + 24) = th;
@@ -598,7 +598,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
     void *local_74 = nullptr;
     float fVar32 = (float)highlighted * _DAT_005524f8;
     float savedLight[3];
-    memcpy(savedLight, (char *)param_1 + EntityOffset(800), sizeof(savedLight));
+    memcpy(savedLight, AsCharacter(param_1)->Light, sizeof(savedLight));
     Equipment_BeginCharacter(AsCharacter(static_cast<intptr_t>(entity)));
     _DAT_005597c8 = 1.0f;
     Equipment_SetStage(0);
@@ -793,6 +793,6 @@ void Equipment_Tick(intptr_t entity, int highlighted)
     }
 
 
-    memcpy((char *)param_1 + EntityOffset(800), savedLight, sizeof(savedLight));
+    memcpy(AsCharacter(param_1)->Light, savedLight, sizeof(savedLight));
     Equipment_EndCharacter();
 }

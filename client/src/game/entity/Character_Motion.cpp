@@ -540,16 +540,16 @@ void __cdecl SetCharacterClass(CHARACTER* character) {
     BYTE* v7 = reinterpret_cast<BYTE*>(cd) + 536;   // matches IDA: CharacterMachine + 536
 
     // ── Primary cluster (4 equipment slots → entity offsets 624/648/672/696) ──
-    auto writeSlot = [&](int srcOff, int eOff) {
+    auto writeSlot = [&](int srcOff, PART_t& part) {
         short v = *(short*)(v7 + srcOff);
-        *(short*)(c + EntityOffset(eOff)) = (v == -1) ? (short)-1 : (short)ItemEntityModel(v);
+        part.Type = (v == -1) ? (short)-1 : (short)ItemEntityModel(v);
     };
     // Valor previo del helper, para detectar el CAMBIO abajo.
     const short prevHelper = AsCharacter(c)->Helper.Type;
-    writeSlot(0,   624);
-    writeSlot(68,  648);
-    writeSlot(476, 672);
-    writeSlot(544, 696);
+    writeSlot(0,   AsCharacter(c)->Weapon[0]);
+    writeSlot(68,  AsCharacter(c)->Weapon[1]);
+    writeSlot(476, AsCharacter(c)->Wing);
+    writeSlot(544, AsCharacter(c)->Helper);
     // 0.97.20: el helper guarda el pet vanilla que imita (bugs, monturas y
     // animaciones se deciden por ese tipo); el modelo propio se dibuja en
     // RenderBugs / Render_PlayerHelper.
@@ -1841,8 +1841,8 @@ void __cdecl MoveCharacter(intptr_t p1)
         v377 = 0;
         if (AsObject(o)->Type == 390 && (AsObject(o)->CurrentAction == 37 || AsObject(o)->CurrentAction == 38)) v377 = 1;
         v375 = 0; Type = 0;
-        v378 = *(short*)(c + EntityOffset(24 * v377 + 624));
-        v376 = *(unsigned char*)(c + (intptr_t)sizeof(PART_t) * v377 + EntityOffset(624) + (626 - 624));
+        v378 = AsCharacter(c)->Weapon[v377].Type;
+        v376 = AsCharacter(c)->Weapon[v377].Level;
 
         BYTE actLocal = AsObject(o)->CurrentAction;
         if (AsObject(o)->Type == 390) {
@@ -1902,10 +1902,10 @@ void __cdecl MoveCharacter(intptr_t p1)
 
             if (AsObject(o)->Type != 390 || v378 == 403 || v378 == 406 || v378 == 409 || v378 == 411 || v378 == 500) {
                 BMD_TransformPosition((void*)v422,
-                             (float*)(48 * (*(BYTE*)(c + (intptr_t)sizeof(PART_t) * v377 + EntityOffset(624) + (628 - 624))) + (intptr_t)AsObject(o)->BoneMatrices),
+                             (float*)(48 * (AsCharacter(c)->Weapon[v377].LinkBone) + (intptr_t)AsObject(o)->BoneMatrices),
                              v372, p1f, 1);
                 BMD_TransformPosition((void*)v422,
-                             (float*)(48 * (*(BYTE*)(c + (intptr_t)sizeof(PART_t) * v377 + EntityOffset(624) + (628 - 624))) + (intptr_t)AsObject(o)->BoneMatrices),
+                             (float*)(48 * (AsCharacter(c)->Weapon[v377].LinkBone) + (intptr_t)AsObject(o)->BoneMatrices),
                              v371, p2f, 1);
                 mc_CreateBlur(c, p1f, p2f, v373, Type, 0);
             } else {
@@ -1928,10 +1928,10 @@ void __cdecl MoveCharacter(intptr_t p1)
                     // elemento YA son esos 48 bytes: multiplicar por 3 otra vez daba
                     // 144*bone y leia la matriz de otro hueso.
                     BMD_TransformPosition((void*)v422,
-                                 (float*)BoneMatrix[*(BYTE*)(c + (intptr_t)sizeof(PART_t) * v377 + EntityOffset(624) + (628 - 624))],
+                                 (float*)BoneMatrix[AsCharacter(c)->Weapon[v377].LinkBone],
                                  v372, p1f, 0);
                     BMD_TransformPosition((void*)v422,
-                                 (float*)BoneMatrix[*(BYTE*)(c + (intptr_t)sizeof(PART_t) * v377 + EntityOffset(624) + (628 - 624))],
+                                 (float*)BoneMatrix[AsCharacter(c)->Weapon[v377].LinkBone],
                                  v371, p2f, 0);
                     mc_CreateBlur(c, p1f, p2f, v373, Type, 1);
                     AnimationFrame += v370f;
@@ -2065,8 +2065,8 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
         // 004520C0 L697-725: equipped-item terrain light.  The two item
         // los registros arrancan en c+624 y c+648 (stride de 24 bytes).
         if (AsCharacter(entity_ptr)->PK < 6) {
-            for (int itemOffset = 624; itemOffset <= 648; itemOffset += 24) {
-                const short itemType = *(short *)(entity_ptr + EntityOffset(itemOffset));
+            for (int hand = 0; hand < 2; ++hand) {
+                const short itemType = AsCharacter(entity_ptr)->Weapon[hand].Type;
                 if (itemType == 412) {
                     float itemLight[3] = {0.80000001f, 0.64000005f, 0.40000001f};
                     AddTerrainLight(AsCharacter(entity_ptr)->Object.Position[0], AsCharacter(entity_ptr)->Object.Position[1], (float*)itemLight, 3, (float*)PrimaryTerrainLight[0]);

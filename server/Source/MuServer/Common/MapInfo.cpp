@@ -1,4 +1,4 @@
-﻿#include "MapInfo.h"
+#include "MapInfo.h"
 #include "Utf8Path.h"
 #include "MapSpawns.h"
 

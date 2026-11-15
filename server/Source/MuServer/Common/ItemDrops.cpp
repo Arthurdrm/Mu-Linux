@@ -1,4 +1,4 @@
-﻿#include "ItemDrops.h"
+#include "ItemDrops.h"
 #include "Utf8Path.h"
 #include "MapSpawns.h"
 

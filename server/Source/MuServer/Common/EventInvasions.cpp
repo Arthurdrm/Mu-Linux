@@ -1,4 +1,4 @@
-﻿#include "EventInvasions.h"
+#include "EventInvasions.h"
 #include "Utf8Path.h"
 
 #include <cctype>

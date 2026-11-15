@@ -1,4 +1,4 @@
-﻿// mu-data: herramientas para los datos del server (Fase 5, datos por mapa).
+// mu-data: herramientas para los datos del server (Fase 5, datos por mapa).
 //
 //   mu-data import-spawns <MonsterSetBase.txt> <MapManager.txt> <Data> [--force]
 //       Parte MonsterSetBase.txt en un Spawns.toml por mapa
@@ -77,27 +77,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include "../Common/Utf8Path.h"
 
 namespace fs = std::filesystem;
-
-static fs::path Utf8Path(const std::string& value)
-{
-#if defined(__cpp_char8_t)
-	return fs::path(std::u8string(reinterpret_cast<const char8_t*>(value.data()), value.size()));
-#else
-	return Utf8Path(value);
-#endif
-}
-
-static std::string PathToUtf8(const fs::path& path)
-{
-	auto value = PathToUtf8(path);
-#if defined(__cpp_char8_t)
-	return std::string(reinterpret_cast<const char*>(value.data()), value.size());
-#else
-	return value;
-#endif
-}
 
 static int Fail(const std::string& message)
 {
@@ -644,7 +626,7 @@ static int ImportItems(const std::string& dataDir, bool force)
 
 	std::vector<std::string> names;
 
-	ItemExtras_ReadItemNames((fs::u8path(dataDir) / "Item" / "Item.txt").u8string(), names);
+	ItemExtras_ReadItemNames(PathToUtf8(Utf8Path(dataDir) / "Item" / "Item.txt"), names);
 
 	std::map<int, size_t> perSection;
 
@@ -655,14 +637,14 @@ static int ImportItems(const std::string& dataDir, bool force)
 
 	for (const std::pair<const int, size_t>& section : perSection)
 	{
-		fs::path file = fs::u8path(ItemExtras_SectionPath(dataDir, section.first));
+		fs::path file = Utf8Path(ItemExtras_SectionPath(dataDir, section.first));
 
-		if (!PrepareOutput(file, force, error) || !ItemExtras_WriteSection(file.u8string(), section.first, items, names, error))
+		if (!PrepareOutput(file, force, error) || !ItemExtras_WriteSection(PathToUtf8(file), section.first, items, names, error))
 		{
 			return Fail(error);
 		}
 
-		std::printf("%-48s %4zu items\n", file.u8string().c_str(), section.second);
+		std::printf("%-48s %4zu items\n", PathToUtf8(file).c_str(), section.second);
 	}
 
 	std::printf("%zu items\n", items.size());

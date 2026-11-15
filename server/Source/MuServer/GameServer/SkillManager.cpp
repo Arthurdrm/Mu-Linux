@@ -1871,7 +1871,7 @@ void CSkillManager::CGMultiSkillAttackRecv(PMSG_MULTI_SKILL_ATTACK_RECV* lpMsg, 
 	// chequeo de colisión (sub_466440) reporta el blanco con un 0x1D.  Puede
 	// llegar incluso antes que el 0x1E (medido con Twisting Slash).  Se ignora
 	// sin avisarle al cliente, que si no muestra un rechazo por cada impacto.
-	if (lpObj->Type == OBJECT_USER && (lpSkill->m_skill == SKILL_TRIPLE_SHOT || lpSkill->m_skill == SKILL_TWISTING_SLASH || lpSkill->m_skill == SKILL_RAGEFUL_BLOW || lpSkill->m_skill == SKILL_DEATH_STAB))
+	if (lpObj->Type == OBJECT_USER && SkillResolvesTargetsInDurationAttack(lpSkill->m_skill))
 	{
 		TRACE_NOTE(aIndex, 0x1D, -1, "skill %d: 0x1D del impacto, los blancos se resuelven en el 0x1E", lpSkill->m_skill);
 		return;

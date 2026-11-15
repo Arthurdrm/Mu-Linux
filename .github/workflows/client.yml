@@ -1,10 +1,13 @@
 name: Client
 on:
   push:
-    branches: [ "fase/*", "platform/**", "main" ]
+    branches: [ "fase/*", "release/*", "platform/**", "main" ]
     tags: [ "*" ]
+  # Todo PR, como el del server: las ramas de tema van a release/* y antes
+  # el cliente no corria ahi (habia que lanzarlo a mano y el resultado no
+  # quedaba en el PR). El filtro de carpetas de `changes` evita compilar
+  # cuando el PR no toca client/.
   pull_request:
-    branches: [ "fase/*", "main" ]
   workflow_dispatch:
 permissions:
   contents: read

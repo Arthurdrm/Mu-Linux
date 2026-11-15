@@ -6,16 +6,44 @@
 #include "stdafx.h"
 #include "game/core/RenderFxSnapshots.h"
 
-// x64: los locales del hash anti-tamper estan a 4 bytes en __fr y sus punteros se
-// pisan entre si; con capacidad 0 ninguna busqueda se ejecuta.
-#if UINTPTR_MAX != 0xFFFFFFFFu
-static uintptr_t g_JointNoHashCapacity = 0;
-#undef DAT_055c9bd4
-#define DAT_055c9bd4 g_JointNoHashCapacity
-#endif
-
 
 /* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
+
+// Salida común de CreateJoint (IDA 0x46D840: switchD_0046dee7_default): acota
+// MaxTails y completa el anillo de segmentos.
+static void* CreateJoint_Finish(char *pcVar14)
+{
+  if (0x32 < AsJoint(pcVar14)->MaxTails) {
+    pcVar14[0x54 + JOINT_FIELD_SHIFT] = '2';
+    pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+    pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+    pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+  }
+  {
+    // DESVIACION DOCUMENTADA (no esta en IDA 0x46D840).
+    //
+    // El binario inicializa UNICAMENTE la fila 0 del anillo de segmentos
+    // (`v11+22..v11+33` = 0x58..0x87, los 4 vertices) y deja el resto como
+    // estaba.  En el original el pool de joints se recicla sin parar y las filas
+    // altas conservan coordenadas plausibles del joint anterior.  Aca el pool es
+    // un global en BSS: la primera vez que se usa un slot esas filas valen 0 y el
+    // renderer (0x00473710) dibujaria un quad hasta el origen del mapa.
+    //
+    // Se replica la fila 0 en el resto del anillo (quads sobrantes degenerados
+    // sobre la posicion del joint), arrancando DESPUES de las filas que la
+    // creacion ya construyo (0..segCount) para no pisar los segmentos armados por
+    // los bucles de creacion (1254 sub 14 / 1253 sub 4 de las alas del MG, y
+    // cualquier subtipo que llame a sub_46FE90 dentro de CreateJoint).
+    const int __rowBytes = 0x30;
+    const int __maxRows  = MAX_JOINT_TAILS;
+    int __n = AsJoint(pcVar14)->MaxTails;
+    if (__n > __maxRows) __n = __maxRows;
+    const int __built = AsJoint(pcVar14)->NumTails;
+    for (int __r = __built + 1; __r < __n; ++__r)
+        memcpy(AsJoint(pcVar14)->Tails[__r], AsJoint(pcVar14)->Tails[0], __rowBytes);
+  }
+  return (void*)pcVar14;
+}
 
 // IDA: CreateJoint
 void * __cdecl
@@ -86,8 +114,8 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
   undefined4 stack0xffffff64 = 0;
   undefined4 stack0xffffff5c = 0;
 
-  pcVar14 = DAT_07b27150;
-  const uintptr_t __jp_end = (uintptr_t)DAT_07b27150 + sizeof(DAT_07b27150);
+  pcVar14 = reinterpret_cast<char*>(Joints);
+  const uintptr_t __jp_end = (uintptr_t)Joints + sizeof(Joints);
   while (*pcVar14 != '\0') {
     pcVar14 = pcVar14 + JOINT_STRIDE;
     if ((uintptr_t)pcVar14 >= __jp_end) {
@@ -115,10 +143,11 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
   // propio case.
   *(int *)&AsJoint(pcVar14)->Direction[1] = 0;
   *(int *)&AsJoint(pcVar14)->Direction[2] = 0;
-  pcVar14[0x40] = '\0';
-  pcVar14[0x41] = '\0';
-  pcVar14[0x42] = '\0';
-  pcVar14[0x43] = '\0';
+  // Target es un puntero: en x64 son 8 bytes, y poner en cero sólo los 4 de
+  // 0x40..0x43 (lo que hace el binario) dejaba la mitad alta del joint que
+  // usó el slot antes.  Con un joint sin target, MoveJoint lo tomaba como no
+  // nulo y lo deferenciaba.
+  AsJoint(pcVar14)->Target = nullptr;
   pfVar1 = AsJoint(pcVar14)->Position;
   pfVar2 = AsJoint(pcVar14)->Angle;
   *pfVar1 = *param_2;
@@ -216,12 +245,12 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
       AsJoint(pcVar14)->TargetPosition[2] = fVar24;
       *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[0] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[0];
       *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1];
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (param_1 < 0x4e3) {
       if (param_1 != 0x4e2) {
         if (0x498 < param_1) {
-          if (param_1 != 0x4e1) goto switchD_0046dee7_default;
+          if (param_1 != 0x4e1) return CreateJoint_Finish(pcVar14);
           goto switchD_0046f0e4_caseD_4fd;
         }
         if (param_1 == 0x498) {
@@ -260,10 +289,10 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           pcVar14[0x3f] = '?';
           *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1] = *(undefined4 *)&AsJoint(pcVar14)->Position[1];
           *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[2] = *(undefined4 *)&AsJoint(pcVar14)->Position[2];
-          goto switchD_0046dee7_default;
+          return CreateJoint_Finish(pcVar14);
         }
         if (param_1 != 0x10a) {
-          if (param_1 != 0x48e) goto switchD_0046dee7_default;
+          if (param_1 != 0x48e) return CreateJoint_Finish(pcVar14);
           goto switchD_0046f0e4_caseD_4ed;
         }
         iVar6 = (intptr_t)AsJoint(pcVar14)->Target;
@@ -315,7 +344,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
           pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
           AsJoint(pcVar14)->Scale = param_7;
-          goto switchD_0046dee7_default;
+          return CreateJoint_Finish(pcVar14);
         case 3:
           if (iVar6 == 0) {
             *pfVar3 = 0.5;
@@ -375,7 +404,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
           pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
           pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
           AsJoint(pcVar14)->Scale = param_7;
-          goto switchD_0046dee7_default;
+          return CreateJoint_Finish(pcVar14);
         default:
           goto switchD_0046db06_default;
         }
@@ -389,7 +418,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
         pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
 switchD_0046db06_default:
         AsJoint(pcVar14)->Scale = param_7;
-        goto switchD_0046dee7_default;
+        return CreateJoint_Finish(pcVar14);
       }
       pcVar14[0x9d0 + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x9d1 + JOINT_FIELD_SHIFT] = '\0';
@@ -512,125 +541,33 @@ switchD_0046dd50_default:
       AsJoint(pcVar14)->TargetPosition[0] = *param_3;
       AsJoint(pcVar14)->TargetPosition[1] = param_3[1];
       AsJoint(pcVar14)->TargetPosition[2] = param_3[2];
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (param_1 == 0x4e5) {
       switch(*(undefined4 *)&AsJoint(pcVar14)->SubType) {
       case 0:
-        local_98 = (byte*)DAT_07cf1ffc;
-        local_80 = (byte*)DAT_07cf1ffc;
-        uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(DAT_07cf1ffc);
-        local_98 = (byte *)0x0;
-        local_88 = (byte*)0x0;
-        if (DAT_055c9bd4 != 0) {
-          do {
-            bVar18 = false;
-            iVar11 = 0;
-            bVar19 = true;
-            local_80 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-            iVar6 = 4;
-            ppbVar15 = &local_98;
-            pbVar26 = local_80;
-            do {
-              if (iVar6 == 0) break;
-              iVar6 = iVar6 + -1;
-              bVar18 = *(byte *)ppbVar15 < *pbVar26;
-              bVar19 = *(byte *)ppbVar15 == *pbVar26;
-              ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-              pbVar26 = pbVar26 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar11 == 0) goto LAB_0046e550;
-            iVar6 = 4;
-            bVar18 = false;
-            iVar11 = 0;
-            bVar19 = true;
-            ppbVar15 = &local_84;
-            pbVar26 = local_80;
-            do {
-              if (iVar6 == 0) break;
-              iVar6 = iVar6 + -1;
-              bVar18 = *(byte *)ppbVar15 < *pbVar26;
-              bVar19 = *(byte *)ppbVar15 == *pbVar26;
-              ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-              pbVar26 = pbVar26 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-
-            }
-            if (iVar11 == 0) {
-              if (uVar9 == 0xffffffff) goto LAB_0046e550;
-              local_80 = pbVar10;
-              uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pbVar10);
-              local_88 = (byte*)0x0;
-              local_8c = (byte*)0x0;
-              if (DAT_055c9bd4 != 0) goto LAB_0046e62c;
-              goto LAB_0046e687;
-            }
-            uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-            local_88 = local_88 + 1;
-          } while ((uint)(uintptr_t)local_88 < DAT_055c9bd4);
-        }
-        CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-LAB_0046e550:
-        local_98 = (byte*)AntiTamper_HashNode();
-        local_98[0x584] = 1;
-        uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pbVar10);
-        local_84 = (byte *)0x0;
-        local_8c = (byte*)0x0;
-        if (DAT_055c9bd4 != 0) {
-          do {
-            bVar18 = false;
-            iVar6 = 0;
-            bVar19 = true;
-            local_88 = (byte*)(uintptr_t)(int)(DAT_055c9bd0 + uVar9 * 4);
-            iVar11 = 4;
-            pbVar26 = (byte*)&stack0xffffff60;
-            pbVar8 = local_88;
-            do {
-              if (iVar11 == 0) break;
-              iVar11 = iVar11 + -1;
-              bVar18 = *pbVar26 < *pbVar8;
-              bVar19 = *pbVar26 == *pbVar8;
-              pbVar26 = pbVar26 + 1;
-              pbVar8 = pbVar8 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar6 == 0) {
-LAB_0046e742:
-              *(byte **)(DAT_055c9bcc + uVar9 * 4) = pbVar10;
-              *(byte **)(DAT_055c9bd0 + uVar9 * 4) = pbVar10;
-              goto LAB_0046e76a;
-            }
-            iVar11 = 4;
-            bVar18 = false;
-            iVar6 = 0;
-            bVar19 = true;
-            ppbVar15 = &local_84;
-            pbVar26 = local_88;
-            do {
-              if (iVar11 == 0) break;
-              iVar11 = iVar11 + -1;
-              bVar18 = *(byte *)ppbVar15 < *pbVar26;
-              bVar19 = *(byte *)ppbVar15 == *pbVar26;
-              ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-              pbVar26 = pbVar26 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar6 == 0) goto LAB_0046e742;
-            uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-            local_8c = local_8c + 1;
-          } while ((uint)(uintptr_t)local_8c < DAT_055c9bd4);
-        }
-        CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______Insert_005580e8);
-        goto LAB_0046e76a;
+        // IDA (0x46D840): el case descifra CharacterMachine, copia el serial de
+        // proyectiles a Weapon (v11[2515] = CharacterMachine[1408]) y lo vuelve
+        // a cifrar.  Este port no cifra CharacterMachine: queda la copia.
+        *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
+        pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x74;
+        pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'B';
+        pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
+        pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
+          // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
+          // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
+          // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
+          // LifeTime = 49; Scale; MaxTails = 6.
+          AsJoint(pcVar14)->Scale = param_7;
+        pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x06';
+        pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+        return CreateJoint_Finish(pcVar14);
       case 1:
         pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
         pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
@@ -757,122 +694,33 @@ LAB_0046e742:
         }
         goto LAB_0046e37e;
       case 5:
-        local_84 = (byte*)DAT_07cf1ffc;
-        local_7c = (byte*)DAT_07cf1ffc;
-        uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(DAT_07cf1ffc);
-        local_98 = (byte *)0x0;
-        if (DAT_055c9bd4 != 0) {
-          do {
-            bVar18 = false;
-            iVar11 = 0;
-            bVar19 = true;
-            local_84 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-            iVar6 = 4;
-            pbVar26 = (byte*)&stack0xffffff64;
-            pbVar8 = local_84;
-            do {
-              if (iVar6 == 0) break;
-              iVar6 = iVar6 + -1;
-              bVar18 = *pbVar26 < *pbVar8;
-              bVar19 = *pbVar26 == *pbVar8;
-              pbVar26 = pbVar26 + 1;
-              pbVar8 = pbVar8 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar11 == 0) goto LAB_0046ea53;
-            iVar6 = 4;
-            bVar18 = false;
-            iVar11 = 0;
-            bVar19 = true;
-            ppbVar15 = &local_80;
-            pbVar26 = local_84;
-            do {
-              if (iVar6 == 0) break;
-              iVar6 = iVar6 + -1;
-              bVar18 = *(byte *)ppbVar15 < *pbVar26;
-              bVar19 = *(byte *)ppbVar15 == *pbVar26;
-              ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-              pbVar26 = pbVar26 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar11 == 0) {
-              if (uVar9 == 0xffffffff) goto LAB_0046ea53;
-              local_84 = pbVar10;
-              uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pbVar10);
-              pbVar10 = (byte *)0x0;
-              if (DAT_055c9bd4 != 0) goto LAB_0046eb2f;
-              goto LAB_0046eb8a;
-            }
-            uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-            local_98 = local_98 + 1;
-          } while ((uint)(uintptr_t)local_98 < DAT_055c9bd4);
-        }
-        CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-LAB_0046ea53:
-        local_88 = (byte*)AntiTamper_HashNode();
-        local_88[0x584] = 1;
-        uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pbVar10);
-        local_84 = (byte *)0x0;
-        pbVar26 = (byte *)0x0;
-        if (DAT_055c9bd4 != 0) {
-          do {
-            bVar18 = false;
-            iVar6 = 0;
-            bVar19 = true;
-            local_88 = (byte*)(uintptr_t)(int)(DAT_055c9bd0 + uVar9 * 4);
-            iVar11 = 4;
-            pbVar8 = (byte*)&stack0xffffff60;
-            pbVar17 = local_88;
-            do {
-              if (iVar11 == 0) break;
-              iVar11 = iVar11 + -1;
-              bVar18 = *pbVar8 < *pbVar17;
-              bVar19 = *pbVar8 == *pbVar17;
-              pbVar8 = pbVar8 + 1;
-              pbVar17 = pbVar17 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar6 == 0) {
-LAB_0046ec45:
-              *(byte **)(DAT_055c9bcc + uVar9 * 4) = local_8c;
-              *(byte **)(DAT_055c9bd0 + uVar9 * 4) = pbVar10;
-              goto LAB_0046ec6d;
-            }
-            iVar11 = 4;
-            bVar18 = false;
-            iVar6 = 0;
-            bVar19 = true;
-            ppbVar15 = &local_84;
-            pbVar8 = local_88;
-            do {
-              if (iVar11 == 0) break;
-              iVar11 = iVar11 + -1;
-              bVar18 = *(byte *)ppbVar15 < *pbVar8;
-              bVar19 = *(byte *)ppbVar15 == *pbVar8;
-              ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-              pbVar8 = pbVar8 + 1;
-            } while (bVar19);
-            if (!bVar19) {
-              iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-            }
-            if (iVar6 == 0) goto LAB_0046ec45;
-            uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-            pbVar26 = pbVar26 + 1;
-          } while ((uint)(uintptr_t)pbVar26 < DAT_055c9bd4);
-        }
-        CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______Insert_005580e8);
-        goto LAB_0046ec6d;
+        // IDA (0x46D840): el case descifra CharacterMachine, copia el serial de
+        // proyectiles a Weapon (v11[2515] = CharacterMachine[1408]) y lo vuelve
+        // a cifrar.  Este port no cifra CharacterMachine: queda la copia.
+        *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
+        pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x10;
+        pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'A';
+        pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
+        pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
+          // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
+          // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
+          // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
+          // LifeTime = 49; Scale; MaxTails = 6.
+          AsJoint(pcVar14)->Scale = param_7;
+        pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\f';
+        pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
+        pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
+        return CreateJoint_Finish(pcVar14);
       }
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (param_1 != 0x4e6) {
-      if (param_1 != 0x4e7) goto switchD_0046dee7_default;
+      if (param_1 != 0x4e7) return CreateJoint_Finish(pcVar14);
       pcVar14[0x54 + JOINT_FIELD_SHIFT] = '2';
       pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
@@ -1244,7 +1092,7 @@ LAB_0046e37e:
       *(undefined4 *)&AsJoint(pcVar14)->Position[1] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[1];
       *(undefined4 *)&AsJoint(pcVar14)->Position[2] = *(undefined4 *)&AsJoint(pcVar14)->TargetPosition[2];
     }
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   }
   switch(param_1) {
   case BITMAP_JOINT_SPARK:
@@ -1301,7 +1149,7 @@ LAB_0046f415:
           pcVar14[0x3e] = -0x80;
           pcVar14[0x3f] = '?';
         }
-        goto switchD_0046dee7_default;
+        return CreateJoint_Finish(pcVar14);
       }
       pcVar14[0xc] = '\0';
       pcVar14[0xd] = '\0';
@@ -1445,7 +1293,7 @@ LAB_0046f415:
       pcVar14[0x3e] = '\0';
       pcVar14[0x3f] = '?';
     }
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   case BITMAP_JOINT_HEALING:
     pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '\f';
     pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
@@ -1475,7 +1323,7 @@ LAB_0046f415:
       pcVar14[0x3d] = '\0';
       pcVar14[0x3e] = '\0';
       pcVar14[0x3f] = '?';
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (iVar6 == 7) {
       pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x04';
@@ -1491,7 +1339,7 @@ LAB_0046f415:
       pcVar14[0x3d] = '\0';
       pcVar14[0x3e] = '\0';
       pcVar14[0x3f] = '\0';
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     if (iVar6 == 4) {
       pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '\x1e';
@@ -1512,9 +1360,9 @@ LAB_0046f415:
       pcVar14[0x4e + JOINT_FIELD_SHIFT] = '\0';
       pcVar14[0x4f + JOINT_FIELD_SHIFT] = '\0';
       AsJoint(pcVar14)->TargetPosition[0] = (float)(int)(uVar9 - 0x20);
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
-    if (iVar6 != 5) goto switchD_0046dee7_default;
+    if (iVar6 != 5) return CreateJoint_Finish(pcVar14);
     iVar6 = _rand();
     local_98 = (byte *)(iVar6 % 10 + -5);
     AsJoint(pcVar14)->Scale = (float)(intptr_t)local_98 + AsJoint(pcVar14)->Scale;
@@ -1546,7 +1394,7 @@ LAB_0046f415:
     pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   case BITMAP_JOINT_LASER + 1:
 switchD_0046f0e4_caseD_4ed:
     pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
@@ -1589,7 +1437,7 @@ switchD_0046f0e4_caseD_4ed:
         pcVar14[0x3e] = -0x80;
         pcVar14[0x3f] = '?';
       }
-      goto switchD_0046dee7_default;
+      return CreateJoint_Finish(pcVar14);
     }
     break;
   case BITMAP_MOTION_BLUR_R2:
@@ -1628,7 +1476,7 @@ switchD_0046f0e4_caseD_4ed:
     AsJoint(pcVar14)->Position[2] = *(float*)&local_88 + AsJoint(pcVar14)->Position[2];
     break;
   default:
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   case BITMAP_FLARE_BLUE:
 switchD_0046f0e4_caseD_4fd:
     iVar6 = AsJoint(pcVar14)->SubType;
@@ -2032,7 +1880,7 @@ LAB_0046f55a:
     AsJoint(pcVar14)->TargetPosition[0] = *param_3;
     AsJoint(pcVar14)->TargetPosition[1] = param_3[1];
     AsJoint(pcVar14)->TargetPosition[2] = param_3[2];
-    goto switchD_0046dee7_default;
+    return CreateJoint_Finish(pcVar14);
   }
   *pfVar3 = 1.0;
   pcVar14[0x38] = '\0';
@@ -2043,562 +1891,7 @@ LAB_0046f55a:
   pcVar14[0x3d] = '\0';
   pcVar14[0x3e] = -0x80;
   pcVar14[0x3f] = '?';
-switchD_0046dee7_default:
-  if (0x32 < AsJoint(pcVar14)->MaxTails) {
-    pcVar14[0x54 + JOINT_FIELD_SHIFT] = '2';
-    pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
-    pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
-    pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-  }
-  {
-    // DESVIACION DOCUMENTADA (no esta en IDA 0x46D840).
-    //
-    // El binario inicializa UNICAMENTE la fila 0 del anillo de segmentos
-    // (`v11+22..v11+33` = 0x58..0x87, los 4 vertices) y deja el resto como
-    // estaba.  En el original el pool de joints se recicla sin parar y las filas
-    // altas conservan coordenadas plausibles del joint anterior.  Aca el pool es
-    // un global en BSS: la primera vez que se usa un slot esas filas valen 0 y el
-    // renderer (0x00473710) dibujaria un quad hasta el origen del mapa.
-    //
-    // Se replica la fila 0 en el resto del anillo (quads sobrantes degenerados
-    // sobre la posicion del joint), arrancando DESPUES de las filas que la
-    // creacion ya construyo (0..segCount) para no pisar los segmentos armados por
-    // los bucles de creacion (1254 sub 14 / 1253 sub 4 de las alas del MG, y
-    // cualquier subtipo que llame a sub_46FE90 dentro de CreateJoint).
-    const int __rowBytes = 0x30;
-    const int __maxRows  = MAX_JOINT_TAILS;
-    int __n = AsJoint(pcVar14)->MaxTails;
-    if (__n > __maxRows) __n = __maxRows;
-    const int __built = AsJoint(pcVar14)->NumTails;
-    for (int __r = __built + 1; __r < __n; ++__r)
-        memcpy(AsJoint(pcVar14)->Tails[__r], AsJoint(pcVar14)->Tails[0], __rowBytes);
-  }
-  return (void*)pcVar14;
-  while( true ) {
-    uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-    pbVar10 = pbVar10 + 1;
-    if ((uint)(uintptr_t)pbVar10 >= DAT_055c9bd4) break;
-LAB_0046eb2f:
-    bVar18 = false;
-    iVar11 = 0;
-    bVar19 = true;
-    pbVar26 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-
-    iVar6 = 4;
-    pbVar8 = (byte*)&stack0xffffff60;
-    pbVar17 = pbVar26;
-    do {
-      if (iVar6 == 0) break;
-      iVar6 = iVar6 + -1;
-      bVar18 = *pbVar8 < *pbVar17;
-      bVar19 = *pbVar8 == *pbVar17;
-      pbVar8 = pbVar8 + 1;
-      pbVar17 = pbVar17 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar11 == 0) goto LAB_0046eb9c;
-    iVar6 = 4;
-    bVar18 = false;
-    iVar11 = 0;
-    bVar19 = true;
-    ppbVar15 = &local_88;
-    do {
-      if (iVar6 == 0) break;
-      iVar6 = iVar6 + -1;
-      bVar18 = *(byte *)ppbVar15 < *pbVar26;
-      bVar19 = *(byte *)ppbVar15 == *pbVar26;
-      ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-      pbVar26 = pbVar26 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar11 == 0) {
-      if (uVar9 == 0xffffffff) goto LAB_0046eb9c;
-      puVar13 = *(undefined4 **)(DAT_055c9bcc + uVar9 * 4);
-      goto LAB_0046eb9e;
-    }
-  }
-LAB_0046eb8a:
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-LAB_0046eb9c:
-  puVar13 = (undefined4 *)0x0;
-LAB_0046eb9e:
-  // puVar13 es undefined4*: la suma avanza de a 4 bytes, no es el campo AlphaEnable.
-  cVar4 = *(char *)(puVar13 + EntityOffset(0x161));
-  *(byte *)(puVar13 + EntityOffset(0x161)) = cVar4 + 1U;
-  if ((byte)(cVar4 + 1U) < 2) {
-    puVar7 = (undefined4*)operator_new(0x584);
-    puVar16 = puVar7;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *puVar16 = *puVar13;
-      puVar13 = puVar13 + 1;
-      puVar16 = puVar16 + 1;
-    }
-    uVar9 = 0x583;
-    iVar6 = 0x584;
-    do {
-      if (uVar9 < 0x583) {
-        *(byte *)(uVar9 + (intptr_t)puVar7) =
-             *(byte *)(uVar9 + (intptr_t)puVar7) ^ *(byte *)(uVar9 + 1 + (intptr_t)puVar7);
-      }
-      bVar5 = *(char *)(uVar9 + (intptr_t)puVar7) - 0x23;
-      uVar12 = uVar9 & 0x8000000f;
-      *(byte *)(uVar9 + (intptr_t)puVar7) = bVar5;
-      if ((int)uVar12 < 0) {
-        uVar12 = (uVar12 - 1 | 0xfffffff0) + 1;
-      }
-      *(byte *)(uVar9 + (intptr_t)puVar7) = (PacketXorKey16[uVar12] ^ bVar5) + 0xb9;
-      uVar9 = uVar9 - 1;
-      iVar6 = iVar6 + -1;
-    } while (iVar6 != 0);
-    puVar13 = puVar7;
-    pbVar10 = local_8c;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *(undefined4 *)pbVar10 = *puVar13;
-      puVar13 = puVar13 + 1;
-      pbVar10 = pbVar10 + 4;
-    }
-    operator_delete((undefined *)puVar7);
-  }
-LAB_0046ec6d:
-  pbVar10 = (byte*)DAT_07cf1ffc;
-  iVar6 = MAIN_HASH_CLASS;
-  local_8c = (byte*)DAT_07cf1ffc;
-  local_88 = (byte*)DAT_07cf1ffc;
-  *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
-  uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pbVar10);
-  pbVar10 = (byte *)0x0;
-  if (DAT_055c9bd4 != 0) {
-    do {
-      iVar11 = 4;
-      pbVar26 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-      bVar18 = false;
-      iVar6 = 0;
-      bVar19 = true;
-      pbVar8 = (byte*)&stack0xffffff5c;
-      pbVar17 = pbVar26;
-      do {
-        if (iVar11 == 0) break;
-        iVar11 = iVar11 + -1;
-        bVar18 = *pbVar8 < *pbVar17;
-        bVar19 = *pbVar8 == *pbVar17;
-        pbVar8 = pbVar8 + 1;
-        pbVar17 = pbVar17 + 1;
-      } while (bVar19);
-      if (!bVar19) {
-        iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-      }
-      if (iVar6 == 0) goto LAB_0046ee73;
-      iVar11 = 4;
-      bVar18 = false;
-      iVar6 = 0;
-      bVar19 = true;
-      ppbVar15 = &local_8c;
-      do {
-        if (iVar11 == 0) break;
-        iVar11 = iVar11 + -1;
-        bVar18 = *(byte *)ppbVar15 < *pbVar26;
-        bVar19 = *(byte *)ppbVar15 == *pbVar26;
-        ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-        pbVar26 = pbVar26 + 1;
-      } while (bVar19);
-      if (!bVar19) {
-        iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-      }
-      if (iVar6 == 0) {
-        if (uVar9 == 0xffffffff) goto LAB_0046ee73;
-        local_8c = (byte*)(uintptr_t)(int)local_90;
-        uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))((void*)(uintptr_t)(int)local_90);
-        pbVar10 = (byte *)0x0;
-        if (DAT_055c9bd4 != 0) goto LAB_0046ed54;
-        goto LAB_0046edb0;
-      }
-      uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-      pbVar10 = pbVar10 + 1;
-    } while ((uint)(uintptr_t)pbVar10 < DAT_055c9bd4);
-  }
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-  goto LAB_0046ee73;
-  while( true ) {
-    uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-    pbVar10 = pbVar10 + 1;
-    if ((uint)(uintptr_t)pbVar10 >= DAT_055c9bd4) break;
-LAB_0046ed54:
-    iVar11 = 4;
-    pbVar26 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-    bVar18 = false;
-    iVar6 = 0;
-    bVar19 = true;
-    pbVar8 = (byte*)&stack0xffffff5c;
-    pbVar17 = pbVar26;
-    do {
-      if (iVar11 == 0) break;
-      iVar11 = iVar11 + -1;
-      bVar18 = *pbVar8 < *pbVar17;
-      bVar19 = *pbVar8 == *pbVar17;
-      pbVar8 = pbVar8 + 1;
-      pbVar17 = pbVar17 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar6 == 0) goto LAB_0046edc2;
-    iVar11 = 4;
-    bVar18 = false;
-    iVar6 = 0;
-    bVar19 = true;
-    ppbVar15 = &local_8c;
-    do {
-      if (iVar11 == 0) break;
-      iVar11 = iVar11 + -1;
-      bVar18 = *(byte *)ppbVar15 < *pbVar26;
-      bVar19 = *(byte *)ppbVar15 == *pbVar26;
-      ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-      pbVar26 = pbVar26 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar6 == 0) {
-      if (uVar9 == 0xffffffff) goto LAB_0046edc2;
-      puVar13 = *(undefined4 **)(DAT_055c9bcc + uVar9 * 4);
-      goto LAB_0046edc4;
-    }
-  }
-LAB_0046edb0:
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-LAB_0046edc2:
-  puVar13 = (undefined4 *)0x0;
-LAB_0046edc4:
-  // puVar13 es undefined4*: la suma avanza de a 4 bytes, no es el campo AlphaEnable.
-  cVar4 = *(char *)(puVar13 + EntityOffset(0x161));
-  *(char *)(puVar13 + EntityOffset(0x161)) = cVar4 + -1;
-  if ((char)(cVar4 + -1) == '\0') {
-    pbVar8 = (byte*)operator_new(0x584);
-    pbVar10 = (byte*)(uintptr_t)(int)local_90;
-    pbVar26 = pbVar8;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *(undefined4 *)pbVar26 = *(undefined4 *)pbVar10;
-      pbVar10 = pbVar10 + 4;
-      pbVar26 = pbVar26 + 4;
-    }
-    uVar9 = 0;
-    iVar6 = (intptr_t)local_90 - (intptr_t)pbVar8;
-    pbVar10 = pbVar8;
-    do {
-      bVar5 = *pbVar10;
-      uVar12 = uVar9 & 0x8000000f;
-      *pbVar10 = bVar5 + 0x47;
-      if ((int)uVar12 < 0) {
-        uVar12 = (uVar12 - 1 | 0xfffffff0) + 1;
-      }
-      bVar5 = (PacketXorKey16[uVar12] ^ bVar5 + 0x47) + 0x23;
-      *pbVar10 = bVar5;
-      if (uVar9 < 0x583) {
-        *pbVar10 = pbVar8[uVar9 + 1] ^ bVar5;
-      }
-      iVar11 = _rand();
-      uVar9 = uVar9 + 1;
-      pbVar10[iVar6] = (byte)iVar11;
-      pbVar10 = pbVar10 + 1;
-    } while (uVar9 < 0x584);
-    pbVar10 = pbVar8;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *puVar13 = *(undefined4 *)pbVar10;
-      pbVar10 = pbVar10 + 4;
-      puVar13 = puVar13 + 1;
-    }
-    operator_delete(pbVar8);
-  }
-LAB_0046ee73:
-  pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x10;
-  pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'A';
-  pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
-  pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
-    // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
-    // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
-    // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
-    // LifeTime = 49; Scale; MaxTails = 6.
-    AsJoint(pcVar14)->Scale = param_7;
-  pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\f';
-  pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-  goto switchD_0046dee7_default;
-  while( true ) {
-    uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-    local_8c = local_8c + 1;
-    if ((uint)(uintptr_t)local_8c >= DAT_055c9bd4) break;
-LAB_0046e62c:
-    bVar18 = false;
-    iVar11 = 0;
-    bVar19 = true;
-    pbVar10 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-    iVar6 = 4;
-    ppbVar15 = &local_88;
-    pbVar26 = pbVar10;
-    do {
-      if (iVar6 == 0) break;
-      iVar6 = iVar6 + -1;
-      bVar18 = *(byte *)ppbVar15 < *pbVar26;
-      bVar19 = *(byte *)ppbVar15 == *pbVar26;
-      ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-      pbVar26 = pbVar26 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar11 == 0) goto LAB_0046e699;
-    iVar6 = 4;
-    bVar18 = false;
-    iVar11 = 0;
-    bVar19 = true;
-    ppbVar15 = &local_84;
-    do {
-      if (iVar6 == 0) break;
-      iVar6 = iVar6 + -1;
-      bVar18 = *(byte *)ppbVar15 < *pbVar10;
-      bVar19 = *(byte *)ppbVar15 == *pbVar10;
-      ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-      pbVar10 = pbVar10 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar11 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar11 == 0) {
-      if (uVar9 == 0xffffffff) goto LAB_0046e699;
-      puVar13 = *(undefined4 **)(DAT_055c9bcc + uVar9 * 4);
-      goto LAB_0046e69b;
-    }
-  }
-LAB_0046e687:
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-LAB_0046e699:
-  puVar13 = (undefined4 *)0x0;
-LAB_0046e69b:
-  // puVar13 es undefined4*: la suma avanza de a 4 bytes, no es el campo AlphaEnable.
-  cVar4 = *(char *)(puVar13 + EntityOffset(0x161));
-  *(byte *)(puVar13 + EntityOffset(0x161)) = cVar4 + 1U;
-  if ((byte)(cVar4 + 1U) < 2) {
-    puVar7 = (undefined4*)operator_new(0x584);
-    puVar16 = puVar7;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *puVar16 = *puVar13;
-      puVar13 = puVar13 + 1;
-      puVar16 = puVar16 + 1;
-    }
-    uVar9 = 0x583;
-    iVar6 = 0x584;
-    do {
-      if (uVar9 < 0x583) {
-        *(byte *)(uVar9 + (intptr_t)puVar7) =
-             *(byte *)(uVar9 + (intptr_t)puVar7) ^ *(byte *)(uVar9 + 1 + (intptr_t)puVar7);
-      }
-      bVar5 = *(char *)(uVar9 + (intptr_t)puVar7) - 0x23;
-      uVar12 = uVar9 & 0x8000000f;
-      *(byte *)(uVar9 + (intptr_t)puVar7) = bVar5;
-      if ((int)uVar12 < 0) {
-        uVar12 = (uVar12 - 1 | 0xfffffff0) + 1;
-      }
-      *(byte *)(uVar9 + (intptr_t)puVar7) = (PacketXorKey16[uVar12] ^ bVar5) + 0xb9;
-      uVar9 = uVar9 - 1;
-      iVar6 = iVar6 + -1;
-    } while (iVar6 != 0);
-    puVar13 = puVar7;
-      // ESCRITURA SALVAJE (2026-10-02, issue #75): el destino de esta copia
-      // es un registro que Ghidra perdio y el port dejo como variable SIN
-      // asignar nunca -- solo se deferencia y se incrementa.  Son 0x161
-      // DWORDs = 1412 bytes (0x584, el tamano del nodo anti-tamper) escritos
-      // a una direccion arbitraria.  En Debug el local vale 0xCCCCCCCC y falla
-      // temprano; en Release trae basura de pila que apunta a memoria viva, y
-      // de ahi la corrupcion que reventaba en gdi32 / opengl32 / sprintf y las
-      // cookies /GS.  Estos bloques son el XOR anti-tamper de CharacterMachine,
-      // que este port neutraliza por policy, asi que la copia se redirige al
-      // scratch del nodo: queda inocua y acotada.
-    unaff_EBX = (undefined4 *)AntiTamper_HashNode();
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *unaff_EBX = *puVar13;
-      puVar13 = puVar13 + 1;
-      unaff_EBX = unaff_EBX + 1;
-    }
-    operator_delete((undefined *)puVar7);
-  }
-LAB_0046e76a:
-  pbVar10 = (byte*)DAT_07cf1ffc;
-  iVar6 = MAIN_HASH_CLASS;
-  local_8c = (byte*)DAT_07cf1ffc;
-  local_88 = (byte*)DAT_07cf1ffc;
-  *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
-  uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pbVar10);
-  pbVar10 = (byte *)0x0;
-  if (DAT_055c9bd4 != 0) {
-    do {
-      iVar11 = 4;
-      pbVar26 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-      bVar18 = false;
-      iVar6 = 0;
-      bVar19 = true;
-      pbVar8 = (byte*)&stack0xffffff5c;
-      pbVar17 = pbVar26;
-      do {
-        if (iVar11 == 0) break;
-        iVar11 = iVar11 + -1;
-        bVar18 = *pbVar8 < *pbVar17;
-        bVar19 = *pbVar8 == *pbVar17;
-        pbVar8 = pbVar8 + 1;
-        pbVar17 = pbVar17 + 1;
-      } while (bVar19);
-      if (!bVar19) {
-        iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-      }
-      if (iVar6 == 0) goto LAB_0046e970;
-      iVar11 = 4;
-      bVar18 = false;
-      iVar6 = 0;
-      bVar19 = true;
-      ppbVar15 = &local_8c;
-      do {
-        if (iVar11 == 0) break;
-        iVar11 = iVar11 + -1;
-        bVar18 = *(byte *)ppbVar15 < *pbVar26;
-        bVar19 = *(byte *)ppbVar15 == *pbVar26;
-        ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-        pbVar26 = pbVar26 + 1;
-      } while (bVar19);
-      if (!bVar19) {
-        iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-      }
-      if (iVar6 == 0) {
-        if (uVar9 == 0xffffffff) goto LAB_0046e970;
-        local_8c = (byte*)(uintptr_t)(int)local_90;
-        uVar9 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))((void*)(uintptr_t)(int)local_90);
-        pbVar10 = (byte *)0x0;
-        if (DAT_055c9bd4 != 0) goto LAB_0046e851;
-        goto LAB_0046e8ad;
-      }
-      uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-      pbVar10 = pbVar10 + 1;
-    } while ((uint)(uintptr_t)pbVar10 < DAT_055c9bd4);
-  }
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-  goto LAB_0046e970;
-  while( true ) {
-    uVar9 = (uVar9 + 1) % (uint)DAT_055c9bd4;
-    pbVar10 = pbVar10 + 1;
-    if ((uint)(uintptr_t)pbVar10 >= DAT_055c9bd4) break;
-LAB_0046e851:
-    iVar11 = 4;
-    pbVar26 = (byte *)(DAT_055c9bd0 + uVar9 * 4);
-    bVar18 = false;
-    iVar6 = 0;
-    bVar19 = true;
-    pbVar8 = (byte*)&stack0xffffff5c;
-    pbVar17 = pbVar26;
-    do {
-      if (iVar11 == 0) break;
-      iVar11 = iVar11 + -1;
-      bVar18 = *pbVar8 < *pbVar17;
-      bVar19 = *pbVar8 == *pbVar17;
-      pbVar8 = pbVar8 + 1;
-      pbVar17 = pbVar17 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar6 == 0) goto LAB_0046e8bf;
-    iVar11 = 4;
-    bVar18 = false;
-    iVar6 = 0;
-    bVar19 = true;
-    ppbVar15 = &local_8c;
-    do {
-      if (iVar11 == 0) break;
-      iVar11 = iVar11 + -1;
-      bVar18 = *(byte *)ppbVar15 < *pbVar26;
-      bVar19 = *(byte *)ppbVar15 == *pbVar26;
-      ppbVar15 = (byte **)((intptr_t)ppbVar15 + 1);
-      pbVar26 = pbVar26 + 1;
-    } while (bVar19);
-    if (!bVar19) {
-      iVar6 = (1 - (uint)bVar18) - (uint)(bVar18 != 0);
-    }
-    if (iVar6 == 0) {
-      if (uVar9 == 0xffffffff) goto LAB_0046e8bf;
-      puVar13 = *(undefined4 **)(DAT_055c9bcc + uVar9 * 4);
-      goto LAB_0046e8c1;
-    }
-  }
-LAB_0046e8ad:
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
-LAB_0046e8bf:
-  puVar13 = (undefined4 *)0x0;
-LAB_0046e8c1:
-  // puVar13 es undefined4*: la suma avanza de a 4 bytes, no es el campo AlphaEnable.
-  cVar4 = *(char *)(puVar13 + EntityOffset(0x161));
-  *(char *)(puVar13 + EntityOffset(0x161)) = cVar4 + -1;
-  if ((char)(cVar4 + -1) == '\0') {
-    pbVar8 = (byte*)operator_new(0x584);
-    pbVar10 = (byte*)(uintptr_t)(int)local_90;
-    pbVar26 = pbVar8;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *(undefined4 *)pbVar26 = *(undefined4 *)pbVar10;
-      pbVar10 = pbVar10 + 4;
-      pbVar26 = pbVar26 + 4;
-    }
-    uVar9 = 0;
-    iVar6 = (intptr_t)local_90 - (intptr_t)pbVar8;
-    pbVar10 = pbVar8;
-    do {
-      bVar5 = *pbVar10;
-      uVar12 = uVar9 & 0x8000000f;
-      *pbVar10 = bVar5 + 0x47;
-      if ((int)uVar12 < 0) {
-        uVar12 = (uVar12 - 1 | 0xfffffff0) + 1;
-      }
-      bVar5 = (PacketXorKey16[uVar12] ^ bVar5 + 0x47) + 0x23;
-      *pbVar10 = bVar5;
-      if (uVar9 < 0x583) {
-        *pbVar10 = pbVar8[uVar9 + 1] ^ bVar5;
-      }
-      iVar11 = _rand();
-      uVar9 = uVar9 + 1;
-      pbVar10[iVar6] = (byte)iVar11;
-      pbVar10 = pbVar10 + 1;
-    } while (uVar9 < 0x584);
-    pbVar10 = pbVar8;
-    for (iVar6 = 0x161; iVar6 != 0; iVar6 = iVar6 + -1) {
-      *puVar13 = *(undefined4 *)pbVar10;
-      pbVar10 = pbVar10 + 4;
-      puVar13 = puVar13 + 1;
-    }
-    operator_delete(pbVar8);
-  }
-LAB_0046e970:
-  pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x74;
-  pcVar14[0x9c3 + JOINT_FIELD_SHIFT] = 'B';
-  pcVar14[0x9b8 + JOINT_FIELD_SHIFT] = '1';
-  pcVar14[0x9b9 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9ba + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x9bb + JOINT_FIELD_SHIFT] = '\0';
-    // Este slot es la **Scale** del joint (+0x0C): Ghidra lo tipo como `float**`
-    // y le asignaba `param_4` (el PUNTERO al vec3 de angulos).  Confirmado con
-    // MU 5.2 CreateJoint, case 0 de BITMAP_JOINT_SPIRIT:  Velocity = 70;
-    // LifeTime = 49; Scale; MaxTails = 6.
-    AsJoint(pcVar14)->Scale = param_7;
-  pcVar14[0x54 + JOINT_FIELD_SHIFT] = '\x06';
-  pcVar14[0x55 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x56 + JOINT_FIELD_SHIFT] = '\0';
-  pcVar14[0x57 + JOINT_FIELD_SHIFT] = '\0';
-  goto switchD_0046dee7_default;
+  return CreateJoint_Finish(pcVar14);
 }
 
 // Puente de compatibilidad IDA: conserva el nombre ABI CreateJoint y delega en Joint_Create.

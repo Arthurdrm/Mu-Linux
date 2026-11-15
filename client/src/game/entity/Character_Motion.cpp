@@ -890,8 +890,8 @@ static inline char mc_JointFind(int Type, intptr_t Owner, int flag)
 {
     // sub_46FE40 (SearchJoint). IDA ancla en &Joints[0].Target y lee los otros
     // campos con índices negativos; flag == -1 ignora el SubType.
-    const JOINT* joints = AsJoint(DAT_07b27150);
-    const int count = (int)(sizeof(DAT_07b27150) / sizeof(JOINT));
+    const JOINT* joints = Joints;
+    const int count = (int)(kJointPoolSize);
     for (int i = 0; i < count; ++i) {
         const JOINT* j = &joints[i];
         if (j->Live == 0) continue;

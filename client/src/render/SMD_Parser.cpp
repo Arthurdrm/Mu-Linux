@@ -267,8 +267,8 @@ void __cdecl ClearCharacters(int param_1) {
         // El slot puede reutilizarse antes de que MoveJoint observe Live=0.
         // Cancela el Mana Shield del ocupante anterior, incluso si ya fue borrado.
         if (param_1 == -1 || *(short*)&AsCharacter(puVar1)->Key != (short)param_1) {
-            JOINT* joints = AsJoint(DAT_07b27150);
-            for (size_t jointIndex = 0; jointIndex < sizeof(DAT_07b27150) / sizeof(JOINT); ++jointIndex) {
+            JOINT* joints = Joints;
+            for (size_t jointIndex = 0; jointIndex < kJointPoolSize; ++jointIndex) {
                 JOINT& joint = joints[jointIndex];
                 if (joint.Live && joint.Type == 266 && joint.SubType == 0 &&
                     joint.Target == reinterpret_cast<OBJECT*>(puVar1))

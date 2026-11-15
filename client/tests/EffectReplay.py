@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
-"""Repetición de efectos (T9a) y partículas (T9d).
+"""Repetición de efectos (T9a), partículas (T9d) y joints (T9e).
 
 Compila los .cpp reales de la suite (--suite effects: Effect_Create.cpp y
 MoveEffect.cpp con tests/EffectReplay.cpp; --suite particles: Particle_Spawn.cpp
-y Particle_Move.cpp con tests/ParticleReplay.cpp) y corre el recorrido de tipos
-x subtipos x owner.
+y Particle_Move.cpp con tests/ParticleReplay.cpp; --suite joints:
+Joint_Create.cpp y MoveJoint.cpp con tests/JointReplay.cpp) y corre el
+recorrido de tipos x subtipos x owner.
+
+Con EFFECT_REPLAY_KEEP=ruta se guardan el binario, el .map y el .pdb, para
+resolver con cdb dónde crashea un caso.
 
 Con --reference-ref REV compila además esa revisión (en una copia temporal del
 árbol, con el harness actual) y exige el mismo hash: es la red de la T9 para
@@ -26,6 +30,8 @@ SUITES = {
                                      "src/render/MoveEffect.cpp"]),
     "particles": ("ParticleReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Particle_Spawn.cpp",
                                          "src/render/Particle_Move.cpp"]),
+    "joints": ("JointReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Joint_Create.cpp",
+                                   "src/render/MoveJoint.cpp"]),
 }
 
 
@@ -60,6 +66,8 @@ endif()
         shutil.copy(binary, os.environ["EFFECT_REPLAY_KEEP"])
         if binary.with_suffix(".map").exists():
             shutil.copy(binary.with_suffix(".map"), os.environ["EFFECT_REPLAY_KEEP"] + ".map")
+        if binary.with_suffix(".pdb").exists():
+            shutil.copy(binary.with_suffix(".pdb"), str(Path(os.environ["EFFECT_REPLAY_KEEP"]).with_suffix(".pdb")))
     out = subprocess.check_output([str(binary)], text=True, cwd=work)
     m = re.search(r"\w+Replay: .*", out)
     if not m:

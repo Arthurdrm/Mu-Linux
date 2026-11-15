@@ -5,6 +5,7 @@
 #include "scenes/SceneObjectCell.h"
 #include "render/EffectPools.h"
 #include "render/ParticleTypes.h"
+#include "render/JointTypes.h"
 struct GATE_ATTRIBUTE;
 struct OBJECT;
 // globals.h — extern declarations for all Ghidra DAT_ globals.
@@ -1899,7 +1900,8 @@ extern float   _DAT_00552d34;  // perspective scale constant
 // JOINT lleva un puntero en +0x40: los campos siguientes se corren en x64.
 constexpr int JOINT_FIELD_SHIFT = (int)sizeof(void*) - 4;
 constexpr int JOINT_STRIDE = 0x9D8 + JOINT_FIELD_SHIFT;
-extern char    DAT_07b27150[kJointPoolSize * JOINT_STRIDE];   // Joint pool: 500 × 0x9d8 (IDA: 0x07B27150..0x07C5AB30)
+extern JOINT   Joints[kJointPoolSize];   // IDA: unk_7B27150 (0x07B27150), 500 slots; nombre de MU 5.2
+static_assert(sizeof(JOINT) == JOINT_STRIDE, "JOINT_STRIDE");
 
 // ── Joint_Create float constants ─────────────────────────────────────────────
 extern float   _DAT_00552a14;  // joint float constant

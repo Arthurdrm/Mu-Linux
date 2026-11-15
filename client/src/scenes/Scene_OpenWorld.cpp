@@ -33,7 +33,7 @@ void __cdecl OpenWorld(void) {
     memset(Particles, 0, sizeof(Particles));   // particle pool (3000×0x70)
     memset(DAT_07c5ab3c, 0, sizeof(DAT_07c5ab3c));   // skill effect pool (200×0x70)
     memset(Effects, 0, sizeof(Effects));   // effect pool (124×0x1bc)
-    memset(DAT_07b27150, 0, sizeof(DAT_07b27150));   // joint pool (200×0x9d8)
+    memset(Joints, 0, sizeof(Joints));   // joint pool (200×0x9d8)
     memset(g_PlayerRenderPool, 0, sizeof(g_PlayerRenderPool)); // planos: 100×0x1bc
     memset(g_PointerPool, 0, sizeof(g_PointerPool)); // pointers: 100×0x70
     memset(DAT_083a2e90, 0, sizeof(DAT_083a2e90));   // boids + partículas ambientales (10×0x1bc)

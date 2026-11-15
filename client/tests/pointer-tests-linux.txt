@@ -214,3 +214,4 @@ tests/MapInfoPointer.py --generator Ninja
 tests/WorldModelsPointer.py --generator Ninja
 tests/EffectReplay.py --generator Ninja
 tests/EffectReplay.py --suite particles --generator Ninja
+tests/EffectReplay.py --suite joints --generator Ninja

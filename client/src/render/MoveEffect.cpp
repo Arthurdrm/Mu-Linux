@@ -1552,7 +1552,9 @@ void MoveEffect(float *param_1, int param_2)
             local_360 = (float)__cnt * _DAT_005526e4;
             local_368 = local_360 * _DAT_005526e4;
             local_364 = local_360 * _DAT_00552504;
-            goto LAB_004695b5;
+            iVar9 = 2;
+            AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
+            goto switchD_00466b93_caseD_c1;
           case BITMAP_FIRE:
             Particle_Spawn(BITMAP_FIRE,AsObject(param_1)->Position,AsObject(param_1)->Angle,&local_368,9,1.0,(intptr_t)AsObject(param_1)->Owner);
             break;
@@ -1726,7 +1728,8 @@ void MoveEffect(float *param_1, int param_2)
           if (!validOwner(owner)) return;
           if (*(char *)(intptr_t)AsObject(param_1)->Owner == '\0') {
             *(float *)&AsObject(param_1)->LifeTime = 0.0;
-            goto LAB_0046a85e;
+            *(undefined1 *)param_1 = 0;
+            goto switchD_00466b93_caseD_c1;
           }
           switch(AsObject(param_1)->SubType) {
           case 0:   // 0.0f
@@ -1876,11 +1879,16 @@ LAB_0046a366:
         local_368 = local_36c * _DAT_00552990;
         local_364 = local_36c * _DAT_005529c0;
         local_360 = local_36c * _DAT_00552570;
-        goto LAB_004695b5;
+        iVar9 = 2;
+        AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
+        break;
       }
       if (((*(int*)&fVar13) < 1) || (2 < (*(int*)&fVar13))) break;
       pcVar11 = (char *)(intptr_t)AsObject(param_1)->Owner;
-      if (pcVar11 == (char *)0x0) goto LAB_0046a85e;
+      if (pcVar11 == (char *)0x0) {
+        *(undefined1 *)param_1 = 0;
+        break;
+      }
       if ((*pcVar11 == '\0') || (((byte)*(undefined4 *)(pcVar11 + 0x78) & 0x20) != 0x20)) {
         AsObject(param_1)->Alpha = AsObject(param_1)->Alpha - _DAT_00552874;
       }
@@ -2150,9 +2158,9 @@ LAB_00469ab9:
       AsObject(param_1)->Alpha = fVar13;
       local_368 = local_36c * _DAT_005528b8;
       local_360 = local_36c * _DAT_00552534;
-LAB_004695b5:
       iVar9 = 2;
-      goto LAB_004695c0;
+      AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
+      break;
     case 0xc2:
     case MODEL_MAGIC_CAPSULE2:
       if (MoveEffect_Type194(param_1, __owner_fVar13, fVar4, fVar5, owner, validOwner)) return;
@@ -2164,7 +2172,6 @@ LAB_004695b5:
       if (AsObject(param_1)->SubType != 5) goto switchD_00466b93_caseD_c7;
       if (!validOwner(owner)) return;
       pcVar11 = (char *)(intptr_t)AsObject(param_1)->Owner;
-LAB_00468772:
       AsObject(param_1)->Position[0] = AsObject(pcVar11)->Position[0] + AsObject(param_1)->StartPosition[0];
       AsObject(param_1)->Position[1] = AsObject(pcVar11)->Position[1] + AsObject(param_1)->StartPosition[1];
       AsObject(param_1)->Position[2] = AsObject(pcVar11)->Position[2] + AsObject(param_1)->StartPosition[2];
@@ -2212,7 +2219,9 @@ LAB_00468772:
       local_364 = local_36c * _DAT_00552530;
       iVar9 = 4;
       local_360 = local_36c * _DAT_005526e4;
-      goto LAB_00468736;
+      local_368 = local_36c;
+      AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
+      break;
     case 0xca:
       if (!validOwner(owner)) return;
       __owner_fVar4 = (intptr_t)AsObject(param_1)->Owner;   // ver nota de __owner_* arriba
@@ -2244,7 +2253,10 @@ LAB_00468772:
         if (*pcVar11 == '\0') {
           *(undefined1 *)param_1 = 0;
         }
-        goto LAB_00468772;
+        AsObject(param_1)->Position[0] = AsObject(pcVar11)->Position[0] + AsObject(param_1)->StartPosition[0];
+        AsObject(param_1)->Position[1] = AsObject(pcVar11)->Position[1] + AsObject(param_1)->StartPosition[1];
+        AsObject(param_1)->Position[2] = AsObject(pcVar11)->Position[2] + AsObject(param_1)->StartPosition[2];
+        break;
       }
     case 199:
     case 0xe7:
@@ -2376,7 +2388,12 @@ LAB_00466e5e:
         }
       }
       AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_00552a10;
-      goto LAB_00466d90;
+      local_368 = local_36c * _DAT_00552a14;
+      iVar9 = 5;
+      local_364 = local_368;
+      local_360 = local_368;
+      AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
+      break;
     case MODEL_ARROW_DOUBLE:
       if (MoveEffect_ArrowDouble(param_1, fVar13, local_344, local_348, local_360, local_364, local_368, local_36c)) return;
       break;
@@ -2431,7 +2448,13 @@ LAB_00466e5e:
       else {
         AsObject(param_1)->BlendMeshLight = (float)(0x14 - (int)local_358) * _DAT_005524f4;
       }
-      goto LAB_00467f78;
+      local_364 = 0.0;
+      local_360 = 0.0;
+      iVar9 = 1;
+      AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * _DAT_005529d0;
+      local_368 = local_36c;
+      AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
+      break;
     case 0xf7: case 0xfa:
     case 0xf8: case 0xfb: {
       const auto& fade = EffectFadePresets[(iVar9 == 0xf7 || iVar9 == 0xfa) ? 0 : 1];
@@ -2478,12 +2501,10 @@ LAB_00466e5e:
       else {
         AsObject(param_1)->BlendMeshLight = (float)(0x28 - __cnt) * _DAT_005524f4;
       }
-LAB_00467f78:
       local_364 = 0.0;
       local_360 = 0.0;
       iVar9 = 1;
       AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * _DAT_005529d0;
-LAB_00468736:
       local_368 = local_36c;
       AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
       break;
@@ -2502,12 +2523,10 @@ LAB_00468736:
         AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_005528f0;
         AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_00552a20;
       }
-LAB_00466d90:
       local_368 = local_36c * _DAT_00552a14;
       iVar9 = 5;
       local_364 = local_368;
       local_360 = local_368;
-LAB_004695c0:
       AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
       break;
     case MODEL_TAIL:
@@ -2591,7 +2610,6 @@ LAB_004695c0:
         }
       }
       else {
-LAB_0046a85e:
         *(undefined1 *)param_1 = 0;
       }
     } // end switch

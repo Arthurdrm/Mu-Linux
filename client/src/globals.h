@@ -86,7 +86,6 @@ extern BYTE    Serial[16]; // IDA: Serial (0x00559624)
 extern DWORD   PacketXorKey3; // IDA: PacketXorKey3 (0x00559678)
 extern float  _DAT_00559680;   // LOD factor
 extern DWORD   DAT_00559680;
-extern DWORD   DAT_00559684;
 extern char    DAT_005597a0;    // PathFinder debug string (first char; take &)
 extern DWORD   DAT_005597c4;
 extern float  _DAT_005597c8;   // LOD scale: 1.0/1.2/1.4
@@ -363,9 +362,6 @@ extern int     AttackPlayer;
 // Render/HUD_Pass4.cpp; los escribe StartMatchCountDown (opcode 0x92).
 extern "C" { extern int m_iMatchCountDownType; extern DWORD m_dwMatchCountDownStart; }
                                // invocada; lo alias-ea HUD_Pass2.cpp.
-extern DWORD   DAT_05826d30;
-extern char    DAT_05826d31;
-extern char    DAT_05826d32;
 extern char    SoccerObserver; // IDA: DAT_05826d33 (0x05826D33)
 extern DWORD   DAT_05826d78;
 extern DWORD   DAT_05826dc8;
@@ -632,7 +628,6 @@ extern "C" int g_nGuildMemberCount;     // IDA: g_nGuildMemberCount (0x07EAA0D0)
 extern DWORD   GuildPlayerKey;  // IDA: GuildPlayerKey (0x07EAA0D8)
 // 0x07EAA0E0 = PartyNumber. Era una copia que nadie escribia.
 #define DAT_07eaa0e0 (*(DWORD*)&PartyNumber)
-extern DWORD   DAT_07eaa0e4;
 extern DWORD   m_nYourTradeGold;  // IDA: m_nYourTradeGold (0x07EAA0F0)
 extern DWORD   m_nMyTradeGold;  // IDA: m_nMyTradeGold (0x07EAA0F4)
 extern int     DAT_07eaa0f8;   // CharData_RecalcDurability accumulator (count of items needing repair)
@@ -987,11 +982,9 @@ extern byte    DAT_005618c4;       // item class name format ptr D
 
 // ── Entity / animation tick globals ───────────────────────────────────────────
 extern float   WorldTime; // IDA: WorldTime (0x05826E08)
-// DAT_05826d31 — declared above
 extern char    SoccerObserver;   // SoccerObserver (IDA @0x05826D33) - lo escriben
                                // InitGame y el F3/23, y lo lee RenderCharacter.
                                // La etiqueta vieja ("guild name flag B") era falsa.
-extern char    lpString_05826bfc[0x50]; // player guild name A (wide->char cache)
 
 // DAT_07e919bc — base del array de info de guild (indexado por slot de party) — declarado arriba como DWORD
 // DAT_07abf5dc — player/entity slot count — declared above as DWORD
@@ -2252,14 +2245,14 @@ extern char    DAT_00559d66;        // guild mark suffix trailing byte
 // Los valores por defecto en 0 hacen que todos esos caminos tomen sus ramas de
 // salida temprana, así que el juego corre igual con los ports incompletos.
 extern int     PartyNumber;          // 0x07EAA0E0 — count of valid party slots
-extern int     PartyKey;             // IDA: PartyKey — reiniciado por InitPartyList
+extern int     PartyKey;             // IDA: PartyKey (0x07EAA0E4) — reiniciado por InitPartyList
 extern BYTE    Party[2048];          // 0x07E11E80 — Party struct array (stride 36, header 24)
-extern int     EnableGuildWar;       // GW active flag
-extern int     EnableSoccer;         // DAT_05826d2c — modo fútbol de guerra de guild
-extern int     GuildWarIndex;        // DAT_05826d34 — fila de tabla de marks de guild enemiga
-extern int     HeroSoccerTeam;       // 0/1 — hero's soccer team index
+extern int     EnableGuildWar;       // IDA: EnableGuildWar (0x05826D30)
+extern int     EnableSoccer;         // IDA: EnableSoccer (0x05826D31) — modo fútbol de guerra de guild
+extern int     GuildWarIndex;        // IDA: GuildWarIndex (0x00559684) — fila de tabla de marks de guild enemiga
+extern int     HeroSoccerTeam;       // IDA: HeroSoccerTeam (0x05826D32) — equipo del héroe en el fútbol
 extern int     GuildWarScore[2];     // [self, enemy]
-extern char    GuildWarName[80];     // enemy guild name
+extern char    GuildWarName[80];     // IDA: GuildWarName (0x05826BFC) — guild enemiga
 extern char    SoccerTeamName[2][80];// team names
 
 // Float-text floating-numbers entry pool (RenderBooleans iterator).

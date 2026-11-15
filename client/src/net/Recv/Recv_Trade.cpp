@@ -42,7 +42,6 @@ void ReceiveTradeExit97k(const BYTE* Msg, int Size)
     // FUERA del Text.bmd del 0.97k, que tiene 1000 filas).
 
     TradeOpened = 0;
-    DAT_05826d30 = 0;
     pPickedItemKey = 0;
     EquipmentItem = 0;
     m_nYourTradeGold = 0;
@@ -57,7 +56,6 @@ void ReceiveTradeExit97k(const BYTE* Msg, int Size)
     EnableUse = 0;
     g_ItemMoveSourcePool = 0;
     g_ItemMoveTargetPool = 0;
-    InitGuildWar();
     InventoryOpened = 0;   // InventoryOpened (IDA ReceiveTradeExit: cierra el inventario)
     CloseInventoryRelatedWindows();
 
@@ -99,7 +97,6 @@ void NetRecv_37(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         ShopOpened = 0;
         WarehouseOpened = 0;
         TradeOpened = 1;
-        DAT_05826d30 = 1;
         DAT_07eaa0e8 = 0;
         m_nYourTradeGold = 0;
         m_nMyTradeGold = 0; // IDA: m_nMyTradeGold
@@ -107,7 +104,6 @@ void NetRecv_37(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         m_bMyConfirm = 0;
         TradeYourWait = 0;
         TradeMyWait = 0;
-        DAT_00559684 = 0xFFFFFFFF;
         ItemMove_ClearPickedState();
         InventoryOpened = 1;
         // PMSG_TRADE_RESPONSE_SEND (0.97.40): name[40]@+4, level@+44,

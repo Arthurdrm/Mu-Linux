@@ -645,7 +645,7 @@ LAB_0051c13d:
     // 0051AF50 obtains the visible character slot from 0045AC80 before
     // expanding the localized invitation format.  The prior void stub lost
     // that return value, so the party prompt had no inviter name.
-    const int characterIndex = FindCharacterIndex((int)DAT_07eaa0e4);
+    const int characterIndex = FindCharacterIndex(PartyKey);
     const char* inviterName = (characterIndex < 400 && CharactersClient)
         ? EntityName::Get(CharactersClient + characterIndex * CHARACTER_STRIDE)
         : "";

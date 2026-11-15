@@ -118,7 +118,6 @@ BYTE     Serial[16] = { 'T', 'b', 'Y', 'e', 'h', 'R', '2', 'h',
 DWORD    PacketXorKey3  = 0; // IDA: PacketXorKey3 (0x00559678)
 float    _DAT_00559680 = 0.0f;
 DWORD    DAT_00559680  = 0;
-DWORD    DAT_00559684  = 0;
 char     DAT_005597a0  = 'p';               // PathFinder debug string sentinel
 // IDA .data 0x5597C4 = 1. Con 1, Skeleton_Transform (0x4404E0) usa la luz del
 // mundo (1.3, 0, 2). Con 0 usa la luz horizontal de la vista previa de crear
@@ -478,9 +477,6 @@ DWORD    BuyCost  = 0;
 DWORD    DAT_05826d20  = 0;
 DWORD    SummonLife  = 0; // IDA: DAT_05826d24 (0x05826D24)
 int      AttackPlayer  = 0;   // 0x05826D28 — indice de slot del ultimo atacante
-DWORD    DAT_05826d30  = 0;
-char     DAT_05826d31  = 0;
-char     DAT_05826d32  = 0;
 char     SoccerObserver  = 0; // IDA: DAT_05826d33 (0x05826D33)
 DWORD    DAT_05826d78  = 0;
 DWORD    DAT_05826dc8  = 0;
@@ -688,7 +684,6 @@ char     DAT_07ea9834[41] = {};   // 0.97.40: nombre de 40 bytes + NUL
 char     DAT_07ea983e  = 0;
 DWORD    GuildPlayerKey  = 0;  // IDA: GuildPlayerKey (0x07EAA0D8)
 // DAT_07eaa0e0: alias de PartyNumber (globals.h)
-DWORD    DAT_07eaa0e4  = 0;
 DWORD    m_nYourTradeGold  = 0;  // IDA: m_nYourTradeGold (0x07EAA0F0)
 DWORD    m_nMyTradeGold  = 0;  // IDA: m_nMyTradeGold (0x07EAA0F4)
 int      DAT_07eaa0f8  = 0;   // item repair counter
@@ -1062,7 +1057,6 @@ char     lpData_055c9ba0[12] = {0};
 // +8 B (the output start used by Skeleton_Transform's pfOut). Both resolve via macros
 // (see globals.h) to DWORD lvalues at the correct offsets within this buffer.
 char     g_BoneVertexBuf[32 * 15000 * 12] = {0};  // 5,760,000 bytes
-char     lpString_05826bfc[0x50] = {0};
 
 // DAT_07e919bc, DAT_07abf5dc, DAT_07abf5d8, FrustrumY/228 — defined above
 

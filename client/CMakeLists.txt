@@ -382,7 +382,6 @@ set(MU_SOURCES
     src/scenes/Scene_Login_ServerSelect.cpp
     src/audio/Sound.cpp
     src/game/terrain/Terrain.cpp
-    src/game/trade/Trade.cpp
     src/ui/UI_InGameMenu.cpp
     src/ui/UI_PanelInput.cpp
     src/ui/UI_IME.cpp
@@ -594,7 +593,6 @@ set(MU_HEADERS
     src/scenes/Scene_Login_ServerSelect.h
     src/audio/Sound.h
     src/game/terrain/Terrain.h
-    src/game/trade/Trade.h
     src/ui/UI.h
     src/game/core/GameEnums.h
     src/app/debug/MiniDump.h

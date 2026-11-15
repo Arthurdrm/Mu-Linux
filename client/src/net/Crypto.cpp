@@ -1335,12 +1335,12 @@ void __fastcall FUN_004236c0(void *This, int /*edx*/, int *param_1) {
 // FUN_00423c30 @ 0x00423C30 (10 bytes) — disconnect socket context
 void FUN_00423c30(void) { CWsctlc_Close(reinterpret_cast<uintptr_t>(SocketClient)); }
 
-// InitGuildWar @ 0x00423DB0 — Net_ResetTrade: clears trade/shop globals, re-enables party markers.
+// InitGuildWar @ 0x00423DB0 — termina la guerra de guild y recalcula GuildTeam de cada entidad.
 // IDA: FUN_00423DB0 (0x00423DB0)
 void __cdecl InitGuildWar(void) {
-    DAT_05826d30 = 0;
-    DAT_00559684 = 0xffffffff;
-    lpString_05826bfc[0] = '\0';
+    EnableGuildWar = 0;
+    GuildWarIndex = -1;
+    GuildWarName[0] = '\0';
     // Re-enable party target markers for all live entities
     unsigned char *puVar3 = (unsigned char*)&AsCharacter(CharactersClient)->GuildTeam;
     char *pPlayer = Hero;

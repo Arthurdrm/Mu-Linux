@@ -811,7 +811,7 @@ void __cdecl UI_InGameMenu(void)
                              mouseY >= 98  && mouseY < 119 && IsClickPushed());
         if (!accept && !reject) return;
 
-        const WORD partyKey = (WORD)DAT_07eaa0e4;
+        const WORD partyKey = (WORD)PartyKey;
         BYTE pkt[6] = { 0xC1, 0x06, 0x41, (BYTE)(accept ? 1 : 0),
                         (BYTE)(partyKey >> 8), (BYTE)partyKey };
         // El 0x41 pide Encrypt=1 (HackPacketCheck.txt indice 65): aceptar y rechazar

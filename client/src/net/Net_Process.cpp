@@ -172,7 +172,7 @@
 //
 //   case 0x3d:  FUN_004337f0(puVar8)
 //
-//   case 0x40:  DAT_07eaa0e4 = byte[3]*0x100 + byte[2]
+//   case 0x40:  PartyKey = byte[3]*0x100 + byte[2]
 //               SetErrorMessage(0x78)   — ShowErrorDialog(0x78)
 //
 //   case 0x41:  Shop slot display — inner switch byte[3] (0-5):
@@ -235,7 +235,7 @@
 //   case 0x62:  FUN_004354f0(puVar8)
 //   case 0x63:  FUN_00435aa0(puVar8)
 //
-//   case 0x64:  DAT_05826ca4 = byte[3]; DAT_05826ca8 = byte[2]; DAT_05826d30 = 1
+//   case 0x64:  DAT_05826ca4 = byte[3]; DAT_05826ca8 = byte[2]; EnableGuildWar = 1
 //
 //   case 0x71:  Party_PacketHandler()
 //   case 0x73:  FUN_00433a80(puVar8, iVar20)

@@ -15,9 +15,7 @@ static BYTE* Warrior_GetSkillRecord97k(int skillType)
         return nullptr;
     if (DAT_07cf1ff8 != 0)
         return DAT_07cf1ff8 + skillType * 0x28;
-    if (DAT_07d29d20 != 0)
-        return DAT_07d29d20 + skillType * 0x28;
-    return nullptr;
+    return (BYTE*)SkillAttribute.Raw + skillType * 0x28;
 }
 
 static void Warrior_SendSkill19(BYTE skill, WORD targetKey)

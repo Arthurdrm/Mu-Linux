@@ -2066,7 +2066,6 @@ char    s__s_d_bmd_0055a7e0[]  = "%s%d.bmd";
 // ── Item/Skill/Gate data loader globals ──────────────────────────────────────
 BYTE*   DAT_07cf1ff0 = nullptr;    // Base de la tabla sombra de atributos de items.
 BYTE*   DAT_07cf1ff8 = nullptr;    // Base de la tabla sombra de skills.
-BYTE*   DAT_07d29d20 = nullptr;    // Base de la tabla de skills reservada al inicio.
 GATE_ATTRIBUTE* GateAttribute = nullptr; // Base de la tabla de gates reservada al inicio.
 // dialog data array — original ocupaba 0x07cf5608..0x07d27608 (0x32000 bytes).
 // Declaramos un buffer real de ese tamaño en DWORDs para que &DAT_07cf5608 apunte a memoria válida.

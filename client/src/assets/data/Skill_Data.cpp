@@ -9,7 +9,7 @@
 // Parser uses TextParser_GetToken (record type 0/1/2):
 //   0 = section separator — strcmp with "END"; break inner loop
 //   1 = record: lVar21 = skill_id (×0x28); reads name string into
-//       DAT_07d29d20 + skill_id*0x28, then fields:
+//       SkillAttribute + skill_id*0x28, then fields:
 //         [0x20] = type byte
 //         [0x21] = target byte
 //         [0x22..0x23] = short mana
@@ -32,7 +32,7 @@ void __cdecl Skill_LoadTextData(const char *path)
     // Streaming text parser — logic mirrors Ghidra decompile of FUN_0047a5b0.
     // The real loop calls TextParser_GetToken to tokenize floats/strings from the
     // open file handle SMDFile_0, using TextParserTokenString as a temp string buf.
-    // Skill records are stored at DAT_07d29d20 + index*0x28 (stride 0x28).
+    // Skill records are stored at SkillAttribute + index*0x28 (stride 0x28).
     // Each record written is also registered in the hash table (MAIN_HASH_CLASS).
     // Stub: call parser until EOF.
     while (TextParser_GetToken() != 2) { /* parse handled by TextParser_GetToken side-effects */ }
@@ -42,7 +42,7 @@ void __cdecl Skill_LoadTextData(const char *path)
 // IDA: FUN_0047A970
 // Writes skill data table to a binary .bmd file.
 // Allocates 0xa00-byte buffer (40 skill entries × 0x28 bytes each).
-// For each entry: copies from DAT_07d29d20, XOR-encrypts via BuxConvert_0,
+// For each entry: copies from SkillAttribute, XOR-encrypts via BuxConvert_0,
 // writes to file. After all entries, computes a rolling checksum
 // (seed: DAT_00b43000, constant 0x5a18) and appends 4 bytes.
 // Hash table operations (Skill_HashTable_SerializeEntry / Skill_HashTable_FreeEntry) manage in-memory index.
@@ -50,7 +50,7 @@ void __cdecl Skill_SaveBMD(const char *path)
 {
     FILE *fp   = (FILE *)crt_fopen(path, DAT_005597d4);  // "wb"
     char *buf  = (char *)operator_new(0xa00);
-    const char *src = (const char *)DAT_07d29d20;
+    const char *src = SkillAttribute.Raw;
     char *p = buf;
     for (const char *end = src + 0xa00; src < end; src += 0x28, p += 0x28) {
         memcpy(p, src, 0x28);

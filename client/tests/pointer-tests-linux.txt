@@ -212,3 +212,4 @@ tests/NpcModelPointer.py --generator Ninja
 tests/InventoryPosePointer.py --generator Ninja
 tests/MapInfoPointer.py --generator Ninja
 tests/WorldModelsPointer.py --generator Ninja
+tests/EffectReplay.py --generator Ninja

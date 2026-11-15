@@ -235,7 +235,7 @@ void __cdecl GuildCreator_HitTest(void) {
             InputText[0][0] = 0;
             DAT_07db8714 = 0;
             DAT_07db8718 = 0;
-            *(DWORD*)DAT_07d780a8 = 0;
+            InputLength[0] = 0;
             InputTextMax = 10;
             GuildInputEnable = 0;
             GuildCreatorOpened = '\0';

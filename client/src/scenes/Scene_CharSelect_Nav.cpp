@@ -1135,7 +1135,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
     g_iCurrentDialogScript = param_1;
     g_iNumLineMessageBoxCustom = SeparateTextIntoLines(
         dlg->m_lpszText,
-        (char *)&DAT_083a44c4, 7, 0x26);
+        g_lpszMessageBoxCustom[0], 7, 0x26);
 
     // Zero the name display buffer (0x5f DWORD-slots = 0x17c bytes)
     int *puVar8 = (int *)g_lpszDialogAnswer;

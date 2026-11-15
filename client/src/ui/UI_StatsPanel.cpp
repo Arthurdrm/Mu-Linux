@@ -789,7 +789,7 @@ LAB_0051c13d:
     }
     local_dc = 0;
     if (0 < g_iNumLineMessageBoxCustom) {
-      pCVar6 = (LPCSTR)&DAT_083a44c4;
+      pCVar6 = (LPCSTR)g_lpszMessageBoxCustom;
       do {
         ptVar17 = &local_e4;
         iVar4 = Platform::TextLength(pCVar6);
@@ -917,7 +917,7 @@ LAB_0051d3cf:
         Gfx::Color3f(0.9f, 0.9f, 1.0f);
       }
       ptVar17 = &local_d0;
-      pCVar6 = DAT_083a44c4 + iVar3 * 0x26;
+      pCVar6 = g_lpszMessageBoxCustom[iVar3];
       iVar4 = Platform::TextLength(pCVar6);
       gFont.MeasureText(gFont.GetTextDC(),pCVar6,iVar4,ptVar17);
       pCVar2 = (LPCSTR)(uintptr_t)local_dc;

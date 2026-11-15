@@ -577,16 +577,15 @@ extern DWORD   DAT_07e11e98;   // party HP bars (stride 0x24)
 extern char    DAT_07e11d6e;            // flag reset each login frame
 extern DWORD   DAT_07d552e4;            // UI inventory/item selection state
 extern int     MouseOnWindow;           // IDA: MouseOnWindow (0x07D78094) — cursor sobre una ventana de UI
-extern BYTE    DAT_07d780a8[40];         // username field length (memset writes 40 bytes)
+extern int     InputLength[10];          // IDA: InputLength (0x07D780A8) — largo de cada campo de InputText
 // InputLength[1] — el largo del campo 1 (destino del susurro).
 //
-// No es un DWORD aparte: `WM_CHAR` lee el largo como `((DWORD*)DAT_07d780a8)[slot]`,
-// o sea los bytes +4..+7 del array. En el binario las dos cosas son la misma
+// No es un DWORD aparte: es `InputLength[1]`. En el binario las dos cosas son la misma
 // memoria (0x07D780A8 es InputLength[10] y 0x07D780AC es su elemento 1), y los
 // sitios que escriben el largo del susurro (historial de flechas, tab-complete,
 // click derecho sobre un jugador, cierre del menu) tienen que llegar al array.
 // El buffer companero (DAT_07db8810) es igualmente un alias del slot 1.
-#define DAT_07d780ac   (*(DWORD*)&DAT_07d780a8[4])
+#define DAT_07d780ac   (*(DWORD*)&InputLength[1])
 // IDA: InputText[10][256] @ 0x07db8710. Slot 0 = username/chat, slot 1 =
 // contraseña/destino-del-susurro. DAT_07db8810 es el alias +0x100 del slot 1 que usan
 // los caminos de login/susurro; el mismo storage respalda a RenderInputText.
@@ -906,7 +905,7 @@ extern DWORD&  DAT_083a432c;   // alias → CurrentCameraPosition[0]
 extern DWORD&  DAT_083a4330;   // alias → CurrentCameraPosition[1]
 extern float&  _DAT_083a4334;  // alias → CurrentCameraPosition[2]
 extern DWORD&  DAT_083a4334;   // alias → CurrentCameraPosition[2] (DWORD view)
-extern char    DAT_083a44c4[7 * 0x26];   // g_lpszMessageBoxCustom — 7×38-byte dialog buffer
+extern char    g_lpszMessageBoxCustom[7][0x26];   // IDA: g_lpszMessageBoxCustom (0x083A44C4) — 7 líneas × 38
 extern float   DAT_083a45d4;   // login background animation angle (Scene_Dispatch)
 extern char    DAT_083a45d8[0x3600];   // server list buffer (stride 0x21e, 24 entries); overlaps sub-symbols below
 #define DAT_083a45ec   (*(DWORD*)(DAT_083a45d8 + 0x14))   // offset 0x083a45ec
@@ -1027,9 +1026,6 @@ extern float   DAT_06f42a5c[200*3];    // bbox min, 3 floats por hueso
 
 // ── UI name-list panel data (ShowCheckBox) ────────────────────────────────────
 // DAT_083a430c  — macro alias dentro de DAT_083a42f8 (ver bloque de dialog button rects)
-// DAT_083a44ea: alias por macro que proyecta en el offset +0x26 (line[1]) dentro
-// del buffer DAT_083a44c4 (g_lpszMessageBoxCustom).
-#define DAT_083a44ea   (DAT_083a44c4[0x26])
 extern byte    DAT_005618b8;       // item class name format ptr A
 extern byte    DAT_005618bc;       // item class name format ptr B
 extern byte    DAT_005618c0;       // item class name format ptr C
@@ -1317,7 +1313,7 @@ extern WORD    DAT_00559f5c;           // guild target tile Y (2-byte)
 // Campos del sub-estado de login (también los escribe la rama 3 del guild 0x94):
 // InputTextMax (int&), InputEnable (= DAT_00559c84) e InputNumber: declarados más arriba.
 // ── Estado de la UI de guild (bloque 0x083a, usado por ShowGuildMessage / la lista de miembros) ──
-// DAT_083a4324 (DWORD) y DAT_083a44c4 (char[7 * 0x26]): declarados más arriba.
+// g_iNumLineMessageBoxCustom y g_lpszMessageBoxCustom (char[7][0x26]): declarados más arriba.
 // ── Dialog button rects (0x083A42F8, 2 entradas × 5 ints = 0x28 bytes) ───────
 // Layout por entrada: [0]=bitmapId-240 (1..4) [1]=x [2]=y [3]=width [4]=height.
 // Escrito por CreateOkMessageBox/CreateDialogInterface/ShowCheckBox/sub_51D9E0/
@@ -2323,10 +2319,6 @@ extern DWORD   DAT_00563e00;       // codec state A
 #define m_dwBackColor  SetBackgroundTextColor
 // g_iNumAnswer — alias de g_iNumAnswer (ver arriba).
 // g_iNumLineMessageBoxCustom — alias de DAT_083a4324 (ver arriba).
-// g_lpszMessageBoxCustom — alias de DAT_083a44c4 (el buffer real de 7 lineas x
-// 0x26): los writers (ShowDialogText, CreateOkMessageBox) llenan DAT_083a44c4 y
-// los readers (sub_402FF0) leen por este nombre.
-#define g_lpszMessageBoxCustom  ((char (*)[0x26])DAT_083a44c4)
 // g_iCurrentDialogScript — alias de DAT_005615dc (ver arriba).
 // g_lpszDialogAnswer — declarado arriba.
 // m_hFontDC (IDA 0x055C9FEC) y los bits del DIB del texto (0x055C9E4C) viven en

@@ -196,8 +196,11 @@ namespace {
 
 constexpr std::size_t kPointerFields[] = { 0xFC, 0x114, 0x184, 0x1B4, 0x1B8 };
 
+FILE* g_dump = nullptr;   // EFFECT_REPLAY_DUMP=archivo: los bytes de cada slot, para diagnosticar
+
 void HashSlot(int index)
 {
+    if (g_dump) { std::fwrite(&index, 4, 1, g_dump); std::fwrite(DAT_07b11670 + (std::size_t)index * OBJECT_STRIDE, OBJECT_STRIDE, 1, g_dump); }
     const unsigned char* slot = reinterpret_cast<const unsigned char*>(DAT_07b11670) + (std::size_t)index * OBJECT_STRIDE;
     MixU((unsigned)index);
     std::size_t pos = 0;
@@ -254,14 +257,30 @@ namespace {
 
 struct CaseArgs { int type, sub, ownerMode, ticks; void* owner; };
 
+// El decompile lee algunas locales sin inicializarlas.  Lo que encuentran en el
+// stack depende de la ruta del binario y del entorno (sobre todo en Win32), asi
+// que antes de cada llamada se pone en ceros la zona que van a ocupar: el
+// resultado no cambia segun desde donde se corra.
+#if defined(_MSC_VER)
+__declspec(noinline)
+#else
+__attribute__((noinline))
+#endif
+void ScrubStack()
+{
+    volatile unsigned char buffer[64 * 1024];
+    for (std::size_t i = 0; i < sizeof(buffer); ++i) buffer[i] = 0;
+}
+
 void RunCase(const CaseArgs& a)
 {
     float pos[3] = { 1200.0f, 1300.0f, 40.0f }, angle[3] = { 0.0f, 0.0f, 90.0f }, light[3] = { 1.0f, 0.5f, 0.25f };
+    ScrubStack();
     float* slot = CreateEffect(a.type, pos, angle, light, (float*)(intptr_t)a.sub, (float*)a.owner, (float*)(intptr_t)-1, nullptr, 0);
     MixP(slot);
     for (int t = 0; t < a.ticks; ++t)
         for (int i = 0; i < kEffectPoolSize; ++i)
-            if (Active(i)) { MixU(0x7100u | (unsigned)t); MoveEffect(reinterpret_cast<float*>(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE), i); }
+            if (Active(i)) { MixU(0x7100u | (unsigned)t); ScrubStack(); MoveEffect(reinterpret_cast<float*>(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE), i); }
 }
 
 bool RunGuarded(const CaseArgs& a)
@@ -292,6 +311,7 @@ int main()
     const int maxType = 1400, maxSub = 16, ticks = 6;
     const bool trace = std::getenv("EFFECT_REPLAY_TRACE") != nullptr;
     unsigned cases = 0, crashes = 0;
+    if (const char* dump = std::getenv("EFFECT_REPLAY_DUMP")) g_dump = std::fopen(dump, "wb");
     for (int type = 0; type < maxType; ++type)
     for (int sub = 0; sub < maxSub; ++sub)
     for (int ownerMode = 0; ownerMode < 3; ++ownerMode) {
@@ -305,6 +325,7 @@ int main()
             ++crashes; MixU(0xDEAD0000u | (unsigned)type);
             if (trace) std::fprintf(stderr, "crash %d %d %d\n", type, sub, ownerMode);
         }
+        if (g_dump) { int tag[4] = { -1, type, sub, ownerMode }; std::fwrite(tag, 4, 4, g_dump); }
         for (int i = 0; i < kEffectPoolSize; ++i) if (Active(i)) HashSlot(i);
         ++cases;
     }

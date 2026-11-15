@@ -47,7 +47,7 @@ std::uint64_t Region(const void* p)
         return (v >= b && v < b + size) ? (tag << 32) | (v - b) : 0;
     };
     if (!v) return 0;
-    if (auto r = in(DAT_07b27150, sizeof(DAT_07b27150), 1)) return r;
+    if (auto r = in(Joints, sizeof(Joints), 1)) return r;
     if (auto r = in(g_owners, sizeof(g_owners), 2)) return r;
     if (auto r = in(g_bones, sizeof(g_bones), 4)) return r;
     if (auto r = in(g_textures, sizeof(g_textures), 5)) return r;
@@ -163,7 +163,7 @@ namespace { sigjmp_buf g_jump; void OnFault(int) { siglongjmp(g_jump, 1); } }
 
 namespace {
 
-JOINT* Slot(int i) { return AsJoint(DAT_07b27150 + (std::size_t)i * JOINT_STRIDE); }
+JOINT* Slot(int i) { return &Joints[i]; }
 bool Active(int i) { return Slot(i)->Live != 0; }
 
 void HashSlot(int i)

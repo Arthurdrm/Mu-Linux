@@ -10,7 +10,7 @@
 // MovePoints @ 0x00479380 — Effect_TickSpark
 //
 // Effect pool:  Effects, stride 0x1bc bytes (0x6f * sizeof(float))
-// Joint pool:   DAT_07b27150, stride 0x9d8 bytes
+// Joint pool:   Joints, stride 0x9d8 bytes
 
 #include "stdafx.h"
 #include "render/Gfx.h"
@@ -62,8 +62,8 @@ void Effect_TickAll(void)
 // IDA: MoveJoints
 void Joint_TickAll(void)
 {
-  JOINT* joints = AsJoint(DAT_07b27150);
-  const uint count = (uint)(sizeof(DAT_07b27150) / sizeof(JOINT));   // kJointPoolSize
+  JOINT* joints = Joints;
+  const uint count = (uint)(kJointPoolSize);   // kJointPoolSize
   for (uint i = 0; i < count; ++i) {
     if (joints[i].Live != 0) {
       MoveJoint((undefined1 *)&joints[i], i);

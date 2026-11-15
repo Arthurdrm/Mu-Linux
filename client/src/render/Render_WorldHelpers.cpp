@@ -321,8 +321,8 @@ void __cdecl ItemDrop_Render(void)
 {
     // DESVIACION (DLL Antilag, ret en 0x00473710): sin joints de skills.
     if (gUserSettings.GetAntilag(ANTILAG_SKILLS)) return;
-    JOINT* joints = AsJoint(DAT_07b27150);
-    const int kEntries = (int)(sizeof(DAT_07b27150) / sizeof(JOINT));   // kJointPoolSize
+    JOINT* joints = Joints;
+    const int kEntries = (int)(kJointPoolSize);   // kJointPoolSize
 
     for (int eIdx = 0; eIdx < kEntries; ++eIdx) {
         JOINT* j = &joints[eIdx];

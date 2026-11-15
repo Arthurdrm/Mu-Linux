@@ -86,8 +86,8 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
   undefined4 stack0xffffff64 = 0;
   undefined4 stack0xffffff5c = 0;
 
-  pcVar14 = DAT_07b27150;
-  const uintptr_t __jp_end = (uintptr_t)DAT_07b27150 + sizeof(DAT_07b27150);
+  pcVar14 = reinterpret_cast<char*>(Joints);
+  const uintptr_t __jp_end = (uintptr_t)Joints + sizeof(Joints);
   while (*pcVar14 != '\0') {
     pcVar14 = pcVar14 + JOINT_STRIDE;
     if ((uintptr_t)pcVar14 >= __jp_end) {

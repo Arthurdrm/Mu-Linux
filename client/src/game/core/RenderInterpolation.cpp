@@ -54,7 +54,7 @@ bool Near(const RenderFxView &view, int offset) {
 void ApplyFx() {
     struct Source { void *base; int stride; };
     const Source sources[]={
-        {(unsigned char *)Effects,OBJECT_STRIDE},{DAT_07b27150,JOINT_STRIDE},{(unsigned char *)Particles,PARTICLE_STRIDE},
+        {(unsigned char *)Effects,OBJECT_STRIDE},{(unsigned char *)Joints,JOINT_STRIDE},{(unsigned char *)Particles,PARTICLE_STRIDE},
         {DAT_07c5ab3c,0x70},{g_WeatherSlotPool,OBJECT_STRIDE},{DAT_083a1218,OBJECT_STRIDE},
         {DAT_083a2e90,OBJECT_STRIDE},{g_RenderPool_07c608a8,0x2f0},
         {g_PlayerRenderPool,OBJECT_STRIDE},{g_PointerPool,0x70}

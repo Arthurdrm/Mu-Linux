@@ -14,6 +14,12 @@ from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from X86Views import model_view
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 MAIN = r'''
 std::uint64_t Hash(const BYTE* bytes, std::size_t size, std::uint64_t digest) {
     for(std::size_t i=0; i<size; ++i) { digest ^= bytes[i]; digest *= 1099511628211ull; }
@@ -31,8 +37,8 @@ std::uint64_t Run(BYTE* stats, BYTE* models, BYTE* actions) {
         std::memcpy(stats+0x38,&attack,2); std::memcpy(stats+0x44,&magic,2);
         BYTE expected[1600], beforeStats[128];
         std::memset(actions,0x5a,1600); std::memcpy(expected,actions,1600); std::memcpy(beforeStats,stats,128);
-        const float a=static_cast<float>(attack)*_DAT_005524bc;
-        const float m=static_cast<float>(magic)*_DAT_005524bc;
+        const float a=static_cast<float>(attack)*0.004f;
+        const float m=static_cast<float>(magic)*0.004f;
         auto set=[&](int index,float value) { std::memcpy(expected+index*16+4,&value,4); };
         set(34,a+0.6f);
         for(int index=35;index<=55;++index) set(index,a+0.25f);
@@ -90,8 +96,8 @@ def harness(revision=None):
     prefix = PREAMBLE.split("BYTE* reservation;", 1)[0].replace("0x10000", "0x100000")
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     for name in ("CharacterAttribute", "Models", "_DAT_005524bc"):
-        prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
-        prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
+        prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
+        prefix += optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M))
     source = read_source("src/game/combat/Combat_LegacyAnimation.cpp", revision)
     # Desde A5 el cuerpo vive en WritePlayerAttackSpeeds (también lo usan los
     # demás jugadores); las revisiones anteriores no lo tienen.

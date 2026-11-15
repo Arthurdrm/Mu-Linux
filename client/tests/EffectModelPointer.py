@@ -13,6 +13,12 @@ from BmdSetupPointer import SERVICES
 from SceneObjectPointer import build_and_run, function, read_source
 from X86Views import model_view
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 EXTRA=r'''
 using byte=BYTE;
 std::uintptr_t Models;
@@ -78,8 +84,8 @@ def harness(revision=None):
     header,definitions=read_source('src/globals.h',revision),read_source('src/globals.cpp',revision)
     names=set(re.findall(r'_DAT_[0-9a-f]+',setup+effect));names.add('DAT_083a45d4')
     for name in sorted(names):
-        prefix+=re.search(rf'extern [^;\n]*\b{name}\s*;',header).group()
-        prefix+=re.search(rf'^[^/\n]*\b{name}\s*=\s*[^;]+;',definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf'extern [^;\n]*\b{name}\s*;',header))
+        prefix+=optional_definition(re.search(rf'^[^/\n]*\b{name}\s*=\s*[^;]+;',definitions,re.M))
     return prefix+model_view(['BodyLight','StreamMesh'],revision)+setup+color+effect+MAIN
 
 

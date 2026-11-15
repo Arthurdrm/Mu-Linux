@@ -16,6 +16,12 @@ import tempfile
 from GatePointer import PREAMBLE as IO_PREAMBLE
 from SceneObjectPointer import ROOT, build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 EXTRA = r'''
 using UINT = unsigned int;
 DWORD DAT_00b43000 = 0x00b43000;
@@ -97,7 +103,7 @@ def harness(revision=None):
     entry = read_source("src/platform/ClientEntry.cpp", revision)
     definitions, allocations = "", ""
     for name in ("DAT_07cf1ff8",):
-        definitions += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+        definitions += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
         definitions += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
         allocations += re.search(rf"^[ \t]*{name}\s*=\s*[^;]+;", entry, re.M).group().replace(
             "malloc(0xa00)", "AllocateSkills(0xa00)")

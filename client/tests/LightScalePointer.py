@@ -8,6 +8,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES=r'''
 #include <cmath>
 using uint=unsigned;
@@ -75,8 +81,8 @@ def harness(revision=None,native=False):
 
     header,definitions=read_source('src/globals.h',revision),read_source('src/globals.cpp',revision)
     for name in sorted(set(re.findall(r'_DAT_[0-9a-f]+',code))):
-        prefix+=re.search(rf'extern [^;\n]*\b{name}\s*;',header).group()
-        prefix+=re.search(rf'^[^/\n]*\b{name}\s*=\s*[^;]+;',definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf'extern [^;\n]*\b{name}\s*;',header))
+        prefix+=optional_definition(re.search(rf'^[^/\n]*\b{name}\s*=\s*[^;]+;',definitions,re.M))
     arg='reinterpret_cast<uintptr_t>(PTR)' if 'uintptr_t param_1' in code else 'static_cast<int>(reinterpret_cast<uintptr_t>(PTR))'
     main=MAIN.replace('static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(owner))','reinterpret_cast<std::uintptr_t>(owner)') if 'AsObject(' in code else MAIN
     if native:

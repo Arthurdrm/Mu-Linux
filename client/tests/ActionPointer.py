@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SUPPORT = r'''
 #ifndef _WIN32
 using WORD = std::uint16_t;
@@ -169,9 +175,9 @@ int main() {
 def harness(revision=None):
     header = read_source("src/globals.h", revision)
     globals_source = read_source("src/globals.cpp", revision)
-    declaration = re.search(r"extern [^;\n]*\bModels\s*;", header).group()
+    declaration = optional_definition(re.search(r"extern [^;\n]*\bModels\s*;", header))
     definition = re.search(r"^[^/\n]*\bModels\s*=\s*[^;]+;", globals_source, re.M).group()
-    declaration += re.search(r"extern [^;\n]*\bCharactersClient\s*;", header).group()
+    declaration += optional_definition(re.search(r"extern [^;\n]*\bCharactersClient\s*;", header))
     definition += re.search(r"^[^/\n]*\bCharactersClient\s*=\s*[^;]+;", globals_source, re.M).group()
     all_actions = function(read_source("src/scenes/Scene_CharSelect_Nav.cpp", revision), "Characters_SetActionAll")
     types = read_source("src/game/entity/EntityTypes.h", revision)

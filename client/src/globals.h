@@ -30,37 +30,20 @@ extern float  _DAT_00000024;
 
 // ── Game math / render constants (0x005524xx – 0x00552dxx) ────────────────────
 // Casi todos se acceden como float vía el alias _DAT_; en algunos también hay acceso entero.
-extern float  _DAT_00552464;
-extern float  _DAT_005524bc;
-extern float  _DAT_005524f0;   // grid-to-world scale factor
 extern float  _DAT_005524f4;
-extern float  _DAT_005524f8;
-extern float  _DAT_00552500;
 extern float  _DAT_00552504;
 extern float  _DAT_00552530;
 extern float  _DAT_00552540;   // particle dir scale (Matrix_TransformPoint branch)
 extern float  _DAT_0055256c;
 extern DWORD   DAT_00552580;
-extern float  _DAT_00552598;
-extern float  _DAT_00552660;
 extern float  _DAT_005526e4;
-extern float  _DAT_00552834;
 extern float  _DAT_00552838;   // 1/480 — Y scale constant
 extern float  _DAT_0055283c;   // 1/640 — X scale constant
-extern float  _DAT_00552848;   // height offset — small entities in normal state
-extern float  _DAT_0055284c;
 extern float  _DAT_00552868;
-extern float  _DAT_00552874;   // alpha fade rate (weather particle)
 extern float  _DAT_005528b4;
-extern float  _DAT_005528b8;
-extern float  _DAT_00552908;
-extern float  _DAT_0055290c;
-extern float  _DAT_00552934;
 extern float  _DAT_005529c0;   // particle velocity scale constant
 extern float  _DAT_005529c8;   // angle-to-radian scale (weather rotation)
 extern float  _DAT_00552a00;
-extern float  _DAT_00552b88;
-extern float  _DAT_00552d20;   // 1/1600 (world→object-bucket-grid factor)
 
 // ── Entity / render constants (0x005590xx – 0x00559dxx) ───────────────────────
 extern BYTE    PacketXorKey16[16];   // DAT_00559050 — 16-byte XOR key table (Crypto/anti-tamper)
@@ -851,10 +834,6 @@ extern char    g_BoneVertexBuf[32 * 15000 * 12];
 extern short   DAT_077d87fc[200];      // contador de vertices por hueso
 extern float   DAT_05827a98[200*3];    // bbox max, 3 floats por hueso
 extern float   DAT_06f42a5c[200*3];    // bbox min, 3 floats por hueso
-#define DAT_05827a9c   (*(DWORD*)((char*)&DAT_05827a98[0] + 4))
-#define DAT_05827aa0   (*(DWORD*)((char*)&DAT_05827a98[0] + 8))
-#define DAT_06f42a60   (*(DWORD*)((char*)&DAT_06f42a5c[0] + 4))
-#define DAT_06f42a64   (*(DWORD*)((char*)&DAT_06f42a5c[0] + 8))
 
 // ── UI name-list panel data (ShowCheckBox) ────────────────────────────────────
 // DAT_083a430c  — macro alias dentro de DAT_083a42f8 (ver bloque de dialog button rects)
@@ -888,7 +867,6 @@ extern DamagePoint DAT_07c80110[kDamagePointCount];   // active-flag at +0; slot
 extern OBJECT  Sprites[kSpritePoolSize];   // IDA: unk_7C85890 (0x07C85890); nombre de MU 5.2
 
 // ── Math / animation constants ────────────────────────────────────────────────
-extern float  _DAT_00552958;   // teleport-anim height offset
 // _DAT_0055283c extern declarado arriba (1/640, X scale constant)
 
 // Input / player name buffers
@@ -1169,8 +1147,6 @@ extern char    DAT_0055a7c4;   // 0=plain files, 1=compressed OZJ/OZT; alias: g_
 
 // Misc.cpp / Entity gravity constants:
 extern float   _DAT_00552570;
-extern float   _DAT_005527d0;
-extern float   _DAT_00552a28;
 
 // FPS timer (0x07e016f0) — DWORD millisecond timestamp, accessed via _DAT_ Ghidra alias:
 extern DWORD   _DAT_07e016f0;  // last FPS tick timestamp (timeGetTime value)
@@ -1260,9 +1236,6 @@ extern int     GrabScreen;   // IDA: GrabScreen (0x083A42F0) — screenshot coun
 // ── Float constants (overlapping globals) ────────────────────────────────────
 extern float   _DAT_00552580;  // 0.0f guard constant
 extern float   Math_DegreesToRadians;  // degrees-to-radians (π/180 = 0.017453f)
-extern float   _DAT_00552ce0;  // half-angle factor 0.5 (used in EulerToQuat EulerToQuat; input already radians)
-extern float   _DAT_00552cf0;  // 1.0f (used in quaternion→matrix)
-extern float   _DAT_00552d00;  // SLERP near-parallel threshold (~1e-3)
 // ── Effect pool ──────────────────────────────────────────────────────────────
 extern OBJECT  Effects[kEffectPoolSize];   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
 // ── Monster_Data string literals ─────────────────────────────────────────────
@@ -1279,8 +1252,6 @@ extern int     DAT_07d7807c;   // spawn slot index
 // ── Monster sound s_ named strings (0055cxxx range) ──────────────────────────
 
 // ── CreateEffect float constants ────────────────────────────────────────────
-extern float   _DAT_005524ec;
-extern float   _DAT_00552844;
 // ── Boids (40 slots de OBJECT; IDA: sub_500E80 y su render) ─────────────────
 // Los 30+ globals DAT_0839bc?? son macros que indexan dentro de un único buffer
 // contiguo: Weather_Update y Particle_PathUpdate los acceden con stride 0x1bc
@@ -1317,10 +1288,6 @@ extern OBJECT  Boids[40];   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
 #define DAT_0839be11  (*(char *)&Boids[0].AlphaEnable)                              // slot[0] byte field
 #define DAT_0839be14  (*(unsigned int *)&Boids[0].AlphaTarget)          // slot[0] alpha fade (int/float)
 // ── Weather float constants ───────────────────────────────────────────────────
-extern float   _DAT_0055286c;  // weather float constant
-extern float   _DAT_005528e4;  // weather float constant
-extern float   _DAT_00552900;  // weather z-offset constant
-extern float   _DAT_00552ab8;  // weather float constant
 
 // ── Camera / viewport globals ─────────────────────────────────────────────────
 extern int     DAT_0055a7b0;   // SetActionObject: tipo de objeto que se derrumba
@@ -1354,7 +1321,6 @@ extern float   _DAT_00552a14;  // joint float constant
 // ── Timer globals ─────────────────────────────────────────────────────────────
 extern DWORD   DAT_05826e14;   // FPS counter B
 extern DWORD   FrameTimeCurrentMs;   // IDA: DAT_05826df0
-extern float   _DAT_005528a8;  // 1/1000 ms-to-s scale
 extern DWORD   DAT_05826e00;   // FPS accumulator ring buffer
 extern float   DeltaT;  // delta time per frame  [IDA 0x0055979C]
 extern DWORD   FrameTimePreviousMs;  // IDA: DAT_05826dfc
@@ -1505,7 +1471,6 @@ extern char    DAT_07d27610[20000];  // name-filter table (1000 × 20 bytes, Fil
 
 // ── Terrain map globals ───────────────────────────────────────────────────────
 // La celda original 0x083A0218 pertenece a g_ObjectBucketGrid (ver arriba).
-extern float   _DAT_00552b70;  // terrain height scale constant
 
 // ── Terrain tile pick / normal computation globals ────────────────────────────
 // (DAT_07feb25c..DAT_07feb284 são macros — ver g_TilePickBuf arriba)
@@ -1607,7 +1572,6 @@ extern "C" char    DAT_07ea51f5[64];   // GuildMark (grilla 8x8, 1 byte por celd
 // El handler del 0x8E llena el array y `EventEntrance_HitTest` lee
 // `(&DAT_00559f60)[i*2]`: tienen que ser la misma memoria.
 // DAT_07ea7b88 — declared above as DWORD
-extern char    DAT_07ea5b30;   // second-password char-slot list base
 
 // BMD_DrawMesh / BMD_DrawBoneSlot_Anim (BMD__RenderMesh / BMD__RenderMeshTranslate) buffers
 // LightTransform pool (see globals.cpp). Backed by g_BoneLightBuf.
@@ -1629,12 +1593,8 @@ extern char    g_BoneChromeNormalBuf[32 * 15000 * 12];
 // _DAT_ float constants missing from earlier declarations
 extern float   _DAT_00552544;  // alpha threshold (alpha < this → use alpha channel path)
 extern float   _DAT_005528c0;  // chrome U scale factor
-extern float   _DAT_005528c4;  // sin period scale for vertex deformation (BMD__RenderMeshTranslate)
-extern float   _DAT_00552644;  // sin amplitude for vertex deformation (BMD__RenderMeshTranslate)
 
 // ── MoveEffect constants (0x005524a8–0x00552a20 range) ─────────
-extern float   _DAT_00552864;  // move effect float constant
-extern float   _DAT_00552994;  // move effect float constant
 extern float   _DAT_005529d4;  // move effect float constant
 extern char    DAT_00559b78[8];
 #define DAT_00559b7f (DAT_00559b78 + 7)   // alias: mismo buffer, offset 7
@@ -1889,8 +1849,6 @@ extern DWORD   DAT_07eaa178;       // mix recipe: socket flag byte
 extern DWORD   DAT_07eaa170;       // mix recipe: wing socket option value
 extern int     DAT_07eaa174;       // mix recipe: combined value score (capped at 0x5a)
 extern char    DAT_00559c6c;       // last rendered hotkey char
-extern float   _DAT_00552ab0;      // arrow angle offset (5-way shot small)
-extern float   _DAT_00552584;      // arrow angle offset (5-way shot large)
 
 // ── UseSkillWizard dependencies ──────────────────────────────────────────────
 extern DWORD   MovementSkillTarget;       // MovementSkillTarget (index into CharactersClient)  [IDA 0x07D780A0]
@@ -1913,10 +1871,8 @@ extern float g_ParticleDriftVelocity[2]; // 0x07C80104..0x07C8010B
 // ── MoveParticles float constants ────────────────────────────────────────────
 // _DAT_00552acc — already declared above (line ~958)
 // _DAT_00552adc — already declared above (line ~151)
-extern float  _DAT_00552b28;       // lifetime-to-light factor (type 0x4a6/0x4d2/0x498)
 
 // ── Additional math/render constants (added for CreateAngle/Terrain_RenderTexturedObject) ──
-extern float  _DAT_00552860;       // 57.29578f = 180/pi (radians to degrees)
 
 // ── CheckArrow / CharSelect chat message string globals ──
 extern char    DAT_07e11df4;        // arrow-required error string ID

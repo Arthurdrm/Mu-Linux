@@ -8,6 +8,12 @@ from SceneObjectPointer import build_and_run, function, read_source
 from ObjectLayoutContract import object_types, record
 
 
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
+
 def harness(contracts_only=False):
     header=read_source("src/assets/model/ModelTypes.h")
     fields=re.findall(r'MU_ASSERT_FIELD\(BMD,\s*(\w+),\s*(0x[\da-fA-F]+)\)',header)
@@ -43,7 +49,7 @@ static_assert(alignof(BMD)==1&&std::is_standard_layout_v<BMD>&&std::is_trivially
     math=read_source("src/game/math/Math_3D.cpp")
     constants=""
     for name in ["_DAT_0055290c","_DAT_00552908","_DAT_005524f8"]:
-        constants+=re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',read_source("src/globals.cpp"),re.M).group()+"\n"
+        constants+=optional_definition(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',read_source("src/globals.cpp"),re.M))+"\n"
     services=r'''
 void Require(bool x){if(!x){std::fputs("Contexto BMD/canario/selección incorrectos\n",stderr);std::abort();}}
 OBJECT* AsObject(void* p){return static_cast<OBJECT*>(p);}BMD* AsModel(void* p){return static_cast<BMD*>(p);}BMD* AsModel(uintptr_t p){return reinterpret_cast<BMD*>(p);}
@@ -128,7 +134,7 @@ int main(){
   std::memset(&owner,0,sizeof(owner));owner.Type=short(trial%512);owner.EnableBoneMatrix=BYTE(trial%3);owner.BoneMatrices=trial%5?privateBones:nullptr;
   const float alpha[]={0,.0001f,.5f,1.f};owner.Alpha=alpha[trial%4];EditFlag=int(trial%3);wantedTranslate=char(trial%2);
   Models=reinterpret_cast<uintptr_t>(models);wantedOwner=&owner;wantedModel=models+owner.Type;wantedBones=owner.EnableBoneMatrix?reinterpret_cast<float*>(owner.BoneMatrices):globalBones;
-  wantedModel->BodyHeight=99;const bool skip=owner.Alpha<_DAT_005524f8;const bool editor=EditFlag==2;
+  wantedModel->BodyHeight=99;const bool skip=owner.Alpha<0.01f;const bool editor=EditFlag==2;
   bonesCalls=boundsCalls=editorCalls=0;ObjectPose_PrepareSimulation(&owner,wantedTranslate);
   Require(bonesCalls==unsigned(!skip&&!editor)&&boundsCalls==bonesCalls&&editorCalls==unsigned(!skip&&editor));
   Require(wantedModel->BodyHeight==(!skip&&!editor?0:99));

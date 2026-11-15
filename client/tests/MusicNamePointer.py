@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #include <string>
 #include <cerrno>
@@ -131,8 +137,8 @@ def harness(revision=None):
     prefix+=SERVICES
     header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
     for name in ("DAT_055ca018",):
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     prefix+=re.search(r"^char\s+DAT_005580ac\[\][^;]+;",definitions,re.M).group()
     text=read_source("src/platform/Text.h",revision)
     prefix+="\nnamespace Platform {"+text[text.index("constexpr std::size_t TruncateText"):text.index("inline int TextConcatSecure")]+"}\n"

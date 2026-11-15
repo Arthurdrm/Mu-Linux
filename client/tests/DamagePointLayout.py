@@ -40,7 +40,7 @@ def harness(revision=None):
  poses=read_source('src/game/core/RenderSnapshots.h',revision);samples=read_source('src/game/core/RenderSnapshots.cpp',revision);structs=''.join(block(poses,'struct '+name+' {') for name in ['RenderPose','RenderPosePair'])+block(samples,'struct Sample {')
  constants='';g=read_source('src/globals.cpp',revision)
  for name in ['_DAT_00552958','_DAT_005528b8','_DAT_00552580','_DAT_00552660','_DAT_00552834']:
-  match=re.search(r'float\s+'+name+r'\s*=\s*[^;]+;',g);assert match;constants+=match.group()+'\n'
+  match=re.search(r'float\s+'+name+r'\s*=\s*[^;]+;',g);constants+=(match.group()+'\n' if match else '')
  return PREAMBLE.split('char DAT_00559bb4',1)[0]+'\n#include <algorithm>\nusing undefined1=unsigned char;\n'+header+structs+declaration.group()+constants+SERVICES+function(read_source('src/game/combat/Skills_WarriorLegacy.cpp',revision),'Entity_TeleportAnim')+function(read_source('src/game/entity/Entity_LegacyTeleport.cpp',revision),'CreatePoint')+function(read_source('src/render/Effect_Tick.cpp',revision),'DamageNumbers_Tick')+block(samples,'Sample PointSample(')+function(read_source('src/render/Render_LegacyDamageNumbers.cpp',revision),'RenderPoints')+MAIN
 
 def main():

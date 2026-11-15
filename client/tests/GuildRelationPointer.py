@@ -9,6 +9,12 @@ from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from LegacyEntityLayout import opaque_cloth_fields
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES=r'''
 std::uintptr_t Hero,CharactersClient;
 BYTE* markBase;
@@ -82,7 +88,7 @@ def harness(revision=None):
     prefix+=re.search(r'static char s_GuildMarkName[^;]+;',source).group()+SERVICES
     gh,gd=read_source('src/globals.h',revision),read_source('src/globals.cpp',revision)
     for name in ['EnableGuildWar','GuildWarIndex','GuildWarName']:
-        prefix+=re.search(rf'extern [^;\n]*\b{name}(?:\[[^\]]*\])?\s*;',gh).group()
+        prefix+=optional_definition(re.search(rf'extern [^;\n]*\b{name}(?:\[[^\]]*\])?\s*;',gh))
         prefix+=re.search(rf'^[^/\n]*\b{name}(?:\[[^\]]*\])?\s*=\s*[^;]+;',gd,re.M).group()
     update=function(source,'GuildWar_UpdateEntityRelation');code=function(source,'GuildMark_Record')+function(source,'GuildMark_FindRecordByName')+update+function(source,'GuildWar_RefreshEntityRelations')
     arg='reinterpret_cast<uintptr_t>(entity)' if 'uintptr_t entityAddress' in update else 'static_cast<int>(reinterpret_cast<uintptr_t>(entity))'

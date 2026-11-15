@@ -12,6 +12,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES=r'''
 #ifndef _WIN32
 using WORD=std::uint16_t;
@@ -117,7 +123,7 @@ def harness(revision=None):
     else:
         assert 'reinterpret_cast<const void*>(static_cast<std::uintptr_t>(c)) == Hero' in source
     globals_source=read_source('src/globals.cpp',revision)
-    constants='\n'.join(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',globals_source,re.M).group(0) for name in ('_DAT_00552834','_DAT_0055284c','_DAT_00552ab0','_DAT_00552584'))
+    constants='\n'.join(optional_definition(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',globals_source,re.M)) for name in ('_DAT_00552834','_DAT_0055284c','_DAT_00552ab0','_DAT_00552584'))
     constants+='\n'+re.search(r'^constexpr int ITEM_MODEL_BASE[^;]+;',read_source('src/game/item/ItemDefines.h',revision),re.M).group(0)
     return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES.replace('CONSTANTS',constants)+function(source,'CreateArrow')+function(source,'CreateArrows')+MAIN
 

@@ -12,6 +12,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 MAIN = r'''
 void Call(int slot,BYTE* pool,BYTE flag) { SetItemGridFlag(slot,ARG,flag); }
 std::uint64_t Run(BYTE* memory,ITEM_ATTRIBUTE* attributes) {
@@ -72,8 +78,8 @@ def harness(revision=None):
     prefix += "\n".join(re.findall(r"^inline (?:const )?ITEM\* AsItem[^\n]+", structs, re.M))
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     name = "DAT_07d78068"
-    prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
-    prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
+    prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
+    prefix += optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M))
     body = function(read_source("src/game/item/Item_InventoryGrid.cpp", revision), "SetItemGridFlag")
     arg = "pool" if "BYTE* param_2" in body else "static_cast<int>(reinterpret_cast<std::uintptr_t>(pool))"
     return prefix + body + MAIN.replace("ARG", arg)

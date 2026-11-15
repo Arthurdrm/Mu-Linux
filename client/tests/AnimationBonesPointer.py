@@ -8,6 +8,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from ObjectLayoutContract import record
+
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
 SERVICES=r'''
 #include <cmath>
 using float10=long double;
@@ -82,7 +88,7 @@ def harness(revision=None,contracts=False):
  pose=read_source('src/game/entity/ObjectPose.cpp',revision);helper=function(pose,'AnimateWithScratch');public=function(pose,'BMD_Animation')
  render=read_source('src/render/Render_LegacyTransforms.cpp',revision);math=read_source('src/game/math/Math_3D.cpp',revision);scene=read_source('src/scenes/Scene_CharSelect_Nav.cpp',revision)
  bodies=function(math,'Matrix_BuildFromEuler')+''.join(function(render,n)for n in ('EulerToQuat','QuatToMatrix','QuatSlerp','R_ConcatTransforms'))+function(scene,'Terrain_QuadEqual')+helper+public
- names=sorted(set(re.findall(r'\b(?:_DAT_[0-9a-f]+|Math_DegreesToRadians)\b',bodies)));globals=read_source('src/globals.cpp',revision);constants=''.join(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',globals,re.M).group()for n in names)
+ names=sorted(set(re.findall(r'\b(?:_DAT_[0-9a-f]+|Math_DegreesToRadians)\b',bodies)));globals=read_source('src/globals.cpp',revision);constants=''.join(optional_definition(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',globals,re.M))for n in names)
  return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES+layouts()+constants+bodies+MAIN.replace('DIRECT','bones' if 'float* param_1' in helper else 'static_cast<int>(reinterpret_cast<uintptr_t>(bones))').replace('PUBLIC','bones' if 'float* bones' in public else 'static_cast<int>(reinterpret_cast<uintptr_t>(bones))')
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--architecture',choices=('Win32','x64'),default='x64');parser.add_argument('--contracts-only',action='store_true');parser.add_argument('--generator');parser.add_argument('--reference-ref');args=parser.parse_args()

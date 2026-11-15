@@ -13,6 +13,12 @@ import tempfile
 from QuestClearPointer import harness as clear_harness
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 MAIN = r'''
 std::uint64_t RunBase(BYTE* memory) {
     constexpr std::size_t size=0x40000;
@@ -50,7 +56,7 @@ def harness(revision=None):
     prefix = clear_harness(revision).split("void Call(void* quest)", 1)[0]
     prefix += "\nusing std::uintptr_t; using std::size_t;\n"
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
-    prefix += re.search(r"extern [^;\n]*\bg_csQuest\s*;", header).group()
+    prefix += optional_definition(re.search(r"extern [^;\n]*\bg_csQuest\s*;", header))
     prefix += re.search(r"^[^/\n]*\bg_csQuest\s*=\s*[^;]+;", definitions, re.M).group()
     prefix += "\n" + (lambda m: m.group() if m else "")(re.search(r"^#define DAT_00583d8c[^\n]+", header, re.M)) + "\n"   # alias de revisiones viejas
     source = read_source("src/net/Crypto.cpp", revision)

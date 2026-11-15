@@ -13,6 +13,12 @@ import tempfile
 from ItemConvertPointer import harness as convert_harness
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #include <type_traits>
 BYTE* pools[5];
@@ -144,8 +150,8 @@ def harness(revision=None):
     prefix=convert_harness(revision).split("void __cdecl ItemConvert(",1)[0]
     header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
     for name in ("DAT_07ea9800","g_ItemMoveSourcePool","g_ItemMoveTargetPool","DAT_07ea5b18"):
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     move=read_source("src/game/item/Item_Move.cpp",revision)
     prefix+=re.search(r"^int g_ItemMoveTargetDurBefore[^;]+;",move,re.M).group()+SERVICES
     for namespace,path in (("FromMove","src/game/item/Item_Move.cpp"),("FromDisplay","src/ui/inventory/Item_Display.cpp")):

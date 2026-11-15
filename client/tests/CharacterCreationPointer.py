@@ -16,6 +16,12 @@ from SceneObjectPointer import build_and_run, function, read_source
 from X86Views import CLOTH_MODEL_MESH, model_view
 from LegacyEntityLayout import opaque_cloth_fields
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #include <array>
 #include <string>
@@ -187,7 +193,7 @@ def harness(revision=None):
     header, globals_source = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     definitions = ""
     for name in ("CharactersClient", "Models"):
-        definitions += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+        definitions += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
         definitions += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     catalog = re.search(r"struct CatalogMonster\s*\{.*?\};", read_source("src/assets/data/ContentCatalog.h", revision), re.S).group()
     prefix += SERVICES.replace("RECORDS", records).replace("CONSTANTS", constants).replace("GLOBALS", definitions).replace("CATALOG_RECORD", catalog)

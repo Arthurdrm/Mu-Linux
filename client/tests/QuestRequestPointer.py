@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 MAIN = r'''
 template<class T> T Read(const BYTE* p) { T value; std::memcpy(&value,p,sizeof(value)); return value; }
 template<class T> void Put(BYTE* p,T value) { std::memcpy(p,&value,sizeof(value)); }
@@ -111,8 +117,8 @@ def harness(revision=None):
     prefix += "\n#ifndef _WIN32\n#define __fastcall\nusing ULONG_PTR=std::uintptr_t;\n#endif\nusing uint=unsigned int; using ushort=unsigned short; using std::uintptr_t;\n"
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     for name in ("CharacterAttribute", "CharacterMachine"):
-        prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
-        prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
+        prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
+        prefix += optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M))
     return prefix + function(read_source("src/scenes/Scene_CharSelect_Nav.cpp", revision), "CSQuest_CheckRequestCondition") + MAIN
 
 

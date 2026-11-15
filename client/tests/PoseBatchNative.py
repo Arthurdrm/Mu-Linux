@@ -10,6 +10,12 @@ from AnimationBonesPointer import harness as animation_harness
 from ObjectLayoutContract import object_types,record
 from SceneObjectPointer import ROOT,read_source,function,build_and_run
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES=r'''
 #include <array>
 #include <unordered_map>
@@ -109,7 +115,7 @@ def harness(revision=None):
  prefix+='\n#include "'+(ROOT/'src/render/TransformMath.h').as_posix()+'"\n'
  source=read_source('src/game/entity/ObjectPose.cpp',revision);source=re.sub(r'^#include[^\n]*\n','',source,flags=re.M)
  existing=set(re.findall(r'\bfloat\s+(\w+)\s*=',prefix,re.M));names=set(re.findall(r'\b_DAT_[0-9a-f]+\b',source));globals=read_source('src/globals.cpp')
- constants='\n'.join(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',globals,re.M).group()for n in sorted(names-existing))
+ constants='\n'.join(optional_definition(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',globals,re.M))for n in sorted(names-existing))
  return prefix+SERVICES+constants+function(read_source('src/game/math/Math_3D.cpp'),'Vector_InverseRotate')+function(read_source('src/game/entity/ObjectBounds.h'),'ObjectBounds_Build')+source+MAIN
 
 def main():

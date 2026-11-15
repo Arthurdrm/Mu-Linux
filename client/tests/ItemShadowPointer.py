@@ -14,6 +14,12 @@ import tempfile
 from GatePointer import PREAMBLE as IO_PREAMBLE
 from SceneObjectPointer import ROOT, build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 EXTRA = r'''
 using UINT = unsigned int;
 DWORD DAT_01c5e200 = 0x01c5e200;
@@ -84,7 +90,7 @@ def harness(revision=None):
     globals_source = read_source("src/globals.cpp", revision)
     declarations = ""
     for name in ("DAT_055c9e44", "DAT_07d78068", "DAT_07cf1ff0"):
-        declarations += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+        declarations += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
         declarations += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     accessors = ""
     for name in ("ItemAttribute_Base", "ItemAttribute_IsRow"):

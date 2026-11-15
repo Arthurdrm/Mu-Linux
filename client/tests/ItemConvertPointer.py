@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 int activeType, catalogMode;
 std::vector<int> catalogEvents;
@@ -133,8 +139,8 @@ def harness(revision=None):
     prefix+=re.search(r"struct CatalogWing\s*\{.*?\n\};",catalog,re.S).group()
     header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
     for name in ("DAT_07d78068","CharacterAttribute"):
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     prefix+=SERVICES+function(catalog,"ItemBehaviorType")
     convert=function(read_source("src/game/item/Item_LegacyLinker.cpp",revision),"ItemConvert")
     arg="item" if "ITEM* ip" in convert.split("{",1)[0] else "static_cast<int>(reinterpret_cast<std::uintptr_t>(item))"

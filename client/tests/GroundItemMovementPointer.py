@@ -13,6 +13,12 @@ import tempfile
 from ItemAnglePointer import harness as item_harness
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 BYTE* Items;
 OBJECT* expectedSparkle;
@@ -104,7 +110,7 @@ def harness(revision=None):
     prefix = item_harness(revision).split("void CallItemAngle(OBJECT* object)", 1)[0]
     globals_source = read_source("src/globals.cpp", revision)
     for name in ("_DAT_005527d0", "_DAT_005528e4", "_DAT_00552a28"):
-        prefix += re.search(rf"^float\s+{name}\s*=[^;]+;", globals_source, re.M).group() + "\n"
+        prefix += optional_definition(re.search(rf"^float\s+{name}\s*=[^;]+;", globals_source, re.M)) + "\n"
     sparkle = function(read_source("src/game/entity/Entity_LegacyEffects.cpp", revision), "Entity_UpdateSparkleEffect").replace("_rand()", "SparkleRandom()")
     move = function(read_source("src/app/util/Misc.cpp", revision), "MoveItems")
     arg = "object" if "OBJECT* object" in sparkle else "static_cast<int>(reinterpret_cast<std::uintptr_t>(object))"

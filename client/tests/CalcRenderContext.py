@@ -22,8 +22,8 @@ int main(){
   object.Type=short(trial%512);object.Alpha=trial%7?1.f:0.f;object.Scale=.5f+float(trial%4);object.Kind=trial%2?4:1;object.CurrentAction=BYTE(trial);object.ContrastEnable=BYTE(trial%2);object.EnableBoneMatrix=BYTE(trial%3);object.BoneMatrices=trial%5?bones:nullptr;
   for(int i=0;i<3;++i)object.Position[i]=float(trial%31+i);
   wantedOwner=&object;wantedModel=models+object.Type;wantedBones=object.EnableBoneMatrix?reinterpret_cast<float*>(object.BoneMatrices):globalBones;wantedTranslate=char(trial%2);Models=reinterpret_cast<uintptr_t>(models);
-  BMD before=models[(object.Type+1)%512];auto expected=*wantedModel;auto savedObject=object;const bool skip=object.Alpha<_DAT_005524f8;int lod=int(trial%5);
-  if(!skip){expected.BodyHeight=0;expected.ContrastEnable=object.ContrastEnable;expected.LightEnable=1;expected.BodyLight[0]=.25f;expected.BodyLight[1]=.5f;expected.BodyLight[2]=.75f;expected.BodyScale=object.Scale;std::memcpy(expected.BodyOrigin,object.Position,12);if(object.Type==331)expected.BodyOrigin[1]+=_DAT_0055290c;else if(object.Type==330)expected.BodyOrigin[1]+=_DAT_00552908;expected.CurrentAction=object.CurrentAction;}
+  BMD before=models[(object.Type+1)%512];auto expected=*wantedModel;auto savedObject=object;const bool skip=object.Alpha<0.01f;int lod=int(trial%5);
+  if(!skip){expected.BodyHeight=0;expected.ContrastEnable=object.ContrastEnable;expected.LightEnable=1;expected.BodyLight[0]=.25f;expected.BodyLight[1]=.5f;expected.BodyLight[2]=.75f;expected.BodyScale=object.Scale;std::memcpy(expected.BodyOrigin,object.Position,12);if(object.Type==331)expected.BodyOrigin[1]+=60.0f;else if(object.Type==330)expected.BodyOrigin[1]+=120.0f;expected.CurrentAction=object.CurrentAction;}
   events.clear();bonesCalls=0;_DAT_005597c8=99;int result=Calc_RenderObject(&object,wantedTranslate,lod);
   Require(result==int(!skip)&&bonesCalls==unsigned(!skip));
   const std::vector<int> normal={1,2,3},outline={1,2,3,4,3,4,1,3},empty={};Require(events==(skip?empty:lod==1?outline:normal));

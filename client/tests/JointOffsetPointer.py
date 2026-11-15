@@ -8,6 +8,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from ObjectLayoutContract import record
+
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
 SERVICES=r'''
 #include <cmath>
 #include <algorithm>
@@ -43,7 +49,7 @@ int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));Require(low);const
 def harness(revision=None):
  code=function(read_source('src/render/SMD_Parser.cpp',revision),'Joint_BoneOffsetApply')
  arg='object' if 'BYTE* param_1' in code else 'static_cast<int>(reinterpret_cast<uintptr_t>(object))'
- constant=re.search(r'^float\s+Math_DegreesToRadians\s*=\s*[^;]+;',read_source('src/globals.cpp',revision),re.M).group()
+ constant=optional_definition(re.search(r'^float\s+Math_DegreesToRadians\s*=\s*[^;]+;',read_source('src/globals.cpp',revision),re.M))
  float_type=re.search(r'typedef\s+long double\s+float10\s*;',read_source('src/types.h',revision)).group()
  stdafx=read_source('src/stdafx.h',revision);sine=re.search(r'static inline double\s+fsin\([^\n]+',stdafx).group();cosine=re.search(r'#define fcos [^\n]+',stdafx).group()
  math=read_source('src/game/math/Math_3D.cpp',revision)

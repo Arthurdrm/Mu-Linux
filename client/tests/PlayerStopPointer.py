@@ -14,6 +14,12 @@ import tempfile
 from SoundPointer import harness as sound_harness
 from SceneObjectPointer import MAP_INFO_STUB, build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 OBJECT_RECORD = r'''
 #ifndef _WIN32
 using WORD = std::uint16_t;
@@ -191,7 +197,7 @@ def harness(revision=None):
     header, globals_source = (read_source(path, revision) for path in ("src/globals.h", "src/globals.cpp"))
     declarations = "\n".join(re.findall(r"^constexpr\s+(?:int|short)\s+\w+\s*=[^;]+;", read_source("src/game/item/ItemDefines.h", revision), re.M))
     for name in ("Models", "DAT_055c9e44", "DAT_07d78068"):
-        declarations += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+        declarations += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
         declarations += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     declarations += re.search(r"static __forceinline [^\n]*\bItemAttribute_Base\([^\{]*\{.*?^\}", header, re.M | re.S).group()
     terrain = function(read_source("src/game/terrain/Terrain_Utils.cpp", revision), "Terrain_GetTileIndex").replace("Terrain_GetTileIndex(", "TileIndexReal(", 1)

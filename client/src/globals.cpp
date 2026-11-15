@@ -23,39 +23,23 @@ float    _DAT_00000020 = 0.0f;
 float    _DAT_00000024 = 0.0f;
 
 // ── Game math / render constants ─────────────────────────────────────────────
-float    _DAT_00552464 = 25.0f;
-float    _DAT_005524bc = 0.004f;
-float    _DAT_005524f0 = 100.0f;  // grid-to-world scale = TERRAIN_SCALE
 float    _DAT_005524f4 = 0.1f;
-float    _DAT_005524f8 = 0.01f;
-float    _DAT_00552500 = 0.001f;
 float    _DAT_00552504 = 0.5f;
 float    _DAT_00552530 = 0.8f;
 float    _DAT_00552540 = 3.0f;
 float    _DAT_0055256c = 1.0f;
 DWORD    DAT_00552580  = 0;
-float    _DAT_00552598 = 50.0f;
-float    _DAT_00552660 = 5.0f;
 float    _DAT_005526e4 = 0.2f;
-float    _DAT_00552834 = 15.0f;
 // _DAT_00552838 = 1/480 (Y scale), _DAT_0055283c = 1/640 (X scale) — compile-time constants.
 // ConvertX(x) = WindowWidth * x * _DAT_0055283c ; ConvertY(y) = WindowHeight * y * _DAT_00552838
 // Used by GL_DrawTexture (RenderBitmap), Screen_ToGLX/80 (ConvertX/Y), Camera_SetupFrustum, etc.
 float    _DAT_00552838 = 1.0f / 480.0f;
 float    _DAT_0055283c = 1.0f / 640.0f;
-float    _DAT_00552848 = 90.0f;
-float    _DAT_0055284c = 30.0f;
 float    _DAT_00552868 = 0.0001f;  // epsilon for near-zero float checks
 float    _DAT_005528b4 = 0.4f;
-float    _DAT_005528b8 = 0.3f;
-float    _DAT_00552908 = 120.0f;
-float    _DAT_0055290c = 60.0f;
-float    _DAT_00552934 = 0.15f;
 float    _DAT_005529c0 = -0.3f;
 float    _DAT_00552a00 = 0.1f;
-float    _DAT_00552b88 = 0.0002f;
 // World → object-bucket grid factor (1/1600; celda = 1600 unidades de mundo)
-float    _DAT_00552d20 = 6.25e-4f;   // 0.000625 = 1/1600
 
 // ── Entity / render constants ─────────────────────────────────────────────────
 // 16-byte XOR key table — usado por Crypto.cpp/CreateEffect.cpp/Net_PacketSession etc.
@@ -983,7 +967,6 @@ OBJECT   Sprites[kSpritePoolSize] = {};   // IDA: unk_7C85890 (0x07C85890); nomb
 // Lo dejamos como referencia al int en pool[4..7] para compartir storage.
 
 // Math / animation constants
-float   _DAT_00552958 = 140.0f;
 // _DAT_0055283c — X-scale constant (1/640); definido arriba con valor correcto.
 // Esta definición fue 0.0f por error; reemplazada por la inicialización en la zona de video-scale.
 
@@ -1026,7 +1009,6 @@ char     DAT_0055a640[] = "\n";  // 0x0055A640 — separador de media altura (Re
 DWORD    RainAngle  = 0;   // IDA: RainAngle (0x07C74AE8)
 DWORD    RainPosition  = 0;  // IDA: RainPosition (0x07C74AEC)
 int     RainSpeed  = 0;   // IDA: RainSpeed (0x00559B9C)
-float   _DAT_00552874  = 0.05f;
 float   _DAT_005529c8  = -0.1f;
 
 // Mouse hover tick (Mouse_UpdateHoverTargets)
@@ -1334,13 +1316,10 @@ int     GrabScreen = 0;   // IDA: GrabScreen (0x083A42F0)
 // ── Float constants ───────────────────────────────────────────────────────────
 float   _DAT_00552580 = 0.0f;
 float   Math_DegreesToRadians = 0.017453292f;  // π/180
-float   _DAT_00552ce0 = 0.5f;          // half-angle factor for EulerToQuat (EulerToQuat).
                                        // IDA sub_4FA1D0 shows literal `a1[k] * 0.5` — quaternion
                                        // half-angle. Input Euler angles are already in RADIANS
                                        // (AngleMatrix path uses Math_DegreesToRadians=π/180, different const).
                                        // No usar π/180 acá: deja toda rotación de hueso ≈ 0.
-float   _DAT_00552cf0 = 1.0f;          // 1.0 (quaternion normalization)
-float   _DAT_00552d00 = 0.001f;        // SLERP near-parallel epsilon
 // ── Effect pool ───────────────────────────────────────────────────────────────
 // Effect pool — Effect_TickAll itera 200 slots × 0x1bc bytes.
 OBJECT  Effects[kEffectPoolSize] = {};   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
@@ -1361,17 +1340,11 @@ int     DAT_07d7807c = 0;
 // ── Monster s_ named sound strings ───────────────────────────────────────────
 
 // ── CreateEffect float constants ────────────────────────────────────────────
-float   _DAT_005524ec = 180.0f;
-float   _DAT_00552844 = 45.0f;
 // ── Weather particle pool (40 × 0x1bc = 0x4560 bytes) ────────────────────────
 // Backing buffer único: Weather_Update recorre los slots 1..39 con stride 0x1bc.
 // Ver globals.h para los macros de field accessors.
 OBJECT   Boids[40] = {};   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
 // ── Weather float constants ───────────────────────────────────────────────────
-float   _DAT_0055286c = 360.0f;
-float   _DAT_005528e4 = 40.0f;
-float   _DAT_00552900 = 300.0f;
-float   _DAT_00552ab8 = 1000.0f;
 
 // ── Camera / viewport globals ─────────────────────────────────────────────────
 // SetActionObject (0x4FA5C0) / MoveObject_Special (0x4FA5F0): animacion de
@@ -1409,7 +1382,6 @@ float   _DAT_00552a14  = -0.5f;
 DWORD   DAT_05826e14   = 0;
 // IDA: DAT_05826df0
 DWORD   FrameTimeCurrentMs   = 0;
-float   _DAT_005528a8  = 0.001f;  // 1/1000 ms-to-s
 // _DAT_00552890 — defined above (float)
 DWORD   DAT_05826e00   = 0;
 float   DeltaT  = 0.0f;    // delta time per frame
@@ -1648,13 +1620,10 @@ char    DAT_0056337c     = 0;
 float   _DAT_00552570   = -0.2f;   // gravity min clamp
 // Valores leídos del binario:
 // 0x5527D0 = 40 C0 00 00 → 6.0f  y  0x552A28 = C1 20 00 00 → -10.0f.
-float   _DAT_005527d0   = 6.0f;    // MoveItems: decaimiento de la velocidad Z por frame
-float   _DAT_00552a28   = -10.0f;  // MoveItems: giro del item mientras cae
 
 
 // ── Terrain map globals (OpenTerrainMapping, OpenObjectsEnc, CreateTerrain) ────────────
 // La celda original 0x083A0218 pertenece a g_ObjectBucketGrid[0].
-float   _DAT_00552b70 = 0.00392156886f; // height scale
 
 // ── Terrain tile pick / normal buffer globals ─────────────────────────────────
 // Estos son ALIASES dentro de g_TilePickBuf[12] declarado arriba para garantizar
@@ -1741,7 +1710,6 @@ char    DAT_07ea51f5[64] = {0};   // GuildMark (grilla 8x8)
 // int     DAT_00559f60  = 0;   // level range lower array
 // int     DAT_00559f64  = 0;   // level range upper array
 // DAT_07ea7b88 — declared above as DWORD
-char    DAT_07ea5b30  = 0;   // second-password char-slot list base
 
 // ── BMD_DrawMesh / BMD_DrawBoneSlot_Anim buffers ─────────────────────────────
 // LightTransform RGB buffer (float R,G,B per vertex). Stride 12 B per vertex.
@@ -1760,12 +1728,8 @@ float   g_ChromeUVBuf[15000 * 2] = {0};   // 120,000 bytes
 char    g_BoneChromeNormalBuf[32 * 15000 * 12] = {0};  // 5,760,000 bytes
 float  _DAT_00552544  = 0.99f; // alpha threshold (alpha < this → use alpha channel path)
 float  _DAT_005528c0  = 0.00024f; // chrome U scale factor
-float  _DAT_005528c4  = 0.007f; // sin period scale for vertex deformation
-float  _DAT_00552644  = 28.0f; // sin amplitude for vertex deformation
 
 // ── MoveEffect constants ──────────────────────────────────────
-float  _DAT_00552864  = 270.0f;
-float  _DAT_00552994  = 250.0f;
 float  _DAT_005529d4  = 0.333333343f;
 // Los tres son DOUBLES de 8 bytes en el binario (no float).
 // Bytes reales (ida_get_bytes 0x5529D8, 32): la region intercala
@@ -1999,8 +1963,6 @@ DWORD  DAT_07eaa178       = 0;     // mix recipe: socket flag byte
 DWORD  DAT_07eaa170       = 0;     // mix recipe: wing socket option value
 int    DAT_07eaa174       = 0;     // mix recipe: combined value score (capped at 0x5a)
 char   DAT_00559c6c       = 0;     // last rendered hotkey char
-float  _DAT_00552ab0      = 7.5f;  // arrow angle offset (5-way shot small)
-float  _DAT_00552584      = 22.5f;  // arrow angle offset (5-way shot large)
 
 // ── UseSkillWizard dependencies ──────────────────────────────────────────────
 DWORD  MovementSkillTarget       = 0;     // MovementSkillTarget (index into CharactersClient)
@@ -2022,10 +1984,8 @@ float g_ParticleDriftVelocity[2] = {};
 // ── MoveParticles float constants ───────────────────────────────────────────
 // _DAT_00552acc — already defined above (line ~964)
 // _DAT_00552adc — already defined above (line ~141)
-float  _DAT_00552b28      = 0.2f;
 
 // Additional math/render constants
-float  _DAT_00552860      = 57.29578f;  // 180/pi (radians to degrees)
 
 // CheckArrow chat string globals (runtime-initialized by resource loader)
 char   DAT_07e11df4       = 0;

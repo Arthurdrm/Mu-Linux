@@ -61,8 +61,8 @@
 //               if byte[3]==1 && !(entity->flags & byte[2]): FUN_0043bde0(byte[2], entity)
 //               else: FUN_0043c070(flags, entity)
 //
-//   case 0x0b:  Packet buffer slot management (max 9 slots, DAT_07e11db4):
-//               if DAT_07e11db4 > 9: shift buffer array down
+//   case 0x0b:  Packet buffer slot management (max 9 slots, DebugTextCount):
+//               if DebugTextCount > 9: shift buffer array down
 //               Guarda puVar8 en DAT_07e016c8[slot], copia los datos a DAT_07e109cc[slot*0x100]
 //               FUN_00500a80()           — process buffered data
 //

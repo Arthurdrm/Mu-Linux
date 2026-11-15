@@ -35,7 +35,7 @@
 //
 // Wind/environment per frame:
 //   _DAT_00559b9c = (int)(fsin(tick * _DAT_00552500) + 3) * 10     — wind X speed
-//   DAT_07c74ae8  = (int)(fsin(tick * _DAT_00552a40 + offset) * 20) — rain Y offset
+//   RainAngle  = (int)(fsin(tick * _DAT_00552a40 + offset) * 20) — rain Y offset
 //   RainPosition  = (RainPosition + 0x14) % 2000                   — rain Z counter
 //
 // Related: RainTarget = intensity target (set to 100 when substate→10)
@@ -67,9 +67,9 @@ void WeatherParticles_Update(void)
     // IDA MoveLeaves (0x46CC80):
     //   RainSpeed = 10 * ((std::int64_t)sin(WorldTime * 0.001) + 3);
     //   RainAngle = 20 * (std::int64_t)sin(WorldTime * 0.00050000002 + 50.0);
-    // (_DAT_00559b9c = RainSpeed, DAT_07c74ae8 = RainAngle.)
+    // (_DAT_00559b9c = RainSpeed, RainAngle = RainAngle.)
     _DAT_00559b9c = (int)(10 * ((longlong)sin((double)WorldTime * 0.001) + 3));
-    DAT_07c74ae8  = (int)(20 * (longlong)sin((double)WorldTime * 0.00050000002 + 50.0));
+    RainAngle  = (int)(20 * (longlong)sin((double)WorldTime * 0.00050000002 + 50.0));
 
     int iVar1 = RainPosition + 0x14;
     RainPosition  = iVar1 % 2000;
@@ -115,7 +115,7 @@ void WeatherParticles_Update(void)
                 if ((int)r < 0) r = (r - 1u | 0xfffffffeu) + 1u;
                 int vx;
                 if (r == 0) vx = -0x14 - _rand() % 0x14;
-                else        vx = (-0x1e  - _rand() % 0x14) - (int)DAT_07c74ae8;
+                else        vx = (-0x1e  - _rand() % 0x14) - (int)RainAngle;
 
                 pfVar10[-4] = (float)vx;
                 pfVar10[-3] = 0.0f;

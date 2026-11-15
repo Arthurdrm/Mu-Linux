@@ -18,8 +18,8 @@
 //   TerrainVertex        = g_TilePickBuf[12]   (4 corners contiguos)
 //   TerrainTextureCoord  = g_TerrainTexCoord[8] (4 UV pairs)
 //   TerrainGrassWind     (float[256²])     (mislabel "water-wave heights")
-//   TerrainGrassTexture[(yi&0xFF)+1] = DAT_0810b2cc[yi&0xFF]
-//   WaterMove=DAT_07eeb214  WaterTextureNumber  CurrentLayer=DAT_0814b2dc
+//   TerrainGrassTexture[(yi&0xFF)+1] = TerrainGrassTexture[yi&0xFF]
+//   WaterMove=WaterMove  WaterTextureNumber  CurrentLayer=CurrentLayer
 //   TerrainFlag  unk_839BC86=DAT_0839bc86  World
 //   TerrainIndex1..4
 
@@ -142,7 +142,7 @@ void __cdecl FaceTexture(int Texture, float xf, float yf, char Water, char Scale
         float w3 = TER_WIND[TER_IDX1] * k;
         float w4 = TER_WIND[TER_IDX2] * k;
         float yfa = w3 + svf;
-        float xfb = DAT_07eeb214 + suf;          // WaterMove + suf
+        float xfb = WaterMove + suf;          // WaterMove + suf
         tc[0][0] = xfb;          tc[0][1] = yfa;
         float ub = w4 + svf;
         float va = xfb + Width;
@@ -225,7 +225,7 @@ void __cdecl RenderTerrainFace(float xf, float yf, int xi, int yi, float lodf)
         // constante de .data que en el binario vale 1.
         if (TER_ALPHA[TER_IDX1] <= 0.0f && TER_ALPHA[TER_IDX2] <= 0.0f &&
             TER_ALPHA[TER_IDX3] <= 0.0f && TER_ALPHA[TER_IDX4] <= 0.0f &&
-            !DAT_0814b2dc && (!IsBloodCastleMap(gMapManager.GetCurrentMap())))   // CurrentLayer
+            !CurrentLayer && (!IsBloodCastleMap(gMapManager.GetCurrentMap())))   // CurrentLayer
         {
             int slot = (int)(unsigned char)TER_L1[TER_IDX1] + 50;
             BITMAP_t* bmp = &Bitmaps[slot];
@@ -233,7 +233,7 @@ void __cdecl RenderTerrainFace(float xf, float yf, int xi, int yi, float lodf)
             if (bmp->Buffer && DrawDistance::Detailed((xi + 0.5f) * 100.0f, (yi + 0.5f) * 100.0f)) {
                 if(!batch.active)GL_BindTextureSlot(slot);     // BindTexture
                 float yfa = bmp->Height + bmp->Height;
-                float u = xf * 0.25f + DAT_0810b2cc[(unsigned char)yi]; // TerrainGrassTexture[(yi&0xFF)+1]
+                float u = xf * 0.25f + TerrainGrassTexture[(unsigned char)yi]; // TerrainGrassTexture[(yi&0xFF)+1]
                 float (*tc)[2] = TER_TEX;
                 tc[0][0] = u;          tc[0][1] = 0.0f;
                 tc[1][0] = u + 0.25f;  tc[1][1] = 0.0f;

@@ -142,7 +142,7 @@ extern DWORD   DAT_00559ce0;   // entity table iteration offset
 #define DAT_00559ccc  (*(DWORD*)&m_iMatchTime)
 #define DAT_00559cd0  (*(DWORD*)&m_iMaxKillMonster)
 #define DAT_00559cd4  (*(DWORD*)&m_iKillMonster)
-extern DWORD   DAT_00559cd8;
+extern DWORD   g_dwOldSent;   // IDA: g_dwOldSent (0x00559CD8)
 extern int     DAT_00559ce8;   // hover target index copy (char-select slot or NPC)
 extern DWORD   DAT_00559d74;
 extern DWORD   DAT_00559ef0;
@@ -473,7 +473,7 @@ extern uintptr_t g_OperateObjects[200];
 #define DAT_07c608b4  (*(DWORD*)(&g_RenderPool_07c608a8[12]))
 extern DWORD   RainTarget;  // IDA: RainTarget (0x07C74AE0)
 extern DWORD   RainCurrent;  // IDA: RainCurrent (0x07C74AE4) - weather intensity target (interpolated)
-extern DWORD   DAT_07c74ae8;   // rain Y offset (driven by fsin)
+extern DWORD   RainAngle;   // IDA: RainAngle (0x07C74AE8) — rain Y offset (driven by fsin)
 extern DWORD   RainPosition;  // IDA: RainPosition (0x07C74AEC) - rain position counter (0..2000)
 
 // ── Player render pool ─────────────────────────────────────────────────────────
@@ -511,7 +511,7 @@ extern DWORD   LoadingWorld;  // IDA: LoadingWorld (0x07E11D1C) - per-frame cool
 extern DWORD   MouseUpdateTime;  // IDA: MouseUpdateTime (0x07E11D28) - movement debounce step counter
 extern DWORD   EditFlag;  // IDA: EditFlag (0x07E11D30) - frame counter (anti-tamper)
 extern int     DAT_07e11d5c;   // cursor sprite size/frame index
-extern DWORD   DAT_07e11d64;   // terrain walk flag (0=walkable 1=blocked)
+extern DWORD   DontMove;   // IDA: DontMove (0x07E11D64) — terrain walk flag (0=walkable 1=blocked)
 extern float  _DAT_07e11d4c;   // facing tick reference (last frame time)
 extern float  _DAT_07e11d50;   // facing dt (delta * speed scale)
 // IDA: InputTextHide (0x07E113D8): por campo de input, 1 = se dibuja con '*'
@@ -519,10 +519,10 @@ extern float  _DAT_07e11d50;   // facing dt (delta * speed scale)
 // `InputTextHide[10]` en HUD_Pass4: el login escribía una y el render de
 // HUD_Pass4 leía la otra.
 extern BYTE    InputTextHide[40];
-extern DWORD   DAT_07e11d94;
+extern DWORD   g_dwOldConv;   // IDA: g_dwOldConv (0x07E11D94)
 extern DWORD   DAT_07e11d98;
-extern DWORD   DAT_07e11da0;
-extern DWORD   DAT_07e11db4;
+extern DWORD   NoticeInverse;   // IDA: NoticeInverse (0x07E11DA0)
+extern DWORD   DebugTextCount;   // IDA: DebugTextCount (0x07E11DB4)
 extern DWORD   DAT_07e11db8;   // movement step count (must be >0x27 for facing packet)
 extern int     DAT_07e11dbc;   // last facing tick time
 extern char    DAT_07e11dc0;   // movement lock flag B
@@ -594,7 +594,6 @@ extern char    DAT_07e919bc[0x13C30];
 extern DWORD   DAT_07ea5b18;
 extern DWORD   DAT_07ea5b1c;
 extern DWORD   DAT_07ea5b20;
-extern DWORD   DAT_07ea8410;
 extern DWORD   DAT_07ea8414;
 // unk_7EA9504 / unk_7EA9328 NO son un buffer aparte: son dos posiciones dentro
 // del inventario real (OffsetInventoryItems @ 0x07EA8410).  Ver la derivación
@@ -691,10 +690,10 @@ extern DWORD   DAT_07eeb204;
 extern DWORD   DAT_07eeb208;
 extern DWORD   DAT_07eeb20c;
 extern DWORD   DAT_07eeb210;
-extern float   DAT_07eeb214;      // WaterMove — terrain water UV scroll offset (RenderTerrain)
+extern float   WaterMove;      // IDA: WaterMove (0x07EEB214) — WaterMove — terrain water UV scroll offset (RenderTerrain)
 extern float   FrustrumY[4];   // frustum quad Y[4] (per TestFrustrum2D)  [IDA 0x07EEB218]
 extern float   FrustrumX[4];   // frustum quad X[4]  [IDA 0x07EEB228]
-extern float   DAT_07eeb238[256 * 256 * 3];   // TerrainLight RGB ambient buffer (256x256 RGB floats)
+extern float   TerrainLight[256 * 256 * 3];   // IDA: TerrainLight (0x07EEB238) — RGB ambiente por tile
 extern DWORD   DAT_07feb238;
 extern DWORD   DAT_07feb23c;
 extern float   g_TerrainTexCoord[8];   // TerrainTextureCoord[4][2] — UVs per tile face (RenderTerrainFace/FaceTexture)
@@ -716,12 +715,12 @@ extern float   DAT_07feb288[256 * 256 * 3];   // TerrainNormal[256*256][3] verte
 
 // ── Large game data arrays (0x080xxxxx – 0x083bxxxx) ─────────────────────────
 extern DWORD   SelectXF;  // IDA: SelectXF (0x080AB288) - cursor screen X (float)
-extern DWORD   DAT_080ab28c;   // cursor screen Y (float)
+extern DWORD   SelectYF;   // IDA: SelectYF (0x080AB28C) — cursor screen Y (float)
 extern unsigned char  TerrainMappingLayer2[0x10000];   // TileTex2[256*256] tile texture index 2  [IDA 0x080AB2B4]
 extern unsigned char  TerrainMappingLayer1[0x10000];   // TileTex1[256*256] tile texture index 1  [IDA 0x080BB2B4]
 extern float   BackTerrainHeight[0x10000];  // IDA: BackTerrainHeight (0x080CB2CC) - [256*256] tile height
-extern float   DAT_0810b2cc[0x10000];          // TerrainNoise[256*256] random noise init
-extern DWORD   DAT_0814b2dc;
+extern float   TerrainGrassTexture[0x10000];          // IDA: TerrainGrassTexture (0x0810B2CC) — TerrainNoise[256*256] random noise init
+extern DWORD   CurrentLayer;   // IDA: CurrentLayer (0x0814B2DC)
 // Ambient terrain-object table — sub_4F7060 (Terrain_SpawnAmbientObjects) walks 100 records de
 // stride 8 leyendo campos en [-5..+1].  Backing zeroado con prefijo de 5 bytes
 // para que las lecturas [-5] queden in-bounds; vacío en nuestro build (el loader
@@ -898,7 +897,7 @@ extern DWORD   CurrentCameraWalkType;  // IDA: CurrentCameraWalkType (0x083A7C38
 extern DWORD   CurrentCameraNumber;  // IDA: CurrentCameraNumber (0x083A7C3C)
 extern DWORD   ServerListCount;
 extern DWORD   DAT_083a7c44;
-extern char    DAT_083a7c48;   // connection-check-enable flag (byte, NO DWORD)
+extern char    EnableSocket;   // IDA: EnableSocket (0x083A7C48) — connection-check-enable flag (byte, NO DWORD)
 extern char    InitLogIn;  // IDA: InitLogIn (0x083A7C49) - Scene_Login init flag
 extern char    InitLoading;  // IDA: InitLoading (0x083A7C4A) - Scene_Loading init flag
 extern char    CharSelectSceneInitialized; // IDA: InitCharacterScene
@@ -949,7 +948,7 @@ extern DWORD   DAT_083bbb74;
 
 // ── Model data table (0x05828d58, stride 0xbc per entity_type) ────────────────
 extern std::uintptr_t Models; // Base de Models; los desplazamientos siguen expresados en bytes.
-extern void*   DAT_06f42a58;   // model memory pool base (allocated once in Model_LoadItems)
+extern void*   ModelsDump;   // IDA: ModelsDump (0x06F42A58) — model memory pool base (allocated once in Model_LoadItems)
 // BoneVertex pool (see globals.cpp). Backed by g_BoneVertexBuf.
 // DAT_0584621c = base del slot 0; &DAT_0584621c es DWORD*, así que el código existente
 // like (float*)(&DAT_0584621c + vertIdx * 3) does k*12-byte stride correctly
@@ -1186,7 +1185,6 @@ extern DWORD   lpDefault_00583d88;     // default context for UIChatLogWindow_Ad
 // extern char    DAT_07d55410;           // error/info message for UIChatLogWindow_AddText   // -> alias a GlobalText, ver el final del archivo
 
 // Connection-check context
-extern DWORD   DAT_07ea9848;           // connection context for Connection_Check
 
 // DAT_05826ceb — rolling packet counter byte (declared above near 0x05826xxx block)
 
@@ -1414,7 +1412,7 @@ extern int AlphaBlendType;   // IDA: AlphaBlendType (0x083A412C)
 extern char    AlphaTestEnable;  // IDA: AlphaTestEnable (0x083A411D) - cache (glEnable/Disable 0xBC0). El comentario viejo decia 'fog' y es FALSO: ver GL_SetAlphaTest/680.
 extern char    TextureEnable;  // IDA: TextureEnable (0x083A4125) - cache (glEnable/Disable 0xDE1 = GL_TEXTURE_2D). El comentario viejo decia 'depth test' y es FALSO.
 extern int     DAT_083a42f4;   // screenshot active flag
-extern int     DAT_083a42f0;   // screenshot counter (mod 10000)
+extern int     GrabScreen;   // IDA: GrabScreen (0x083A42F0) — screenshot counter (mod 10000)
 // ── Float constants (overlapping globals) ────────────────────────────────────
 extern float   _DAT_00552580;  // 0.0f guard constant
 extern float   Math_DegreesToRadians;  // degrees-to-radians (π/180 = 0.017453f)
@@ -1655,7 +1653,7 @@ extern BYTE    DAT_07ea5240[0x44];
 extern char    g_PointerPool[100 * 0x70]; // IDA: Pointers (0x07C82CD0).
 
 // ── Terrain_Light globals ─────────────────────────────────────────────────────
-extern DWORD   DAT_0839bc84;
+extern DWORD   ActiveTerrain;   // IDA: ActiveTerrain (0x0839BC84)
 // cb60c / 0828b60c / cb610 / 0828b610 NO son globals separados —
 // son el 2do/3er DWORD del slot 0 de cb608 / 0828b608. Las macros están
 // definidas junto a las declaraciones de cb608 / 0828b608, más arriba en este header.

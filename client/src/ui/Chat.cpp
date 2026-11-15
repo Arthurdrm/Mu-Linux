@@ -231,7 +231,7 @@ void UI_RenderNotices(void)
   for (int slot = 0; slot < 6; ++slot) {
     SetBackgroundTextColor = 0x80000000;
     if (lpString[0x104] == '\0') {
-      m_dwTextColor = ((4 < (int)DAT_07e11da0 % 10) - 1 & 0x81000000) - 0xaf3701;
+      m_dwTextColor = ((4 < (int)NoticeInverse % 10) - 1 & 0x81000000) - 0xaf3701;
     }
     else {
       m_dwTextColor = -0x37009c;
@@ -580,7 +580,7 @@ void Chat_TickPresentation() {
         SceneFlag == 4 ? CharSelectSceneInitialized && CurrentProtocolState > 50 :
         SceneFlag == 5 && EnableMainRender && LoadingWorld <= 30;
     if (!ready) return;
-    if (!gUserSettings.GetAntilag(ANTILAG_INTERFACE)) ++DAT_07e11da0;
+    if (!gUserSettings.GetAntilag(ANTILAG_INTERFACE)) ++NoticeInverse;
     if (g_bUseChatListBox == 1 || SceneFlag != 5) ++DAT_07e11da8;
     // Contar sólo campos que dibujarían el caret activo. Hay dos entradas
     // legacy del mismo renderer y pueden coincidir chat, diálogo y panel.

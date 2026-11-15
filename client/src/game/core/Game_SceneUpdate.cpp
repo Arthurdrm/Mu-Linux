@@ -157,7 +157,7 @@ int Game_SceneUpdate(void)
         // state/UI globals are initialized here.
         // CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
         //              (unsigned)(0 | (g_ServerPort)));
-        DAT_083a7c48 = 1;
+        EnableSocket = 1;
         ServerListCount = 0;
 
         // ── Flujo ConnectServer ──────────────────────────────────

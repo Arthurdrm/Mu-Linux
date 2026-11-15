@@ -219,7 +219,7 @@ def harness(revision=None):
                                       read_source(path, revision), re.M).group())
     validate = ('if(Models != reinterpret_cast<std::uintptr_t>(models)) '
                 '{ std::fputs("Base Models truncada\\n", stderr); std::exit(1); }')
-    initialize = ('\nvoid* DAT_06f42a58;\nvoid InitializeModels(void* models) {'
+    initialize = ('\nvoid* DAT_06f42a58;\n#define ModelsDump DAT_06f42a58\nvoid InitializeModels(void* models) {'
                   'DAT_06f42a58 = models;' + initializers[0] + validate
                   + 'Models = 0;' + initializers[1] + validate + '}\n')
     preamble = PREAMBLE.replace("DWORD Models;", declaration + definition)

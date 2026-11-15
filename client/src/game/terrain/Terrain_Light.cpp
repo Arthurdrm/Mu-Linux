@@ -10,7 +10,7 @@
 //   TerrainGrassWind — float[256][256] per-tile brightness (wave-modulated)
 //   DAT_081cb608 — float[256][256][3] per-tile RGB light colour (bilinear)
 //   DAT_0828b608 — source RGB light colour table (read-only)
-//   DAT_0839bc84 — flag: light map enabled
+//   ActiveTerrain — flag: light map enabled
 //   FrustrumBoundMinX_1/94 — current dirty rect corners
 
 #include "stdafx.h"
@@ -19,7 +19,7 @@
 // IDA: RequestTerrainLight (0x004F7960)
 // Samples the light colour at world position (param_1, param_2) using
 // bilinear interpolation over the 256x256 tile RGB map at DAT_081cb608.
-// Requires map mode 5 (SceneFlag==5) and DAT_0839bc84 != 0.
+// Requires map mode 5 (SceneFlag==5) and ActiveTerrain != 0.
 // param_1: world X  param_2: world Y  param_3: output float[3] RGB
 // On failure (out-of-bounds or wrong mode), writes (0,0,0).
 void __cdecl RequestTerrainLight(float param_1,float param_2,float *param_3)
@@ -36,7 +36,7 @@ void __cdecl RequestTerrainLight(float param_1,float param_2,float *param_3)
   float *pfVar10;
   longlong lVar11;
 
-  if ((SceneFlag == 5) && (DAT_0839bc84 != '\0')) {
+  if ((SceneFlag == 5) && (ActiveTerrain != '\0')) {
     fVar3 = param_1 * 0.01f;
     fVar2 = param_2 * 0.01f;
     lVar11 = (longlong)fVar3;   // IDA RequestTerrainLight: v3 = (std::int64_t)xfa  (xf*0.01)

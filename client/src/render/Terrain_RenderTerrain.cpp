@@ -104,9 +104,9 @@ void __cdecl RenderTerrain(char EditFlag) {
     if (EditFlag) Terrain_BeginWavePass();
 
     if (gMapManager.GetCurrentMap() == MAP_TARKAN)
-        DAT_07eeb214 = (float)((long long)WorldTime % 40000) * 0.000024999999f;  // WaterMove (Tarkan)
+        WaterMove = (float)((long long)WorldTime % 40000) * 0.000024999999f;  // WaterMove (Tarkan)
     else
-        DAT_07eeb214 = (float)((long long)WorldTime % 20000) * 0.000049999999f;  // WaterMove
+        WaterMove = (float)((long long)WorldTime % 20000) * 0.000049999999f;  // WaterMove
 
     if (EditFlag) {
         SelectFlag = 0;                 // SelectFlag = 0
@@ -126,7 +126,7 @@ void __cdecl RenderTerrain(char EditFlag) {
     if (EditFlag) {
         if (SelectFlag) {               // SelectFlag → render del tile pickeado
             float sxf = *(float*)&SelectXF;   // SelectXF
-            float syf = *(float*)&DAT_080ab28c;   // SelectYF
+            float syf = *(float*)&SelectYF;   // SelectYF
             RenderTerrainTile(*(int*)&sxf, *(int*)&syf, (int)sxf, (int)syf,
                          1.0f, 1, (int)(unsigned char)EditFlag);
         }

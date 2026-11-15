@@ -368,8 +368,8 @@ static bool GetHeroDropTile(BYTE* outX, BYTE* outY)
     // Pick del terreno bajo el cursor (mismo patron que Combat_Targeting).
     RenderTerrain('\x01');                    // RenderTerrain(true): arma el rayo
     const int gridX = (int)*(float*)&SelectXF;   // SelectXF
-    const int gridY = (int)*(float*)&DAT_080ab28c;   // SelectYF
-    if (!RenderTerrainTile(*(int*)&SelectXF, *(int*)&DAT_080ab28c,
+    const int gridY = (int)*(float*)&SelectYF;   // SelectYF
+    if (!RenderTerrainTile(*(int*)&SelectXF, *(int*)&SelectYF,
                       gridX, gridY, 1.0f, 1, 1))
         return false;
     *outX = (BYTE)(int)(DAT_083a4130 * 0.01f);   // CollisionPosition[0]

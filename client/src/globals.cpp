@@ -158,7 +158,7 @@ DWORD    DAT_00559cc4  = 0;
 // 0x00559CCC/CD0/CD4 son m_iMatchTime / m_iMaxKillMonster / m_iKillMonster.
 // Estaban declarados DOS veces (aca como DAT_ y mas abajo con su nombre), o
 // sea eran memorias distintas.  Ahora los DAT_ son alias (globals.h).
-DWORD    DAT_00559cd8  = 0;
+DWORD    g_dwOldSent  = 0;   // IDA: g_dwOldSent (0x00559CD8)
 DWORD    DAT_00559d74  = 0;
 DWORD    DAT_00559ef0  = 0;
 DWORD    DAT_00559ef4  = 0;
@@ -495,7 +495,7 @@ DWORD    DAT_05826e10  = 0;
 // MAX_BONES = 200, igual que g_BoneScratch → 200 x 16 bytes (paso de 16 por hueso).
 char     DAT_05826e18[200 * 0x10] = {0};
 std::uintptr_t Models = 0; // Base de Models, sin truncar la dirección.
-void*    DAT_06f42a58  = nullptr;  // model memory pool
+void*    ModelsDump  = nullptr;  // IDA: ModelsDump (0x06F42A58) — model memory pool
 
 // BMD bounding-box scratch arrays (BMD_CreateBoundingBox)
 // Tablas scratch de BMD_CreateBoundingBox (0x442E60), la unica funcion del
@@ -591,10 +591,10 @@ void    *CharacterMachine  = nullptr;  // IDA: CharacterMachine (0x07CF1FFC), bu
 DWORD   _DAT_07e118e4  = 0;    // facing angle (float, movement packet)
 int      HeroTile      = 0;    // IDA: HeroTile (0x07E118E8), tile de TerrainMappingLayer1 bajo el heroe
 DWORD    MacroTime  = 0;  // IDA: MacroTime (0x07E11D7C)
-DWORD    DAT_07e11d94  = 0;
+DWORD    g_dwOldConv  = 0;   // IDA: g_dwOldConv (0x07E11D94)
 DWORD    DAT_07e11d98  = 0;
-DWORD    DAT_07e11da0  = 0;
-DWORD    DAT_07e11db4  = 0;
+DWORD    NoticeInverse  = 0;   // IDA: NoticeInverse (0x07E11DA0)
+DWORD    DebugTextCount  = 0;   // IDA: DebugTextCount (0x07E11DB4)
 DWORD    DAT_07e11db8  = 0;
 int      DAT_07e11dbc  = 0;
 char     DAT_07e11dc0  = 0;
@@ -649,7 +649,6 @@ char     DAT_07e919bc[0x13C30] = {};
 DWORD    DAT_07ea5b18  = 0;
 DWORD    DAT_07ea5b1c  = 0;
 DWORD    DAT_07ea5b20  = 0;
-DWORD    DAT_07ea8410  = 0;
 DWORD    DAT_07ea8414  = 0;
 // Equip grid buffer — see globals.h header for layout rationale.  Each
 // 68-byte row contains 8 ITEM cells at stride 544 bytes (so cells overlap
@@ -745,7 +744,7 @@ DWORD    DAT_07eeb204  = 0;
 DWORD    DAT_07eeb208  = 0;
 DWORD    DAT_07eeb20c  = 0;
 DWORD    DAT_07eeb210  = 0;
-float    DAT_07eeb214  = 0.0f;   // WaterMove — terrain water UV scroll offset (RenderTerrain)
+float    WaterMove  = 0.0f;   // IDA: WaterMove (0x07EEB214) — WaterMove — terrain water UV scroll offset (RenderTerrain)
 // TestFrustrum2D (Frustum_IsVisible) lee 4 floats consecutivos desde cada array y
 // Camera_SetMatrix escribe los 4 corners: tienen que ser arrays contiguos (si no,
 // el cull del frustum rechaza todos los chunks).
@@ -753,7 +752,7 @@ float    FrustrumY[4] = {0};   // frustum quad Y[4]
 float    FrustrumX[4] = {0};   // frustum quad X[4]
 // OpenJpegBuffer escribe 256x256 RGB floats (= 196608 floats) usados como
 // TerrainLight RGB ambiente.
-float    DAT_07eeb238[256 * 256 * 3] = {};
+float    TerrainLight[256 * 256 * 3] = {};   // IDA: TerrainLight (0x07EEB238)
 DWORD    DAT_07feb238  = 0;
 DWORD    DAT_07feb23c  = 0;
 // Tile pick corners buffer — 12 floats contiguos (4 vec3 corners del quad
@@ -770,14 +769,14 @@ float    DAT_07feb288[256 * 256 * 3] = {};
 //   TerrainMappingLayer2 = TileTex2[256*256] (BYTE)   — segundo índice de textura
 //   TerrainMappingLayer1 = TileTex1[256*256] (BYTE)   — primer índice de textura
 //   TerrainMappingAlpha = TerrainHeight[256*256] (float) — altura de tile
-//   DAT_0810b2cc = TerrainNoise[256*256] (float)  — ruido aleatorio init
+//   TerrainGrassTexture = TerrainNoise[256*256] (float)  — ruido aleatorio init
 unsigned char  TerrainMappingLayer2[0x10000] = {};
 unsigned char  TerrainMappingLayer1[0x10000] = {};
 // BackTerrainHeight[256*256] float array.
 float    BackTerrainHeight[0x10000] = {};  // IDA: BackTerrainHeight (0x080CB2CC)
-float    DAT_0810b2cc[0x10000] = {};
+float    TerrainGrassTexture[0x10000] = {};   // IDA: TerrainGrassTexture (0x0810B2CC)
 float    g_TerrainTexCoord[8] = {};   // TerrainTextureCoord[4][2] (RenderTerrainFace/FaceTexture)
-DWORD    DAT_0814b2dc  = 0;
+DWORD    CurrentLayer  = 0;   // IDA: CurrentLayer (0x0814B2DC)
 BYTE     g_TerrainObjTable[0x328] = {};   // ambient terrain-object table (sub_4F7060); &DAT_081cb2ed=&[5]
 // Live per-tile lighting buffer — 256×256 tiles × 3 floats = 786432 bytes.
 // Terrain_Water escribe vía `(char*)&DAT_081cb608 + iVar2*12` (y análogo con
@@ -946,11 +945,11 @@ DWORD    CurrentCameraWalkType  = 0;  // IDA: CurrentCameraWalkType (0x083A7C38)
 DWORD    CurrentCameraNumber  = 0;  // IDA: CurrentCameraNumber (0x083A7C3C)
 DWORD    ServerListCount  = 0;  // cantidad de servers del F4/02 (ReceiveServerList)
 DWORD    DAT_083a7c44  = 0;
-// DAT_083a7c48 es char en el binario original (flag "connection check enable"
-// leído como byte en Game_MainLoop). No declararlo DWORD: `DAT_083a7c48 = 1`
+// EnableSocket es char en el binario original (flag "connection check enable"
+// leído como byte en Game_MainLoop). No declararlo DWORD: `EnableSocket = 1`
 // escribiría 4 bytes y pisaría InitLogIn/4a/4b (c49 es el init flag de
 // Scene_Login).
-char     DAT_083a7c48  = 0;
+char     EnableSocket  = 0;   // IDA: EnableSocket (0x083A7C48)
 char     InitLogIn  = 0;  // IDA: InitLogIn (0x083A7C49)
 char     InitLoading  = 0;  // IDA: InitLoading (0x083A7C4A)
 // IDA: InitCharacterScene
@@ -997,7 +996,7 @@ DWORD    InputIndex  = 0;
 DWORD    EditFlag  = 0;  // IDA: EditFlag (0x07E11D30)
 DWORD    LoadingWorld  = 0;  // IDA: LoadingWorld (0x07E11D1C)
 DWORD    MouseUpdateTime  = 0;  // IDA: MouseUpdateTime (0x07E11D28)
-DWORD    DAT_07e11d64  = 0;
+DWORD    DontMove  = 0;   // IDA: DontMove (0x07E11D64)
 float   _DAT_07e11d4c  = 0.0f;
 float   _DAT_07e11d50  = 0.0f;
 BYTE     InputTextHide[40]  = {0};   // IDA: InputTextHide (0x07E113D8)
@@ -1136,7 +1135,7 @@ char     DAT_0055a630[] = "";    // secondary stats line
 
 // Weather particle system (MoveLeaves): DAT_07c5ab5c is the +0x20 alias
 // of DAT_07c5ab3c, declared in globals.h; it has no standalone storage.
-DWORD    DAT_07c74ae8  = 0;
+DWORD    RainAngle  = 0;   // IDA: RainAngle (0x07C74AE8)
 DWORD    RainPosition  = 0;  // IDA: RainPosition (0x07C74AEC)
 int     _DAT_00559b9c  = 0;
 float   _DAT_00552874  = 0.05f;
@@ -1144,7 +1143,7 @@ float   _DAT_005529c8  = -0.1f;
 
 // Mouse hover tick (Mouse_UpdateHoverTargets)
 DWORD    SelectXF  = 0;  // IDA: SelectXF (0x080AB288)
-DWORD    DAT_080ab28c  = 0;
+DWORD    SelectYF  = 0;   // IDA: SelectYF (0x080AB28C)
 float    DAT_083a4130  = 0.0f;
 float    DAT_083a4134  = 0.0f;
 float    DAT_083a4138  = 0.0f;
@@ -1253,7 +1252,6 @@ DWORD    m_bBlockWhisper_1  = 0;  // IDA: m_bBlockWhisper_1 (0x07E11DAC)
 char     DAT_07eaa132  = 0;
 DWORD    lpDefault_00583d88 = 0;
 // DAT_07d55410 es GlobalText[593] (ver el bloque de alias al final de globals.h).
-DWORD    DAT_07ea9848  = 0;
 char     RepairEnable_0  = 0;   // RepairEnable_0
 
 // ── Chat / UI countdown timers ────────────────────────────────────────────────
@@ -1455,7 +1453,7 @@ int     AlphaBlendType = 0;   // IDA: AlphaBlendType (0x083A412C)
 char    AlphaTestEnable = 0;  // IDA: AlphaTestEnable (0x083A411D)
 char    TextureEnable = 0;  // IDA: TextureEnable (0x083A4125)
 int     DAT_083a42f4 = 0;
-int     DAT_083a42f0 = 0;
+int     GrabScreen = 0;   // IDA: GrabScreen (0x083A42F0)
 // ── Float constants ───────────────────────────────────────────────────────────
 float   _DAT_00552580 = 0.0f;
 float   Math_DegreesToRadians = 0.017453292f;  // π/180
@@ -1667,7 +1665,7 @@ char    g_PointerPool[100 * 0x70] = {};
 // Spark-effect pool — Effect_TickSpark itera 100 slots × 0x70 bytes.
 
 // ── Terrain_Light globals ─────────────────────────────────────────────────────
-DWORD   DAT_0839bc84   = 0;
+DWORD   ActiveTerrain   = 0;   // IDA: ActiveTerrain (0x0839BC84)
 // cb60c/cb610 and 0828b60c/610 are NOT separate globals — in the
 // original binary they're the 2nd/3rd DWORDs of slot 0 of cb608/0828b608.
 // Code uses `(&DAT_081cb60c)[iVar2*3]` to access slot iVar2's 2nd field, and

@@ -302,7 +302,7 @@ int GL_CaptureScreenshot(void)
   Gfx::ReadPixelsRGB(0, 0, gWindow.GetRealWidth(), gWindow.GetHeight(), puVar2);
   WriteJpeg((const char*)&GrabFileName,gWindow.GetRealWidth(),gWindow.GetHeight(),puVar2,100);
   operator_delete(puVar2);
-  iVar1 = DAT_083a42f0 + 1;
-  DAT_083a42f0 = iVar1 % 10000;
+  iVar1 = GrabScreen + 1;
+  GrabScreen = iVar1 % 10000;
   return iVar1 / 10000;
 }

@@ -224,7 +224,7 @@ void Recv_LogOut(const BYTE* Msg)
         LoginSubState = 0;                // sub-state = ServerSelect
         DAT_083a7c18 = 0;
         CurrentProtocolState = 0;                // CurrentProtocolState
-        DAT_083a7c48 = 0;                // ConnectionCheckEnable
+        EnableSocket = 0;                // ConnectionCheckEnable
         InitLogIn = 0;                // InitLogIn
         CharSelectSceneInitialized = 0;
         InitMainScene = 0;                // InitMainScene

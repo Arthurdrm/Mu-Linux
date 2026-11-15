@@ -369,7 +369,7 @@ void __cdecl RenderItems3D(float p1, float p2, short* p3, int p4, int p5, char p
                             }
                         }
                         // Mix sparkle effects when mixing
-                        if (p6 != '\0' && p3 == (short*)&DAT_07ea9848 &&
+                        if (p6 != '\0' && p3 == (short*)OffsetMixItems &&
                             MixState > 0 && MixState < 0x33) {
                             EnableAlphaBlend();
                             unsigned int r1 = rand();

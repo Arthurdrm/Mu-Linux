@@ -12,6 +12,7 @@ SERVICES=r'''
 float *normals,*ambient,*output;
 #define DAT_07feb288 (*reinterpret_cast<float(*)[196608]>(normals))
 #define DAT_07eeb238 (*reinterpret_cast<float(*)[196608]>(ambient))
+#define TerrainLight DAT_07eeb238
 #define BackTerrainLight (*reinterpret_cast<float(*)[196608]>(output))
 CONSTANTS
 '''

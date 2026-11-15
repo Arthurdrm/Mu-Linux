@@ -46,10 +46,10 @@ bool __cdecl CheckTarget(CHARACTER* c) {
     RenderTerrain('\x01');  // RenderTerrain(true) — init ray cast
 
     int gridX = (int)*(float*)&SelectXF;     // SelectXF
-    int gridY = (int)*(float*)&DAT_080ab28c;     // SelectYF
+    int gridY = (int)*(float*)&SelectYF;     // SelectYF
     bool hit = (bool)RenderTerrainTile(
         *(int*)&SelectXF,  // SelectXF as int (float bits)
-        *(int*)&DAT_080ab28c,  // SelectYF as int (float bits)
+        *(int*)&SelectYF,  // SelectYF as int (float bits)
         // 0049CAE0: RenderTerrainTile(SelectXF, SelectYF,
         //                             (int)SelectXF, (int)SelectYF, ...).
         // The previous port inverted these integer tile indices, so this

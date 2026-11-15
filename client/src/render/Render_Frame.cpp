@@ -115,7 +115,7 @@
 //                         (_DAT_00552cac, _DAT_00552c24, _DAT_00552c14, _DAT_00552ca8)
 //   UI_RenderNotices()    → PlayerName_Render()         — nombres de jugadores con parpadeo
 //                         SetBlendMode + gFont.SelectFont(bold) + glColor3f(1,1,1)
-//                         itera Notice stride 0x104; parpadeo via DAT_07e11da0 % 10
+//                         itera Notice stride 0x104; parpadeo via NoticeInverse % 10
 //   if (g_bUseChatListBox == 1) || (SceneFlag != 5): UI_RenderChatLogOverlay()
 //                     → SystemText_Render()         — notificaciones del sistema
 //                         glColor3f(1,1,1) + gFont.SelectFont(normal_font)

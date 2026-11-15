@@ -27,6 +27,7 @@ CHARACTER* AsCharacter(CHARACTER* p) { return p; }
 CHARACTER* AsCharacter(std::uintptr_t p) { return reinterpret_cast<CHARACTER*>(p); }
 int SelectedCharacter;
 DWORD TargetX, TargetY, SelectXF, DAT_080ab28c;
+#define SelectYF DAT_080ab28c
 float DAT_083a4130, DAT_083a4134, DAT_083a4138;
 bool terrainHit;
 int terrainCalls, tileCalls;

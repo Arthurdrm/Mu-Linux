@@ -6,7 +6,7 @@
 //   2. Determine which entity/item is under the cursor and store hover targets.
 //
 // ── Cursor billboard ──────────────────────────────────────────────────────────
-// RenderTerrainTile(SelectXF, DAT_080ab28c, screenX, screenY, 1.0f, 1, 1):
+// RenderTerrainTile(SelectXF, SelectYF, screenX, screenY, 1.0f, 1, 1):
 //   Returns nonzero if cursor is visible/active.
 // If visible, calls GL_SetBlendAdditive() (hide char anim sprite for cursor area),
 // then RenderTerrainAlphaBitmap(type=8, x, y, sx, sy, color, 0, alpha) to draw the quad.
@@ -271,7 +271,7 @@ int __cdecl RenderTerrainTile(int iparam_1, int iparam_2, int param_3, int param
     }
     if (cVar1 == '\x01') {
         *(float*)&SelectXF = param_1;
-        *(float*)&DAT_080ab28c = param_2;
+        *(float*)&SelectYF = param_2;
         SelectFlag = 1;
     }
     if (EditFlag == 3) {

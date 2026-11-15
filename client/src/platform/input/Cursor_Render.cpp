@@ -126,7 +126,7 @@ void __cdecl Cursor_Render(void) {
     }
     // Sin LMB → arrow. Con LMB → move (3) / DontMove (10).
     if (MouseLButton == 0) { draw_arrow(); return; }
-    if (DAT_07e11d64 != 0)
+    if (DontMove != 0)
         GL_DrawTexture(10, cx, cy, 24.0f, 24.0f, 0.0f, 0.0f, 1.0f, 1.0f, '\x01', '\x01');
     else
         GL_DrawTexture(3,  cx, cy, 24.0f, 24.0f, 0.0f, 0.0f, 1.0f, 1.0f, '\x01', '\x01');

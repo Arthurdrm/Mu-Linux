@@ -246,3 +246,5 @@ tests/MapInfoPointer.py --architecture x64
 tests/WorldModelsPointer.py --architecture x64
 tests/EffectReplay.py --architecture Win32
 tests/EffectReplay.py --architecture x64
+tests/EffectReplay.py --suite particles --architecture Win32
+tests/EffectReplay.py --suite particles --architecture x64

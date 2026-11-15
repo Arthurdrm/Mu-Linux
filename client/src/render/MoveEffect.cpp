@@ -2600,13 +2600,13 @@ void MoveEffect(float *param_1, int param_2)
           case BITMAP_ENERGY:
             if (MoveEffect_Energy(param_1, __cnt, fVar13, fVar4, fVar5, fVar6, local_360, local_364, local_368, pfVar10)) return;
             break;
-          case 0x4a7:
+          case BITMAP_LIGHTNING + 1:
             if (MoveEffect_Type1191(param_1, __cnt, iVar9, local_360, local_364, local_368)) return;
             break;
           case BITMAP_FIRE:
             if (MoveEffect_Fire_4ab(param_1, local_368)) return;
             break;
-          case 0x4ac:
+          case BITMAP_FIRE + 1:
             { const CaseExit exit = MoveEffect_Type1196(param_1, local_360, local_364, local_368, local_36c);
               if (exit == CaseExit::Return) return;
               if (exit == CaseExit::Break) break; }
@@ -2623,8 +2623,8 @@ void MoveEffect(float *param_1, int param_2)
         case 0x4e0:
           if (MoveEffect_Type1248(param_1, __cnt, iVar9)) return;
           break;
-        case 0x4f0:
-        case 0x4f1:
+        case BITMAP_MAGIC + 1:
+        case BITMAP_MAGIC + 2:
           if (MoveEffect_Type1264(param_1)) return;
           break;
         case 0x4f3:
@@ -2636,7 +2636,7 @@ void MoveEffect(float *param_1, int param_2)
         case BITMAP_SKULL:
           if (MoveEffect_Skull(param_1, __cnt, __owner_fVar4, fVar13, fVar17, fVar18, fVar5, local_1a4, local_1ec, local_1f0, local_1f4, local_258, local_25c, local_260, local_35c, local_368, owner, pfVar10, validOwner)) return;
           break;
-        case 0x566:
+        case BITMAP_ADV_SMOKE + 1:
           if (MoveEffect_Type1382(param_1, iVar9, local_1a4, local_314, local_318, local_31c, local_32c, local_330, local_334, local_34c, local_350, local_354, local_360, local_364, local_368, local_36c, pfVar10, pfVar15)) return;
           break;
         case 0x596:
@@ -2668,7 +2668,7 @@ void MoveEffect(float *param_1, int param_2)
       }
     }
     else switch(iVar9) {
-    case MODEL_TAMA:
+    case MODEL_TAMA:   // Tamachan (0.98j case 183)
       if (MoveEffect_Tama(param_1, __cnt)) return;
       break;
     case MODEL_ICE:

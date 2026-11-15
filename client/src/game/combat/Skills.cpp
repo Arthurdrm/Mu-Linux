@@ -87,7 +87,7 @@ static void SetPlayerBow97k(BYTE* entity)
 // it never replays the local hero's cast animation.
 static void AnimateRemoteSkillCaster97k(BYTE* caster)
 {
-    if (!caster || caster == (BYTE*)DAT_07abf5d8)
+    if (!caster || caster == (BYTE*)Hero)
         return;
     if (*(WORD*)(caster + 2) == 390)
         SetPlayerMagic(AsCharacter(caster));
@@ -102,7 +102,7 @@ extern BYTE* g_CharData;     // DAT_07cf1ffc
 
 // g_EntityBase is never wired to the actual entity array — the real
 // base lives in DAT_07abf5d0 (set by WinMain).
-#define ENTITY(idx)  ((BYTE*)DAT_07abf5d0 + (idx) * CHARACTER_STRIDE)
+#define ENTITY(idx)  ((BYTE*)CharactersClient + (idx) * CHARACTER_STRIDE)
 #define STRIDE       CHARACTER_STRIDE
 
 // ============================================================
@@ -231,7 +231,7 @@ void PacketHandler_0x19(BYTE* pkt)
         // IDA 0x42BCA0 L198-201: `if (sc == Hero) Teleport = 0;`
         // (Teleport = 0x05826D14 = Teleport).  Faltaba: el flag quedaba
         // armado despues de terminar el teleport propio.
-        if (caster == (BYTE*)DAT_07abf5d8)
+        if (caster == (BYTE*)Hero)
             Teleport = 0;
         PlayBuffer(102, AsObject(caster), 0);
         return;
@@ -266,7 +266,7 @@ void PacketHandler_0x19(BYTE* pkt)
             PlayBuffer(81, 0, 0);
 
         // LABEL_98 applies this animation to remote casters only.
-        if (caster != (BYTE*)DAT_07abf5d8)
+        if (caster != (BYTE*)Hero)
         {
             // FUN_00413900(0x51, caster_idx) — UI event 0x51 = magic hit
             AnimateRemoteSkillCaster97k(caster);
@@ -324,7 +324,7 @@ void PacketHandler_0x19(BYTE* pkt)
     case 0x2B:  // 43 Death Stab
     {
         SetAction(AsObject(caster), 67);
-        if (caster != (BYTE*)DAT_07abf5d8 && *(WORD *)&AsCharacter(caster)->Object.Type == 390)
+        if (caster != (BYTE*)Hero && *(WORD *)&AsCharacter(caster)->Object.Type == 390)
             *(DWORD *)&AsCharacter(caster)->Object.AnimationFrame = 0;
         goto common_tail;
     }

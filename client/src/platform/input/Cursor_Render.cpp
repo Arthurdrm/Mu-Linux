@@ -94,8 +94,8 @@ void __cdecl Cursor_Render(void) {
     // Hover sobre char vivo + SelectedCharacter → attack crosshair o arrow
     // NULL-guard: en login Hero=NULL y SelectedCharacter=-1, así que el branch
     // se saltea; el guard sólo protege contra misconfig.
-    if (DAT_07abf5d8 != NULL &&
-        *(char*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone == '\0' &&
+    if (Hero != NULL &&
+        *(char*)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone == '\0' &&
         SelectedCharacter != -1)
     {
         if ((char)CheckAttack() != '\0' && MouseOnWindow == '\0') {

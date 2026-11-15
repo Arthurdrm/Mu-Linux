@@ -356,33 +356,13 @@ struct SERVER_LIST_t
 // SceneFlag ya está declarado en stdafx.h; World en globals.h.
 
 // Character
-#define DAT_07abf5d8        Hero                // IDA: DAT_07abf5d8 (0x07ABF5D8)
-#define DAT_07abf5d0        CharactersClient    // IDA: DAT_07abf5d0 (0x07ABF5D0)
-#define HeroIndex        HeroIndex         // IDA: HeroIndex (0x05826CA0)
-#define g_SimpleModulusCS        g_SimpleModulusCS // IDA: g_SimpleModulusCS (0x05826C10)
-#define g_SimpleModulusSC        g_SimpleModulusSC // IDA: g_SimpleModulusSC (0x05826C58)
-#define ChatWhisperID        ChatWhisperID     // IDA: ChatWhisperID (0x05826CB4)
-#define HeroKey        HeroKey           // IDA: HeroKey (0x05826CAC)
-#define DAT_05826cb0        CurrentProtocolState // IDA: DAT_05826cb0 (0x05826CB0)
-#define CurrentSkill        CurrentSkill      // IDA: CurrentSkill (0x05826D10)
-#define BuyCost        BuyCost           // IDA: BuyCost (0x05826D18)
-#define ChatTime        ChatTime          // IDA: ChatTime (0x05826D08)
-#define g_dwLatestMagicTick        g_dwLatestMagicTick // IDA: g_dwLatestMagicTick (0x05826CF4)
-#define LogInID        LogInID           // IDA: LogInID (0x05826CD4)
-#define LogIn        LogIn             // IDA: LogIn (0x05826CF8)
 #define SocketStartupFirst  First             // IDA: First (0x055CA15C)
-#define bBuxCode        bBuxCode          // IDA: bBuxCode (0x00558090)
-#define g_byPacketSerialRecv        g_byPacketSerialRecv // IDA: g_byPacketSerialRecv (0x05826CEC)
-#define m_nTempMyTradeGold        m_nTempMyTradeGold // IDA: m_nTempMyTradeGold (0x05826C9C)
-#define Version        Version           // IDA: Version (0x0055961C)
-#define Serial        Serial            // IDA: Serial (0x00559624)
 // SelectedCharacter is a named global declared in globals.h.
 // IDA provenance: DAT_00559c50.
 
 // Camera / OpenGL — underlying storage is DWORD but the binary treats the
 // bit pattern as float. Use lvalue-float reinterpretation so assignments like
 // `CameraFOV = 45.0f` write the IEEE-754 bits (not an integer cast).
-#define EarthQuake          _DAT_083a0210    // float
 
 // Connection: g_bGameServerConnected is declared in globals.h.
 #define ServerList          (*(SERVER_LIST_t(*)[MAX_SERVER_HI])&DAT_083a45d8)
@@ -395,7 +375,6 @@ struct SERVER_LIST_t
 // del select-server es OTRA cosa: es `group = ServerCode / 20` (0..N), que indexa
 // la tabla de nombres `DAT_07d52c34` (stride 300) — ver `Recv_ServerList`.  El
 // grupo 12 es un caso especial: usa `GlobalText[559]` y va al slot 24.
-#define ServerListCount     DAT_083a7c40     // BYTE (use as char)
 #define ServerNumber        ServerListCount  // alias historico, no usar en codigo nuevo
 
 // Models
@@ -408,17 +387,6 @@ extern char* g_BitmapsRaw;
 
 // ── Companion-project aliases (IDA decompile compatibility) ──────────────────
 // Globals:
-#define DAT_00559c84         InputEnable          // IDA: DAT_00559c84 (0x00559C84)
-#define DAT_005616ac         SelectedHero         // IDA: DAT_005616ac (0x005616AC)
-#define DAT_083a7c14         LoginSubState        // IDA: DAT_083a7c14 (0x083A7C14)
-#define Attacking         Attacking            // IDA: Attacking (0x00559C58)
-#define DAT_05826d24         SummonLife           // IDA: DAT_05826d24 (0x05826D24)
-#define DAT_05826c08         SoccerTime           // IDA: DAT_05826c08 (0x05826C08)
-#define DAT_05826d33         SoccerObserver       // IDA: DAT_05826d33 (0x05826D33)
-#define DAT_07e11d6f         LockInputStatus      // IDA: DAT_07e11d6f (0x07E11D6F)
-#define DAT_07eaa138         RepairEnable         // IDA: DAT_07eaa138 (0x07EAA138)
-#define DAT_07e11998         SendGetItem          // IDA: DAT_07e11998 (0x07E11998)
-#define Teleport         Teleport             // IDA: Teleport (0x05826D14)
 // PrimaryTerrainLight es DAT_081cb608 (el buffer que lee el render y que
 // `Terrain_Water` (0x4F95E0) resetea por frame), NO `DAT_07eab250` (un DWORD
 // muerto). `AddTerrainLight` indexa `Buffer[768*y + 3*x]` con x,y hasta 255, asi
@@ -438,8 +406,6 @@ extern char* g_BitmapsRaw;
 // Con el clamp, la luz dinamica (fuego, antorchas, efectos) no llega a saturar.
 // El port de 0x4F76C0 es `AddTerrainLight` (Render/SMD_Parser.cpp).
 void __cdecl AddTerrainLight(float xf, float yf, float *Light, int Range, float *Buffer);   // decl local: structs.h no incluye functions.h
-#define AngleMatrix          AngleMatrix
-#define CreateEffect         CreateEffect
 #define CreateBomb           Effect_SpawnSmokeBurst
 #define AddTerrainAttributeRange Terrain_UpdateTileAttributeRect
 #define AddTerrainAttribute      Terrain_SetTileAttributeBits

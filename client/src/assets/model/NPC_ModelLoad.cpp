@@ -16,7 +16,7 @@ void __cdecl OpenNpc(int Type) {
     // DAT_0055a7c4 = g_tex_ext_mode (0=plain, 1=compressed OZJ/OZT)
     // If g_tex_ext_mode!=0 and model already has bones (Data+0x26 > 0), skip loading.
 
-    DWORD* pModels = (DWORD*)DAT_05828d58;
+    DWORD* pModels = (DWORD*)Models;
     // Check if already loaded: DAT_0055a7c4 != 0 and *(short*)(Models[Type].Data + 0x26) > 0
     // Models[Type].Data is at pModels + Type * BMD_STRIDE — but the actual struct size is
     // unknown here. The Ghidra code references Models[Type].Data at a pointer field.
@@ -24,7 +24,7 @@ void __cdecl OpenNpc(int Type) {
     // The guard check is: if (DAT_0055a7c4 != 0 && bone_count > 0) return;
     // We skip this check since we can't reliably compute BMD struct offset without BMD_STRIDE.
     // The original binary does this check before the switch.
-    char* model = (char*)DAT_05828d58 + BMD_STRIDE * Type;
+    char* model = (char*)Models + BMD_STRIDE * Type;
     if (DAT_0055a7c4 != 0 && *(short*)(model + 0x26) > 0)
         return;
 
@@ -61,6 +61,6 @@ void __cdecl OpenNpc(int Type) {
     // NOTA (patch separado): el loop PlaySpeed del original (IDA offsets +0x26/+0x30)
     // NO se aplica acá. En nuestro layout real +0x26=NumBones y +0x30=Bones
     // (BMD_Load.cpp:225/233), no NumActions/Actions — se audita/aplica aparte.
-    if (*(short*)(DAT_05828d58 + Type * BMD_STRIDE + 0x24) > 0)   // NumMeshes > 0
+    if (*(short*)(Models + Type * BMD_STRIDE + 0x24) > 0)   // NumMeshes > 0
         OpenTexture(Type, (void*)"Npc\\", 0x2600 /*GL_NEAREST*/, true);
 }

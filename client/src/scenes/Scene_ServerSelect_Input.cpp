@@ -235,7 +235,7 @@ void CServerSelWin_UpdateWhileActive(void)
                             CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
                                          (unsigned int)g_ServerPort);
                         }
-                        DAT_083a7c14 = 1;   // state = Connecting
+                        LoginSubState = 1;   // state = Connecting
 
                         // IDA 0x0051E7E0 L315-316 (CServerSelWin): these are
                         // GlobalText[470]/[471], not the standalone buffers

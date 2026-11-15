@@ -311,7 +311,7 @@ bool RunGuarded(const CaseArgs& a)
 
 int main()
 {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(g_models);
+    Models = reinterpret_cast<std::uintptr_t>(g_models);
     for (std::size_t i = 0; i < sizeof(g_bones) / 4; ++i) reinterpret_cast<float*>(g_bones)[i] = (float)(i % 13) * 0.5f;
     const int maxType = 1400, maxSub = 16, ticks = 6;
     const bool trace = std::getenv("EFFECT_REPLAY_TRACE") != nullptr;
@@ -328,7 +328,7 @@ int main()
         Hero = reinterpret_cast<char*>(g_owners[0]);
         std::memset(g_charMachine, 0, sizeof(g_charMachine));
         g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
-        DAT_07cf1ffc = g_charMachine;
+        CharacterMachine = g_charMachine;
         ClearPool();
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];

@@ -31,7 +31,7 @@ void __cdecl ItemDrop_SetupRenderRef(BYTE* param_1) {
     // +0x3C guarda sólo 32 bits; el dueño completo vive en g_ParticleOwner.
     intptr_t iVar1 = (intptr_t)g_ParticleOwner[(param_1 - reinterpret_cast<BYTE*>(Particles)) / PARTICLE_STRIDE];
     float local_c[3] = {0.0f, 0.0f, 0.0f};
-    BYTE* this_ = reinterpret_cast<BYTE*>(DAT_05828d58 + *(short*)(iVar1 + 2) * BMD_STRIDE);
+    BYTE* this_ = reinterpret_cast<BYTE*>(Models + *(short*)(iVar1 + 2) * BMD_STRIDE);
     if (*(int*)(param_1 + 4) == 0x4d0)
         local_c[1] = -120.0f;
     *(unsigned int*)(this_ + 0x6c + BMD_FIELD_SHIFT) = *(unsigned int*)(iVar1 + 0x10);
@@ -40,7 +40,7 @@ void __cdecl ItemDrop_SetupRenderRef(BYTE* param_1) {
     uint uVar2 = *(uint*)(param_1 + 8) & 0x80000001;
     if ((int)uVar2 < 0) uVar2 = (uVar2 - 1 | 0xfffffffe) + 1;
     BMD_TransformPosition(this_,
-        (float*)((unsigned int)(AsCharacter(DAT_07abf5d8)->Weapon[static_cast<int32_t>(uVar2)].LinkBone) * 0x30
+        (float*)((unsigned int)(AsCharacter(Hero)->Weapon[static_cast<int32_t>(uVar2)].LinkBone) * 0x30
                  + *(intptr_t*)&AsObject(iVar1)->BoneMatrices),
         local_c,
         (float*)(param_1 + 0x10),

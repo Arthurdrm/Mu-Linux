@@ -61,7 +61,7 @@ static void Terrain_ProcessObjects(bool simulation)
                            chunkIter++ < 4096 &&
                            SceneObjects::Contains(entity))
                     {
-                        if (*entity == '\0' || !DAT_05828d58 ||
+                        if (*entity == '\0' || !Models ||
                             *(short*)(entity + 2) < 0 || *(short*)(entity + 2) >= ResourceTables::ModelCount())
                         {
                             entity = reinterpret_cast<char*>(AsObject(entity)->SceneNext);
@@ -91,7 +91,7 @@ static void Terrain_ProcessObjects(bool simulation)
                                 {
                                     void *pvSlot = AntiTamper_HashNode();
                                     *(unsigned char*)((char*)pvSlot + 0x584) = 1;
-                                    HashTable_Insert(&MAIN_HASH_CLASS, pvSlot, DAT_07cf1ffc);
+                                    HashTable_Insert(&MAIN_HASH_CLASS, pvSlot, CharacterMachine);
                                 }
 
                                 WorldEffects_Tick((intptr_t)entity);
@@ -122,7 +122,7 @@ static void Terrain_ProcessObjects(bool simulation)
     {
         int iVar = 0;
         do {
-            char *entity = (char*)(DAT_07abf5d0 + iVar);
+            char *entity = (char*)(CharactersClient + iVar);
             if (*entity != '\0') {
                 float ex = *(float*)(entity + 0x10) * _DAT_005524f8;
                 float ey = *(float*)(entity + 0x14) * _DAT_005524f8;

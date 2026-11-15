@@ -20,7 +20,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
     g_iLimitAttackTime = 15; // g_iLimitAttackTime = 15
 
     // Models base
-    intptr_t modelsBase = DAT_05828d58;
+    intptr_t modelsBase = Models;
 
     switch (skillByte) {
 
@@ -328,7 +328,7 @@ bool __cdecl AttackStage(intptr_t c, intptr_t o)
     const int hand = GetHandOfWeapon((intptr_t)o);
     const BYTE skill = AsCharacter(c)->Skill, stage = AsCharacter(c)->SkillStage;
     const short type = AsObject(o)->Type;
-    const intptr_t model = DAT_05828d58 + type * BMD_STRIDE;
+    const intptr_t model = Models + type * BMD_STRIDE;
     g_iLimitAttackTime = 15;
     if (skill == 43) {
         if (stage == 8) PlayBuffer(83, 0, 0);
@@ -359,7 +359,7 @@ bool __cdecl AttackStage(intptr_t c, intptr_t o)
     } else if(skill==48) { if(stage>9 && type==390 && AsObject(o)->CurrentAction==63) AsCharacter(c)->SkillStage=15; }
     else if(skill==49) { if(AsObject(o)->AnimationFrame>=5.0f && type==390 && (AsObject(o)->CurrentAction==64 || AsObject(o)->CurrentAction==65)) AsCharacter(c)->SkillStage=15; }
     else if(skill==52) { if(type==390 && AsObject(o)->CurrentAction>=34 && AsObject(o)->CurrentAction<=91 && AsObject(o)->AnimationFrame>=5.0f){AsObject(o)->PriorAnimationFrame=4.0f;AsObject(o)->AnimationFrame=5.0f;} if(stage==3){CreateEffect(1267,(float*)(o+16),(float*)(o+28),(float*)(o+232),nullptr,(float*)o,(float*)-1,nullptr,0);PlayBuffer(100, AsObject(o),0);} g_iLimitAttackTime=5; }
-    else if(skill==55) { if(type==390 && AsObject(o)->CurrentAction==61) { if(stage && stage<=2) CreateEffect(1267,(float*)(o+16),(float*)(o+28),(float*)(o+232),(float*)1,(float*)o,(float*)-1,nullptr,0); if(AsObject(o)->AnimationFrame>=3.0f){PlayBuffer(84,0,0); CreateEffect(1168,(float*)(o+16),(float*)(o+28),(float*)(o+232),nullptr,(float*)o,(float*)(intptr_t)AsObject(o)->PKKey,(float*)(intptr_t)FindHotKey(55),0); const intptr_t modelState=DAT_05828d58?(intptr_t)AsModel(DAT_05828d58+390*BMD_STRIDE)->Actions:0; if(modelState && CharacterAttribute) *(float*)(modelState+ModelActionByte(980))=*(WORD*)((BYTE*)CharacterAttribute+56)*0.0040000002f+0.54000002f; AsCharacter(c)->SkillStage=15;} } }
+    else if(skill==55) { if(type==390 && AsObject(o)->CurrentAction==61) { if(stage && stage<=2) CreateEffect(1267,(float*)(o+16),(float*)(o+28),(float*)(o+232),(float*)1,(float*)o,(float*)-1,nullptr,0); if(AsObject(o)->AnimationFrame>=3.0f){PlayBuffer(84,0,0); CreateEffect(1168,(float*)(o+16),(float*)(o+28),(float*)(o+232),nullptr,(float*)o,(float*)(intptr_t)AsObject(o)->PKKey,(float*)(intptr_t)FindHotKey(55),0); const intptr_t modelState=Models?(intptr_t)AsModel(Models+390*BMD_STRIDE)->Actions:0; if(modelState && CharacterAttribute) *(float*)(modelState+ModelActionByte(980))=*(WORD*)((BYTE*)CharacterAttribute+56)*0.0040000002f+0.54000002f; AsCharacter(c)->SkillStage=15;} } }
     else if(skill==56) { if(type==390 && AsObject(o)->CurrentAction==81){float a[3]={AsObject(o)->Angle[0],AsObject(o)->Angle[1],AsObject(o)->Angle[2]-40.0f};for(int i=0;i<5;++i){CreateEffect(MODEL_MAGIC2,(float*)(o+16),a,(float*)(o+232),(float*)2,(float*)o,(float*)-1,nullptr,0);a[2]+=20.0f;}PlayBuffer(84,0,0);AsCharacter(c)->SkillStage=15;} }
     // IDA: AttackStage (0x00448930). DESVIACION DLL: adelantar magia sólo en jugadores.
     // Los monstruos conservan las etapas intermedias que consume AttackEffect (Alquamos 1, Queen Rainer 5).

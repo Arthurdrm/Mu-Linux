@@ -65,7 +65,7 @@ static void WritePlayerAttackSpeeds(char* P, int attackSpeed, int magicSpeed);
 void __cdecl SetAttackSpeed(void) {
     const BYTE* ca = static_cast<const BYTE*>(CharacterAttribute);
     if (ca == 0) return;
-    const BYTE* models = reinterpret_cast<const BYTE*>(DAT_05828d58);
+    const BYTE* models = reinterpret_cast<const BYTE*>(Models);
     if (models == 0) return;
 
     // Read stats (16-bit unsigned)
@@ -182,9 +182,9 @@ void PlayerAttackSpeed_Set(int slot, std::uint16_t key, int physiSpeed, int magi
 
 bool PlayerAttackSpeed_ForAction(const void* c, int action, float* speed)
 {
-    if (!c || !DAT_07abf5d0 || c == (const void*)DAT_07abf5d8) return false;
+    if (!c || !CharactersClient || c == (const void*)Hero) return false;
     if (action < 0 || action >= kSpeedActions) return false;
-    const intptr_t off = (intptr_t)c - (intptr_t)DAT_07abf5d0;
+    const intptr_t off = (intptr_t)c - (intptr_t)CharactersClient;
     if (off < 0 || off % CHARACTER_STRIDE != 0) return false;
     const int slot = (int)(off / CHARACTER_STRIDE);
     if (slot >= 400) return false;

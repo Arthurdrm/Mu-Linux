@@ -465,7 +465,7 @@ static void HUD_HotkeyTick(void)
     int kF11 = PressKey(VK_F11);
 
     if (GuildInputEnable != '\0') return;  // g_ChatMode
-    if (DAT_00559c84 != '\0') return;  // g_TextMode (login / dialog text)
+    if (InputEnable != '\0') return;  // g_TextMode (login / dialog text)
     if (TabInputEnable != '\0') return;  // g_IME_Mode
     // IDA Chat_InputTick L3976-3985: ANTES de mirar cualquier hotkey de panel,
     // el original corta la funcion entera con esta lista:
@@ -621,7 +621,7 @@ void __cdecl Player_ProcessInput(void)
     // (0x4B14F0), que es donde los tiene el binario.
 
     // ── Guard: entity visibility / renderable flag ─────────────────────────────
-    if (AsCharacter(DAT_07abf5d8)->Dead != 0)
+    if (AsCharacter(Hero)->Dead != 0)
         return;
 
     // ── LoadingWorld cooldown ────────────────────────────────────────────────
@@ -641,12 +641,12 @@ void __cdecl Player_ProcessInput(void)
     // Si el modo de segunda contraseña está activo, la entidad bajo el mouse está muerta y el índice de hover es válido:
     //   copy entity name (entity+0x1c1) to password buffer DAT_07db8810,
     //   después poner en cero y volver a copiar vía el buffer intermedio DAT_07e113e4.
-    if (DAT_00559c84 != '\0'
-        && AsCharacter(DAT_07abf5d8)->SafeZone != 0
+    if (InputEnable != '\0'
+        && AsCharacter(Hero)->SafeZone != 0
         && SelectedCharacter != -1
         && MouseRButtonPush != '\0')
     {
-        unsigned char *hoverEntity = (unsigned char*)(DAT_07abf5d0 + SelectedCharacter * CHARACTER_STRIDE);
+        unsigned char *hoverEntity = (unsigned char*)(CharactersClient + SelectedCharacter * CHARACTER_STRIDE);
         const unsigned char *nameSrc = (const unsigned char*)EntityName::Get(hoverEntity);
 
         // Copy name into password buffer
@@ -676,7 +676,7 @@ void __cdecl Player_ProcessInput(void)
     bool bHeadTrackActive = false;
     float fHalfScreenW = 320.0f;
     {
-        unsigned char* ent = (unsigned char*)DAT_07abf5d8;
+        unsigned char* ent = (unsigned char*)Hero;
         if (ent) {
             // En pantalla ancha el mundo ocupa toda la ventana: su centro es 320.
             fHalfScreenW = gWindow.IsWide() ? 320.0f : (float)(GetScreenWidth() / 2);
@@ -694,7 +694,7 @@ void __cdecl Player_ProcessInput(void)
 
             // IDA L374: el tracking se apaga durante el auto-ataque y con la
             // animación de muerte (62).
-            if ((DAT_07e11e18 == 0 || g_Attacking == -1 || !gMapManager.Current().autoAttack)
+            if ((m_bAutoAttack == 0 || g_Attacking == -1 || !gMapManager.Current().autoAttack)
                 && AsCharacter(ent)->Object.CurrentAction != 62)
             {
                 bHeadTrackActive = true;
@@ -718,7 +718,7 @@ void __cdecl Player_ProcessInput(void)
     // bar): el walker se ejecuta SIEMPRE; solo el envío de packets y el
     // procesamiento de clicks nuevos van gateados.
     {
-        unsigned char *ent = (unsigned char*)DAT_07abf5d8;
+        unsigned char *ent = (unsigned char*)Hero;
         if (*(unsigned char*)(ent + 0x78) & 0x20) {
             SetPlayerStop(AsCharacter(ent));
         } else {
@@ -828,7 +828,7 @@ void __cdecl Player_ProcessInput(void)
     // inmediato; mientras se mueve se mantiene el gate por tiempo para no spamear
     // el server con paths intermedios.
     { // El salto de salida no entra en el ámbito de estas variables.
-    bool walkerIdle = (AsCharacter(DAT_07abf5d8)->PathNum == 0);
+    bool walkerIdle = (AsCharacter(Hero)->PathNum == 0);
     // DAT_07e11dc0 ("movement lock flag B"): según IDA solo lo escriben Attack
     // (0x49CC50) y Chat_InputTick (0x4B6630). Attack es stub vacío en nuestro build
     // y el port de Chat_InputTick no tiene ese write, así que su valor fiel es 0;
@@ -883,8 +883,8 @@ void __cdecl Player_ProcessInput(void)
                     //
                     // También se resetean anim_state a idle (1) y el path state: el héroe hereda
                     // el anim_state del preview de CharSelect.
-                    if (DAT_07abf5d8) {
-                        BYTE* hero = (BYTE*)DAT_07abf5d8;
+                    if (Hero) {
+                        BYTE* hero = (BYTE*)Hero;
                         *(char *)&AsCharacter(hero)->MovementType = 0;            // action queue
                         *(char *)&AsCharacter(hero)->Object.CurrentAction = 1;            // anim_state = idle
                         *(char *)&AsCharacter(hero)->Object.PriorAction = 1;            // anim_state_prev
@@ -1065,7 +1065,7 @@ void __cdecl Player_ProcessInput(void)
         }
 
         // (Walker movido arriba del gate — ya corrió al inicio del tick.)
-        unsigned char *ent = (unsigned char*)DAT_07abf5d8;
+        unsigned char *ent = (unsigned char*)Hero;
 
         _DAT_07e11d50 = (WorldTime - _DAT_07e11d4c) * _DAT_00552890;
 
@@ -1145,8 +1145,8 @@ void __cdecl Player_ProcessInput(void)
                     && *(char *)&AsCharacter(ent)->MovementType == '\0'
                     && (AsCharacter(ent)->Class & 7) == 2)
                 {
-                    short animA = *(short*)((unsigned char*)DAT_07cf1ffc + 0x86);
-                    short animB = *(short*)((unsigned char*)DAT_07cf1ffc + 0x97);
+                    short animA = *(short*)((unsigned char*)CharacterMachine + 0x86);
+                    short animB = *(short*)((unsigned char*)CharacterMachine + 0x97);
 
                     // Anim ranges for movement packet [0xC1][0x11]
                     bool sendMovePkt =
@@ -1192,7 +1192,7 @@ void __cdecl Player_ProcessInput(void)
                     if ((char)canAct == '\0') {
                         goto end_tick_inc;
                     }
-                    BYTE* hoverEnt = (BYTE*)(uintptr_t)DAT_07abf5d0
+                    BYTE* hoverEnt = (BYTE*)(uintptr_t)CharactersClient
                                    + (uintptr_t)SelectedCharacter * CHARACTER_STRIDE;
                     // Muerto = +0x2FD (IDA ReceiveDie:18). No usar +0x2EC (state flag que el
                     // server también pone en 0 en ReceiveAction) ni +0x34E (es SafeZone: dejaría
@@ -1206,7 +1206,7 @@ void __cdecl Player_ProcessInput(void)
                         DAT_00559c70 = -1;
                         goto end_tick_inc;
                     }
-                    intptr_t tgtEntityBase = (intptr_t)(DAT_07abf5d0 + SelectedCharacter * CHARACTER_STRIDE);
+                    intptr_t tgtEntityBase = (intptr_t)(CharactersClient + SelectedCharacter * CHARACTER_STRIDE);
                     int dstX = AsCharacter(tgtEntityBase)->PositionX;
                     int dstY = AsCharacter(tgtEntityBase)->PositionY;
 
@@ -1279,7 +1279,7 @@ void __cdecl Player_ProcessInput(void)
                         goto end_tick_inc;
                     }
                     {
-                        const char* const CM = (const char*)(uintptr_t)DAT_07cf1ffc;
+                        const char* const CM = (const char*)(uintptr_t)CharacterMachine;
                         const int lh = CM ? ItemBehaviorType(*(const short*)(CM + 536)) : -1;  // IDA: v265
                         const int rh = CM ? ItemBehaviorType(*(const short*)(CM + 604)) : -1;  // IDA: v264
                         const bool bRanged = (lh >= 136 && lh < 143)
@@ -1394,7 +1394,7 @@ void __cdecl Player_ProcessInput(void)
                 if (ShopOpened == '\0' && WarehouseOpened == '\0') {
                     AsCharacter(ent)->MovementType = 2;
                     DAT_00559ce8 = SelectedNpc;
-                    intptr_t tgtBase = (intptr_t)(DAT_07abf5d0 + SelectedNpc * CHARACTER_STRIDE);
+                    intptr_t tgtBase = (intptr_t)(CharactersClient + SelectedNpc * CHARACTER_STRIDE);
                     DAT_07db8708  = (int)AsCharacter(tgtBase)->Object.Type;
                     _DAT_07e118e4 = *(DWORD *)&AsCharacter(tgtBase)->Object.Angle[2];
                     DAT_00559c70  = SelectedNpc;
@@ -1605,7 +1605,7 @@ end_tick_inc:
     }
 end_tick:
     // ── Per-frame entity state update ─────────────────────────────────────────
-    Combat_DispatchHeroSkillAttack(DAT_07abf5d8);
+    Combat_DispatchHeroSkillAttack(Hero);
 
     // ── HeroTile: atributo de terreno bajo el HÉROE ───────────────────────────
     // IDA Player_InputTick L570-582:
@@ -1623,7 +1623,7 @@ end_tick:
     // Lo leen además Render_Frame (2da pasada de SkillEffect_Render) y
     // Scene_CharSelect_Nav.
     {
-        const char* hero = (const char*)DAT_07abf5d8;
+        const char* hero = (const char*)Hero;
         if (hero) {
             int gx = (int)(*(const float*)(hero + 16)) / 100;   // world X → celda
             int gy = (int)(*(const float*)(hero + 20)) / 100;   // world Y → celda

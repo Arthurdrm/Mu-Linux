@@ -77,7 +77,7 @@ void __cdecl RenderSkillIcon(int iIndex, float x, float y, float width, float he
     // rojizo si el heroe no tiene Uniria (818) ni Dinorant (819) en el slot de
     // helper (Hero + 696 = c+0x2B8).
     if (skillId == 0x2f) {
-        const BYTE* hero = (const BYTE*)(uintptr_t)DAT_07abf5d8;
+        const BYTE* hero = (const BYTE*)(uintptr_t)Hero;
         const short helperType = hero ? *(const short*)&AsCharacter(hero)->Helper.Type : -1;
         if (helperType != 818 && helperType != 819)
             Gfx::Color3f(1.0f, 0.5f, 0.5f);
@@ -111,7 +111,7 @@ void __cdecl RenderSkillIcon(int iIndex, float x, float y, float width, float he
     //   0x93 SkillLevel[64]
     //   0xD3 HotKey[4][64]  — 4 characters × 64 slots, stride 64 bytes
     // HotKey[SelectedHero][iIndex+4] = charAttr + 0xD3 + SelectedHero*64 + (iIndex + 4)
-    unsigned int selectedHero = (unsigned int)DAT_005616ac;  // SelectedHero index (0..3)
+    unsigned int selectedHero = (unsigned int)SelectedHero;  // SelectedHero index (0..3)
     if (selectedHero > 3) selectedHero = 0;  // safety clamp
     int hotkey = (unsigned char)*(charAttr + 0xD3 + selectedHero * 64 + iIndex + 4);
     if (hotkey == 0) hotkey = 0xFF;  // empty slot → no-hotkey sentinel

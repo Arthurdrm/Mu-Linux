@@ -252,10 +252,10 @@ void __cdecl Model_LoadItemMeshes(void)
     //   0x2be38 = 956*0xBC+0x28 → Event+9                      mesh[1]
     {
         BYTE* m;
-        m = AsModel(DAT_05828d58 + BMD_STRIDE * 496)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
-        m = AsModel(DAT_05828d58 + BMD_STRIDE * 410)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
-        m = AsModel(DAT_05828d58 + BMD_STRIDE * 566)->Meshs; if (m) m[sizeof(ClothModelMesh) * 2] = 1;
-        m = AsModel(DAT_05828d58 + BMD_STRIDE * 470)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
-        m = AsModel(DAT_05828d58 + BMD_STRIDE * 956)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
+        m = AsModel(Models + BMD_STRIDE * 496)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
+        m = AsModel(Models + BMD_STRIDE * 410)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
+        m = AsModel(Models + BMD_STRIDE * 566)->Meshs; if (m) m[sizeof(ClothModelMesh) * 2] = 1;
+        m = AsModel(Models + BMD_STRIDE * 470)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
+        m = AsModel(Models + BMD_STRIDE * 956)->Meshs; if (m) m[sizeof(ClothModelMesh) * 1] = 1;
     }
 }

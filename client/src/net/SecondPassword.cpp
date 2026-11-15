@@ -262,7 +262,7 @@ unsigned int __cdecl SecondPassword_Handler(void)
                         // Abrir: el PIN se acaba de tipear y el codigo personal
                         // sale del campo de texto.
                         pw = (unsigned short)atoi(DAT_07ea9814);
-                        NetText::ToServer(pkt + 6, 10, (const char*)DAT_07db8710);
+                        NetText::ToServer(pkt + 6, 10, (const char*)InputText);
                     } else {
                         // Poner (2): la contrasena la dejo el modo 5.
                         // Sacar (3): el server no la mira.

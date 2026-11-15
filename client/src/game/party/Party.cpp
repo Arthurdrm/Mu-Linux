@@ -410,7 +410,7 @@ void Guild_CharSelectResult(BYTE* pkt)
         memset(GoldenArcherLuckyNumberText, 0, sizeof(GoldenArcherLuckyNumberText));
         ClearInput(0);                // reset char select
         InputTextMax = 0xC;           // login sub-state → CharSelectInit
-        DAT_00559c84  = 0;
+        InputEnable  = 0;
         InputNumber  = 1;
         GoldInputEnable  = 0;
         InputGold  = 0;

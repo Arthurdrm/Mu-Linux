@@ -26,7 +26,7 @@ static inline void *ClothNew(void) {
 // DESVIACION: recrear su geometría SIM antes del alta, sin heredar vértices del draw.
 static void PrepareMeshClothVertices(CHARACTER* entity) {
     OBJECT &owner=*AsObject(entity);
-    void *model=static_cast<void*>(AsModel(DAT_05828d58)+owner.Type);
+    void *model=static_cast<void*>(AsModel(Models)+owner.Type);
     EquipmentModelContext context(model);
     float *bones=owner.EnableBoneMatrix ? (float *)owner.BoneMatrices : (float *)g_BoneScratch;
     AsModel(model)->BodyHeight=0;
@@ -109,7 +109,7 @@ void CharacterCloth_Tick(CHARACTER* entity)
         float *bones = (float *)o.BoneMatrices;
         if (bones) memcpy(g_AttackEffectMatrix_04D, bones + 1152 / sizeof(float), sizeof(g_AttackEffectMatrix_04D));
         ++o.Type;
-        void *selectModel = static_cast<void*>(AsModel(DAT_05828d58) + o.Type);
+        void *selectModel = static_cast<void*>(AsModel(Models) + o.Type);
         char context[sizeof(BMD)];
         memcpy(context, selectModel, sizeof(context));
         ObjectPose_PrepareSimulation(AsObject(entity), 1);
@@ -183,15 +183,15 @@ void CharacterCloth_Tick(CHARACTER* entity)
         const short guildIndex = AsCharacter(cb)->GuildMarkIndex;
         if (guildIndex != -1) {
             const char* guildName = Guild_GetMarkName(guildIndex);
-            if (EnableSoccer && DAT_07abf5d8) {
-                const short heroGuild = AsCharacter(DAT_07abf5d8)->GuildMarkIndex;
+            if (EnableSoccer && Hero) {
+                const short heroGuild = AsCharacter(Hero)->GuildMarkIndex;
                 if (heroGuild != -1 &&
                     (strcmp(Guild_GetMarkName(heroGuild), guildName) == 0 ||
                      strcmp(GuildWarName, guildName) == 0)) {
                     bCape = true;
                 }
             }
-            if (DAT_05826d33 &&
+            if (SoccerObserver &&
                 (strcmp(SoccerTeamName[0], guildName) == 0 ||
                  strcmp(SoccerTeamName[1], guildName) == 0)) {
                 bCape = true;

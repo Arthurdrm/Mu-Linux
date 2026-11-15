@@ -29,7 +29,7 @@ HRESULT __cdecl PlayBuffer(int slot, const OBJECT* owner, BOOL loop) {
 MAIN = r'''
 void CallWalk(CHARACTER* character) { CALL_WALK; }
 std::uint64_t RunWalk(CHARACTER* character, BYTE* models, BYTE* items, unsigned displacement) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     DAT_055c9e44 = reinterpret_cast<std::uintptr_t>(items);
     DAT_07d78068 = DAT_055c9e44 + displacement * 64;
     Require(ItemAttribute_Base() == DAT_07d78068);

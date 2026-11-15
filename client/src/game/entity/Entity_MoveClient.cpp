@@ -24,7 +24,7 @@ void __stdcall MoveCharactersClient(void) {
 
     // Phase 2: Per-entity terrain flag update
     int offset = 0;
-    char* entBase = (char*)(uintptr_t)DAT_07abf5d0;
+    char* entBase = (char*)(uintptr_t)CharactersClient;
     do {
         char* ent = entBase + offset;
         // entity alive check: *(char *)&AsCharacter(ent)->Object.Live != 0, *(char *)&AsCharacter(ent)->Dead == 0, *(char *)&AsCharacter(ent)->Object.Kind != 8

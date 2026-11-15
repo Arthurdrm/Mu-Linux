@@ -66,7 +66,7 @@ void ObjectPose_PrepareSimulation(OBJECT* entity, char translate)
         Calc_RenderObject(entity, translate, 0);
         return;
     }
-    BMD* model = AsModel(DAT_05828d58) + o.Type;
+    BMD* model = AsModel(Models) + o.Type;
     model->BodyHeight = 0.0f;
     float *bones = o.EnableBoneMatrix ? (float *)o.BoneMatrices : (float *)&DAT_06970a9c;
     ObjectPose_PrepareBones(entity, model, bones, translate);
@@ -337,16 +337,16 @@ void PrepareRange(void*,std::size_t begin,std::size_t end) {
 // consume copias validadas y conserva todas sus escrituras en el orden original.
 void ObjectPose_BeginBatch() {
     batchActive=false; geometryPose=nullptr; batchCount=0; jobs.clear();
-    if(SceneFlag!=5 || EditFlag==2 || !DAT_07abf5d0) return;
+    if(SceneFlag!=5 || EditFlag==2 || !CharactersClient) return;
     // Medición de lotes pequeños: con 4 poses la coordinación era más cara.
     // Contar trabajo antes de copiar fuentes y reservar el equipo para lotes útiles.
     int visible=0;
     std::size_t vertexWork=0,boneWork=0;
     for(int slot=0;slot<400;++slot) {
-        const auto* o=AsObject(DAT_07abf5d0+slot*sizeof(CHARACTER));
-        if(!o->Live || (!o->Visible && (const void*)o!=(const void*)DAT_07abf5d8) ||
+        const auto* o=AsObject(CharactersClient+slot*sizeof(CHARACTER));
+        if(!o->Live || (!o->Visible && (const void*)o!=(const void*)Hero) ||
            o->Alpha<_DAT_005524f8 || o->Type<0 || (std::size_t)o->Type>=ResourceTables::ModelCount()) continue;
-        const BMD* model=AsModel(DAT_05828d58)+o->Type;
+        const BMD* model=AsModel(Models)+o->Type;
         if(model->NumActions<=0) continue;
         ++visible;
         const int bones=model->NumBones,count=model->NumMeshs;
@@ -364,10 +364,10 @@ void ObjectPose_BeginBatch() {
     ++batchEpoch;
     for(std::size_t slot=0;slot<prepared.size();++slot) {
         auto& p=prepared[slot]; p.valid=false; p.geometry=false;
-        auto* o=AsObject(DAT_07abf5d0+slot*sizeof(CHARACTER));
-        if(!o->Live || (!o->Visible && (void*)o!=(void*)DAT_07abf5d8) || o->Alpha<_DAT_005524f8) continue;
+        auto* o=AsObject(CharactersClient+slot*sizeof(CHARACTER));
+        if(!o->Live || (!o->Visible && (void*)o!=(void*)Hero) || o->Alpha<_DAT_005524f8) continue;
         if(o->Type<0 || (std::size_t)o->Type>=ResourceTables::ModelCount()) continue;
-        const BMD* model=AsModel(DAT_05828d58)+o->Type;
+        const BMD* model=AsModel(Models)+o->Type;
         const int count=model->NumBones;
         if(count<=0 || count>200 || model->NumActions<=0 ||
            (uintptr_t)model->Bones<0x10000u || (uintptr_t)model->Actions<0x10000u) continue;
@@ -451,7 +451,7 @@ void ObjectPose_EndBatch() { batchActive=false; geometryPose=nullptr; }
 static bool ReuseBones(OBJECT* entity,void* model,float* bones,char translate) {
     geometryPose=nullptr;
     if(!batchActive || translate!=1) return false;
-    const auto base=(uintptr_t)DAT_07abf5d0, address=(uintptr_t)entity;
+    const auto base=(uintptr_t)CharactersClient, address=(uintptr_t)entity;
     if(address<base || address-base>=400*sizeof(CHARACTER) || (address-base)%sizeof(CHARACTER)) return false;
     auto& p=prepared[(address-base)/sizeof(CHARACTER)];
     if(!p.valid || p.originalModel!=model) return false;

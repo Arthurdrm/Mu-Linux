@@ -50,11 +50,11 @@ std::uint64_t epoch=0;
 bool published=false;
 bool Ready() {
     return SceneFlag==2 ? InitLogIn!=0 : SceneFlag==4 ?
-        CharSelectSceneInitialized && DAT_05826cb0>50 :
+        CharSelectSceneInitialized && CurrentProtocolState>50 :
         SceneFlag==5 && EnableMainRender && LoadingWorld<=30;
 }
 bool Context() {
-    return Ready() && scene==SceneFlag && world==gMapManager.GetCurrentMap() && models==DAT_05828d58;
+    return Ready() && scene==SceneFlag && world==gMapManager.GetCurrentMap() && models==Models;
 }
 Identity ReadIdentity(const Pool& pool, int index) {
     Identity id;
@@ -85,7 +85,7 @@ void RenderFxSnapshots_BeginStep() {
             if (id.live) memcpy(pool.previous.data()+index*pool.bytes,pool.base+index*pool.bytes,pool.bytes);
         }
     }
-    scene=SceneFlag; world=gMapManager.GetCurrentMap(); models=DAT_05828d58;
+    scene=SceneFlag; world=gMapManager.GetCurrentMap(); models=Models;
 }
 void RenderFxSnapshots_EndStep() {
     const bool context=Context();

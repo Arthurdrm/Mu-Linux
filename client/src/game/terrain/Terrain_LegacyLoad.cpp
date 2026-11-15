@@ -206,7 +206,7 @@ void __cdecl ClearItems(void) {
 // Frees tile model slots (0xf604..0x11710), then frees sound channels 0x78..0xa9.
 void __cdecl DeleteNpcs(void) {
     for (int slot = 0x14f; slot < 0x17c; ++slot)
-        BMD__Release(AsModel(DAT_05828d58) + slot);
+        BMD__Release(AsModel(Models) + slot);
     for (int i = 0x78; i < 0xaa; i++) Sound_ReleaseBuffer(i); // IDA: FUN_00404AD0
 }
 
@@ -214,7 +214,7 @@ void __cdecl DeleteNpcs(void) {
 // Frees water model slots (0xc648..0xf604), then frees sound channels 0xaa..0x1a3.
 void __cdecl DeleteMonsters(void) {
     for (int slot = 0x10e; slot < 0x14f; ++slot)
-        BMD__Release(AsModel(DAT_05828d58) + slot);
+        BMD__Release(AsModel(Models) + slot);
     for (int i = 0xaa; i < 0x1a4; i++) Sound_ReleaseBuffer(i); // IDA: FUN_00404AD0
 }
 
@@ -241,11 +241,11 @@ void __cdecl OpenWorldModels(void) {
         case MAP_EXILE:
             break;
         case MAP_ARENA:
-            *(unsigned char *)((uintptr_t)AsModel(DAT_05828d58 + BMD_STRIDE * 178)->Actions + 0x1a) = 1;
+            *(unsigned char *)((uintptr_t)AsModel(Models + BMD_STRIDE * 178)->Actions + 0x1a) = 1;
             break;
         case MAP_ATLANS:
             for (int iVar7 = 0xbc; iVar7 < 0x69c; iVar7 += 0xbc)
-                *(unsigned char *)((intptr_t)AsModel(DAT_05828d58 + BMD_STRIDE * (181 + iVar7 / 0xbc))->Actions + 10) = 1;
+                *(unsigned char *)((intptr_t)AsModel(Models + BMD_STRIDE * (181 + iVar7 / 0xbc))->Actions + 10) = 1;
             break;
         case MAP_TARKAN:
             break;
@@ -319,7 +319,7 @@ void __cdecl OpenWorldModels(void) {
         // Los IDs de modelo son los del binario; los nombres son los .bmd del
         // pack (jar_01.smd es Well01.bmd, por ejemplo).
         for (const auto& object : info.objects) {
-            char* slotPtr = (char*)((uintptr_t)DAT_05828d58 + (uintptr_t)BMD_STRIDE * object.first);
+            char* slotPtr = (char*)((uintptr_t)Models + (uintptr_t)BMD_STRIDE * object.first);
             if (AsModel(slotPtr)->NumBones > 0) continue;  // already loaded (e.g. SMD worked)
             AccessModel(object.first, objectDir, object.second.c_str(), -1);
         }
@@ -354,14 +354,14 @@ void __cdecl OpenWorldModels(void) {
             OpenTexture(i, textureDir, 0x2600, '\x01');
         // Map-specific post-load fixups
         if (map == MAP_DUNGEON)
-            *(unsigned int *)((uintptr_t)AsModel(DAT_05828d58 + BMD_STRIDE * 40)->Actions + sizeof(ModelAnimationAction) + 4) = 0x3ecccccd; // 0.4f
+            *(unsigned int *)((uintptr_t)AsModel(Models + BMD_STRIDE * 40)->Actions + sizeof(ModelAnimationAction) + 4) = 0x3ecccccd; // 0.4f
         else if (map == MAP_TARKAN) {
-            *(unsigned char *)(DAT_05828d58 + BMD_STRIDE * 11 + 0x88 + BMD_FIELD_SHIFT) = 0;
-            *(unsigned char *)(DAT_05828d58 + BMD_STRIDE * 12 + 0x88 + BMD_FIELD_SHIFT) = 0;
-            *(unsigned char *)(DAT_05828d58 + BMD_STRIDE * 13 + 0x88 + BMD_FIELD_SHIFT) = 0;
-            *(unsigned char *)(DAT_05828d58 + BMD_STRIDE * 73 + 0x88 + BMD_FIELD_SHIFT) = 0;
-            *(unsigned char *)(DAT_05828d58 + BMD_STRIDE * 75 + 0x88 + BMD_FIELD_SHIFT) = 0;
-            *(unsigned char *)(DAT_05828d58 + BMD_STRIDE * 79 + 0x88 + BMD_FIELD_SHIFT) = 0;
+            *(unsigned char *)(Models + BMD_STRIDE * 11 + 0x88 + BMD_FIELD_SHIFT) = 0;
+            *(unsigned char *)(Models + BMD_STRIDE * 12 + 0x88 + BMD_FIELD_SHIFT) = 0;
+            *(unsigned char *)(Models + BMD_STRIDE * 13 + 0x88 + BMD_FIELD_SHIFT) = 0;
+            *(unsigned char *)(Models + BMD_STRIDE * 73 + 0x88 + BMD_FIELD_SHIFT) = 0;
+            *(unsigned char *)(Models + BMD_STRIDE * 75 + 0x88 + BMD_FIELD_SHIFT) = 0;
+            *(unsigned char *)(Models + BMD_STRIDE * 79 + 0x88 + BMD_FIELD_SHIFT) = 0;
         }
     }
 

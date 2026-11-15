@@ -65,7 +65,7 @@ void __cdecl ItemDrop_RenderGroundWeapon(intptr_t o) {
     if (_DAT_00552488 >= (float)AsObject(o)->LifeTime) return;
 
     const intptr_t owner = (intptr_t)((OBJECT*)(uintptr_t)(o))->Owner;
-    if (!owner || !DAT_05828d58 || !DAT_07abf5d8) return;
+    if (!owner || !Models || !Hero) return;
 
     const int model_id = *(unsigned char*)(owner + 136) + ITEM_MODEL_BASE;
     if (model_id < 0 || model_id >= 1024) return;
@@ -73,13 +73,13 @@ void __cdecl ItemDrop_RenderGroundWeapon(intptr_t o) {
     const auto *sample=MaterialVisuals_ObjectSample((void *)o,model_id);
     MaterialVisualScope material(sample);
     const float alpha = sample ? sample->alpha : AsObject(o)->Alpha;
-    BYTE* mdl = (BYTE*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * model_id;
+    BYTE* mdl = (BYTE*)(uintptr_t)Models + BMD_STRIDE * model_id;
 
     // Volcar posicion / accion / clase al slot del modelo compartido.
     *(int*) (mdl + 108 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[0];
     *(int*) (mdl + 112 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[1];
     *(int*) (mdl + 116 + BMD_FIELD_SHIFT) = *(int *)&AsObject(o)->Position[2];
-    *(BYTE*)(mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7);
+    *(BYTE*)(mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7);
     *(BYTE*)(mdl + 160 + BMD_FIELD_SHIFT) = sample ? sample->action : AsObject(o)->CurrentAction;
 
     const short savedType = AsObject(o)->Type;
@@ -169,7 +169,7 @@ void __cdecl Effect_SkillImpactBurst(int param_1, intptr_t param_2, float* param
 void __cdecl CreateBlood(intptr_t o) {
     WORD wType = *(WORD*)(o + 0x02);  // o->Type
     // Models[type].Data + 0x54 = bone index for blood attachment point
-    int boneIdx = *(int*)(DAT_05828d58 + (short)wType * BMD_STRIDE + 0x54 + BMD_FIELD_SHIFT);
+    int boneIdx = *(int*)(Models + (short)wType * BMD_STRIDE + 0x54 + BMD_FIELD_SHIFT);
     if (boneIdx == -1) return;
 
     if (wType == 0x11d) {
@@ -210,6 +210,6 @@ void __cdecl CreateBlood(intptr_t o) {
     // BMD::TransformPosition(Models + type, o->BoneTransform2[boneIdx], localPos, worldPos, Translate)
     // BoneTransform2 is a pointer at o+0x114; each bone matrix is float[3][4] = 48 bytes
     float* boneMatrix = (float*)((intptr_t)((OBJECT*)(uintptr_t)(o))->BoneMatrices + boneIdx * 48);
-    void* model = (void*)(DAT_05828d58 + (short)wType * BMD_STRIDE);
+    void* model = (void*)(Models + (short)wType * BMD_STRIDE);
     BMD__TransformPosition(model, (float(*)[4])boneMatrix, localPos, worldPos, true);
 }

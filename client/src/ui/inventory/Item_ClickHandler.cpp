@@ -535,7 +535,7 @@ extern "C" void __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int grid
         536, 604, 672, 740, 808, 876, 944, 1012, 1080, 1148, 1216, 1284
     };
 
-    BYTE* CM = (BYTE*)DAT_07cf1ffc;
+    BYTE* CM = (BYTE*)CharacterMachine;
     if (CM == nullptr) return;
     BYTE* wearSlot = CM + 68 * slot_idx + 536;
     if (*(WORD*)wearSlot != 0xFFFF) {
@@ -549,7 +549,7 @@ extern "C" void __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int grid
         *(DWORD*)(wearSlot + 56) = 0xFFFFFFFFu;
 
         // Ajustes del puntero al héroe para los slots de equipo conocidos.
-        BYTE* heroPtr = (BYTE*)DAT_07abf5d8;
+        BYTE* heroPtr = (BYTE*)Hero;
         if (heroPtr) {
             switch (slot_idx) {
             case 0:  // Lefthand weapon
@@ -775,7 +775,7 @@ void __cdecl InventoryGrid_Tick(char* origin_x, int origin_y, short* inv_base,
                     BYTE pkt[4];
                     pkt[0] = 0x34;
                     pkt[1] = (BYTE)slotIdx;
-                    pkt[2] = (BYTE)DAT_07eaa138;    // RepairEnable (0=NPC, 1=self)
+                    pkt[2] = (BYTE)RepairEnable;    // RepairEnable (0=NPC, 1=self)
                     // HackPacketCheck.txt índice 52 (=0x34) → Encrypt=1: el
                     // server exige frame C3. Mandarlo C1 daba "Packet
                     // encryption error" → CloseClient (la desconexión al

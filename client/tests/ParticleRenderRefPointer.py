@@ -11,7 +11,7 @@ from legacy_fields import lower_names
 SERVICES=r'''
 using uint=unsigned;
 using byte=unsigned char;
-uintptr_t DAT_05828d58,DAT_07abf5d8;
+uintptr_t Models,Hero;
 char* DAT_07abf5f0;PARTICLE_TYPES
 #ifdef PARTICLE_DEFINED
 PARTICLE* Particles;
@@ -37,7 +37,7 @@ std::uint64_t Run(BYTE* ownerMem,BYTE* particleMem,BYTE* heroMem,BYTE* modelMem)
   g_ParticleOwner[0]=reinterpret_cast<std::uintptr_t>(owner);std::memcpy(owner+2,&type,2);std::memcpy(slot+4,&kind,4);std::memcpy(slot+8,&subtype,4);
   for(unsigned i=0;i<3;++i){std::uint32_t bits=(trial*0x10101u+i*0x220033u)^0x7f800000u;std::memcpy(owner+16+4*i,&bits,4);}
   const int index=subtype%2;hero[628-24]=static_cast<BYTE>((trial*7)%5);hero[628]=static_cast<BYTE>((trial*11)%5);hero[628+24]=static_cast<BYTE>((trial*13)%5);const unsigned bone=hero[628+index*24];
-  DAT_05828d58=reinterpret_cast<uintptr_t>(models);DAT_07abf5d8=reinterpret_cast<uintptr_t>(hero);expectedModel=models+type*188;expectedOutput=slot+16;expectedMatrix=reinterpret_cast<float*>(matrix+bone*48);expectedY=kind==0x4d0?-120.0f:0.0f;calls=0;
+  Models=reinterpret_cast<uintptr_t>(models);Hero=reinterpret_cast<uintptr_t>(hero);expectedModel=models+type*188;expectedOutput=slot+16;expectedMatrix=reinterpret_cast<float*>(matrix+bone*48);expectedY=kind==0x4d0?-120.0f:0.0f;calls=0;
   BYTE ownerBefore[768],heroBefore[768],particleExpected[160],modelExpected[6656];std::memcpy(ownerBefore,ownerMem,768);std::memcpy(heroBefore,heroMem,768);std::memcpy(particleExpected,particleMem,160);std::memcpy(modelExpected,modelMem,6656);
   std::memcpy(modelExpected+(expectedModel-modelMem)+108,owner+16,12);for(unsigned i=0;i<3;++i){const float value=float(31+7*i);std::memcpy(particleExpected+16+16+4*i,&value,4);}
   Invoke(slot);Require(calls==1 && std::memcmp(ownerBefore,ownerMem,768)==0 && std::memcmp(heroBefore,heroMem,768)==0 && std::memcmp(particleExpected,particleMem,160)==0 && std::memcmp(modelExpected,modelMem,6656)==0);

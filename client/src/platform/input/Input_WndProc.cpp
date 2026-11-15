@@ -177,11 +177,11 @@ void Input_OnEvent(const Platform::InputEvent& event)
         // "la tecla se perdió" de "la tecla se ignoró".
 
         // Clampea el slot a [0,9] para evitar OOB si el índice por slot es basura.
-        DWORD  slot = DAT_07e11d78 & 0x0F;
+        DWORD  slot = InputIndex & 0x0F;
         if (slot > 9) slot = 0;
         DWORD* lens = (DWORD*)DAT_07d780a8;
         int    len  = (int)lens[slot];
-        char*  buf  = (char*)DAT_07db8710 + slot * 0x100;
+        char*  buf  = (char*)InputText + slot * 0x100;
 
         if (!DAT_055ca019) {
             // Limpia el buffer de composición del IME para este slot (stride 4)
@@ -199,8 +199,8 @@ void Input_OnEvent(const Platform::InputEvent& event)
             break;
         }
         if (event.character == 9) {           // Tab — rotate active slot
-            if (DAT_00559c84 && InputNumber > 1) {
-                DAT_07e11d78 = (DAT_07e11d78 + 1) % InputNumber;
+            if (InputEnable && InputNumber > 1) {
+                InputIndex = (InputIndex + 1) % InputNumber;
                 PlayBuffer(0x19, 0, 0);   // PlayBuffer(25) — click sfx
             }
             break;
@@ -213,8 +213,8 @@ void Input_OnEvent(const Platform::InputEvent& event)
             //   if (GoldInputEnable) { InputGold = atoi(InputText[0]); ... }
             // Así el diálogo de zen del baúl sabe cuánto tecleó el jugador.
             if (GoldInputEnable) {
-                DAT_07e11d78 = 0;                     // InputIndex = 0
-                char* goldBuf = (char*)DAT_07db8710;  // InputText[0]
+                InputIndex = 0;                     // InputIndex = 0
+                char* goldBuf = (char*)InputText;  // InputText[0]
                 goldBuf[0xFF] = 0;
                 // IDA: WndProc (0x004149D0).
                 // DESVIACION (fix del DLL, Patchs.cpp 0x004EB8C7): validar diez dígitos y rango antes de convertir Zen.
@@ -232,7 +232,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
                 // UI_InGameMenu case 116 leyendo DAT_055ca038 el frame siguiente).
                 memset(goldBuf, 0, 0x100);
                 lens[0] = 0;
-                DAT_00559c84 = 0;                     // InputEnable = 0
+                InputEnable = 0;                     // InputEnable = 0
                 break;
             }
 
@@ -250,9 +250,9 @@ void Input_OnEvent(const Platform::InputEvent& event)
             if (SceneFlag == 5 && GuildInputEnable == 0 && !guildDeleteCodeDialog) {
                 bool empty = (lens[slot] == 0);
                 if (empty) {
-                    if (DAT_00559c84) {
+                    if (InputEnable) {
                         // Cierra el input de chat.
-                        DAT_00559c84 = 0;
+                        InputEnable = 0;
                     } else {
                         // Abre el input de chat — inicializa los campos de texto.
                         // Per IDA Game.cpp:4326-4327: InputTextMax[0]=42, [1]=10.
@@ -266,33 +266,33 @@ void Input_OnEvent(const Platform::InputEvent& event)
                         InputTextHide[0] = 0;
                         InputNumber = 2;                       // InputNumber = 2 (chat + whisper target)
                         // GoldInputEnable = 0 — ya está en 0 en el juego normal
-                        DAT_00559c84 = 1;                       // InputEnable = 1
-                        DAT_07e11d78 = 0;                       // InputIndex = 0
+                        InputEnable = 1;                       // InputEnable = 1
+                        InputIndex = 0;                       // InputIndex = 0
                         ChatHistory::ResetBrowse();
                     }
                     PlayBuffer(0x19, 0, 0);   // click sfx
-                } else if (DAT_00559c84) {
+                } else if (InputEnable) {
                     // Con texto + chat abierto → envía la línea (slot 0), limpia y
                     // cierra. Refleja las líneas 2046-2120 del WndProc de IDA condensadas
                     // en un solo camino (el original de IDA separa /whisper +
                     // /pvp + comandos de GM, pero por ahora los reenviamos al
                     // loop de canales de Chat_InputTick; el envío crudo anda
                     // bien para el caso del chat normal).
-                    char* line = (char*)DAT_07db8710 + slot * 0x100;
+                    char* line = (char*)InputText + slot * 0x100;
                     // DESVIACION (Fase 4): historial del campo del mensaje (flechas).
                     if (slot == 0) ChatHistory::Push(line);
                     // "/N texto" guarda la macro N en vez de enviarse (desviacion).
                     if (Chat_TryAssignMacro(line)) {
                         memset(line, 0, 0x100);
                         lens[slot] = 0;
-                        DAT_00559c84 = 0;
+                        InputEnable = 0;
                         break;
                     }
                     // IDA WndProc L2265-2268: antes del SendChat (no en el
                     // susurro) revisa los gestos, salvo montado fuera de zona segura.
                     if (((const char*)&DAT_07db8810)[0] == '\0') {
-                        WORD helper = *(WORD*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Helper.Type;
-                        if ((helper != 818 && helper != 819) || *(char*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone)
+                        WORD helper = *(WORD*)&((CHARACTER*)(uintptr_t)(Hero))->Helper.Type;
+                        if ((helper != 818 && helper != 819) || *(char*)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone)
                             CheckChatText(line);
                     }
                     Chat_SendChatLine(line);
@@ -303,7 +303,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
                     // Cierra el chat (coincide con el comportamiento "enviar + autocerrar";
                     // la queja del usuario era que Enter-con-texto NO
                     // close).
-                    DAT_00559c84 = 0;
+                    InputEnable = 0;
                     PlayBuffer(0x19, 0, 0);   // click sfx
                 }
             }
@@ -318,7 +318,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
         // sub_4EB5D0) y con GoldInputEnable sólo se aceptan dígitos '0'..'9'.
         const bool guildDeleteCodeDialog =
             ErrorMessage == 126 || ErrorMessage == 152;
-        if (DAT_00559c84 || GoldInputEnable || GuildInputEnable || guildDeleteCodeDialog) {
+        if (InputEnable || GoldInputEnable || GuildInputEnable || guildDeleteCodeDialog) {
             // DESVIACION (Fase 4): Ctrl+V pega el portapapeles carácter por
             // carácter, con los mismos filtros y topes que el tipeo.
             if (event.character == 0x16) {
@@ -359,7 +359,7 @@ static bool Input_AppendCharacter(DWORD slot, uint32_t c)
 
     DWORD* lens = (DWORD*)DAT_07d780a8;
     const int len = (int)lens[slot];
-    char* buf = (char*)DAT_07db8710 + slot * 0x100;
+    char* buf = (char*)InputText + slot * 0x100;
 
     // InputTextMax[8] @ 0x00559c94 — leído como int desde el array tipado.
     int maxLen = _InputTextMaxArr[slot];
@@ -392,7 +392,7 @@ extern "C" bool Input_AppendText(DWORD slot, const char* utf8)
         const size_t n = TextEngine::Decode(rest, 0, cp);
         if (!n || !Input_AppendCharacter(slot, (uint32_t)cp)) {
             lens[slot] = previous;
-            ((char*)DAT_07db8710)[slot * 0x100 + previous] = 0;
+            ((char*)InputText)[slot * 0x100 + previous] = 0;
             return false;
         }
         rest.remove_prefix(n);

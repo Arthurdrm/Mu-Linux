@@ -29,7 +29,7 @@ MAIN = r'''
 void CallDie(CHARACTER* character) { CALL_DIE; }
 void CallWrapper(CHARACTER* character) { CALL_WRAPPER; }
 std::uint64_t RunDie(CHARACTER* character, BYTE* models, bool wrapper) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     g_EnableSound = TRUE; activeCharacter = character;
     for(int slot = 0; slot < 420; ++slot) { MaxBufferChannel[slot] = 4; Enable3DSound[slot] = true; }
     digest = 14695981039346656037ull;

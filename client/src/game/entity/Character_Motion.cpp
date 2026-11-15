@@ -210,10 +210,10 @@ LABEL_129:
         short v53 = AsCharacter(c)->Object.Type;
         if (v53 != 390 || (AsCharacter(c)->Object.SubType >= 206 && AsCharacter(c)->Object.SubType <= 208)) {
             // Models[v53].SoundIdle (offset 170)
-            short modSnd = *(short*)((char*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * v53 + 170 + BMD_FIELD_SHIFT);
+            short modSnd = *(short*)((char*)(uintptr_t)Models + BMD_STRIDE * v53 + 170 + BMD_FIELD_SHIFT);
             if (modSnd != (short)0xFFFF) {
                 int v55 = rand() % 2;
-                short s = *(short*)((char*)(uintptr_t)DAT_05828d58
+                short s = *(short*)((char*)(uintptr_t)Models
                                     + BMD_STRIDE * v53 + 2 * v55 + 170 + BMD_FIELD_SHIFT);
                 // PlayBuffer(s + 170, c, 0) — sound playback (PlayBuffer en nuestra port)
                 PlayBuffer(s + 170, AsObject(c), 0);
@@ -438,7 +438,7 @@ label_119:
         return;
     }
     // Sonido de movimiento aleatorizado (1/64 para el jugador, 1/16 para el resto)
-    if (param_1 == AsCharacter(DAT_07abf5d8)) {
+    if (param_1 == AsCharacter(Hero)) {
         if ((rand() & 0x3f) != 0) return;
     } else {
         if ((rand() & 0xf) != 0) return;
@@ -447,7 +447,7 @@ label_119:
     if (etype != 0x186 || (AsCharacter(param_1)->Object.SubType > 0xcd && AsCharacter(param_1)->Object.SubType < 0xd1)) {
         if (AsCharacter(param_1)->Object.SubType > 0xcd && AsCharacter(param_1)->Object.SubType < 0xd1)
             PlayBuffer(0x5d, AsObject(param_1), 0);
-        if (*(short *)(DAT_05828d58 + 0xaa + BMD_FIELD_SHIFT + etype * BMD_STRIDE) != -1) {
+        if (*(short *)(Models + 0xaa + BMD_FIELD_SHIFT + etype * BMD_STRIDE) != -1) {
             // IDA 0x443930 L288-289:
             //     v19 = rand() % 2;
             //     PlayBuffer(*(short*)(Models + 2*(v19 + 94*type) + 170) + 170, c, 0);
@@ -456,7 +456,7 @@ label_119:
             // leería campos ajenos del struct de modelo.
             int v19 = rand() % 2;
             int iVar9 = 0;
-            PlayBuffer(AsModel(DAT_05828d58 + etype * BMD_STRIDE)->Sounds[v19] + 0xaa, AsObject(param_1), iVar9);
+            PlayBuffer(AsModel(Models + etype * BMD_STRIDE)->Sounds[v19] + 0xaa, AsObject(param_1), iVar9);
         }
     }
 }
@@ -503,8 +503,8 @@ void __cdecl MoveCharacterPosition(CHARACTER* character) {
 void Hero_ApplyCatalogEquipment(CHARACTER* character)
 {
     BYTE* c = reinterpret_cast<BYTE*>(character);
-    if (!DAT_07cf1ffc || *(short*)(c + 2) != 390) return;
-    const BYTE* v7 = static_cast<const BYTE*>(DAT_07cf1ffc) + 536;
+    if (!CharacterMachine || *(short*)(c + 2) != 390) return;
+    const BYTE* v7 = static_cast<const BYTE*>(CharacterMachine) + 536;
     static const int kWearOff[9] = { 136, 204, 272, 340, 408, 0, 68, 476, 544 };
     for (int part = 0; part < 9; ++part)
         gContentCatalog.SetEntityPart(c, part, *(short*)(v7 + kWearOff[part]));
@@ -536,7 +536,7 @@ void __cdecl SetCharacterClass(CHARACTER* character) {
     BYTE* c = reinterpret_cast<BYTE*>(character);
     if (AsCharacter(c)->Object.Type != 390) return;   // 390 = 0x186 = local player
 
-    char* cd = (char*)DAT_07cf1ffc;
+    char* cd = (char*)CharacterMachine;
     BYTE* v7 = reinterpret_cast<BYTE*>(cd) + 536;   // matches IDA: CharacterMachine + 536
 
     // ── Primary cluster (4 equipment slots → entity offsets 624/648/672/696) ──
@@ -982,7 +982,7 @@ LABEL_41:
             }
         }
         // Non-player or player[206-208]: model action sound at +178
-        short modSnd = *(short*)((char*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * v14 + 178 + BMD_FIELD_SHIFT);
+        short modSnd = *(short*)((char*)(uintptr_t)Models + BMD_STRIDE * v14 + 178 + BMD_FIELD_SHIFT);
         if (modSnd != -1) {
             PlayBuffer(modSnd + 170, AsObject(c), 0);
         }
@@ -1035,7 +1035,7 @@ void __cdecl MoveCharacter(intptr_t p1)
     // `BoneMatrix[3 * bone]`.  No usar un buffer local: los huesos que
     // BMD_Animation no escribe quedarian con basura de stack.
     float (* const BoneMatrix)[3][4] = (float (*)[3][4])g_BoneScratch;
-    intptr_t   v422 = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)DAT_05828d58;  // model slot
+    intptr_t   v422 = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)Models;  // model slot
     bool  bEventNpc = false;
     intptr_t Owner = 0;
     intptr_t v390  = 0;
@@ -1328,7 +1328,7 @@ void __cdecl MoveCharacter(intptr_t p1)
 
     // L818-839: bone-particle effect (o+404 = effect counter)
     if (*(BYTE*)&((OBJECT*)(uintptr_t)(o))->HurtByOneToOne) {
-        intptr_t This = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)DAT_05828d58;
+        intptr_t This = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)Models;
         memset(p1f, 0, sizeof(p1f));
         for (intptr_t kk = 0; kk < *(short*)(This + 34); ++kk) {
             intptr_t v401 = reinterpret_cast<ModelAnimationBone*>(AsModel(This)->Bones)[kk].Parent;
@@ -1960,7 +1960,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
     if (!entity_ptr) return;
 
     // Model slot = DAT_05828d58 + entity_type * 0xbc
-    void *model = (void *)(DAT_05828d58 + (int)AsCharacter(entity_ptr)->Object.Type * BMD_STRIDE);
+    void *model = (void *)(Models + (int)AsCharacter(entity_ptr)->Object.Type * BMD_STRIDE);
 
     // If model has no action data: copy cached transform params to render slots
     if (*(short *)(static_cast<BYTE*>(model) + 0x26) == 0) {
@@ -2027,7 +2027,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
         if (*(unsigned short *)&AsCharacter(entity_ptr)->Object.Type != 390) {
             MoveHead(AsCharacter(entity_ptr));
         }
-        if (entity_ptr != (intptr_t)DAT_07abf5d8 &&
+        if (entity_ptr != (intptr_t)Hero &&
             !AsCharacter(entity_ptr)->Dead && !(rand() % 32)) {
             float *headTarget = (float *)(entity_ptr + 52);
             headTarget[0] = (float)(rand() % 128 - 64);
@@ -2502,7 +2502,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
     // 004520C0 L1383-1396: los pasos del jugador local se eligen según las dos
     // animation-frame thresholds, once per walk/run cycle.
     if (*(unsigned short *)&AsCharacter(entity_ptr)->Object.Type == 390 &&
-        entity_ptr == (intptr_t)DAT_07abf5d8) {
+        entity_ptr == (intptr_t)Hero) {
         const unsigned char action = AsCharacter(entity_ptr)->Object.CurrentAction;
         if ((action >= 13 && action <= 33) || action == 79 || action == 80) {
             const float frame = AsCharacter(entity_ptr)->Object.AnimationFrame;
@@ -2532,7 +2532,7 @@ void __cdecl MoveMonsterClient(CHARACTER* character, OBJECT* object)
     BYTE* param_2 = reinterpret_cast<BYTE*>(object);
 
     // Sale si esto es el centinela de la entidad del jugador
-    if (character == AsCharacter(DAT_07abf5d8)) return;
+    if (character == AsCharacter(Hero)) return;
 
     // 00454CD0: el flag de teleport/altura tiene una única rama de actualización visual
     // antes de suprimir el walker normal de camino. El tipo 272 se mantiene sobre

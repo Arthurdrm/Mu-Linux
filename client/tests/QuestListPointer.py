@@ -115,8 +115,8 @@ def harness(revision=None):
     for name in ("g_csQuest", "Hero", "CharacterAttribute"):
         prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
         prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
-    for name in ("DAT_07abf5d8",):
-        prefix += "\n" + re.search(rf"^#define\s+{name}\s+[^\n]+", header + read_source("src/structs.h", revision), re.M).group() + "\n"
+    for name in ("DAT_07abf5d8",):   # alias de revisiones viejas
+        prefix += "\n" + (lambda m: m.group() if m else "")(re.search(rf"^#define\s+{name}\s+[^\n]+", header + read_source("src/structs.h", revision), re.M)) + "\n"
     prefix += SERVICES
     lists = function(read_source("src/app/core/Runtime_Medium.cpp", revision), "CSQuest__setQuestLists")
     entry = function(read_source("src/app/core/Runtime_Small.cpp", revision), "CSQuest__setQuestList")

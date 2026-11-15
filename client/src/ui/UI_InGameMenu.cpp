@@ -72,7 +72,7 @@ static void SaveOptionsToServer97k(void)
     BYTE opt[15];
     memset(opt, 0, sizeof(opt));
 
-    const int hero = (int)DAT_005616ac;                 // SelectedHero
+    const int hero = (int)SelectedHero;                 // SelectedHero
     if (hero >= 0 && hero <= 4) {
         const BYTE* keyMap = CA + 215 + (hero << 6);
         for (int slot = 0; slot < 64; ++slot) {
@@ -383,10 +383,10 @@ void __cdecl UI_InGameMenu(void)
             // IDA: sub_513C10 (0x00513C10).  PMSG_CHARACTER_DELETE_RECV =
             // [C1][54][F3][02][name:40][PersonalCode:10] (0.97.40); el nombre
             // sale del personaje elegido, rellenado con ceros.
-            const int hero = (int)DAT_005616ac;          // SelectedHero
-            DAT_005616ac = (DWORD)-1;
+            const int hero = (int)SelectedHero;          // SelectedHero
+            SelectedHero = (DWORD)-1;
             DAT_005615e0 = (DWORD)hero;                  // dword_5615E0
-            DAT_05826cb0 = 56;                           // CurrentProtocolState
+            CurrentProtocolState = 56;                           // CurrentProtocolState
             const int NAME = (int)NetText::CharacterNameSize;
             BYTE pkt[4 + NetText::CharacterNameSize + 10];
             memset(pkt, 0, sizeof(pkt));
@@ -394,20 +394,20 @@ void __cdecl UI_InGameMenu(void)
             pkt[1] = (BYTE)sizeof(pkt);
             pkt[2] = 0xF3;
             pkt[3] = 0x02;
-            if (hero >= 0 && DAT_07abf5d0) {
-                const char* name = EntityName::Get(DAT_07abf5d0 + hero * CHARACTER_STRIDE);
+            if (hero >= 0 && CharactersClient) {
+                const char* name = EntityName::Get(CharactersClient + hero * CHARACTER_STRIDE);
                 NetText::ToServer(pkt + 4, NAME, name);
             }
-            NetText::ToServer(pkt + 4 + NAME, 10, (const char*)DAT_07db8710);   // InputText[0]
+            NetText::ToServer(pkt + 4 + NAME, 10, (const char*)InputText);   // InputText[0]
             gNetwork.Send(pkt, sizeof(pkt));
         }
         // Las dos ramas terminan igual (sub_513C10 LABEL_32 / L2183-2187).
-        DAT_083a7c14 = 0x18;
+        LoginSubState = 0x18;
         DAT_083a7c18 = 0x15;
         PlayBuffer(0x1b, 0, 0);                        // PlayBuffer(27)
         if (yes) {
             ClearInput(1);
-            DAT_00559c84 = 0;                            // InputEnable
+            InputEnable = 0;                            // InputEnable
         }
         goto tail;
     }
@@ -442,7 +442,7 @@ void __cdecl UI_InGameMenu(void)
             Input_SetLimit(0, (int)NetText::ChatMessageSize - 1, 42);   // InputTextMax[0]
             InputNumber = 2;           // InputNumber
             GoldInputEnable = 0;           // GoldInputEnable
-            DAT_00559c84 = 0;           // InputEnable
+            InputEnable = 0;           // InputEnable
             MouseUpdateTime = 0;           // MouseUpdateTime
             MouseUpdateTimeMax = 6;           // MouseUpdateTimeMax
             InputGold = 0;
@@ -481,7 +481,7 @@ void __cdecl UI_InGameMenu(void)
         Input_SetLimit(0, (int)NetText::ChatMessageSize - 1, 42);
         InputNumber = 2;
         GoldInputEnable = 0;               // GoldInputEnable = 0
-        DAT_00559c84 = 0;               // InputEnable = 0
+        InputEnable = 0;               // InputEnable = 0
         InputGold = 0;               // InputGold = 0
         goto tail;
     }
@@ -598,7 +598,7 @@ void __cdecl UI_InGameMenu(void)
         pkt[1] = (BYTE)sizeof(pkt);
         pkt[2] = 0x53;
         NetText::ToServer(pkt + 3, NAME, &byte_7E91790[kGuildMemberRecordSize * memberIdx]);
-        NetText::ToServer(pkt + 3 + NAME, 10, (const char*)DAT_07db8710);
+        NetText::ToServer(pkt + 3 + NAME, 10, (const char*)InputText);
         gNetwork.SendC1(pkt, (int)sizeof(pkt));
         goto tail;
     }
@@ -883,10 +883,10 @@ void __cdecl UI_InGameMenu(void)
             pkt[2] = 0x83;
             pkt[3] = 1;
             memcpy(pkt + 4, &pin, 2);
-            NetText::ToServer(pkt + 6, 10, (const char*)DAT_07db8710);    // InputText[0]
+            NetText::ToServer(pkt + 6, 10, (const char*)InputText);    // InputText[0]
             gNetwork.SendC1(pkt, sizeof(pkt));
         }
-        memset(DAT_07db8710, 0, 10);                           // InputText[0][0..9]
+        memset(InputText, 0, 10);                           // InputText[0][0..9]
         *(DWORD*)DAT_07d780a8 = 0;                             // InputLength[0]
         goto tail;
     }
@@ -1011,7 +1011,7 @@ void __cdecl UI_InGameMenu(void)
         //  no son los del binario: 0x36 para el 119 y 0x30 para el 121.)
 
         case 0x7e:
-            memset(DAT_07db8710, 0, 0x100);
+            memset(InputText, 0, 0x100);
             *(DWORD*)DAT_07d780a8 = 0;
             DAT_07d552e4  = 0;
             // IDA consume MouseLButtonPush al cancelar. Estos dos latches son

@@ -178,7 +178,7 @@ uint __fastcall CSQuest_CheckRequestCondition(void *pThis, short *param_1, char 
                                 if (param_2 == '\0') {
                                     *(int *)(quest + 0x1c884) = *(int *)(puVar12 + 2);
                                 } else {
-                                    int iVar5 = ((int *)DAT_07cf1ffc)[0x152];
+                                    int iVar5 = ((int *)CharacterMachine)[0x152];
                                     int iVar6 = *(int *)(puVar12 + 2);
                                     *(int *)(quest + 0x1c884) = iVar6;
                                     if (iVar5 < iVar6) {
@@ -1694,7 +1694,7 @@ LABEL_85:
                     PlayBuffer(rand() % 2 + 40, AsObject(c), 0);
                 }
                 short modelType = AsCharacter(c)->Object.Type;
-                const BYTE* modelBase = reinterpret_cast<const BYTE*>(DAT_05828d58) + BMD_STRIDE * modelType;
+                const BYTE* modelBase = reinterpret_cast<const BYTE*>(Models) + BMD_STRIDE * modelType;
                 if (*(const unsigned short*)&((BMD*)(uintptr_t)(modelBase))->Sounds[2] != 0xFFFF) {
                     const BMD* soundModel = AsModel(modelBase);
                     PlayBuffer(soundModel->Sounds[2 + rand() % 2] + 170, AsObject(c), 0);
@@ -1706,7 +1706,7 @@ LABEL_85:
                 PlayBuffer(rand() % 2 + 40, AsObject(c), 0);
             }
             short modelType = AsCharacter(c)->Object.Type;
-            const BYTE* modelBase = reinterpret_cast<const BYTE*>(DAT_05828d58) + BMD_STRIDE * modelType;
+            const BYTE* modelBase = reinterpret_cast<const BYTE*>(Models) + BMD_STRIDE * modelType;
             if (*(const unsigned short*)&((BMD*)(uintptr_t)(modelBase))->Sounds[2] != 0xFFFF) {
                 const BMD* soundModel = AsModel(modelBase);
                 PlayBuffer(soundModel->Sounds[2 + rand() % 2] + 170, AsObject(c), 0);
@@ -1813,7 +1813,7 @@ void __cdecl SetPlayerShock(CHARACTER* c, int Hit)
         }
         if (etype != 284) {
             // Monster-table sound lookup: Models[etype].Sound[rand()%2]
-            const BYTE* modelsBase = reinterpret_cast<const BYTE*>(DAT_05828d58);
+            const BYTE* modelsBase = reinterpret_cast<const BYTE*>(Models);
             const short* sndTbl = reinterpret_cast<const short*>(modelsBase + BMD_STRIDE * etype + 174 + BMD_FIELD_SHIFT);
             if ((unsigned short)*sndTbl != 0xFFFF) {
                 int v6 = sndTbl[rand() % 2] + 170;
@@ -1845,7 +1845,7 @@ label_26:
 // Devuelve el índice de slot 0-399, o 400 si no lo encontró.
 int __cdecl FindCharacterIndex(int param_1)
 {
-    char *pcVar2 = (char*)(uintptr_t)DAT_07abf5d0;
+    char *pcVar2 = (char*)(uintptr_t)CharactersClient;
     for (int iVar1 = 0; iVar1 <= 399; iVar1++, pcVar2 += CHARACTER_STRIDE) {
         if (*pcVar2 != '\0' && *(short*)&((CHARACTER*)(uintptr_t)(pcVar2))->Key == (short)param_1)
             return iVar1;
@@ -1869,7 +1869,7 @@ int __cdecl FindCharacterIndex(int param_1)
 void __cdecl ChangeCharacterExt(int Key, BYTE *Equipment) {
     // DAT_07abf5d0 guarda la dirección base del array de entidades como entero.
     // 916 (0x394) = entity stride. Slot at DAT_07abf5d0 + 916*Key.
-    intptr_t c = DAT_07abf5d0 + CHARACTER_STRIDE * Key;
+    intptr_t c = CharactersClient + CHARACTER_STRIDE * Key;
     if (*(WORD *)&AsCharacter(c)->Object.Type != 390) return;
     // 0.97.20: el CharSet sólo lleva vanilla; el único agregado que viaja es
     // el ala custom (más abajo).

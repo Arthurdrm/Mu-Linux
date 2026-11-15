@@ -247,7 +247,7 @@ bool RunGuarded(const CaseArgs& a)
 
 int main()
 {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(g_models);
+    Models = reinterpret_cast<std::uintptr_t>(g_models);
     for (std::size_t i = 0; i < sizeof(g_bones) / 4; ++i) reinterpret_cast<float*>(g_bones)[i] = (float)(i % 13) * 0.5f;
     for (std::size_t i = 0; i < sizeof(g_textures) / 4; ++i) reinterpret_cast<float*>(g_textures)[i] = (float)(i % 17) + 1.0f;
     const int minType = 0, maxType = 1400, maxSub = 16, ticks = 6;
@@ -263,7 +263,7 @@ int main()
         ClearPool();
         std::memset(g_charMachine, 0, sizeof(g_charMachine));
         g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
-        DAT_07cf1ffc = g_charMachine;
+        CharacterMachine = g_charMachine;
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];
         const std::uint64_t total = g_hash;

@@ -96,9 +96,9 @@ void __cdecl UI_RenderInputField(int x, undefined4 y, int index)
     // four register pushes. This is ONE 256-byte array, not independent
     // local_100/local_fc/local_fa/auStack_f9 variables whose order MSVC can change.
     char text[256];
-    const char* input = DAT_07db8710[index];
+    const char* input = InputText[index];
     const char hide = DAT_07e113d8[index];
-    DAT_00559c78 = 0xffd2e6ff;
+    m_dwTextColor = 0xffd2e6ff;
     SetBackgroundTextColor = 0;
 
     if (hide == 1 || hide == 2) {
@@ -123,8 +123,8 @@ void __cdecl UI_RenderInputField(int x, undefined4 y, int index)
         g_TextExtent07E113D0.cx = width;
     ScaleGlobalTextSize();
 
-    if (index == DAT_07e11d78) {
-        const DWORD frame = DAT_07e11d2c;
+    if (index == InputIndex) {
+        const DWORD frame = InputFrame;
         if ((frame & 1) == 0) {
             // IDA 0x47F25B: lea esi, InputTextIME[index*4]. Taking
             // &DAT_07e11cec would multiply by the whole 40-byte array again.
@@ -231,10 +231,10 @@ void UI_RenderNotices(void)
   for (int slot = 0; slot < 6; ++slot) {
     SetBackgroundTextColor = 0x80000000;
     if (lpString[0x104] == '\0') {
-      DAT_00559c78 = ((4 < (int)DAT_07e11da0 % 10) - 1 & 0x81000000) - 0xaf3701;
+      m_dwTextColor = ((4 < (int)DAT_07e11da0 % 10) - 1 & 0x81000000) - 0xaf3701;
     }
     else {
-      DAT_00559c78 = -0x37009c;
+      m_dwTextColor = -0x37009c;
     }
     lpsz = &local_8;
     iVar1 = Platform::TextLength(lpString);
@@ -296,27 +296,27 @@ void UI_RenderChatLogOverlay(void)
        ((DAT_00559bf1 != '\0' || ((&DAT_07df948c)[iVar5 * 0x46] != 3)))) {
       switch((&DAT_07df948c)[iVar5 * 0x46]) {
       case 0:
-        DAT_00559c78 = 0xff000000;
+        m_dwTextColor = 0xff000000;
         SetBackgroundTextColor = 0x9632c8ff;
         break;
       case 1:
-        DAT_00559c78 = 0xffff9664;
+        m_dwTextColor = 0xffff9664;
         SetBackgroundTextColor = 0x96000000;
         break;
       case 2:
-        DAT_00559c78 = 0xff001eff;
+        m_dwTextColor = 0xff001eff;
         SetBackgroundTextColor = 0x96000000;
         break;
       case 3:
-        DAT_00559c78 = 0xffc8dce6;
+        m_dwTextColor = 0xffc8dce6;
         SetBackgroundTextColor = 0x96000000;
         break;
       case 4:
-        DAT_00559c78 = 0xff000000;
+        m_dwTextColor = 0xff000000;
         SetBackgroundTextColor = 0x96ffc800;
         break;
       case 5:
-        DAT_00559c78 = 0xff000000;
+        m_dwTextColor = 0xff000000;
         SetBackgroundTextColor = 0xc896ff00;
       }
       // Port exacto de IDA (Ghidra pierde los varargs de sprintf):
@@ -353,9 +353,9 @@ void UI_RenderChatLogOverlay(void)
       *(LONG *)((char *)&DAT_07df9494 + iVar5 * 0x118) = local_108.cx;
       uVar2 = SetBackgroundTextColor;
       if (((((bVar8) && (iVar3 < (int)((uint)(local_108.cx * 0x280) / gWindow.GetWidth()) + gWindow.PanelOrigin(Ui::WindowLeft))) &&
-           (iVar7 <= MouseY)) && ((MouseY < iVar7 + 0xd && (DAT_00559c84 != '\0')))) &&
-         (*(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone != '\0')) {
-        pbVar4 = (byte *)EntityName::Get(DAT_07abf5d8);
+           (iVar7 <= MouseY)) && ((MouseY < iVar7 + 0xd && (InputEnable != '\0')))) &&
+         (*(char *)&((CHARACTER*)(uintptr_t)(Hero))->SafeZone != '\0')) {
+        pbVar4 = (byte *)EntityName::Get(Hero);
         do {
           bVar1 = *pbVar6;
           bVar8 = bVar1 < *pbVar4;
@@ -374,8 +374,8 @@ LAB_00480b89:
         iVar5 = 0;
 LAB_00480b8e:
         if ((iVar5 != 0) && (DAT_07e11da8 % 6 < 3)) {
-          SetBackgroundTextColor = DAT_00559c78;
-          DAT_00559c78 = uVar2;
+          SetBackgroundTextColor = m_dwTextColor;
+          m_dwTextColor = uVar2;
         }
       }
       UI_DrawText(gWindow.PanelOrigin(Ui::WindowLeft),iVar7,local_100,0,1,0, sizeof(local_100));
@@ -429,8 +429,8 @@ void UI_TickHoverBubbles(void)
         (MouseX < (int)((uint)(c->Width * 0x280) / gWindow.GetWidth() + c->x)) &&
         (c->y <= MouseY) &&
         (MouseY < (int)((uint)(c->Height * 0x1e0) / gWindow.GetHeight() + c->y)) &&
-        (DAT_00559c84 != '\0') && (AsCharacter(DAT_07abf5d8)->SafeZone != '\0') &&
-        strcmp(ChatDisplayName(c), EntityName::Get(DAT_07abf5d8)) != 0 &&
+        (InputEnable != '\0') && (AsCharacter(Hero)->SafeZone != '\0') &&
+        strcmp(ChatDisplayName(c), EntityName::Get(Hero)) != 0 &&
         (MouseRButtonPush != '\0')) {
       TextEngine::CopyTruncated((char *)DAT_07db8810, NetText::CharacterNameSize + 1, ChatDisplayName(c));
       DAT_07d780ac = (DWORD)strlen((char *)DAT_07db8810);
@@ -460,7 +460,7 @@ char Chat_ValidateInputCommand(void)
   uVar2 = 0xffffffff;
   iVar3 = 0;
   iVar4 = 0;
-  pcVar5 = (char *)DAT_07db8710;
+  pcVar5 = (char *)InputText;
   do {
     if (uVar2 == 0) break;
     uVar2 = uVar2 - 1;
@@ -469,13 +469,13 @@ char Chat_ValidateInputCommand(void)
   } while (cVar1 != '\0');
   if (0 < (int)(~uVar2 - 1)) {
     do {
-      if (((char*)DAT_07db8710)[iVar3] != ' ') {
-        local_100[iVar4] = ((char*)DAT_07db8710)[iVar3];
+      if (((char*)InputText)[iVar3] != ' ') {
+        local_100[iVar4] = ((char*)InputText)[iVar3];
         iVar4 = iVar4 + 1;
       }
       uVar2 = 0xffffffff;
       iVar3 = iVar3 + 1;
-      pcVar5 = (char *)DAT_07db8710;
+      pcVar5 = (char *)InputText;
       do {
         if (uVar2 == 0) break;
         uVar2 = uVar2 - 1;
@@ -495,11 +495,11 @@ char Chat_ValidateInputCommand(void)
       pcVar5 = pcVar5 + 0x14;
     } while (iVar3 < DAT_07d78074);
   }
-  if ((char)(uintptr_t)DAT_07db8710 != '/') {
+  if ((char)(uintptr_t)InputText != '/') {
     uVar2 = 0xffffffff;
     iVar3 = 0;
     iVar4 = 0;
-    pcVar5 = (char *)DAT_07db8710;
+    pcVar5 = (char *)InputText;
     do {
       if (uVar2 == 0) break;
       uVar2 = uVar2 - 1;
@@ -508,13 +508,13 @@ char Chat_ValidateInputCommand(void)
     } while (cVar1 != '\0');
     if (0 < (int)(~uVar2 - 1)) {
       do {
-        if (((char*)DAT_07db8710)[iVar3] != ' ') {
-          local_100[iVar4] = ((char*)DAT_07db8710)[iVar3];
+        if (((char*)InputText)[iVar3] != ' ') {
+          local_100[iVar4] = ((char*)InputText)[iVar3];
           iVar4 = iVar4 + 1;
         }
         uVar2 = 0xffffffff;
         iVar3 = iVar3 + 1;
-        pcVar5 = (char *)DAT_07db8710;
+        pcVar5 = (char *)InputText;
         do {
           if (uVar2 == 0) break;
           uVar2 = uVar2 - 1;
@@ -535,27 +535,27 @@ char Chat_ValidateInputCommand(void)
       } while (iVar3 < DAT_07d78070);
     }
   }
-  uVar2 = FindTextA((char *)DAT_07db8710,(char *)&DAT_00561740,'\0');
+  uVar2 = FindTextA((char *)InputText,(char *)&DAT_00561740,'\0');
   if ((char)uVar2 == '\0') {
-    uVar2 = FindTextA((char *)DAT_07db8710,(char *)&DAT_00561744,'\0');
+    uVar2 = FindTextA((char *)InputText,(char *)&DAT_00561744,'\0');
     if ((char)uVar2 == '\0') {
-      uVar2 = FindTextA((char *)DAT_07db8710,(char *)&DAT_00561748,'\0');
+      uVar2 = FindTextA((char *)InputText,(char *)&DAT_00561748,'\0');
       if ((char)uVar2 == '\0') {
-        uVar2 = FindTextA((char *)DAT_07db8710,(char *)&DAT_0056174c,'\0');
+        uVar2 = FindTextA((char *)InputText,(char *)&DAT_0056174c,'\0');
         if ((char)uVar2 == '\0') {
-          uVar2 = FindTextA((char *)DAT_07db8710,(char *)&DAT_00561750,'\0');
+          uVar2 = FindTextA((char *)InputText,(char *)&DAT_00561750,'\0');
           if ((char)uVar2 == '\0') {
-            uVar2 = FindTextA((char *)DAT_07db8710,s_Webzen_00561754,'\0');
+            uVar2 = FindTextA((char *)InputText,s_Webzen_00561754,'\0');
             if ((char)uVar2 == '\0') {
-              uVar2 = FindTextA((char *)DAT_07db8710,s_WebZen_0056175c,'\0');
+              uVar2 = FindTextA((char *)InputText,s_WebZen_0056175c,'\0');
               if ((char)uVar2 == '\0') {
-                uVar2 = FindTextA((char *)DAT_07db8710,s_Webzen_00561764,'\0');
+                uVar2 = FindTextA((char *)InputText,s_Webzen_00561764,'\0');
                 if ((char)uVar2 == '\0') {
-                  uVar2 = FindTextA((char *)DAT_07db8710,s_WEBZEN_0056176c,'\0');
+                  uVar2 = FindTextA((char *)InputText,s_WEBZEN_0056176c,'\0');
                   if ((char)uVar2 == '\0') {
-                    uVar2 = FindTextA((char *)DAT_07db8710,&DAT_07d4b4b0,'\0');
+                    uVar2 = FindTextA((char *)InputText,&DAT_07d4b4b0,'\0');
                     if ((char)uVar2 == '\0') {
-                      uVar2 = FindTextA((char *)DAT_07db8710,&DAT_07d4b5dc,'\0');
+                      uVar2 = FindTextA((char *)InputText,&DAT_07d4b5dc,'\0');
                       if ((char)uVar2 == '\0') {
                         return uVar2;
                       }
@@ -577,17 +577,17 @@ void ChatListBox_TickPresentation();
 // DESVIACION: parpadeos y alpha avanzan con los pasos SIM, no con los draws.
 void Chat_TickPresentation() {
     const bool ready = SceneFlag == 2 ? InitLogIn != 0 :
-        SceneFlag == 4 ? CharSelectSceneInitialized && DAT_05826cb0 > 50 :
+        SceneFlag == 4 ? CharSelectSceneInitialized && CurrentProtocolState > 50 :
         SceneFlag == 5 && EnableMainRender && LoadingWorld <= 30;
     if (!ready) return;
     if (!gUserSettings.GetAntilag(ANTILAG_INTERFACE)) ++DAT_07e11da0;
     if (g_bUseChatListBox == 1 || SceneFlag != 5) ++DAT_07e11da8;
     // Contar sólo campos que dibujarían el caret activo. Hay dos entradas
     // legacy del mismo renderer y pueden coincidir chat, diálogo y panel.
-    const int index=DAT_07e11d78;
+    const int index=InputIndex;
     int cursors=0;
-    if (SceneFlag==2 && DAT_083a7c14>1 && DAT_083a7c14<4 && (index==0 || index==1)) ++cursors;
-    if (SceneFlag==4 && DAT_083a7c14>26 && DAT_083a7c14<29 &&
+    if (SceneFlag==2 && LoginSubState>1 && LoginSubState<4 && (index==0 || index==1)) ++cursors;
+    if (SceneFlag==4 && LoginSubState>26 && LoginSubState<29 &&
         (int)DAT_005616b0>=0 && index==0) ++cursors;
     if (SceneFlag==5 && !gUserSettings.GetAntilag(ANTILAG_INTERFACE)) {
         if ((InputEnable || TabInputEnable) && (index==0 || index==1)) ++cursors;
@@ -596,7 +596,7 @@ void Chat_TickPresentation() {
     }
     if (index==0 && (ErrorMessage==0x74 || ErrorMessage==0x72 ||
         ErrorMessage==0x7e || ErrorMessage==0x98)) ++cursors;
-    DAT_07e11d2c+=cursors;
+    InputFrame+=cursors;
     if (SceneFlag == 5 && !gUserSettings.GetAntilag(ANTILAG_INTERFACE))
         ChatListBox_TickPresentation();
 }

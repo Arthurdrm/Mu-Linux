@@ -58,13 +58,13 @@ extern "C" int g_GoldenArcherCustom = 0;
 #define GA_MouseUpdateMax    MouseUpdateTimeMax
 #define GA_InventoryStartX   (*(int*)&InventoryStartX)
 #define GA_InventoryStartY   (*(int*)&InventoryStartY)
-#define GA_InputEnable       DAT_00559c84
+#define GA_InputEnable       InputEnable
 #define GA_GoldInputEnable   GoldInputEnable
 #define GA_InputGold         InputGold
 #define GA_StorageGoldFlag   StorageGoldFlag
 #define GA_InputNumber       InputNumber
 #define GA_InputTextWidth    InputTextWidth
-#define GA_InputIndex        DAT_07e11d78
+#define GA_InputIndex        InputIndex
 #define GA_WindowWidth       ((int)gWindow.GetWidth())
 #define GA_WindowHeight      ((int)gWindow.GetHeight())
 
@@ -383,7 +383,7 @@ static void GA_Ida_Check(void)
             const int by = GA_InventoryStartY + 290;
             if (GA_In(bx, by, 120, 22) && GA_MouseLButtonPop) {
                 if (GetItemCount(-1, -1)) {
-                    const char* text = DAT_07db8710[GA_InputIndex];
+                    const char* text = InputText[GA_InputIndex];
                     BYTE pkt[18] = { 0xC1, 18, 0x9D };
                     memcpy(pkt + 3, text + 0, 4);  pkt[7] = 0;
                     memcpy(pkt + 8, text + 4, 4);  pkt[12] = 0;
@@ -817,7 +817,7 @@ static void RenderLucky(void)
     RenderInputText(x + 40, y + 9, 0);
     GA_InputTextWidth = 256;
     y += 30;
-    RenderBox((float)x + 35, (float)y, 120, 22, GlobalText[906], strlen(DAT_07db8710[GA_InputIndex]) > 0);
+    RenderBox((float)x + 35, (float)y, 120, 22, GlobalText[906], strlen(InputText[GA_InputIndex]) > 0);
     if (GA_GiftName[0]) {
         y += 30;
         char lines[7 * 38 + 1] = {};
@@ -843,8 +843,8 @@ static bool CheckLucky(void)
     int y = kStartY + 80;
     if (CheckExplanation(x, y)) return true;
     y += 160;
-    if (strlen(DAT_07db8710[GA_InputIndex]) > 0 && IsWorkZone(x, y, 120, 22)) {
-        if (ConsumeClick()) { PlayBuffer(25, 0, 0); SendExchangeLucky(DAT_07db8710[GA_InputIndex]); }
+    if (strlen(InputText[GA_InputIndex]) > 0 && IsWorkZone(x, y, 120, 22)) {
+        if (ConsumeClick()) { PlayBuffer(25, 0, 0); SendExchangeLucky(InputText[GA_InputIndex]); }
         return true;
     }
     return false;

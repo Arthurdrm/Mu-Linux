@@ -1680,7 +1680,7 @@ static bool IsTooltipItem(const void* candidate)
         inSlots(OffsetInventoryItems, 64) || inSlots(OffsetTradeItems, 64) ||
         inSlots(OffsetMixItems, 64) || inSlots(OffsetWarehouseItems, 120) ||
         inSlots(Inventory, 160) || inSlots(ShopItems, 120) ||
-        (CharacterMachine && CharacterMachine == DAT_07cf1ffc &&
+        (CharacterMachine &&
          inSlots((const BYTE*)CharacterMachine + 536, 12));
     if (!known) return false;
     const ITEM* item = static_cast<const ITEM*>(candidate);

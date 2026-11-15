@@ -99,7 +99,7 @@ static void Send_CharSelectPacket(void)
     pkt[2] = 0xF3;
     pkt[3] = 0x03;
 
-    NetText::ToServer(pkt + 4, NAME, (const char*)DAT_07db8710);
+    NetText::ToServer(pkt + 4, NAME, (const char*)InputText);
 
     // Char slot byte: DAT_07abf20c low nibble * 0x10 + high nibble
     pkt[4 + NAME] = (BYTE)((char)DAT_07abf20c * 0x10 + ((BYTE*)&DAT_07abf20c)[1]);
@@ -128,7 +128,7 @@ static void Send_CharCreatePacket(void)
     pkt[2] = 0xF3;
     pkt[3] = 0x01;      // sub 0x01 = CREATE
 
-    NetText::ToServer(pkt + 4, NAME, (const char*)DAT_07db8710);   // typed char name (InputText[0])
+    NetText::ToServer(pkt + 4, NAME, (const char*)InputText);   // typed char name (InputText[0])
 
     // Class byte: page*0x10 + byte1 → 0/16/32/48 = DW/DK/FE/MG.
     pkt[4 + NAME] = (BYTE)((char)DAT_07abf20c * 0x10 + ((BYTE*)&DAT_07abf20c)[1]);
@@ -142,12 +142,12 @@ static void Send_CharCreatePacket(void)
 void Game_EnterWorldTick(void)
 {
     // ── ENTRY GUARD ───────────────────────────────────────────────────────────
-    if (DAT_05826cb0 < 0x33) return;
+    if (CurrentProtocolState < 0x33) return;
 
     // Count free entity slots (first 5 entries in entity array)
     bool hasFreeSlot = false;
     {
-        char* e = (char*)DAT_07abf5d0;
+        char* e = (char*)CharactersClient;
         for (int i = 0; i < 5; i++, e += CHARACTER_STRIDE) {
             if (*e == '\0') { hasFreeSlot = true; break; }
         }
@@ -175,7 +175,7 @@ void Game_EnterWorldTick(void)
         DAT_07abf20c = (DAT_07abf20c & 0xffffff00) | 1;
         DAT_07abf0d4  = 0;
 
-        DAT_005616ac  = -1;
+        SelectedHero  = -1;
         DAT_005616b0  = -1;
         DAT_005615e0  = -1;
         MouseOnWindow  = 0;
@@ -183,9 +183,9 @@ void Game_EnterWorldTick(void)
         DAT_005616a4  = -100;
 
         if (!hasFreeSlot) {
-            DAT_083a7c14 = 0x14;  // no free slot: char list only
+            LoginSubState = 0x14;  // no free slot: char list only
         } else {
-            DAT_083a7c14 = 0x15;  // free slot: can create char
+            LoginSubState = 0x15;  // free slot: can create char
             PlayBuffer(0x1b, 0, 0);
         }
 
@@ -193,11 +193,11 @@ void Game_EnterWorldTick(void)
 
         // Anti-tamper: register DAT_07cf1ffc in hash table
         {
-            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, DAT_07cf1ffc);
+            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, CharacterMachine);
             if (idx == 0xffffffff) {
                 void* node = AntiTamper_HashNode();
                 *((BYTE*)node + 0x584) = 1;
-                HashTable_Insert(&MAIN_HASH_CLASS, node, DAT_07cf1ffc);
+                HashTable_Insert(&MAIN_HASH_CLASS, node, CharacterMachine);
             }
         }
 
@@ -205,17 +205,17 @@ void Game_EnterWorldTick(void)
         {
             char* p = (char*)CharacterAttribute;
             for (int i = 0x56; i <= 0x6a; i++) p[i] = '\0';
-            int* q = (int*)((char*)DAT_07cf1ffc + 0x87 * 4);
+            int* q = (int*)((char*)CharacterMachine + 0x87 * 4);
             for (int i = 7; i >= 0; i--, q += 0x11) *q = 0;
         }
 
         // Re-register new entry
         {
-            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, DAT_07cf1ffc);
+            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, CharacterMachine);
             if (idx == 0xffffffff) {
                 void* node = AntiTamper_HashNode();
                 *((BYTE*)node + 0x584) = 1;
-                HashTable_Insert(&MAIN_HASH_CLASS, node, DAT_07cf1ffc);
+                HashTable_Insert(&MAIN_HASH_CLASS, node, CharacterMachine);
             }
         }
 
@@ -228,9 +228,9 @@ void Game_EnterWorldTick(void)
         DAT_07eaa14c = 0;
 
         GuildInputEnable = 0; TabInputEnable = 0; GoldInputEnable = 0;
-        DAT_00559c84 = 1;
+        InputEnable = 1;
         ClearInput(1);
-        DAT_07e11d78 = 0;
+        InputIndex = 0;
         InputTextWidth = 0x5a;
         InputNumber = 1;
 
@@ -239,7 +239,7 @@ void Game_EnterWorldTick(void)
             UIChatLogWindow_AddText((const char*)&DAT_083a7c88, (const char*)&DAT_083a7c84, 0);
 
         // Clear entity local player ptr if null
-        if (DAT_07abf5d8 == 0) {
+        if (Hero == 0) {
             _DAT_00000010 = 0; _DAT_00000014 = 0; _DAT_00000018 = 0;
             _DAT_0000001c = 0; _DAT_00000020 = 0; _DAT_00000024 = 0;
         }
@@ -299,7 +299,7 @@ void Game_EnterWorldTick(void)
     // chars correrían la misma anim.
     {
         for (int s = 0; s < 8; ++s) {
-            intptr_t e = (intptr_t)DAT_07abf5d0 + s * CHARACTER_STRIDE;
+            intptr_t e = (intptr_t)CharactersClient + s * CHARACTER_STRIDE;
             if (*(char*)e != '\0') {
                 MoveCharacterVisual(e);            // MoveCharacterVisual: model.action ← entity.action
                 CharacterAnimation(e, e);   // advance entity[+0x108] (anim frame)
@@ -315,8 +315,8 @@ void Game_EnterWorldTick(void)
     MoveCamera();           CLK_WATCH("after-MoveCamera");
 
     // Delete entity if server confirmed (0x39 = delete ack)
-    if (DAT_05826cb0 == 0x39) {
-        ((char*)DAT_07abf5d0)[DAT_005615e0 * CHARACTER_STRIDE] = '\0';
+    if (CurrentProtocolState == 0x39) {
+        ((char*)CharactersClient)[DAT_005615e0 * CHARACTER_STRIDE] = '\0';
     }
 
     int mouseX = MouseX;
@@ -341,24 +341,24 @@ void Game_EnterWorldTick(void)
 
             // Find first free entity slot
             int slotFound = DAT_005616b0;
-            char* e = (char*)DAT_07abf5d0;
+            char* e = (char*)CharactersClient;
             for (int i = 0; i < 5; i++, e += CHARACTER_STRIDE) {
                 if (*e == '\0') { slotFound = i; break; }
                 slotFound = DAT_005616b0;
             }
             DAT_005616b0 = slotFound;
             PlayBuffer(0x19, 0, 0);
-            DAT_083a7c14 = 0x16;
+            LoginSubState = 0x16;
             DAT_083a7c18 = 0x1b;
             PlayBuffer(0x1b, 0, 0);
             ClearInput(1);
-            DAT_00559c84 = 1;
+            InputEnable = 1;
             InputNumber = 1;
             Input_SetLimit(0, (int)NetText::CharacterNameSize, (int)NetText::CharacterNameClusters);
         }
 
         // Update free slot flag after possible change
-        hasFreeSlot = (DAT_005616ac != -1);
+        hasFreeSlot = (SelectedHero != -1);
 
         // Click equip/select button (DAT_005616a8+0x80..0xc6, Y 0x93-0xa7)
         if (hasFreeSlot &&
@@ -368,8 +368,8 @@ void Game_EnterWorldTick(void)
             IsClickPushed())
         {
             MouseLButtonPush = '\0';
-            ushort lvl = *(ushort*)&AsCharacter(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE)->Level;
-            BYTE   flags = AsCharacter(DAT_07abf5d0)[DAT_005616ac].CtlCode;
+            ushort lvl = *(ushort*)&AsCharacter(CharactersClient + SelectedHero * CHARACTER_STRIDE)->Level;
+            BYTE   flags = AsCharacter(CharactersClient)[SelectedHero].CtlCode;
 
             if (lvl < 40) {
                 // Level too low error
@@ -378,7 +378,7 @@ void Game_EnterWorldTick(void)
                 } else {
                     if (ErrorMessage == 0) ErrorMessage = 0x72; else NextErrorMessage = 0x72;
                     ClearInput(1);
-                    DAT_00559c84 = 1; InputNumber = 1;
+                    InputEnable = 1; InputNumber = 1;
                     InputTextMax = DAT_083a7acc;
                     DAT_07e113d8[0] = 1;
                 }
@@ -399,7 +399,7 @@ void Game_EnterWorldTick(void)
         {
             int slotY = dialogY + 0x32;
             bool confirmed = false;
-            int  selSlot   = DAT_005616ac;
+            int  selSlot   = SelectedHero;
             int  pendingB  = NextErrorMessage;
 
             for (int i = 0; i < 5; i++, slotY += 0x14) {
@@ -410,20 +410,20 @@ void Game_EnterWorldTick(void)
                         confirmed = true;
                         selSlot   = i;
                         pendingB  = 0;
-                        DAT_005616ac = i;
+                        SelectedHero = i;
                         ErrorMessage = pendingB;
                     } else if (IsClickPushed()) {
                         // ── DIAGNOSTIC: capture state at slot-click trigger ──
                         MouseLButtonPush = '\0';
                         NextErrorMessage = 0;
-                        DAT_005616ac = i;
+                        SelectedHero = i;
                         ErrorMessage = pendingB;
                         PlayBuffer(0x19, 0, 0);
-                        if (DAT_083a7c14 != 0x17 && DAT_083a7c14 != 0x15)
+                        if (LoginSubState != 0x17 && LoginSubState != 0x15)
                             PlayBuffer(0x1b, 0, 0);
-                        DAT_083a7c14 = 0x18;
+                        LoginSubState = 0x18;
                         DAT_083a7c18 = 0x17;
-                        selSlot = DAT_005616ac;
+                        selSlot = SelectedHero;
                         pendingB = NextErrorMessage;
                     }
                 }
@@ -438,7 +438,7 @@ void Game_EnterWorldTick(void)
             //   // flag check → state = 25
 
             bool selectClicked = false;
-            if (DAT_005616ac != -1) {
+            if (SelectedHero != -1) {
                 // v40 = 1 path (line 545 IDA): confirm flag from button trigger
                 if (hasFreeSlot && !confirmed) {
                     if (ErrorMessage == 0 && DAT_055ca038 != '\0') {
@@ -469,11 +469,11 @@ void Game_EnterWorldTick(void)
             // Flag check ONLY si v103 (char válido) Y (selectClick OR v40):
             // corresponde a IDA `if (!v40) goto LABEL_124` y precondición
             // SelectedHero != -1.  Sin esto, cada frame disparaba state=0x19.
-            if (DAT_005616ac != -1 && (selectClicked || confirmed)) {
-                BYTE flags = AsCharacter(DAT_07abf5d0)[DAT_005616ac].CtlCode;
+            if (SelectedHero != -1 && (selectClicked || confirmed)) {
+                BYTE flags = AsCharacter(CharactersClient)[SelectedHero].CtlCode;
                 // Precedence-fix: IDA `(flags & 1) == 0`, no `!flags & 1`.
                 if ((flags & 1) == 0) {
-                    DAT_083a7c14 = 0x19;
+                    LoginSubState = 0x19;
                     PlayBuffer(0x1b, 0, 0);
                 } else {
                     if (ErrorMessage == 0) ErrorMessage = 0x85; else NextErrorMessage = 0x85;
@@ -508,7 +508,7 @@ void Game_EnterWorldTick(void)
         }
         unsigned maxPage = 2;   // rotate limit: 3 si algún char >= lvl 220
         {
-            char* e = (char*)DAT_07abf5d0;
+            char* e = (char*)CharactersClient;
             for (int i = 0; i < 5; i++, e += CHARACTER_STRIDE)
                 if (*e != '\0' && *(ushort*)&((CHARACTER*)(uintptr_t)(e))->Level > 0xdb) { maxPage = 3; break; }
         }
@@ -542,7 +542,7 @@ void Game_EnterWorldTick(void)
             MouseLButtonPush = '\0';
             DAT_005616b0 = -1;
             PlayBuffer(0x19, 0, 0);
-            DAT_083a7c14 = 0x1c;
+            LoginSubState = 0x1c;
             DAT_083a7c18 = 0x15;
             PlayBuffer(0x1b, 0, 0);
         }
@@ -556,20 +556,20 @@ void Game_EnterWorldTick(void)
                 if (okClick) MouseLButtonPush = '\0';
                 DAT_005616b0 = -1;
                 PlayBuffer(0x19, 0, 0);
-                DAT_083a7c14 = 0x1c;
+                LoginSubState = 0x1c;
                 DAT_083a7c18 = 0x15;
                 PlayBuffer(0x1b, 0, 0);
 
                 // Validate username length
-                int ulen = (int)strlen((char*)DAT_07db8710);
+                int ulen = (int)strlen((char*)InputText);
                 if (ulen < 4) {
                     if (ErrorMessage == 0) ErrorMessage = 0x7a; else NextErrorMessage = 0x7a;
                 } else {
-                    if (Chat_ValidateInputCommand() == '\0' && !CheckSpecialText((const BYTE*)DAT_07db8710)) { // IDA: FUN_00406B30
+                    if (Chat_ValidateInputCommand() == '\0' && !CheckSpecialText((const BYTE*)InputText)) { // IDA: FUN_00406B30
                         DAT_083a7c18 = 0x1c;
                         ErrorMessage = NextErrorMessage;
                         NextErrorMessage = 0;
-                        DAT_05826cb0 = 0x34;
+                        CurrentProtocolState = 0x34;
                         Send_CharCreatePacket();   // F3/01 crear (no F3/03 select)
                     } else {
                         if (ErrorMessage == 0) ErrorMessage = 0x73; else NextErrorMessage = 0x73;
@@ -584,8 +584,8 @@ void Game_EnterWorldTick(void)
         static int s_lastSubState = -1;
         static int s_lastDialogY  = -999999;
         static int s_lastCamX     = -999999;
-        if ((int)DAT_083a7c14 != s_lastSubState) {
-            s_lastSubState = (int)DAT_083a7c14;
+        if ((int)LoginSubState != s_lastSubState) {
+            s_lastSubState = (int)LoginSubState;
         }
         // Also log dialog Y / camera X every ~32 frames if state is steady so we
         // can see if positions are bouncing without a state change.
@@ -599,7 +599,7 @@ void Game_EnterWorldTick(void)
     }
 
     // ── ANIMATION STATE MACHINE ───────────────────────────────────────────────
-    switch (DAT_083a7c14) {
+    switch (LoginSubState) {
     case 0x15:  // Ease dialog Y to 6
         DAT_005616a4 += (6 - DAT_005616a4) / 3;
         break;
@@ -607,7 +607,7 @@ void Game_EnterWorldTick(void)
     case 0x16:  // Slide dialog off screen (down)
         DAT_005616a4 -= (DAT_005616a4 + 0x102) / 2;
         if (DAT_005616a4 < -0xff) {
-            DAT_083a7c14 = DAT_083a7c18;
+            LoginSubState = DAT_083a7c18;
             PlayBuffer(0x1b, 0, 0);
         }
         break;
@@ -623,12 +623,12 @@ void Game_EnterWorldTick(void)
     case 0x18:  // Slide panel off, send char-select
         DAT_005616a8 -= (DAT_005616a8 + 0xca) / 2;
         if (DAT_005616a8 < -199) {
-            DAT_083a7c14 = DAT_083a7c18;
+            LoginSubState = DAT_083a7c18;
             PlayBuffer(0x1b, 0, 0);
-            if (DAT_05826cb0 == 0x3a) {
-                int code = DAT_05826cb0;
-                if (ErrorMessage == 0) { ErrorMessage = 0x3a; DAT_05826cb0 = 0x33; }
-                else                   { NextErrorMessage = 0x3a; DAT_05826cb0 = 0x33; }
+            if (CurrentProtocolState == 0x3a) {
+                int code = CurrentProtocolState;
+                if (ErrorMessage == 0) { ErrorMessage = 0x3a; CurrentProtocolState = 0x33; }
+                else                   { NextErrorMessage = 0x3a; CurrentProtocolState = 0x33; }
             }
         }
         break;
@@ -636,7 +636,7 @@ void Game_EnterWorldTick(void)
     case 0x19:  // Slide off; on reach: copiar datos del personaje y pasar a Loading
         DAT_005616a8 -= (DAT_005616a8 + 0xca) / 2;
         if (DAT_005616a8 < -200) {
-            int code = DAT_05826cb0;
+            int code = CurrentProtocolState;
             bool validCode = (code == 0x33 || code == 0x35 || code == 0x36 ||
                               code == 0x37 || code == 0x39 || code == 0x3a);
             if (validCode) {
@@ -645,12 +645,12 @@ void Game_EnterWorldTick(void)
                     // Copy char name from selected slot
                     // 0.97.40: CharacterMachine guarda 10 bytes; el nombre completo
                     // queda en EntityName::Selected().
-                    const char* charName = EntityName::Get((const void*)(uintptr_t)(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE));
+                    const char* charName = EntityName::Get((const void*)(uintptr_t)(CharactersClient + SelectedHero * CHARACTER_STRIDE));
                     EntityName::SetSelected(charName);
                     TextEngine::CopyTruncated((char*)CharacterAttribute, 11, charName);
-                    *(ushort*)((char*)CharacterAttribute + 0xe) = *(ushort*)&AsCharacter(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE)->Level;
-                    ((char*)CharacterAttribute)[0xb] = (char)AsCharacter(DAT_07abf5d0)[DAT_005616ac].Class;
-                    ((char*)CharacterAttribute)[0xc] = (char)AsCharacter(DAT_07abf5d0)[DAT_005616ac].Skin;
+                    *(ushort*)((char*)CharacterAttribute + 0xe) = *(ushort*)&AsCharacter(CharactersClient + SelectedHero * CHARACTER_STRIDE)->Level;
+                    ((char*)CharacterAttribute)[0xb] = (char)AsCharacter(CharactersClient)[SelectedHero].Class;
+                    ((char*)CharacterAttribute)[0xc] = (char)AsCharacter(CharactersClient)[SelectedHero].Skin;
                 }
                 // El F3/03 NO sale de aca: IDA 0x521D80 case 25 solo copia los
                 // datos del personaje y pasa a Loading. Lo manda el init de
@@ -667,13 +667,13 @@ void Game_EnterWorldTick(void)
                 // Va DENTRO de case 25, tras el Pkt_Send y el check de validCode (IDA
                 // 0x00521D80:1150); fuera del switch correría cada frame.
                 {
-                    const char* charName = EntityName::Get((const void*)(uintptr_t)(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE));
+                    const char* charName = EntityName::Get((const void*)(uintptr_t)(CharactersClient + SelectedHero * CHARACTER_STRIDE));
                     char* charData = (char*)CharacterAttribute;
                     EntityName::SetSelected(charName);
                     TextEngine::CopyTruncated(charData, 11, charName);
-                    *(ushort*)(charData + 0xe) = *(ushort*)&AsCharacter(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE)->Level;
-                    charData[0xb] = (char)AsCharacter(DAT_07abf5d0)[DAT_005616ac].Class;
-                    charData[0xc] = (char)AsCharacter(DAT_07abf5d0)[DAT_005616ac].Skin;
+                    *(ushort*)(charData + 0xe) = *(ushort*)&AsCharacter(CharactersClient + SelectedHero * CHARACTER_STRIDE)->Level;
+                    charData[0xb] = (char)AsCharacter(CharactersClient)[SelectedHero].Class;
+                    charData[0xc] = (char)AsCharacter(CharactersClient)[SelectedHero].Skin;
                 }
 
                 SceneFlag  = 3;  // SceneFlag = Loading
@@ -691,30 +691,30 @@ void Game_EnterWorldTick(void)
     case 0x1c:  // Slide off; transition to char list or create
         DAT_005616a4 -= (DAT_005616a4 + 0x192) / 2;
         if (DAT_005616a4 < -399) {
-            int code = DAT_05826cb0;
+            int code = CurrentProtocolState;
             if (code == 0x35 || code == 0x36 || code == 0x37) {
                 // Check if any slot is free
                 bool anyFree = false;
-                char* e = (char*)DAT_07abf5d0;
+                char* e = (char*)CharactersClient;
                 for (int i = 0; i < 5; i++, e += CHARACTER_STRIDE)
                     if (*e == '\0') { anyFree = true; break; }
 
                 if (anyFree) {
-                    DAT_083a7c14 = 0x15;
+                    LoginSubState = 0x15;
                     PlayBuffer(0x1b, 0, 0);
                 } else {
-                    DAT_083a7c14 = 0x14;
+                    LoginSubState = 0x14;
                 }
 
                 // Propagate response code
                 if (code == 0x36 || code == 0x37) {
                     int r = code;
-                    if (DAT_05826cb0 == 0) { NextErrorMessage = r; ErrorMessage = NextErrorMessage; }
+                    if (CurrentProtocolState == 0) { NextErrorMessage = r; ErrorMessage = NextErrorMessage; }
                     else if (ErrorMessage == 0) { ErrorMessage = r; }
                     else { NextErrorMessage = r; }
                 }
             } else if (DAT_083a7c18 == 0x15) {
-                DAT_083a7c14 = 0x15;
+                LoginSubState = 0x15;
             }
         }
         break;

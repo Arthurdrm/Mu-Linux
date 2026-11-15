@@ -106,7 +106,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
     // 0.97.20: la pieza guarda el modelo lógico (param_6, que decide la pose y
     // los efectos por tipo); se dibuja con el modelo propio del catálogo.
     const int drawModel = gContentCatalog.EntityDrawModel((const void*)(uintptr_t)param_4, param_6);
-    iVar7 = DAT_05828d58 + drawModel * BMD_STRIDE;
+    iVar7 = Models + drawModel * BMD_STRIDE;
     EquipmentModelContext modelContext((void *)iVar7);
     AsModel(iVar7)->ContrastEnable = AsCharacter(param_4)->Object.ContrastEnable;  // ContrastEnable
     *(unsigned int *)&AsModel(iVar7)->BodyScale = *(unsigned int *)&AsCharacter(param_4)->Object.Scale;  // Scale
@@ -140,7 +140,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
         float* pBoneMat = (float*)((unsigned int)*(unsigned char*)(param_5 + 4) * 0x30
                                    + (intptr_t)AsCharacter(param_4)->Object.BoneMatrices);
 
-        void* ownerModel = (void*)(DAT_05828d58
+        void* ownerModel = (void*)(Models
                                    + (int)AsCharacter(param_4)->Object.Type * BMD_STRIDE);
 
         // BMD__RotationPosition = RotationPosition: transforms pos_in through bone → pos_out

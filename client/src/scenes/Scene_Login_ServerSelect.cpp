@@ -286,7 +286,7 @@ int Scene_Login_ServerSelect(void)
         fVar4          = (float)iStartY;   // non-PVP base Y, leído por Pass 4
     }
 
-    DAT_00559c78 = 0xffffffff;
+    m_dwTextColor = 0xffffffff;
     iVar8 = 0;
     SetBackgroundTextColor = 0;
     lpString = (LPCSTR)&DAT_083a45d8;
@@ -509,7 +509,7 @@ LAB_0051f44c:
         }
 
         // ── PASS 5: selected server IP display ───────────────────────────────
-        DAT_00559c78 = 0xffffffff;
+        m_dwTextColor = 0xffffffff;
         SetBackgroundTextColor = 0x80000000;
         // Literales float (no bit-patterns 0x3fxxxxxx).
         Gfx::Color3f(1.0f, 0.2f, 0.1f);   // orange-red (IP text)

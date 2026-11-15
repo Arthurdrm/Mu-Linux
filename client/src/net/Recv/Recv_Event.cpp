@@ -199,8 +199,8 @@ void NetRecv_9B(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             // devolver el indice, o sea el portador es unico.
             if (itemOwner != -1 && itemLevel != 0xFF && itemLevel != 0) {
                 const int idx = Character_FindByKey_WithClear(itemOwner & 0x7FFF);
-                if (DAT_07abf5d0 && idx >= 0 && idx < 400) {
-                    BYTE* c = (BYTE*)(uintptr_t)DAT_07abf5d0 + CHARACTER_STRIDE * idx;
+                if (CharactersClient && idx >= 0 && idx < 400) {
+                    BYTE* c = (BYTE*)(uintptr_t)CharactersClient + CHARACTER_STRIDE * idx;
                     AsCharacter(c)->EtcPart = itemLevel;
                 }
             } else if (itemOwner == -1 || itemLevel == 0) {

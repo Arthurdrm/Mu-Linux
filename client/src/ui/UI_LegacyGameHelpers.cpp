@@ -61,16 +61,16 @@ void __cdecl Item_ReturnPickedItem(void)
     else if (src == &OffsetMixItems[0])       fill(OffsetMixItems, pos);
     else if (pos >= 12)                       fill(OffsetInventoryItems, pos - 12);
     else if (pos >= 0 && CharacterMachine) {
-        if (pos == 8 && DAT_07abf5d8) {
+        if (pos == 8 && Hero) {
             int bug = (type == 416) ? 816 : (type == 418) ? 195 : (type == 419) ? 267 : 0;
             if (bug)
-                CreateBug(bug, (void*)(DAT_07abf5d8 + 0x10), (void*)DAT_07abf5d8, 0);
+                CreateBug(bug, (void*)(Hero + 0x10), (void*)Hero, 0);
         }
         memcpy((BYTE*)CharacterMachine + 68 * pos + 536, pPickedItem, 0x44);
     }
 
     pPickedItemKey = 0;
-    if (DAT_07abf5d8) SetCharacterClass(AsCharacter(DAT_07abf5d8));      // SetCharacterClass(Hero)
+    if (Hero) SetCharacterClass(AsCharacter(Hero));      // SetCharacterClass(Hero)
     PlayBuffer(29, 0, 0);                                  // PlayBuffer(29)
     // (bloques de hash-table anti-tamper omitidos)
 }
@@ -102,10 +102,10 @@ char __cdecl SelectSkillByHotkey(int a1)
 {
     char found = 0;
     char* CA = (char*)CharacterAttribute;
-    char* playerEnt = (char*)DAT_07abf5d8;
+    char* playerEnt = (char*)Hero;
     if (!CA || !playerEnt) return 0;
 
-    const int hero = (int)DAT_005616ac;   // SelectedHero
+    const int hero = (int)SelectedHero;   // SelectedHero
     for (int i = 0; i < 20; i++) {
         if (CA[i + 87] != 0 &&
             (unsigned char)CA[(hero << 6) + i + 215] == (unsigned char)a1) {

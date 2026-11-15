@@ -205,8 +205,8 @@ void SceneCharSelect_PrepareLighting()
         hover.BlendMeshLight=brightness;
     }
     for (int slot=0;slot<5;++slot) {
-        OBJECT &o=((CHARACTER *)DAT_07abf5d0)[slot].Object;
-        const float light=slot==DAT_005616ac || slot==SelectedCharacter ?
+        OBJECT &o=((CHARACTER *)CharactersClient)[slot].Object;
+        const float light=slot==SelectedHero || slot==SelectedCharacter ?
             1.0f : brightness*_DAT_00552504;
         o.Light[0]=o.Light[1]=o.Light[2]=light;
     }
@@ -235,7 +235,7 @@ int Scene_CharSelect(void)
     if (CharSelectSceneInitialized == '\0')
         return (uint)uVar6 << 8;
 
-    if (0x32 < DAT_05826cb0) {
+    if (0x32 < CurrentProtocolState) {
         FogEnable = 0;
         DAT_07e11d6e = 0;
         // 0x3f800000 son los bits de 1.0f, no la magnitud.
@@ -254,12 +254,12 @@ int Scene_CharSelect(void)
         // La selección de preview se publica al terminar el paso lógico.
 
         // La luz ya está preparada; se conserva la corrección de altura legacy.
-        iVar4 = DAT_005616ac;
+        iVar4 = SelectedHero;
         iVar9 = SelectedCharacter;
         iVar7 = 0;
         _DAT_0055a7c0 = 0;
         do {
-            CHARACTER* preview = AsCharacter(DAT_07abf5d0) + iVar7;
+            CHARACTER* preview = AsCharacter(CharactersClient) + iVar7;
             if (preview->Helper.Type == 0x333)
                 preview->Object.Position[2] = 20.0f;
             iVar7++;
@@ -272,7 +272,7 @@ int Scene_CharSelect(void)
             if (now - s_lastDiag > 1000) {
                 s_lastDiag = now;
                 for (int s = 0; s < 5; ++s) {
-                    BYTE* e = (BYTE*)(DAT_07abf5d0 + s * CHARACTER_STRIDE);
+                    BYTE* e = (BYTE*)(CharactersClient + s * CHARACTER_STRIDE);
                 }
             }
         }
@@ -287,14 +287,14 @@ int Scene_CharSelect(void)
         Entity_RenderAll_3D();
 
         // Orbital particles for selected char
-        if ((DAT_005616ac != -1) && (((char*)DAT_07abf5d0)[DAT_005616ac * CHARACTER_STRIDE] != '\0')) {
+        if ((SelectedHero != -1) && (((char*)CharactersClient)[SelectedHero * CHARACTER_STRIDE] != '\0')) {
             GL_SetBlendAdditive();   // Frame_UpdateTimer
             uVar12  = (unsigned int)(*(float*)&WorldTime);
             local_6c = (int)((longlong)((ulonglong)(uint)((int)uVar12 >> 0x1f) << 0x20 | uVar12 & 0xffffffff) % 0xe10);
             local_70 = (float)local_6c * _DAT_00552a00;
-            Effect_DrawRing(0x4f1, (float *)(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE + 0x10),
+            Effect_DrawRing(0x4f1, (float *)(CharactersClient + SelectedHero * CHARACTER_STRIDE + 0x10),
                          0x420c0000, 0x425c0000, 0x43160000,  local_70, 0, 0.0f);
-            Effect_DrawRing(0x4f1, (float *)(DAT_07abf5d0 + DAT_005616ac * CHARACTER_STRIDE + 0x10),
+            Effect_DrawRing(0x4f1, (float *)(CharactersClient + SelectedHero * CHARACTER_STRIDE + 0x10),
                          0x420c0000, 0x425c0000, 0x43160000, -local_70, 0, 0.0f);
         }
 
@@ -331,7 +331,7 @@ int Scene_CharSelect(void)
             GL_SetBlendSrcOver('\x01');
             Gfx::Color3f(1.0f, 1.0f, 1.0f);
             iVar9 = 0;
-            pcVar5 = (char*)DAT_07abf5d0;
+            pcVar5 = (char*)CharactersClient;
             do {
                 if (pcVar5[iVar9] != '\0') {
                     // ── fStack_5c/uStack_58/fStack_54 del decomp son 3 locales separadas que MSVC
@@ -355,7 +355,7 @@ int Scene_CharSelect(void)
                         if (slotIdx >= 0 && slotIdx < 5 && now2 - s_lastNI[slotIdx] > 1000) {
                             s_lastNI[slotIdx] = now2;
                             char b[400];
-                            const char* nm = EntityName::Get((BYTE*)DAT_07abf5d0 + iVar9);
+                            const char* nm = EntityName::Get((BYTE*)CharactersClient + iVar9);
                             float* M = (float*)&CameraMatrix;
                         }
                     }
@@ -371,17 +371,17 @@ int Scene_CharSelect(void)
                             s_lastNO[slotIdx2] = now3;
                         }
                     }
-                    bVar2 = AsCharacter(DAT_07abf5d0 + iVar9)->CtlCode;
+                    bVar2 = AsCharacter(CharactersClient + iVar9)->CtlCode;
                     // Color by class/flags
-                    if      (bVar2 & 1)    { SetBackgroundTextColor = 0x8000ffff; DAT_00559c78 = 0xff000000; }
-                    else if (bVar2 & 0x12) { SetBackgroundTextColor = 0x80ffff00; DAT_00559c78 = 0xff000000; }
-                    else if (bVar2 & 4)    { SetBackgroundTextColor = 0x80ffffff; DAT_00559c78 = 0xff000000; }
-                    else if (bVar2 & 8)    { SetBackgroundTextColor = 0x80ff0000; DAT_00559c78 = 0xff000000; }
-                    else                   { SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xffffc8b4; }
+                    if      (bVar2 & 1)    { SetBackgroundTextColor = 0x8000ffff; m_dwTextColor = 0xff000000; }
+                    else if (bVar2 & 0x12) { SetBackgroundTextColor = 0x80ffff00; m_dwTextColor = 0xff000000; }
+                    else if (bVar2 & 4)    { SetBackgroundTextColor = 0x80ffffff; m_dwTextColor = 0xff000000; }
+                    else if (bVar2 & 8)    { SetBackgroundTextColor = 0x80ff0000; m_dwTextColor = 0xff000000; }
+                    else                   { SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xffffc8b4; }
                     // Name (top, bold font) — IDA L194-198: sprintf(String, "%s", entity+449)
                     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_BOLD));
                     {
-                        const char* charName = EntityName::Get((BYTE*)DAT_07abf5d0 + iVar9);
+                        const char* charName = EntityName::Get((BYTE*)CharactersClient + iVar9);
                         crt_sprintf(aCStack_50, DAT_00561a30, charName);
                     }
                     iVar4 = Platform::TextLength(aCStack_50);
@@ -398,11 +398,11 @@ int Scene_CharSelect(void)
                     //           ClassNameTable + 300 * ((klass & 7) + 4 * (klass >> 3)),
                     //           level)
                     // klass byte at entity+0x1bc (444): DW=0, DK=1, ELF=2, MG=3, SM=8, BK=9, ME=10
-                    SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xffffffff;
+                    SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xffffffff;
                     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
                     {
-                        BYTE klass = ((BYTE*)DAT_07abf5d0)[FieldAddress(iVar9, &AsCharacter(iVar9)->Class)];
-                        WORD lvl   = AsCharacter((BYTE*)DAT_07abf5d0 + iVar9)->Level;
+                        BYTE klass = ((BYTE*)CharactersClient)[FieldAddress(iVar9, &AsCharacter(iVar9)->Class)];
+                        WORD lvl   = AsCharacter((BYTE*)CharactersClient + iVar9)->Level;
                         int  cidx  = (klass & 7) + 4 * (klass >> 3);
                         // 0.97k tiene DW/DK/ELF/MG y evolved SM/BK/ME (no DL).
                         static const char* kClassNames[16] = {
@@ -423,7 +423,7 @@ int Scene_CharSelect(void)
                     gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), aCStack_50, iVar4, &tStack_68);
                     UI_RenderText(local_6c - (uint)((tStack_68.cx / 2) * 0x280) / gWindow.GetWidth(),
                                  nameProjY, aCStack_50, (LPSIZE)0x0, '\0', 0);
-                    pcVar5 = (char*)DAT_07abf5d0;
+                    pcVar5 = (char*)CharactersClient;
                 }
                 iVar9 += CHARACTER_STRIDE;
             } while (iVar9 < 5 * CHARACTER_STRIDE);
@@ -431,7 +431,7 @@ int Scene_CharSelect(void)
 
         // ── Warning text ──────────────────────────────────────────────────────
         if (m_bAccountBlockItem != '\0') {
-            SetBackgroundTextColor = 0x80ffff00; DAT_00559c78 = 0xff000000;
+            SetBackgroundTextColor = 0x80ffff00; m_dwTextColor = 0xff000000;
             gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
             iVar9 = Platform::TextLength((LPCSTR)lpString_07d49c14);
             gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)lpString_07d49c14, iVar9, &tStack_68);
@@ -444,7 +444,7 @@ int Scene_CharSelect(void)
         }
 
         // ── Server info text (bottom right, blue) ─────────────────────────────
-        SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xff67bfdf;
+        SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xff67bfdf;
         gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
         iVar9 = Platform::TextLength((LPCSTR)&lpString_00561a3c);
         gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&lpString_00561a3c, iVar9, &tStack_68);
@@ -463,7 +463,7 @@ int Scene_CharSelect(void)
         GL_PopMatrixAll();
 
         // ── Create character panel (states 0x1b..0x1c) ────────────────────────
-        if ((0x1a < DAT_083a7c14) && (DAT_083a7c14 < 0x1d)) {
+        if ((0x1a < LoginSubState) && (LoginSubState < 0x1d)) {
             GL_BeginViewport(0, 0, 0x280, 0x1e0);
             GL_Begin2D();
             GL_SetBlendSrcOver('\x01');
@@ -472,7 +472,7 @@ int Scene_CharSelect(void)
             iVar9 = DAT_005616a4;
             uVar8 = 2;
             iVar4 = 5;
-            pcVar5 = (char*)DAT_07abf5d0;
+            pcVar5 = (char*)CharactersClient;
             do {
                 if ((*pcVar5 != '\0') && (0xdb < *(ushort*)&AsCharacter(pcVar5)->Level))
                     uVar8 = 3;
@@ -590,8 +590,8 @@ int Scene_CharSelect(void)
         // ── Bottom panels / buttons ───────────────────────────────────────────
         GL_BeginViewport(0, 0, 0x280, 0x1e0);
         // Reset entity[0] world pos
-        DAT_07abf5d8 = (char*)DAT_07abf5d0;
-        pcVar5 = (char*)DAT_07abf5d0;
+        Hero = (char*)CharactersClient;
+        pcVar5 = (char*)CharactersClient;
         pcVar5[0x10] = '\0'; pcVar5[0x11] = '\0'; pcVar5[0x12] = '\0'; pcVar5[0x13] = '\0';
         pcVar5[0x14] = '\0'; pcVar5[0x15] = '\0'; pcVar5[0x16] = '\0'; pcVar5[0x17] = '\0';
         GL_Begin2D();
@@ -601,7 +601,7 @@ int Scene_CharSelect(void)
             // Check if any slot is empty
             bVar10 = false;
             iVar9 = 5;
-            pcVar5 = (char*)DAT_07abf5d0;
+            pcVar5 = (char*)CharactersClient;
             do {
                 if (*pcVar5 == '\0') bVar10 = true;
                 pcVar5 += CHARACTER_STRIDE;
@@ -627,7 +627,7 @@ int Scene_CharSelect(void)
                 GL_DrawTexture(0x11, 286.0f, (float)(int)local_70, 70.0f, 25.0f, 0.0f, 0.0f, 0.546875f, 0.78125f, '\x01', '\x01');
             }
 
-            bVar10 = (DAT_005616ac == -1);
+            bVar10 = (SelectedHero == -1);
             // Delete char button brightness (literales float, igual que arriba)
             if (bVar10) { fR = fG = fB = 0.5f; }
             else         { fR = fG = fB = 1.0f; }

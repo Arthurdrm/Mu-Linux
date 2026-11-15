@@ -258,7 +258,7 @@ DWORD    DAT_005599e0  = 0;
 // del chat).  En .data vale 1: arrancan activados.
 DWORD    m_bBlockWhisper  = 1;   // IDA: m_bBlockWhisper (0x00559BF0)
 // DAT_00559c4c/50 are defined below in the named hover/targeting section.
-DWORD    DAT_00559c78  = 0xffffffff;
+DWORD    m_dwTextColor  = 0xffffffff;
 // 0x00559C7C — IDA `SetTextColor_0`: color del PREFIJO (nombre de guild) en la
 // composición de burbujas de chat (`sub_47F360`).  Lo escriben `RenderBoolean`
 // (3 sitios, según el sub-modo del mensaje) y `RenderPartyHP`.  Se define acá
@@ -653,7 +653,7 @@ DWORD    DAT_05826e10  = 0;
 // BMD_Animation (0x440060 L157-166: `(char *)&unk_5826E18 + 16 * boneIdx`).
 // MAX_BONES = 200, igual que g_BoneScratch → 200 x 16 bytes (paso de 16 por hueso).
 char     DAT_05826e18[200 * 0x10] = {0};
-std::uintptr_t DAT_05828d58 = 0; // Base de Models, sin truncar la dirección.
+std::uintptr_t Models = 0; // Base de Models, sin truncar la dirección.
 void*    DAT_06f42a58  = nullptr;  // model memory pool
 
 // BMD bounding-box scratch arrays (BMD_CreateBoundingBox)
@@ -751,7 +751,7 @@ OBJECT   Planes[100] = {};   // IDA: unk_7C74E68 (0x07C74E68); nombre de MU 5.2
 DWORD*   DAT_07c74f54 = (DWORD*)(reinterpret_cast<char*>(Planes) + 0xEC);
 
 // ── g_CharData XOR block ───────────────────────────────────────────────────────
-void    *DAT_07cf1ffc  = nullptr;  // g_CharData pointer (0x584-byte XOR-encoded)
+void    *CharacterMachine  = nullptr;  // IDA: CharacterMachine (0x07CF1FFC), buffer de 0x584 bytes
 
 // ── UI / HUD data ─────────────────────────────────────────────────────────────
 DWORD   _DAT_07e118e4  = 0;    // facing angle (float, movement packet)
@@ -989,7 +989,7 @@ DWORD    FrustrumBoundMinY_2  = 0;
 DWORD    DAT_0839be18  = 0;
 
 // ── Scene / state machine vars ────────────────────────────────────────────────
-float    _DAT_083a0210 = 0.0f;  // EarthQuake
+float    EarthQuake = 0.0f;  // EarthQuake
 DWORD    DAT_083a0210  = 0;
 // Celdas de escena; el layout x86 permanece idéntico al de IDA 0x083A0218.
 SceneObjectCell g_ObjectBucketGrid[256] = {};
@@ -1036,8 +1036,6 @@ DWORD&   CameraRayOriginZ = CameraRayOriginX_arr[2];  // DAT_083A428C
 char     DAT_083a4299  = 0;
 DWORD    ViewportCenterX  = 0;  // DAT_083A429C
 DWORD    ViewportCenterY  = 0;  // DAT_083A42A0
-DWORD    PerspectiveX  = 0;  // IDA: PerspectiveX (0x083A42A4)
-DWORD    PerspectiveY  = 0;  // IDA: PerspectiveY (0x083A42A8)
 DWORD    MouseRButton  = 0;  // IDA: MouseRButton (0x083A42AC)
 DWORD    OpenglWindowHeight  = 0;  // viewport height
 // CameraAngle[3] @ 0x083a42b8 — 3 floats read by BeginOpengl via glRotatef and
@@ -1112,7 +1110,7 @@ DWORD    ErrorMessage  = 0;  // IDA: ErrorMessage (0x083A7C24)
 DWORD    NextErrorMessage  = 0;  // IDA: NextErrorMessage (0x083A7C28)
 DWORD    CurrentCameraWalkType  = 0;  // IDA: CurrentCameraWalkType (0x083A7C38)
 DWORD    CurrentCameraNumber  = 0;  // IDA: CurrentCameraNumber (0x083A7C3C)
-DWORD    DAT_083a7c40  = 0;  // cantidad de servers del F4/02 (ReceiveServerList)
+DWORD    ServerListCount  = 0;  // cantidad de servers del F4/02 (ReceiveServerList)
 DWORD    DAT_083a7c44  = 0;
 // DAT_083a7c48 es char en el binario original (flag "connection check enable"
 // leído como byte en Game_MainLoop). No declararlo DWORD: `DAT_083a7c48 = 1`
@@ -1161,7 +1159,7 @@ char     GuildInputEnable  = 0;
 char     TabInputEnable  = 0;   // IDA: TabInputEnable (0x07E11D71)
 char     GoldInputEnable  = 0;
 char     g_PadAfterChatMode[64]  = { static_cast<char>(0xCC) };
-DWORD    DAT_07e11d78  = 0;
+DWORD    InputIndex  = 0;
 DWORD    EditFlag  = 0;  // IDA: EditFlag (0x07E11D30)
 DWORD    LoadingWorld  = 0;  // IDA: LoadingWorld (0x07E11D1C)
 DWORD    MouseUpdateTime  = 0;  // IDA: MouseUpdateTime (0x07E11D28)
@@ -1177,7 +1175,7 @@ char&    DAT_07e113d9 = reinterpret_cast<char&>(DAT_07e113d8[1]);
 
 DWORD    TargetX  = 0;
 DWORD    TargetY  = 0;
-DWORD    DAT_07e109c8  = 0;
+DWORD    ItemKey  = 0;
 // Historial de chat @ 0x07E113E4 — anillo de 5 entradas x 256 bytes.
 // Lo confirma el propio binario: el walker de RenderChatInput termina en
 // 0x07E118E4, y 0x7E118E4 - 0x7E113E4 = 0x500 = 5 * 256.
@@ -1193,7 +1191,7 @@ BYTE     DAT_07d780a8[40]  = {0};
 // Multi-slot input buffer (IDA: InputText[10][256] @ 0x07db8710).
 // Slot 0 = chat / username, slot 1 = whisper-target / password.
 // DAT_07db8810 is a #define alias for slot 1 in globals.h.
-char     DAT_07db8710[10][256] = {{0}};
+char     InputText[10][256] = {{0}};
 DWORD    DAT_07db8708  = 0;
 
 // Server-config globals (poblados por los opcodes 0xDD/DE/DF).
@@ -1493,7 +1491,7 @@ int      DAT_07e11da4  = 0;
 SIZE     g_TextExtent07E113D0 = {0, 0};
 
 int&    _DAT_07e113d4  = *reinterpret_cast<int*>(&g_TextExtent07E113D0.cy);
-DWORD    DAT_07e11d2c  = 0;
+DWORD    InputFrame  = 0;
 // Tabla de 10 punteros del buffer de composición del IME: WinMain la escribe con
 // `slot * 4` (slot clampeado a 0..9) y Chat.cpp la lee como `LPCSTR*`.
 char     DAT_07e11cec[10 * 4] = {0};
@@ -1574,8 +1572,8 @@ float&   _DAT_083a416c = *reinterpret_cast<float*>(&CameraMatrix[11]);
 float&   _CameraRayOriginX = *reinterpret_cast<float*>(&CameraRayOriginX_arr[0]); // _DAT_083A4284
 float&   _CameraRayOriginY = *reinterpret_cast<float*>(&CameraRayOriginX_arr[1]); // _DAT_083A4288
 float&   _CameraRayOriginZ = *reinterpret_cast<float*>(&CameraRayOriginX_arr[2]); // _DAT_083A428C
-float    _DAT_083a42a4 = 0.0f;
-float    _DAT_083a42a8 = 0.0f;
+float    PerspectiveX = 0.0f;
+float    PerspectiveY = 0.0f;
 float    ScreenCenterYFlip = 0.0f;  // projection center Y
 // Bone transform scratch buffer (3x4 row-major matrix, 12 floats / 48 bytes).
 // Must be CONTIGUOUS — AngleMatrix/BMD_Animation write all 12 floats starting
@@ -1942,7 +1940,7 @@ DWORD   DAT_07eaa0e8   = 0;
 // MarkColor[16]: `CreateGuildMark` (0x4F0100) escribe los 16 colores y
 // `RenderGuildMark` (0x4F02F0) indexa `MarkColor[p5]` con p5 en 0..15.
 // El hueco hasta DAT_07e11f78 es de 68 bytes, asi que los 16 entran.
-DWORD   DAT_07e11f34[16] = {0};  // MarkColor[16] — paleta de la marca (ARGB)
+DWORD   MarkColor[16] = {0};  // MarkColor[16] — paleta de la marca (ARGB)
 BYTE    DAT_07e11f78[0x880] = {0};
 // DAT_07ea52d0: alias de Inventory.Key (globals.h)
 // DAT_07ea7bc0: alias de OffsetTradeItems.Key (globals.h)
@@ -2772,7 +2770,6 @@ SIZE   TextSize              = {0, 0};
 // dword_55C9BC8 hash-table state lives in g_HashTableCtx[4] (line ~438);
 // macros MAIN_HASH_CLASS/cc/d0/d4 alias it.  Do NOT re-define here.
 
-void  *CharacterMachine      = nullptr;
 // CharacterAttribute se declara en globals.h (IDA: 0x07CF1FF4).
 
 // DAT_07e11d6e is already defined at line ~676 as char (matches header).

@@ -70,7 +70,7 @@ void __cdecl Font_RenderTextToBitmap(int p1, int p2, LPCSTR p3, int p4, int p5, 
             if (p9) gFont.MeasureText(gFont.GetTextDC(), p9, Platform::TextLength(p9), &sz);
             pending.prefixWidth = p9 ? sz.cx : 0;
         }
-        pending.textColor = DAT_00559c78;
+        pending.textColor = m_dwTextColor;
         pending.prefixColor = SetTextColor_0;
         pending.backColor = m_dwBackColor;
         return;
@@ -171,7 +171,7 @@ void __cdecl Font_RenderTextToBitmap(int p1, int p2, LPCSTR p3, int p4, int p5, 
                             // DAT_00559c7c y SetTextColor_0 son la misma memoria (unificados en globals.h).
                             color = SetTextColor_0;
                         } else {
-                            color = DAT_00559c78;  // m_dwTextColor
+                            color = m_dwTextColor;  // m_dwTextColor
                         }
                     }
                     *dst = color;

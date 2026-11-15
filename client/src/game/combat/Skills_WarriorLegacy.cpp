@@ -56,14 +56,14 @@ static void Warrior_SendSkill1E(BYTE skill, BYTE x, BYTE y, BYTE direction,
 static void Warrior_CollectMultiTargets(const float* centre, float radius,
                                         WORD relationKey, int* keys, int* count, int maximum)
 {
-    if (!centre || !keys || !count || *count >= maximum || DAT_07abf5d0 == 0)
+    if (!centre || !keys || !count || *count >= maximum || CharactersClient == 0)
         return;
 
     const float radiusSquared = radius * radius;
-    BYTE* characters = (BYTE*)(uintptr_t)DAT_07abf5d0;
+    BYTE* characters = (BYTE*)(uintptr_t)CharactersClient;
     for (int index = 0; index < 400 && *count < maximum; ++index) {
         BYTE* candidate = characters + index * CHARACTER_STRIDE;
-        if (!AsCharacter(candidate)->Object.Live || !AsCharacter(candidate)->Object.Visible || candidate == (BYTE*)(uintptr_t)DAT_07abf5d8 || AsCharacter(candidate)->Dead)
+        if (!AsCharacter(candidate)->Object.Live || !AsCharacter(candidate)->Object.Visible || candidate == (BYTE*)(uintptr_t)Hero || AsCharacter(candidate)->Dead)
             continue;
 
         const int key = *(short *)&AsCharacter(candidate)->Key; // IDA: *(std::int16_t *)(v9 + 456)
@@ -179,7 +179,7 @@ void __cdecl Combat_UseWarriorSkill(intptr_t c /* IDA: c */, intptr_t o /* IDA: 
     // Native code indexes CharactersClient directly at 0x4859A9.  Attack and
     // Action establish this index before entering this helper; adding a local
     // rejection here changes the original tail (state + C1:11 confirmation).
-    char* targetEntity = (char*)(uintptr_t)DAT_07abf5d0 + targetIdx * CHARACTER_STRIDE; // IDA: v285 source
+    char* targetEntity = (char*)(uintptr_t)CharactersClient + targetIdx * CHARACTER_STRIDE; // IDA: v285 source
     AsCharacter(c)->TargetPosition[0] = *(float*)(targetEntity + 0x10); // TargetPosition.x
     AsCharacter(c)->TargetPosition[1] = *(float*)(targetEntity + 0x14); // TargetPosition.y
     AsCharacter(c)->TargetPosition[2] = *(float*)(targetEntity + 0x18); // TargetPosition.z
@@ -234,7 +234,7 @@ void __cdecl Combat_UseWarriorSkill(intptr_t c /* IDA: c */, intptr_t o /* IDA: 
             Warrior_CollectMultiTargets(centre, 100.0f, *(WORD*)(o + 134), keys, &count, 6);
             // IDA 0x485780 L1097-1100: el serial vive en CharacterMachine+1408,
             // no en la entidad (CHARACTER mide 0x394: 1408 caía en el slot siguiente).
-            BYTE* machine = static_cast<BYTE*>(DAT_07cf1ffc);
+            BYTE* machine = static_cast<BYTE*>(CharacterMachine);
             const BYTE serial = machine ? machine[1408] : 0;
             if (machine) machine[1408] = serial + 1;
             *(BYTE*)(o + 136) = serial;
@@ -350,7 +350,7 @@ void __cdecl Entity_TeleportEnd(intptr_t entity_idx) {
     BYTE* puVar3 = (BYTE*)(uintptr_t)(int)entity_idx;
 
     // Local player: clear teleport in-flight state (hash-table ops are obfuscation noise)
-    if ((void*)entity_idx == (void*)DAT_07abf5d8) {
+    if ((void*)entity_idx == (void*)Hero) {
         *(short*)((char*)CharacterAttribute + 0x1c) = 0;
     }
 
@@ -400,7 +400,7 @@ LAB_00445110:
             return;
         }
         // General: look up footstep sound from entity-class table at DAT_05828d58+0xb2
-        short sfx = *(short*)((char*)DAT_05828d58 + 0xb2 + BMD_FIELD_SHIFT + sVar2 * BMD_STRIDE);
+        short sfx = *(short*)((char*)Models + 0xb2 + BMD_FIELD_SHIFT + sVar2 * BMD_STRIDE);
         if (sfx != -1)
             PlayBuffer(sfx + 0xaa, AsObject(entity_idx), 0);
     }

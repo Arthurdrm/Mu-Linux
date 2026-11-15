@@ -29,7 +29,7 @@ int __cdecl Calc_RenderObject(OBJECT* object, char param_2, int param_3) {
     float fVar2 = AsObject(param_1)->Alpha;
     if (fVar2 < _DAT_005524f8)
         return 0;
-    BMD* this_ = AsModel(DAT_05828d58) + object->Type;
+    BMD* this_ = AsModel(Models) + object->Type;
     this_->BodyHeight = 0.0f;
     this_->ContrastEnable = AsObject(param_1)->ContrastEnable;
     Entity_GetLightScale(reinterpret_cast<uintptr_t>(param_1), reinterpret_cast<uintptr_t>(this_));

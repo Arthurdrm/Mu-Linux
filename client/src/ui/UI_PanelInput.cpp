@@ -84,7 +84,7 @@ void __cdecl GuildCreator_HitTest(void) {
         // IDA: GuildCreator_HitTest. La grilla de edición tiene 8 filas de 8 celdas;
         // cada celda conserva un índice de color completo en DAT_07ea51f5.
         // La compresión a 32 bytes ocurre únicamente al enviar el paquete 0x55.
-        *(DWORD*)(DAT_07abf5d8 + 0x24) = 0x42e10000;
+        *(DWORD*)(Hero + 0x24) = 0x42e10000;
         const BYTE selectedColor = (BYTE)DAT_07eaa0dc;
         BYTE* const cells = (BYTE*)&DAT_07ea51f5;
         for (int row = 0; row < 8; ++row) {
@@ -169,7 +169,7 @@ void __cdecl GuildCreator_HitTest(void) {
                     } else {
                         // IDA: strcpy(&dword_7EA51EC, InputText[0])
                         memset(DAT_07ea51ec, 0, sizeof(DAT_07ea51ec));
-                        TextEngine::CopyTruncated(DAT_07ea51ec, sizeof(DAT_07ea51ec), (const char*)DAT_07db8710[0]);
+                        TextEngine::CopyTruncated(DAT_07ea51ec, sizeof(DAT_07ea51ec), (const char*)InputText[0]);
             
                         // El rango de guild entero es Encrypt=0 -> C1 plano, y
                         // `gNetwork.SendC1` aplica el mismo chain-XOR sobre 3..len-1
@@ -226,13 +226,13 @@ void __cdecl GuildCreator_HitTest(void) {
                 // IDA: C1:03:57 cancela el editor y libera INTERFACE_GUILD_CREATE.
                 const BYTE pkt3[3] = { 0xC1, 0x03, 0x57 };
                 gNetwork.SendC1(pkt3, sizeof(pkt3));
-                *(short*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->GuildMarkIndex = (short)0xffff;
+                *(short*)&((CHARACTER*)(uintptr_t)(Hero))->GuildMarkIndex = (short)0xffff;
             }
             PlayBuffer(0x19, 0, 0);
             // DAT_07db8710 es char[10][256] — escribimos el primer byte del slot 0
             // explícitamente. (Los globals 8714/8718 son símbolos separados: también se
             // limpian, para terminar en NUL lo que haya quedado del username.)
-            DAT_07db8710[0][0] = 0;
+            InputText[0][0] = 0;
             DAT_07db8714 = 0;
             DAT_07db8718 = 0;
             *(DWORD*)DAT_07d780a8 = 0;
@@ -285,7 +285,7 @@ void __cdecl Party_MemberClickHandler(void) {
         MouseOnWindow = 1;
     }
 
-    const char* const heroName = DAT_07abf5d8 ? EntityName::Get(DAT_07abf5d8) : "";
+    const char* const heroName = Hero ? EntityName::Get(Hero) : "";
     const bool heroLeads = PartyNumber > 0 && strcmp(Party_GetName(0), heroName) == 0;
     for (int row = 0; row < PartyNumber; ++row) {
         BYTE* const member = Party + row * 36;
@@ -463,18 +463,18 @@ void __cdecl Inventory_HitTest(void) {
 
     // Refresh char-list visibility arrays for all CharData slots (stride 0x44, 12 slots)
     for (int i = 0; i < 0x330; i += 0x44) {
-        void* puVar8 = DAT_07cf1ffc;
-        uint uVar4 = HashTable_GetIndex(&MAIN_HASH_CLASS, (void*)DAT_07cf1ffc);
+        void* puVar8 = CharacterMachine;
+        uint uVar4 = HashTable_GetIndex(&MAIN_HASH_CLASS, (void*)CharacterMachine);
         if (uVar4 == 0xffffffff) {
             void* pvVar10 = AntiTamper_HashNode();
             *(static_cast<BYTE*>(pvVar10) + 0x584) = 1;
             HashTable_Insert(&MAIN_HASH_CLASS, pvVar10, puVar8);
         }
         // Update slot visibility based on item type == -1
-        if (*(short*)(static_cast<BYTE*>(DAT_07cf1ffc) + 0x218 + i) == -1)
-            *(static_cast<BYTE*>(DAT_07cf1ffc) + 0x258 + i) = 0;
+        if (*(short*)(static_cast<BYTE*>(CharacterMachine) + 0x218 + i) == -1)
+            *(static_cast<BYTE*>(CharacterMachine) + 0x258 + i) = 0;
         else
-            *(static_cast<BYTE*>(DAT_07cf1ffc) + 0x258 + i) = 1;
+            *(static_cast<BYTE*>(CharacterMachine) + 0x258 + i) = 1;
     }
 
     // IDA sub_4E6550 L160-231: reset por frame del byte ITEM.Color (+0x40) de
@@ -516,7 +516,7 @@ void __cdecl Inventory_HitTest(void) {
                      (short*)OffsetInventoryItems, 8, 8, '\0');
     }
 
-    DAT_07eaa138 = 0;
+    RepairEnable = 0;
     // Char-count check and back-button
     char sv3 = TradeOpened;
     if (sv3 == '\0') {
@@ -524,7 +524,7 @@ void __cdecl Inventory_HitTest(void) {
         if (sv4 == '\0' && WarehouseOpened == '\0' && ChaosMixOpened == '\0' && GoldenArcherOpenType == 0) {
             ushort uVar3 = *(ushort*)(static_cast<BYTE*>(CharacterAttribute) + 0xe);
             if (0x31 < uVar3) {
-                DAT_07eaa138 = 1;
+                RepairEnable = 1;
                 if ((int)(InventoryStartX + 0x3c) <= (int)MouseX &&
                     (int)MouseX < (int)(InventoryStartX + 0x54) &&
                     (int)(InventoryStartY + 0x18b) <= (int)MouseY &&
@@ -878,7 +878,7 @@ void __cdecl Warehouse_HitTest(void) {
         // DESVIACION (fix del DLL, Patchs.cpp 0x004EB6C3): depósito de Zen con diez dígitos.
         InputTextMax = 10;
         InputNumber = 1;
-        DAT_00559c84 = 0;
+        InputEnable = 0;
         GoldInputEnable = 1;
         break;
     case 1:
@@ -888,7 +888,7 @@ void __cdecl Warehouse_HitTest(void) {
         // DESVIACION (fix del DLL, Patchs.cpp 0x004EB6FE): extracción de Zen con diez dígitos.
         InputTextMax = 10;
         InputNumber = 1;
-        DAT_00559c84 = 0;
+        InputEnable = 0;
         GoldInputEnable = 1;
         StorageGoldFlag = 1;
         break;
@@ -939,7 +939,7 @@ void __cdecl Trade_InputTick(void) {
         // DESVIACION (fix del DLL, Patchs.cpp 0x004EB8C7): oferta de Zen con diez dígitos.
         InputTextMax = 10;
         InputNumber = 1;
-        DAT_00559c84 = 0;
+        InputEnable = 0;
         GoldInputEnable = 1;
         InputGold = 0;
         StorageGoldFlag = 2;

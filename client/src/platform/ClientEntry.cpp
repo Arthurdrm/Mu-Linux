@@ -638,26 +638,19 @@ int main(int, char**)
 
     // Array de entidades — CRÍTICO, todo lo accede
     DAT_055c9e48 = reinterpret_cast<std::uintptr_t>(malloc(529 * CHARACTER_STRIDE));
-    DAT_07abf5d0 = DAT_055c9e48 + (rand() % 0x80) * CHARACTER_STRIDE;
-    memset((void*)DAT_07abf5d0, 0, 401 * CHARACTER_STRIDE);
+    CharactersClient = DAT_055c9e48 + (rand() % 0x80) * CHARACTER_STRIDE;
+    memset((void*)CharactersClient, 0, 401 * CHARACTER_STRIDE);
 
     // CharacterMachine / HashTable
     {
         void* ht = malloc(0x584);
         memset(ht, 0, 0x161 * 4);
-        DAT_07cf1ffc = ht;
+        CharacterMachine = ht;
     }
 
     // 20-21: CharacterAttribute = CharacterMachine; Hero = entity array slot 0
-    CharacterAttribute = DAT_07cf1ffc;
-    // También hay que setear el global C++ `CharacterMachine` (definido en
-    // globals.cpp, separado de DAT_07cf1ffc): HUD_Pass5 (Render_HudPass_4BD650_)
-    // chequea `if (!CharacterMachine || !CharacterAttribute) return;` y sin esto el
-    // HUD no dibuja HP/MP/skills.
-    extern void* CharacterMachine;
-    CharacterMachine = DAT_07cf1ffc;
-    // CHARACTER_MACHINE_Init(DAT_07cf1ffc);   // HashTable_Init — TODO: implement
-    DAT_07abf5d8 = (char*)DAT_07abf5d0;  // player ptr = entity array slot 0
+    CharacterAttribute = CharacterMachine;
+    Hero = (char*)CharactersClient;  // player ptr = entity array slot 0
 
     // Contexto del pathfinder (DAT_05826df4).
     //
@@ -697,9 +690,9 @@ int main(int, char**)
     // durante la carga del mapa (state=5). Los spawns de entidades de la escena de
     // login deferencian DAT_05828d58 + etype*0xbc + offset y crashean si es NULL.
     // Alocamos un fallback en cero, grande como para etype hasta ~0x300.
-    if (DAT_05828d58 == 0) {
+    if (Models == 0) {
         DAT_06f42a58=ResourceTables::ModelBase();
-        DAT_05828d58 = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
+        Models = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
     }
 
     // Class name table (DAT_07d2b494, stride 300, indexed por cidx = (klass&7) +

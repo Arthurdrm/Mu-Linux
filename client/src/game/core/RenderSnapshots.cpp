@@ -62,7 +62,7 @@ bool SameCameraMode(const RenderCameraPose& a, const RenderCameraPose& b) {
 void CaptureCamera(bool begin, bool sameScene) {
     RenderCameraPose pose;
     const bool live=Simulation_ReadCameraPose(pose);
-    const void* owner=SceneFlag==5 ? DAT_07abf5d8 : nullptr;
+    const void* owner=SceneFlag==5 ? Hero : nullptr;
     if (begin) {
         camera.continuous=sameScene && cameraPublished && cameraLive && live && cameraOwner==owner &&
             SameCameraMode(camera.current,pose);
@@ -104,11 +104,11 @@ void End(Track& track, const Sample& sample, bool sameScene) {
 }
 CHARACTER* Character(int slot) {
     if (slot == 400) return (CHARACTER*)CharacterView;
-    return DAT_07abf5d0 ? ((CHARACTER*)DAT_07abf5d0) + slot : nullptr;
+    return CharactersClient ? ((CHARACTER*)CharactersClient) + slot : nullptr;
 }
 int CharacterSlot(const void* entity) {
     if (entity == CharacterView) return 400;
-    const std::uintptr_t address = (std::uintptr_t)entity, base = (std::uintptr_t)DAT_07abf5d0;
+    const std::uintptr_t address = (std::uintptr_t)entity, base = (std::uintptr_t)CharactersClient;
     if (!base || address < base || address - base >= 400 * sizeof(CHARACTER)) return -1;
     const std::uintptr_t offset = address - base;
     return offset % sizeof(CHARACTER) == 0 ? (int)(offset / sizeof(CHARACTER)) : -1;
@@ -322,8 +322,8 @@ bool RenderSnapshots_Camera(float maximum, RenderCameraPair& out) {
     // Un respawn/teleport del seguido corta también la pareja de cámara.
     if (SceneFlag==5) {
         RenderPosePair followed;
-        const int slot=CharacterSlot(DAT_07abf5d8);
-        out.continuous=out.continuous && cameraOwner==DAT_07abf5d8 &&
+        const int slot=CharacterSlot(Hero);
+        out.continuous=out.continuous && cameraOwner==Hero &&
             RenderSnapshots_Character(slot,maximum,followed) && followed.continuous;
     }
     return true;

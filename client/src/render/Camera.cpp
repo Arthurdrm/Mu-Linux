@@ -195,34 +195,6 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     CreateFrustrum2D(param_2);
 }
 
-// ── FUN_005112F0 @ 0x005112F0 — Camera_MouseRay ─────────────────────────────
-// Converts screen-space mouse position to world-space ray direction.
-// out_ray[0..2] = world-space ray direction vector
-void __cdecl Camera_MouseRay(int mouseX, int mouseY, float *out_ray)
-{
-    float view_x = ((float)gWindow.PixelFromUiX(mouseX) - Ff(ViewportCenterX)) *
-                   Ff(PerspectiveX) * Ff(CameraViewFar);
-    float view_y = -((float)gWindow.GetHeight() * (float)mouseY / 0x1e0 - Ff(ViewportCenterY)) *
-                   Ff(PerspectiveY) * Ff(CameraViewFar);
-    float view_z = -Ff(CameraViewFar);
-
-    // Camera forward (negated local-space)
-    float cam_fwd_neg[3] = {
-        -Ff(DAT_083a414c),
-        -Ff(DAT_083a415c),
-        -Ff(DAT_083a416c)
-    };
-    float view_dir[3] = { view_x, view_y, view_z };
-
-    // Transform to world space using stored view matrix
-    Vector_InverseRotate(cam_fwd_neg, (float*)&CameraMatrix, (float*)&CameraRayOriginX);
-    Vector_InverseRotate(view_dir,    (float*)&CameraMatrix, out_ray);
-
-    out_ray[0] += Ff(CameraRayOriginX);
-    out_ray[1] += Ff(CameraRayOriginY);
-    out_ray[2] += Ff(CameraRayOriginZ);
-}
-
 // ── Compatibility helper; no standalone IDA function ─────────────────────────
 // CÓDIGO MUERTO: esta función NO se llama. Es una decompilación errónea
 // que asume corners en DAT_07eab1bc..1e8 (que ya están en world coords post
@@ -340,8 +312,8 @@ void __cdecl Camera_ProjectWorldToScreen(float *param_1,int *param_2,int *param_
   // Perspective divide (eye-space → NDC → window pixels)
   if (TPos[2] == 0.0f) { *param_2 = -1000; *param_3 = -1000; return; }
   float invZ = 1.0f / TPos[2];
-  int sx = (int)ViewportCenterX - (int)(TPos[0] * invZ / _DAT_083a42a4);
-  int sy = (int)ViewportCenterY + (int)(TPos[1] * invZ / _DAT_083a42a8);
+  int sx = (int)ViewportCenterX - (int)(TPos[0] * invZ / PerspectiveX);
+  int sy = (int)ViewportCenterY + (int)(TPos[1] * invZ / PerspectiveY);
 
   // Scale from real-window pixels to logical 640×480
   // IDA: `*sx = 640 * *sx / (int)WindowWidth;` — aritmetica CON SIGNO (el cast

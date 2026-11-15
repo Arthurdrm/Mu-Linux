@@ -77,7 +77,7 @@ SERVICES = SERVICES.replace("MAP_INFO_STUB", MAP_INFO_STUB)
 MAIN = r'''
 void Call(CHARACTER* character) { CALL_STOP; }
 std::uint64_t Run(CHARACTER* character, BYTE* models, BYTE* items, unsigned displacement) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     DAT_055c9e44 = reinterpret_cast<std::uintptr_t>(items);
     DAT_07d78068 = DAT_055c9e44 + displacement * 64;
     Require(ItemAttribute_Base() == DAT_07d78068);
@@ -189,7 +189,7 @@ def harness(revision=None):
     prefix = re.sub(r"struct OBJECT\s*\{.*?\};", lambda _: record, prefix, count=1, flags=re.S)
     header, globals_source = (read_source(path, revision) for path in ("src/globals.h", "src/globals.cpp"))
     declarations = "\n".join(re.findall(r"^constexpr\s+(?:int|short)\s+\w+\s*=[^;]+;", read_source("src/game/item/ItemDefines.h", revision), re.M))
-    for name in ("DAT_05828d58", "DAT_055c9e44", "DAT_07d78068"):
+    for name in ("Models", "DAT_055c9e44", "DAT_07d78068"):
         declarations += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
         declarations += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     declarations += re.search(r"static __forceinline [^\n]*\bItemAttribute_Base\([^\{]*\{.*?^\}", header, re.M | re.S).group()

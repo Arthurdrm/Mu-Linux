@@ -187,7 +187,7 @@ void __cdecl AccessModel(int param_1, const char *param_2, const char *param_3, 
         const char *pcVar1 = (param_4 < 10) ? s__s0_d_bmd_0055a7ec : s__s_d_bmd_0055a7e0;
         crt_sprintf(local_40, pcVar1, param_3, param_4);
     }
-    BMD* model = AsModel(DAT_05828d58) + param_1;
+    BMD* model = AsModel(Models) + param_1;
     int numBonesInSlot = model->NumBones;
     if (DAT_0055a7c4 == '\0') {
         // HQ path original: si el SMD ya cargó bones, BMD__Save agrega la anim BMD.
@@ -246,7 +246,7 @@ void __cdecl OpenTexture(int Model, const char* SubFolder, int Type, char Check)
     //    slot +0x38 short* indexTexture (short[n])
     // Verificado en BMD__Open (BMD::Open): this[0x24]=numMeshes,
     // this[0x34]=texName[] y this[0x38]=indexTex[] se asignan directamente.
-    char* slot = (char*)(DAT_05828d58 + Model * BMD_STRIDE);
+    char* slot = (char*)(Models + Model * BMD_STRIDE);
     short numMeshes = *(short*)(slot + 0x24);
     // DIAG-canary inconditional: confirmar que llegamos a la función para Ship/Logo
     {
@@ -389,7 +389,7 @@ extern "C" void __cdecl SMD2BMDAnimation(int ID, char LockPosition);
 //   }
 void __cdecl OpenSMDModel(int ID, const char* FileName, int Actions, char Flip) {
     ResourceTables::EnsureModels(std::size_t(ID)+1);
-    BMD* slot = AsModel(DAT_05828d58) + ID;
+    BMD* slot = AsModel(Models) + ID;
     if (slot->NumMeshs > 0) return;  // Modelo ya cargado.
     if (!OpenSMDFile(FileName, 0, Flip)) return;
     strncpy(slot->Name, FileName, sizeof(slot->Name)-1);
@@ -407,10 +407,10 @@ void __cdecl OpenSMDModel(int ID, const char* FileName, int Actions, char Flip) 
 //   }
 void __cdecl OpenSMDAnimation(int ID, const char* FileName, char LockPosition) {
     ResourceTables::EnsureModels(std::size_t(ID)+1);
-    BMD* slot = AsModel(DAT_05828d58) + ID;
+    BMD* slot = AsModel(Models) + ID;
     if (slot->NumBones <= 0) return;  // Conservar el gate por huesos del port.
     // La cantidad de huesos pertenece al modelo elegido, no al último archivo leído.
-    if (!Smd::SelectModel(AsModel(DAT_05828d58)+ID)) return;
+    if (!Smd::SelectModel(AsModel(Models)+ID)) return;
     OpenSMDFile(FileName, 1, 0);
     SMD2BMDAnimation(ID, LockPosition);
 }

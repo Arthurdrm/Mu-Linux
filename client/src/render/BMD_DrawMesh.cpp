@@ -154,7 +154,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
     // DESVIACION: un modelo propio del catálogo con caras invertidas (hecho
     // para dos caras) se dibuja sin descarte de caras; el 0.97k no tiene
     // modelos así.  Los modelos vanilla no pasan por acá.
-    const int model = (int)(((uintptr_t)bmd_obj - (uintptr_t)DAT_05828d58) / sizeof(BMD));
+    const int model = (int)(((uintptr_t)bmd_obj - (uintptr_t)Models) / sizeof(BMD));
     const bool twoSidedMesh=model >= MODEL_MAX_VANILLA && gContentCatalog.IsTwoSidedMesh(model,meshIndex);
     // DESVIACION R4n: el ámbito mantiene dos caras durante todos los materiales
     // y recupera culling/caché coherentes al salir, también en retornos tempranos.
@@ -253,7 +253,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
     // ZzzBMD.cpp RenderBody: iBlendMesh = i).  El 0.97 la parsea pero no la
     // usa; se aplica sólo a los modelos dinámicos para no tocar el vanilla.
     const bool brightMesh =
-        ((int)(((uintptr_t)bmd_obj - (uintptr_t)DAT_05828d58) / sizeof(BMD)) >= MODEL_MAX_VANILLA) &&
+        ((int)(((uintptr_t)bmd_obj - (uintptr_t)Models) / sizeof(BMD)) >= MODEL_MAX_VANILLA) &&
         mesh->TextureFlags != 0 && static_cast<const char*>(mesh->TextureFlags)[0] != 0;
 
     if ((bVar4 & 1) == 1) {
@@ -428,7 +428,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
     // original decide este blend — no sale del asset (el BMD v10 no tiene campo
     // de RenderType; se deriva del nombre de textura) ni de `RenderLinkObject`
     // (0x455430), que no toca BlendMesh. Queda como forzado explicito.
-    if (bmd_obj == (void*)(DAT_05828d58 + 816 * sizeof(BMD)) && meshIndex == 1) {
+    if (bmd_obj == (void*)(Models + 816 * sizeof(BMD)) && meshIndex == 1) {
         BMDDevice::Select({BMDDevice::Pass::Glow});
     }
 

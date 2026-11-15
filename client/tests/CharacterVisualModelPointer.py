@@ -17,7 +17,7 @@ SERVICES=r'''
 // Proyección semántica para el servicio controlado, sin representar CHARACTER.
 struct OBJECT{short Type;float Position[3],Scale;BYTE CurrentAction;float BoundingBoxMin[3],BoundingBoxMax[3],OBB[12];};
 struct Character{OBJECT Object;}entity;
-std::uintptr_t DAT_05828d58;unsigned queries,boundsCalls;
+std::uintptr_t Models;unsigned queries,boundsCalls;
 Character* AsCharacter(int key){Require(key==7);++queries;return &entity;}
 void ObjectBounds_Build(const float* a,const float* b,const float* p,float* out){Require(a==entity.Object.BoundingBoxMin && b==entity.Object.BoundingBoxMax && p==entity.Object.Position && out==entity.Object.OBB && boundsCalls++==0);}
 '''
@@ -31,7 +31,7 @@ std::uint64_t Run(BYTE* storage){
  const DWORD bits[]={0,0x80000000u,0x7f800000u,0xff800000u,0x7fc12345u,1,0x3f800000u,0xffffffffu};
  std::uint64_t hash=14695981039346656037ull;unsigned cases=0,coverage=0;
  for(unsigned profile=0;profile<256;++profile)for(short action:actions)for(unsigned slot:slots){
-  DAT_05828d58=reinterpret_cast<std::uintptr_t>(storage+16+(profile%2)*4);BYTE* model=reinterpret_cast<BYTE*>(DAT_05828d58)+slot*188;
+  Models=reinterpret_cast<std::uintptr_t>(storage+16+(profile%2)*4);BYTE* model=reinterpret_cast<BYTE*>(Models)+slot*188;
   for(unsigned i=0;i<188;++i)model[i]=static_cast<BYTE>(profile+i*37);
   Put(model,38,action);Put(model,34,bones[profile%6]);Put(model,84,roots[profile%6]);
   std::memset(&entity,0x55,sizeof(entity));entity.Object.Type=static_cast<short>(slot);entity.Object.CurrentAction=static_cast<BYTE>(profile);

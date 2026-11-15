@@ -655,7 +655,7 @@ extern "C" void GuildCreator_OpenFromServer(void)
     // apagado. Ambos caminos escriben InputText[0], pero sólo el primero evita
     // que Enter abra o envíe chat mientras el editor conserva el foco.
     GuildInputEnable = 1;
-    DAT_00559c84 = 0;
+    InputEnable = 0;
     ClearInput(0);
     // El Personal Code deja este slot enmascarado; el nombre del guild es visible.
     InputTextHide[0] = 0;
@@ -693,7 +693,7 @@ extern "C" void GuildCreator_CloseFromResult(void)
     ClearInput(0);
     _InputTextMaxArr[0] = 10;
     GuildInputEnable = 0;
-    DAT_00559c84 = 0;
+    InputEnable = 0;
     GuildCreatorOpened = 0;
     g_iKeyPadEnable = 0;
     if (Hero)

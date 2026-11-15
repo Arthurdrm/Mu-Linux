@@ -88,9 +88,9 @@ void Sound_Update3DPositions(void)
 
             // Player world pos (DAT_07abf5d8) minus entity world pos.
             float offset[3];
-            offset[0] = *(float*)(DAT_07abf5d8 + 0x10) - entityPtr->Position[0];
-            offset[1] = *(float*)(DAT_07abf5d8 + 0x14) - entityPtr->Position[1];
-            offset[2] = *(float*)(DAT_07abf5d8 + 0x18) - entityPtr->Position[2];
+            offset[0] = *(float*)(Hero + 0x10) - entityPtr->Position[0];
+            offset[1] = *(float*)(Hero + 0x14) - entityPtr->Position[1];
+            offset[2] = *(float*)(Hero + 0x18) - entityPtr->Position[2];
 
             // Rotate into listener space.
             Vector_Rotate(offset, rotMatrix, offset);

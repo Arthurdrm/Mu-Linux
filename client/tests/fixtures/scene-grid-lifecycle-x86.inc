@@ -64,7 +64,7 @@ void __cdecl Entity_GridUnlink(void *param_1_v, void* cell) {
 void __cdecl DeleteObjects(void) {
 
     for (int i = 0; i < 0x7580; i += 0xbc)
-        BMD__Release(i + DAT_05828d58);
+        BMD__Release(i + Models);
 
 
 

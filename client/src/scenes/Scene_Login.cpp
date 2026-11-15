@@ -103,13 +103,13 @@ uint Scene_Login(void)
     InputTextWidth = 0x77;                  // InputTextWidth = 119
     GL_SetBlendSrcOver('\x01');                 // EnableAlphaTest(1)
     Gfx::Color3f(1.0f, 1.0f, 1.0f);
-    DAT_00559c78 = 0xffd2e6ff;            // m_dwTextColor
+    m_dwTextColor = 0xffd2e6ff;            // m_dwTextColor
     SetBackgroundTextColor = 0;                     // m_dwBackColor
     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
 
     // ── Credential input panel (sub-states 2..3) ─────────────────────────────
     iVar3 = DAT_005616a4;
-    if ((1 < DAT_083a7c14) && (DAT_083a7c14 < 4)) {
+    if ((1 < LoginSubState) && (LoginSubState < 4)) {
         tStack_74.cx = DAT_005616a4;
         GL_DrawTexture(0xc, 195.0f, (float)DAT_005616a4, 250.0f, 216.0f,
                      0.0f, 0.0f, 0.9765625f, 0.84375f, '\x01', '\x01');
@@ -159,7 +159,7 @@ uint Scene_Login(void)
     InputTextWidth = 0x100;                 // InputTextWidth = 256
     Gfx::Color3f(0.8f, 0.7f, 0.6f);
     uVar6 = 0xffffffff;
-    DAT_00559c78 = 0xffffffff;
+    m_dwTextColor = 0xffffffff;
 
     // Version string 1 (memcpy loop generado por MSVC)
     pcVar8 = &DAT_07d4b12c;
@@ -234,10 +234,10 @@ uint Scene_Login(void)
                  acStack_64, (LPSIZE)0x0, '\0', 0);
 
     // ── Sub-state dispatch ────────────────────────────────────────────────────
-    if (DAT_083a7c14 == 0)
+    if (LoginSubState == 0)
         Scene_Login_ServerSelect();
 
-    if ((DAT_083a7c14 == 1) || (DAT_083a7c14 == 0xc)) {
+    if ((LoginSubState == 1) || (LoginSubState == 0xc)) {
         // Connecting / Timeout: progress bar + cancel button
         Gfx::Color3f(0.5f, 0.5f, 0.5f);
         GL_DrawTexture(0xf0, 213.0f, 228.0f, 213.0f, 64.0f,
@@ -265,7 +265,7 @@ uint Scene_Login(void)
         // Cancel button (0xf3=normal, 0xf4=highlighted)
         if (((((MouseX < 0x11d) || (0x162 < MouseX)) ||
               (MouseY < 0x106)) || (0x119 < MouseY)) ||
-            ((DAT_083a7c14 == 0xc) && (DAT_083a4320 < 4)))
+            ((LoginSubState == 0xc) && (DAT_083a4320 < 4)))
         {
             iVar3 = 0xf3;
         } else {

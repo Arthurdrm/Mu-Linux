@@ -66,8 +66,8 @@ void Mouse_UpdateHoverTargets(void)
         SelectedCharacter = -1;
         Attacking = -1;
     } else if (SelectedCharacter >= 0 &&
-               *(char *)(FieldAddress(DAT_07abf5d0, &AsCharacter(DAT_07abf5d0)->Dead) + SelectedCharacter * CHARACTER_STRIDE) == '\0' &&
-               *(char *)(DAT_07abf5d0 + SelectedCharacter * CHARACTER_STRIDE + 0x84) == '\x02') {
+               *(char *)(FieldAddress(CharactersClient, &AsCharacter(CharactersClient)->Dead) + SelectedCharacter * CHARACTER_STRIDE) == '\0' &&
+               *(char *)(CharactersClient + SelectedCharacter * CHARACTER_STRIDE + 0x84) == '\x02') {
         // Current hover target is a valid alive monster.
         // Keep the original transient hover state.  Leaving this selected
         // after the cursor moves away turns later ground clicks into a basic
@@ -95,7 +95,7 @@ void Mouse_UpdateHoverTargets(void)
         if (Attacking == -1 ||
             MouseLButton != '\0' || MouseLButtonPush != 0 ||
             MouseRButton != '\0' || MouseRButtonPush != '\0' ||
-            *(char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Dead != '\0')
+            *(char *)&((CHARACTER*)(uintptr_t)(Hero))->Dead != '\0')
         {
             SelectedCharacter = -1;
         }
@@ -135,7 +135,7 @@ void Mouse_UpdateHoverTargets(void)
         }
 
         // No Alt: check swim/idle move state
-        unsigned char moveFlags = *(unsigned char *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7;
+        unsigned char moveFlags = *(unsigned char *)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7;
         if (moveFlags == 2 || moveFlags == 0)
         {
             // HashTable encode/decode block — anti-tamper obfuscation.
@@ -163,8 +163,8 @@ void Mouse_UpdateHoverTargets(void)
             // elfa activo (skills 26-28: curar, mas defensa, mas dano) se invierte,
             // para poder apuntarle a un jugador que tiene un monstruo detras.
             int firstKind = 0x22, secondKind = 1;
-            if (DAT_07abf5d8 && CharacterAttribute) {
-                const BYTE slot  = *(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->CurrentSkill;
+            if (Hero && CharacterAttribute) {
+                const BYTE slot  = *(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->CurrentSkill;
                 const BYTE skill = ((BYTE*)CharacterAttribute)[87 + slot];
                 if (skill >= 26 && skill <= 28) { firstKind = 1; secondKind = 0x22; }
             }
@@ -321,7 +321,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
     bool bVar17 = (SceneFlag == 4);  // SceneFlag == CharSelect
 
     // Pass 1: set highlight flags and color tints for visible entities
-    byte *pbVar4 = (byte *)(DAT_07abf5d0 + 0x84);
+    byte *pbVar4 = (byte *)(CharactersClient + 0x84);
     for (int loop1 = 400; loop1 != 0; loop1--, pbVar4 += CHARACTER_STRIDE) {
         if (((*pbVar4 & param_1) == *pbVar4) && (pbVar4[-0x84] != 0) && (AsObject(pbVar4 - 0x84)->Visible != 0) &&
             (_DAT_00552580 < *(float *)(FieldAddress(pbVar4, &AsObject(pbVar4)->Alpha) - 0x84))) {
@@ -352,7 +352,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
     bool diagFilt = (SceneFlag == 4);
 
     for (int ofs = 0; ofs < 400 * CHARACTER_STRIDE; ofs += CHARACTER_STRIDE, ent_idx++) {
-        char *ent = (char *)(ofs + DAT_07abf5d0);
+        char *ent = (char *)(ofs + CharactersClient);
         if (diagFilt && ent_idx < 5) {
             DWORD now = Platform::GetTimer().Ticks();
             if (now - s_lastFilt[ent_idx] > 1000) {
@@ -385,7 +385,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
         }
 
         // Visibility + nearest check
-        if ((!bVar17) && (ent == (char *)DAT_07abf5d8)) continue;
+        if ((!bVar17) && (ent == (char *)Hero)) continue;
         if ((*(char *)&AsObject(ent)->Kind & param_1) != *(char *)&AsObject(ent)->Kind) continue;
 
         // IDA sub_4AFDC0 L38-52: test del RAYO del mouse contra la OBB de la
@@ -429,7 +429,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
         int *piVar12 = (int *)((char *)&DAT_07e11e80 + 0x1c);
         for (int pi = 0; pi < (int)DAT_07eaa0e0; pi++, piVar12 += 9) {
             if (*piVar12 < 0) {
-                const char *playerName = EntityName::Get(DAT_07abf5d8);
+                const char *playerName = EntityName::Get(Hero);
                 const char *partyName  = Party_NameOf(piVar12 - 7);
                 size_t n = strlen(playerName);
                 size_t m = strlen(partyName);
@@ -566,7 +566,7 @@ char __cdecl Party_HPBar_HoverCheck(void)
     float local_24 = 5.0f;                              // top of first bar (Y)
     char result = 0;
 
-    UINT  uVar7 = *(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7;  // clase del heroe (c->Class & 7)
+    UINT  uVar7 = *(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7;  // clase del heroe (c->Class & 7)
     UINT *puVar5 = (UINT*)&DAT_07e11e9c;                // party slot base (stride 9 uints = 0x24)
 
     for (int i = 0; i < (int)DAT_07eaa0e0; i++, puVar5 += 9) {
@@ -582,7 +582,7 @@ char __cdecl Party_HPBar_HoverCheck(void)
             // [HashTable obfuscation block skipped — anti-tamper, not game logic]
 
             // Get entity stat ID for this party slot
-            UINT *puVar12 = (UINT*)(UINT)*(BYTE*)((UINT)*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->CurrentSkill + 0x57 + (char*)CharacterAttribute);
+            UINT *puVar12 = (UINT*)(UINT)*(BYTE*)((UINT)*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->CurrentSkill + 0x57 + (char*)CharacterAttribute);
 
             // Check if entity type is a hoverable icon (0x1a/0x1b/0x1c/0xf/0x10)
             UINT pVal = (UINT)(uintptr_t)puVar12;

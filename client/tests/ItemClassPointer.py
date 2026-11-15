@@ -10,7 +10,7 @@ from legacy_fields import lower_names
 SERVICES=r'''
 #define CHARMENU_ROW_MAX 28
 #define crt_sprintf std::sprintf
-uintptr_t DAT_07abf5d8;
+uintptr_t Hero;
 char GlobalText[1040][32];
 char lpString_07e90798[3200];
 int TextListColor[32],TextBold[32],TextNum,DAT_07eaa158;
@@ -24,7 +24,7 @@ std::uint64_t Run(BYTE* itemMem,BYTE* heroMem){
   std::memset(itemMem,0xa5,96);std::memset(heroMem,0xc3,512);for(unsigned c=0;c<4;++c)item[56+c]=(pattern>>(2*c))&3;hero[444]=static_cast<BYTE>(skin);
   BYTE itemBefore[96],heroBefore[512];std::memcpy(itemBefore,itemMem,96);std::memcpy(heroBefore,heroMem,512);
   std::memset(lpString_07e90798,0x5a,sizeof(lpString_07e90798));for(unsigned r=0;r<32;++r){TextListColor[r]=37+r;TextBold[r]=73+r;}
-  const int rows[]={0,1,24,25};const int start=rows[(pattern+skin)%4];TextNum=start;DAT_07eaa158=17;DAT_07abf5d8=reinterpret_cast<uintptr_t>(hero);
+  const int rows[]={0,1,24,25};const int start=rows[(pattern+skin)%4];TextNum=start;DAT_07eaa158=17;Hero=reinterpret_cast<uintptr_t>(hero);
   char expected[3200];int color[32],bold[32],row=start,blanks=17;std::memcpy(expected,lpString_07e90798,sizeof(expected));std::memcpy(color,TextListColor,sizeof(color));std::memcpy(bold,TextBold,sizeof(bold));
   if(start<=24){
    color[start+2]=color[start+3]=0;unsigned eligible[4],n=0;for(unsigned c=0;c<4;++c)if(item[56+c])eligible[n++]=c;
@@ -39,7 +39,7 @@ std::uint64_t Run(BYTE* itemMem,BYTE* heroMem){
   Invoke(item);Require(TextNum==row && DAT_07eaa158==blanks && std::memcmp(expected,lpString_07e90798,sizeof(expected))==0 && std::memcmp(color,TextListColor,sizeof(color))==0 && std::memcmp(bold,TextBold,sizeof(bold))==0 && std::memcmp(itemMem,itemBefore,96)==0 && std::memcmp(heroMem,heroBefore,512)==0);
   Hash(digest,expected,sizeof(expected));Hash(digest,color,sizeof(color));Hash(digest,bold,sizeof(bold));Hash(digest,&row,4);Hash(digest,&blanks,4);++cases;
  }
- char before[3200];std::memcpy(before,lpString_07e90798,sizeof(before));const int row=TextNum,blank=DAT_07eaa158;Invoke(nullptr);DAT_07abf5d8=0;Invoke(item);Require(TextNum==row && DAT_07eaa158==blank && std::memcmp(before,lpString_07e90798,sizeof(before))==0);
+ char before[3200];std::memcpy(before,lpString_07e90798,sizeof(before));const int row=TextNum,blank=DAT_07eaa158;Invoke(nullptr);Hero=0;Invoke(item);Require(TextNum==row && DAT_07eaa158==blank && std::memcmp(before,lpString_07e90798,sizeof(before))==0);
  Require(cases==65536);return digest;
 }
 int main(){for(unsigned i=0;i<1040;++i)std::sprintf(GlobalText[i],"g%04u",i);std::strcpy(GlobalText[60],"no:%s");std::strcpy(GlobalText[61],"ok:%s");

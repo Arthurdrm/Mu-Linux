@@ -45,7 +45,7 @@ extern "C" BYTE OffsetMixItems[];
 // click derecho para equipar (RightClickMove.cpp).
 bool Equip_CanPlace(const ITEM* item, int a5)
 {
-    if (!item || !CharacterMachine || !CharacterAttribute || !DAT_07abf5d8 || !DAT_07d78068) return false;
+    if (!item || !CharacterMachine || !CharacterAttribute || !Hero || !DAT_07d78068) return false;
     BYTE* const CM = (BYTE*)CharacterMachine;
     BYTE* const CA = (BYTE*)CharacterAttribute;
     ITEM_ATTRIBUTE* const IA = (ITEM_ATTRIBUTE*)(uintptr_t)DAT_07d78068;
@@ -59,9 +59,9 @@ bool Equip_CanPlace(const ITEM* item, int a5)
     const BYTE* req   = IA[item->Type].RequireClass;
     bool ok = true;
 
-    if ((*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7) == 3) {       // Magic Gladiator
+    if ((*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7) == 3) {       // Magic Gladiator
         if (!req[3] && !req[0] && !req[1]) ok = false;
-    } else if (!req[*(BYTE*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->Class & 7]) {
+    } else if (!req[*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7]) {
         ok = false;
     }
 
@@ -153,7 +153,7 @@ bool Equip_CanPlace(const ITEM* item, int a5)
 extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float h, int slotIdx)
 {
     if ((int)EnableUse > 0 || EquipmentItem /* EquipmentItem */) return;
-    if (!CharacterMachine || !CharacterAttribute || !DAT_07abf5d8 || !DAT_07d78068) return;
+    if (!CharacterMachine || !CharacterAttribute || !Hero || !DAT_07d78068) return;
 
     const int  a5  = slotIdx;
     const int  x0  = (int)InventoryStartX + (int)sx;          // InventoryStartX + a1
@@ -199,7 +199,7 @@ extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float
                 (kind >= 430 && kind <= 435))
                 return;
             MouseLButtonPush = 0;
-            BYTE pkt[5] = { 0xC1, 0x05, 0x34, (BYTE)a5, (BYTE)DAT_07eaa138 };
+            BYTE pkt[5] = { 0xC1, 0x05, 0x34, (BYTE)a5, (BYTE)RepairEnable };
             gNetwork.Send(pkt, sizeof(pkt));
             return;
         }
@@ -225,11 +225,11 @@ extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float
         *(int*)(slot + 4) = 0;
         slot[27] = 0;
         DAT_07ea5b18 = (DWORD)a5;                           // Inventory[32].Type
-        SetCharacterClass(AsCharacter(DAT_07abf5d8));         // SetCharacterClass(Hero)
+        SetCharacterClass(AsCharacter(Hero));         // SetCharacterClass(Hero)
         CheckInventory = 0;                                   // CheckInventory
         PlayBuffer(29, 0, 0);
         if (a5 == 8)
-            DeleteBug((intptr_t)DAT_07abf5d8);
+            DeleteBug((intptr_t)Hero);
         if (rightClick) {
             DAT_07e11e78 = (DWORD)(unequipTarget + 12);
             EquipmentItem = 1;                               // EquipmentItem

@@ -276,7 +276,7 @@ void __cdecl GridSpring_Create(void *widget, OBJECT* entity, int p3, float p4, f
             } else {
                 float out_pos[3] = {lx, ly, lz};
                 float out_col[4] = {0};
-                BMD_TransformPosition(static_cast<void*>(AsModel(DAT_05828d58) + entity_ptr->Type),
+                BMD_TransformPosition(static_cast<void*>(AsModel(Models) + entity_ptr->Type),
                              local_3c, out_pos, out_col, '\x01');
                 // BMD__TransformPosition LEE del 3er arg (Pos) y ESCRIBE en el 4º
                 // (WorldPos): el resultado transformado es out_col, no `out_pos`.

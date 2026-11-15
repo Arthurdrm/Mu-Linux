@@ -80,7 +80,7 @@ void __cdecl Combat_UseWizardSkill(intptr_t c, intptr_t o) {
     // ── Set target position from CharactersClient[MovementSkillTarget] ──
     char* heroEntity = (char*)c;
     int targetIdx = (int)MovementSkillTarget;  // MovementSkillTarget
-    intptr_t entityBase = DAT_07abf5d0;    // CharactersClient array base
+    intptr_t entityBase = CharactersClient;    // CharactersClient array base
 
     // Target entity position: entityBase + targetIdx * 0x394 + offset
     // Ghidra: CharactersClient[_MovementSkillTarget].Object.Position[0/1/2]
@@ -357,7 +357,7 @@ bool __stdcall Combat_UseElfSkillItem(intptr_t c, intptr_t pItem) {
 
     // Hero = DAT_07abf5d8
     char* charAttrBase = (char*)CharacterAttribute;
-    char* heroEntity   = DAT_07abf5d8;
+    char* heroEntity   = Hero;
 
     if (charAttrBase == nullptr || heroEntity == nullptr) {
         return false;
@@ -456,7 +456,7 @@ bool __stdcall Combat_UseElfSkillItem(intptr_t c, intptr_t pItem) {
         // IDA: SkillElf (0x0048BD70).
         // DESVIACION (fix del DLL, Patchs.cpp 0x0048C6F9): usar SelectedCharacter si CheckAttack permite atacarlo; conservar la ruta sin blanco.
         const int targetIndex = CheckAttack() ? (int)SelectedCharacter : (int)MovementSkillTarget;
-        WORD targetKey = AsCharacter((char*)(uintptr_t)DAT_07abf5d0 + targetIndex * CHARACTER_STRIDE)->Key;
+        WORD targetKey = AsCharacter((char*)(uintptr_t)CharactersClient + targetIndex * CHARACTER_STRIDE)->Key;
         if (targetKey == 0xFFFF) {
             continue;
         }

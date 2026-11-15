@@ -297,13 +297,13 @@ void __cdecl ClearInput(int param_1)
   int iVar2;
   undefined4 *puVar3;
 
-  DAT_07e11d78 = 0;
+  InputIndex = 0;
   DAT_00559c90 = 0xffffffff;
   iVar2 = 0;
   do {
     if ((iVar2 != 1) || (param_1 != 0)) {
       // stride 0x100 (256 bytes per slot) — Ghidra mis-read as 0x40
-      puVar3 = (undefined4*)((char*)DAT_07db8710 + iVar2 * 0x100);
+      puVar3 = (undefined4*)((char*)InputText + iVar2 * 0x100);
       for (iVar1 = 0x40; iVar1 != 0; iVar1 = iVar1 + -1) {
         *puVar3 = 0;
         puVar3 = puVar3 + 1;

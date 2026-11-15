@@ -645,7 +645,7 @@ static bool CreateEffect_Type268(float*& pfVar17, float*& pfVar8, float*& result
 static bool CreateEffect_Type238(float*& pfVar17, float*& result)
 {
   *(int*)&pfVar17[EffectLifetimeIndex] = 5;
-  *(char *)((char*)DAT_07cf1ffc + 1408) = *(char *)((char*)DAT_07cf1ffc + 1408) + 1;   // serial de proyectiles
+  *(char *)((char*)CharacterMachine + 1408) = *(char *)((char*)CharacterMachine + 1408) + 1;   // serial de proyectiles
   { result = (float*)(pfVar17); return true; }
   return false;
 }
@@ -654,7 +654,7 @@ static bool CreateEffect_Type238(float*& pfVar17, float*& result)
 static bool CreateEffect_Type239(float*& pfVar17, float*& result)
 {
   *(int*)&pfVar17[EffectLifetimeIndex] = 25;
-  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
   { result = (float*)(pfVar17); return true; }
   return false;
 }
@@ -689,7 +689,7 @@ static bool CreateEffect_SkillBlast(float *& param_8, intptr_t& iVar9, float*& p
   pfVar17[0x11] = AsObject(pfVar17)->Position[1];
   pfVar17[0x12] = AsObject(pfVar17)->Position[2];
   Joint_Create(0x4ea,pfVar12,pfVar12,AsObject(pfVar17)->Angle,5,(intptr_t)pfVar17,100.0,-1,0);
-  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
   { result = (float*)(pfVar17); return true; }
   return false;
 }
@@ -715,7 +715,7 @@ static bool CreateEffect_ArrowDouble(float*& pfVar12, float*& pfVar17, float*& r
     *(float *)&AsObject(pfVar17)->AttackPoint = 0.0;
     AsObject(pfVar17)->Kind = 1;
   }
-  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
   { result = (float*)(pfVar17); return true; }
   return false;
 }
@@ -751,7 +751,7 @@ static bool CreateEffect_Type243(float& fVar27, intptr_t& iVar9, float* const& l
     Joint_Create(0x4e1,pfVar8,pfVar8,pfVar12,0xb,(intptr_t)pfVar17,50.0,-1,iVar9 == 1);
     iVar9 = iVar9 + 1;
   } while (iVar9 < 4);
-  *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+  *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
   { result = (float*)(pfVar17); return true; }
   return false;
 }
@@ -872,8 +872,8 @@ LAB_00460dd8:
     Tamachan_Create((char *)pfVar17);
     return pfVar8;
   }
-  pfVar4 = (float*)DAT_07cf1ffc;
-  pfVar3 = (float*)DAT_07abf5d8;
+  pfVar4 = (float*)CharacterMachine;
+  pfVar3 = (float*)Hero;
   fVar27 = _DAT_00552580;
   if (0xf6 < param_1) {
     if (param_1 < 0x1f1) {
@@ -1091,7 +1091,7 @@ LAB_004658be:
     }
     if (param_1 == 0x4b0) {
       *(int*)&pfVar17[EffectLifetimeIndex] = 40;
-      *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+      *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
       return pfVar17;
     }
     if (0x498 < param_1) {
@@ -1292,8 +1292,8 @@ LAB_00463e3d:
     if ((float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner != pfVar3) {
       return (float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner;
     }
-    pfVar12 = (float*)DAT_07cf1ffc;
-    cVar5 = *(char *)((char*)DAT_07cf1ffc + 1408);
+    pfVar12 = (float*)CharacterMachine;
+    cVar5 = *(char *)((char*)CharacterMachine + 1408);
     *(char *)(pfVar17 + 0x22) = cVar5;
     *((char *)pfVar12 + 1408) = cVar5 + '\x01';
     sVar28 = AsObject(pfVar17)->PKKey;
@@ -1438,7 +1438,7 @@ switchD_00461001_caseD_c7:
       *(float *)&AsObject(pfVar17)->AttackPoint = 0.0;
       AsObject(pfVar17)->Kind = 1;
     }
-    pfVar8 = (float*)DAT_07abf5d8;
+    pfVar8 = (float*)Hero;
     if ((param_1 == 0xd8) && (AsObject(pfVar17)->SubType == 3)) {
       *(int*)&pfVar17[EffectLifetimeIndex] = 40;
       fVar27 = pfVar8[5];
@@ -1453,7 +1453,7 @@ switchD_00461001_caseD_c7:
       param_8 = (float *)(iVar9 % 0x14);
       *pfVar12 = -((float)(int)(intptr_t)param_8 + _DAT_00552844);
     }
-    *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+    *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
     return pfVar17;
   }
   case 0xe1:
@@ -1529,18 +1529,18 @@ switchD_00461001_caseD_c7:
       AsObject(pfVar17)->Scale = 0.1;
       AsObject(pfVar17)->Gravity = 0.0;
     }
-    pfVar8 = (float*)DAT_07cf1ffc;
+    pfVar8 = (float*)CharacterMachine;
     // *(float *)&AsObject(pfVar17)->Owner (= slot+252) es el PUNTERO al owner: hay que reinterpretar
     // los bits, no convertir el float (eso destruia el puntero y la comparacion
     // con Hero nunca daba true).
     pfVar12 = (float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner;
-    if (pfVar12 != (float*)DAT_07abf5d8) {
+    if (pfVar12 != (float*)Hero) {
       return pfVar12;
     }
     if (1 < AsObject(pfVar17)->SubType) {                      // SubType (DWORD)
       return pfVar12;
     }
-    *(char *)(pfVar17 + 0x22) = *(char *)((char*)DAT_07cf1ffc + 1408);   // serial de proyectiles
+    *(char *)(pfVar17 + 0x22) = *(char *)((char*)CharacterMachine + 1408);   // serial de proyectiles
     return (float *)Entity_FindNearby_SendPacket((uint)AsObject(pfVar17)->Skill,AsObject(pfVar17)->Position,400.0,
                                                  *(byte *)(pfVar17 + 0x22),AsObject(pfVar17)->PKKey);
   case MODEL_ARROW_DOUBLE:
@@ -1560,9 +1560,9 @@ switchD_00461001_caseD_c7:
   // + 1408)), el mismo que leen Joint_Create y UseSkillWarrior.  Ghidra lo da como
   // pfVar12[0x160] sobre un float*, o sea 0x160 * 4; el port lo había pasado a bytes
   // sin escalar y leía e incrementaba CharacterMachine+0x160, que es otro campo.
-  cVar5 = *(char *)((char*)DAT_07cf1ffc + 1408);
+  cVar5 = *(char *)((char*)CharacterMachine + 1408);
   *(char *)(pfVar17 + 0x22) = cVar5;
-  *(char *)((char*)DAT_07cf1ffc + 1408) = cVar5 + '\x01';
+  *(char *)((char*)CharacterMachine + 1408) = cVar5 + '\x01';
   return pfVar17;
 switchD_00460f25_caseD_100:
   pfVar12 = pfVar17 + 7;
@@ -1622,8 +1622,8 @@ switchD_00465549_caseD_4ba:
 LAB_00465641:
   Matrix_BuildFromEuler(AsObject(pfVar17)->Angle,local_3c + 3);
   Vector_Rotate(&local_6c,local_3c + 3,AsObject(pfVar17)->Direction);
-  if ((float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner != (float*)DAT_07abf5d8) {
-    return (float*)DAT_07abf5d8;
+  if ((float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner != (float*)Hero) {
+    return (float*)Hero;
   }
   fVar27 = AsObject(pfVar17)->Position[1];
   fVar2 = AsObject(pfVar17)->Position[2];
@@ -1679,10 +1679,10 @@ void __cdecl Tamachan_Spawn(void)
   angle[0] = 0.0f;
   angle[1] = 0.0f;
   angle[2] = 0.0f;
-  if (DAT_07abf5d8)   // guard del port: el binario asume Hero
+  if (Hero)   // guard del port: el binario asume Hero
     angle[2] = CreateAngle(16284.0f, 12031.0f,
-                            *(float *)((char *)DAT_07abf5d8 + 16),
-                            *(float *)((char *)DAT_07abf5d8 + 20));
+                            *(float *)((char *)Hero + 16),
+                            *(float *)((char *)Hero + 20));
   CreateEffect(MODEL_TAMA, pos, angle, angle, (float *)0, (float *)0, (float *)-1,
                 (float *)0, 0);
 }

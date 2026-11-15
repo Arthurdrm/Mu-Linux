@@ -9,7 +9,7 @@ from SceneObjectPointer import ROOT,build_and_run,function,read_source
 
 SERVICES=r'''
 #include <string>
-uintptr_t DAT_05828d58;int selected,actions;char flip,lock;bool openResult;const char* filename;
+uintptr_t Models;int selected,actions;char flip,lock;bool openResult;const char* filename;
 std::vector<unsigned> events;
 namespace ResourceTables{void EnsureModels(std::size_t count){Require(count==std::size_t(selected)+1);events.push_back(1);}}
 bool OpenSMDFile(const char* path,int type,char value){Require(path==filename && type==(actions==-999?1:0) && value==(actions==-999?0:flip));events.push_back(2);return openResult;}
@@ -22,7 +22,7 @@ void Hash(std::uint64_t& h,const void* data,std::size_t bytes){auto* p=static_ca
 std::uint64_t Run(BYTE* memory,char* name){
  constexpr unsigned slots=32,bytes=slots*sizeof(BMD)+32;const short counts[]={-32768,-1,0,1,32767};
  const unsigned lengths[]={0,1,30,31,32,63,127};std::uint64_t digest=14695981039346656037ull;
- DAT_05828d58=reinterpret_cast<uintptr_t>(memory+16);
+ Models=reinterpret_cast<uintptr_t>(memory+16);
  for(unsigned trial=0;trial<4096;++trial){
   std::memset(memory,0xa5,bytes);std::memset(name,0x7b,256);const auto length=lengths[(trial/2)%7];
   for(unsigned i=0;i<length;++i)name[i]=static_cast<char>(i%3==0?0xc3:'a'+i%26);name[length]=0;filename=name;

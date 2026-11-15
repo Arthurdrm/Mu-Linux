@@ -71,7 +71,7 @@ MAIN = r'''
 void Begin(OBJECT* object) { CALL_BEGIN; }
 void End(OBJECT* object) { CALL_END; }
 std::uint64_t Run(BYTE* models, OBJECT* object) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     digest = 14695981039346656037ull;
     activeObject = object; serviceCalls = 0;
     Begin(nullptr); End(nullptr); Require(serviceCalls == 0);

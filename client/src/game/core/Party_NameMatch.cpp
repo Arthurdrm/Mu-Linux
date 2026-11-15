@@ -22,7 +22,7 @@ void __cdecl Party_MatchEntityNames(void)
     // per entry), not the address of the DAT_07abf5d0 pointer variable.
     // The last two predicates are material: a party member that is merely
     // allocated but not on-screen must not receive an overhead HP bar.
-    char* entity = (char*)(uintptr_t)DAT_07abf5d0;
+    char* entity = (char*)(uintptr_t)CharactersClient;
     if (!entity)
         return;
 

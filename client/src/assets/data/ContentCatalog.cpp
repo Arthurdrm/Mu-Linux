@@ -262,8 +262,8 @@ bool ReadSection(PendingSection& section, const BYTE* msg, int size)
 // CustomMonster: OpenMonsterModel / OpenNpcModel).
 void SetMonsterSpeeds(int slot, bool npc)
 {
-    if (slot < 0 || !DAT_05828d58) return;
-    BYTE* model = (BYTE*)(uintptr_t)DAT_05828d58 + slot * BMD_STRIDE;
+    if (slot < 0 || !Models) return;
+    BYTE* model = (BYTE*)(uintptr_t)Models + slot * BMD_STRIDE;
     BYTE* actions = *(BYTE**)&((BMD*)(uintptr_t)(model))->Actions;
     const short count = *(short*)(model + 0x26);
     if (!actions || count <= 0) return;
@@ -1093,7 +1093,7 @@ int CContentCatalog::LoadItemModel(int index, const char* folder, const char* na
 int CContentCatalog::LoadModel(const char* folder, const char* name, int fixedSlot)
 {
     char sub[96];
-    if (!DAT_05828d58 || !NormalizeFolder(folder, sub, sizeof(sub)) || !ValidName(name)) {
+    if (!Models || !NormalizeFolder(folder, sub, sizeof(sub)) || !ValidName(name)) {
         Log("ContentCatalog: ruta de modelo inválida '%s' '%s'", folder, name);
         return -1;
     }
@@ -1110,7 +1110,7 @@ int CContentCatalog::LoadModel(const char* folder, const char* name, int fixedSl
     char dir[128];
     Platform::TextFormatTruncated(dir, sizeof(dir), Platform::TruncateText, "Data\\%s", sub);
     AccessModel(slot, dir, name, -1);
-    const BYTE* model = (const BYTE*)(uintptr_t)DAT_05828d58 + slot * BMD_STRIDE;
+    const BYTE* model = (const BYTE*)(uintptr_t)Models + slot * BMD_STRIDE;
     if (*(const short*)(model + 0x24) <= 0) {
         Log("ContentCatalog: no se pudo cargar %s%s.bmd", dir, name);
         s_LoadedModels[key] = -1;

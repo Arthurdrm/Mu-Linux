@@ -202,7 +202,7 @@ void __cdecl BMD__Release(BMD* model) {
 void __cdecl DeleteObjects(void) {
     // free all model slots
     for (int slot = 0; slot < 0xa0; ++slot)
-        BMD__Release(AsModel(DAT_05828d58) + slot);
+        BMD__Release(AsModel(Models) + slot);
 
     // IDA 0x004FFD50: descargar cada celda desde la cola hacia la cabeza.
     // El límite cuenta las 256 celdas y no depende del ancho de los punteros.
@@ -263,7 +263,7 @@ void __cdecl ClearCharacters(int param_1) {
     GoldenArcher_ResetCharacter();
     char* butterflesEnd = (char*)&Butterfles[10];
     for (int i = 0; i < 400 * CHARACTER_STRIDE; i += CHARACTER_STRIDE) {
-        char* puVar1 = (char*)(i + DAT_07abf5d0);
+        char* puVar1 = (char*)(i + CharactersClient);
         // El slot puede reutilizarse antes de que MoveJoint observe Live=0.
         // Cancela el Mana Shield del ocupante anterior, incluso si ya fue borrado.
         if (param_1 == -1 || *(short*)&AsCharacter(puVar1)->Key != (short)param_1) {
@@ -339,7 +339,7 @@ void __cdecl Effect_CollisionCheck(intptr_t Target) {
             randPass = (rcheck == 0);
         }
         if (!randPass) return;
-        if (*(intptr_t*)(T + 252) != (intptr_t)DAT_07abf5d8) return;  // hero only
+        if (*(intptr_t*)(T + 252) != (intptr_t)Hero) return;  // hero only
 
         // Anti-tamper hash table — skipped
 
@@ -394,7 +394,7 @@ void __cdecl Effect_CollisionCheck(intptr_t Target) {
     else {
         // ── Path B: AOE — scan all entities within 100 units ──────────────
         intptr_t owner = *(intptr_t*)(T + 252);
-        char* charBase = (char*)(uintptr_t)DAT_07abf5d0;  // CharactersClient
+        char* charBase = (char*)(uintptr_t)CharactersClient;  // CharactersClient
         const int kEntStride = CHARACTER_STRIDE;
         char* found = nullptr;
         for (int idx = 0; idx < 400; ++idx) {
@@ -404,7 +404,7 @@ void __cdecl Effect_CollisionCheck(intptr_t Target) {
             // visibility flag at +332
             if (AsObject(ent)->Visible == 0) continue;
             // skip hero
-            if (ent == (char*)(uintptr_t)DAT_07abf5d8) continue;
+            if (ent == (char*)(uintptr_t)Hero) continue;
             // skip if "dead" flag at +745+20
             if (AsCharacter(ent)->Dead != 0) continue;
             // distance check (XY only, sqrt <= 100)
@@ -546,11 +546,11 @@ float* __cdecl Entity_FindNearby_SendPacket(unsigned int param_1, float* param_2
     constexpr int kMaxMultiSkillTargets = 80;
     int count = 0;
     short nearbyIds[kMaxMultiSkillTargets] = {};
-    char *pcEnt = (char *)DAT_07abf5d0;
+    char *pcEnt = (char *)CharactersClient;
     for (int i = 0; i < 400 && count < kMaxMultiSkillTargets; i++, pcEnt += CHARACTER_STRIDE) {
         if (*(char *)&AsCharacter(pcEnt)->Object.Live == '\0') continue;                    // IDA: *(v16 - 747)
         if (*(char *)&AsCharacter(pcEnt)->Object.Visible == '\0') continue;                // IDA: *(v16 - 395)
-        if (pcEnt == DAT_07abf5d8) continue;               // IDA: v16 - 747 != Hero
+        if (pcEnt == Hero) continue;               // IDA: v16 - 747 != Hero
         if (*(char *)&AsCharacter(pcEnt)->Dead != '\0') continue;                   // IDA: v16[18] = ent + 765
 
         // IDA L160-163: v17 = a2[1] - ent.y ; v19 = a2[0] - ent.x ; sqrt <= a3
@@ -581,7 +581,7 @@ float* __cdecl Entity_FindNearby_SendPacket(unsigned int param_1, float* param_2
 
     // IDA L197-218: si el nombre del heroe contiene "webzen" (aWebzen_2,
     // 0x559B80) sale sin mandar el 0x1D.  Exencion de las cuentas de Webzen.
-    if (DAT_07abf5d8 && strstr(EntityName::Get(DAT_07abf5d8), "webzen"))
+    if (Hero && strstr(EntityName::Get(Hero), "webzen"))
         return (float*)(uintptr_t)1;
 
     // 3. Paquete C1:1D — PMSG_MULTI_SKILL_ATTACK_RECV.
@@ -744,7 +744,7 @@ float __cdecl MoveHumming(float *param_1, float *param_2, float *param_3, float 
 void __cdecl BMD__RenderBody(void *model, int flags, float f1, int f2, float f3, float f4, float f5, int f6, int rgba) {
     // Valida un slot completo del pool real, no una dirección virtual de Windows.
     // Linux ELF32 puede reservar este pool por encima de 2 GB.
-    const uintptr_t base = static_cast<uintptr_t>(DAT_05828d58);
+    const uintptr_t base = static_cast<uintptr_t>(Models);
     const uintptr_t address = reinterpret_cast<uintptr_t>(model);
     constexpr size_t stride = sizeof(BMD);
     if (!base || address < base) return;
@@ -788,7 +788,7 @@ void __cdecl BMD__RenderBody(void *model, int flags, float f1, int f2, float f3,
 // SetMonsterSound @ 0x00509810 — Model_SetAnimationSlots(slot_idx, s0, s1, s2, s3, s4)
 // Writes 5 shorts into model slot at DAT_05828d58 + slot_idx * 0xbc + 0xaa.
 void __cdecl Model_SetAnimationSlots(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6) {
-    auto* model = AsModel(DAT_05828d58) + param_1;
+    auto* model = AsModel(Models) + param_1;
     model->Sounds[0] = (short)param_2;
     model->Sounds[1] = (short)param_3;
     model->Sounds[2] = (short)param_4;
@@ -815,7 +815,7 @@ unsigned int __cdecl CheckAttack(void) {
         return 0;
     }
 
-    BYTE* target = (BYTE*)(uintptr_t)DAT_07abf5d0 + CHARACTER_STRIDE * SelectedCharacter;
+    BYTE* target = (BYTE*)(uintptr_t)CharactersClient + CHARACTER_STRIDE * SelectedCharacter;
     const BYTE kind = AsCharacter(target)->Object.Kind;
     if (kind == 2) {
         return 1;
@@ -829,7 +829,7 @@ unsigned int __cdecl CheckAttack(void) {
         return targetPkLevel >= 6 ||
                ((gUserSettings.GetPvPWithoutControl() ||   // DESVIACION (DLL, 0x0048322F)
                  ((unsigned short)Platform::GetInput().KeyState(VK_CONTROL) >> 8) == 0x80) &&
-                target != (BYTE*)(uintptr_t)DAT_07abf5d8);
+                target != (BYTE*)(uintptr_t)Hero);
     }
 
     // In a war, a PK target from our own guild remains protected before the
@@ -838,7 +838,7 @@ unsigned int __cdecl CheckAttack(void) {
     if (targetPkLevel >= 6) {
         const short targetGuild = AsCharacter(target)->GuildMarkIndex;
         if (targetGuild != -1) {
-            const short heroGuild = AsCharacter((BYTE*)(uintptr_t)DAT_07abf5d8)->GuildMarkIndex;
+            const short heroGuild = AsCharacter((BYTE*)(uintptr_t)Hero)->GuildMarkIndex;
             if (strcmp(DAT_07e919bc + 80 * heroGuild,
                        DAT_07e919bc + 80 * targetGuild) == 0) {
                 return 0;
@@ -846,7 +846,7 @@ unsigned int __cdecl CheckAttack(void) {
         }
     }
 
-    if (AsCharacter(target)->GuildTeam == 2 && target != (BYTE*)(uintptr_t)DAT_07abf5d8) {
+    if (AsCharacter(target)->GuildTeam == 2 && target != (BYTE*)(uintptr_t)Hero) {
         return 1;
     }
 

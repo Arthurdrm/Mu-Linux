@@ -38,7 +38,7 @@ int __cdecl RenderMatchScore(void)
 
     Gfx::Color3f(0.5f, 1.0f, 0.5f);
     UI_RenderText(229, 70, GlobalText[647], (LPSIZE)0, '\0', 0);
-    Platform::TextFormat(buf, GlobalText[648], EntityName::Get(DAT_07abf5d8));
+    Platform::TextFormat(buf, GlobalText[648], EntityName::Get(Hero));
     UI_RenderText(229, 86, buf, (LPSIZE)0, '\0', 0);
 
     // Encabezados 680..684.  El original SALTEA el 681 ("Personaje") y le suma
@@ -124,12 +124,12 @@ int __cdecl GuildOverview_Render(void)
     UI_RenderText(0x140 - cx, 0x56, subtitle, (LPSIZE)0, '\0', 0);
 
     Gfx::Color3f(1.0f, 1.0f, 1.0f);
-    DAT_00559c78 = 0xffffffff;
+    m_dwTextColor = 0xffffffff;
     gFont.SelectFont(hdc, (HGDIOBJ)gFont.GetFont(FONT_BOLD));
 
     // Score total
     char buf[256];
-    DAT_00559c78 = 0xffd2ffd2;
+    m_dwTextColor = 0xffd2ffd2;
     Platform::TextFormat(buf, &param_2_07d68e20);
     len = Platform::TextLength(buf);
     gFont.MeasureText(hdc, buf, len, &sz);
@@ -138,7 +138,7 @@ int __cdecl GuildOverview_Render(void)
 
     int iY = 0x82;
     if (DAT_083a7c30 != 0) {
-        DAT_00559c78 = 0xffd2d2ff;
+        m_dwTextColor = 0xffd2d2ff;
         Platform::TextFormat(buf, &param_2_07d68f4c, DAT_083a7b0c);
         len = Platform::TextLength(buf);
         gFont.MeasureText(hdc, buf, len, &sz);
@@ -146,7 +146,7 @@ int __cdecl GuildOverview_Render(void)
         UI_RenderText(0x140 - cx, 0x82, buf, (LPSIZE)0, '\0', 0);
         iY = 0x9a;
     }
-    DAT_00559c78 = 0xffffd2d2;
+    m_dwTextColor = 0xffffd2d2;
     Platform::TextFormat(buf, &param_2_07d69078, DAT_083a7b04);
     len = Platform::TextLength(buf);
     gFont.MeasureText(hdc, buf, len, &sz);

@@ -80,7 +80,7 @@ static void RenderAttackBuffSparkles(BYTE* entity)
 {
     OBJECT& object = *AsObject(entity);
     if ((*(DWORD*)(entity + 120) & 4) == 0 || !object.BoneMatrices) return;
-    void* model = (void*)(uintptr_t)(DAT_05828d58 + object.Type * BMD_STRIDE);
+    void* model = (void*)(uintptr_t)(Models + object.Type * BMD_STRIDE);
     const int boneCount = AsModel(model)->NumBones;
     const float* bones = (const float*)object.BoneMatrices;
     float offset[3] = { 0.0f, 0.0f, 0.0f };
@@ -106,7 +106,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     short sVar2    = *(short *)((intptr_t)puVar13 + 2);        // entity_type
 
     intptr_t  entity_type = (int)sVar2;
-    void *model = (void *)(DAT_05828d58 + entity_type * BMD_STRIDE);
+    void *model = (void *)(Models + entity_type * BMD_STRIDE);
 
 
 
@@ -364,7 +364,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     //
     // Va ANTES del render del cuerpo y ANTES de la segunda escritura de luz
     // (la del PK, mas abajo), igual que en IDA: L786 el heroe, L2310 el PK.
-    if ((void *)param_1 == DAT_07abf5d8) {
+    if ((void *)param_1 == Hero) {
         float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
         const unsigned char drink = CharacterAttribute
             ? *((unsigned char *)(uintptr_t)CharacterAttribute + 40) : 0;
@@ -392,7 +392,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = local_60 + *(float *)(puVar13 + 0x3a);
     *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = local_5c + *(float *)(puVar13 + 0x3b);
     *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = local_58 + *(float *)(puVar13 + 0x3c);
-    if ((void *)param_1 == DAT_07abf5d8) {
+    if ((void *)param_1 == Hero) {
         // El heroe no usa la luz del terreno (ver el bloque de mas arriba).
         float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
         const unsigned char drink = CharacterAttribute
@@ -467,19 +467,19 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
                 // 0.97.20: modelo propio de la pieza (catálogo).
                 iVar9 = gContentCatalog.EntityDrawModel(param_1, iVar9);
                 BYTE bClassByte = *(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->Class;
-                *(BYTE *)(DAT_05828d58 + iVar9 * BMD_STRIDE + 0x98 + BMD_FIELD_SHIFT) =
+                *(BYTE *)(Models + iVar9 * BMD_STRIDE + 0x98 + BMD_FIELD_SHIFT) =
                     (BYTE)(((bClassByte & 7) << 1) | (bClassByte >> 3));
                 // ── DIAG: log per-call to RenderPartObject (Entity_DrawAt) for char-select
                 // dump scale, model addr, animCount@26, and DAT_005524f8 (cull thresh).
                 if (SceneFlag == 4) {
-                    int csSlot = (int)(((uintptr_t)param_1_ - (uintptr_t)DAT_07abf5d0) / CHARACTER_STRIDE);
+                    int csSlot = (int)(((uintptr_t)param_1_ - (uintptr_t)CharactersClient) / CHARACTER_STRIDE);
                     if (csSlot >= 0 && csSlot < 5) {
                         static DWORD s_lastDA[5] = {0,0,0,0,0};
                         DWORD now = Platform::GetTimer().Ticks();
                         if (now - s_lastDA[csSlot] > 1000) {
                             // log only the FIRST body-part draw of this slot per second
                             s_lastDA[csSlot] = now;
-                            void* bm = (void*)(DAT_05828d58 + iVar9 * BMD_STRIDE);
+                            void* bm = (void*)(Models + iVar9 * BMD_STRIDE);
                             float fScale = *(float *)((int*)&AsObject((char *)puVar13)->Alpha);
                         }
                     }
@@ -559,15 +559,15 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
             const short guildIndex = AsCharacter(cb)->GuildMarkIndex;
             if (guildIndex != -1) {
                 const char* guildName = Guild_GetMarkName(guildIndex);
-                if (EnableSoccer && DAT_07abf5d8) {
-                    const short heroGuild = *(short*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->GuildMarkIndex;
+                if (EnableSoccer && Hero) {
+                    const short heroGuild = *(short*)&((CHARACTER*)(uintptr_t)(Hero))->GuildMarkIndex;
                     if (heroGuild != -1 &&
                         (strcmp(Guild_GetMarkName(heroGuild), guildName) == 0 ||
                          strcmp(GuildWarName, guildName) == 0)) {
                         bCape = true;
                     }
                 }
-                if (DAT_05826d33 &&
+                if (SoccerObserver &&
                     (strcmp(SoccerTeamName[0], guildName) == 0 ||
                      strcmp(SoccerTeamName[1], guildName) == 0)) {
                     bCape = true;
@@ -755,7 +755,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
             // Trail spawn at transformed bone position
             float fOff[3] = { 20.0f, 0.0f, 15.0f };
             float fWorldPos[3];
-            BMD_TransformPosition((void *)(DAT_05828d58 + (int)*(short *)((intptr_t)puVar13 + 2) * BMD_STRIDE),
+            BMD_TransformPosition((void *)(Models + (int)*(short *)((intptr_t)puVar13 + 2) * BMD_STRIDE),
                          (float *)((intptr_t)AsCharacter(puVar13)->Helper.LinkBone * 0x30 + (intptr_t)AsObject(puVar13)->BoneMatrices),
                          fOff, fWorldPos, '\x01');
             float fColor2[3] = { fVar32 * _DAT_00552504, 0.0f, 0.0f };

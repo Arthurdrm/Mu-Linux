@@ -61,7 +61,7 @@ template<class... T>void Skeleton_Transform(T...){}
 extern "C" const char* Guild_GetMarkName(int){return "guild";}
 char GuildWarName[32]="rival",SoccerTeamName[2][32]={{0},{0}};
 bool EnableSoccer=false;int SceneFlag=5;DWORD MoveSceneFrame;
-uintptr_t DAT_05828d58,DAT_07abf5d8;BYTE DAT_05826d33;
+uintptr_t Models,Hero;BYTE SoccerObserver;
 float DAT_0584621c[15000*4*3];
 float g_BoneScratch[16000],g_AttackEffectMatrix_04D[12],g_AttackEffectMatrix_04D_Alt[12],g_AttackEffectMatrix_04D_Aux[12];
 DWORD DAT_00552508;
@@ -118,7 +118,7 @@ void OwnerReset(){
     std::memset(&owner,0,sizeof(owner));owner.Object.Type=390;owner.Object.Scale=1;owner.Object.EnableBoneMatrix=1;owner.Object.BoneMatrices=bones;owner.GuildMarkIndex=-1;
     for(auto& p:owner.BodyPart)p.Type=-1;
     for(auto& b:bones){std::memset(b,0,sizeof(b));b[0][0]=b[1][1]=b[2][2]=1;b[0][3]=2;b[1][3]=-3;b[2][3]=5;}
-    DAT_05828d58=reinterpret_cast<uintptr_t>(models);DAT_07abf5d8=reinterpret_cast<uintptr_t>(&owner);
+    Models=reinterpret_cast<uintptr_t>(models);Hero=reinterpret_cast<uintptr_t>(&owner);
     for(auto& m:models){m.BodyScale=1;m.BodyOrigin[0]=3;m.BodyOrigin[1]=-2;m.BodyOrigin[2]=1;m.Meshs=reinterpret_cast<BYTE*>(meshes);}
     std::memset(meshes,0,sizeof(meshes));for(auto& m:meshes){m.VertexCount=4;m.TriangleCount=2;m.Vertices=meshVertices;m.Triangles=triangles;}
     for(unsigned i=0;i<4;++i){short bone=short(i%2?18:2);std::memcpy(meshVertices+i*16,&bone,2);}

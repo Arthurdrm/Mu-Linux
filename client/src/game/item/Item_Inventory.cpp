@@ -194,7 +194,7 @@ static void WriteEquipmentSlot(int slotIdx, int type, int level, BYTE optByte, B
     //   +4  Level (int)
     //   +26 Durability (BYTE)
     //   +27 Option1 (BYTE)
-    BYTE* cm = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+    BYTE* cm = (BYTE*)(uintptr_t)CharacterMachine;
     if (!cm) return;
     if (slotIdx < 0 || slotIdx >= 12) return;
 
@@ -205,8 +205,8 @@ static void WriteEquipmentSlot(int slotIdx, int type, int level, BYTE optByte, B
         memset(slot, 0, sizeof(ITEM));
         AsItem(slot)->Type  = -1;
         AsItem(slot)->Key = 0;
-        if (SceneFlag == 5 && DAT_07abf5d8) {
-            HeroEquipWatchdog(AsCharacter(DAT_07abf5d8));
+        if (SceneFlag == 5 && Hero) {
+            HeroEquipWatchdog(AsCharacter(Hero));
         }
         return;
     }
@@ -236,8 +236,8 @@ static void WriteEquipmentSlot(int slotIdx, int type, int level, BYTE optByte, B
     equip->x = (BYTE)slotIdx;
     equip->y = 0;
     equip->Color = 0;
-    if (SceneFlag == 5 && DAT_07abf5d8) {
-        HeroEquipWatchdog(AsCharacter(DAT_07abf5d8));
+    if (SceneFlag == 5 && Hero) {
+        HeroEquipWatchdog(AsCharacter(Hero));
     }
 }
 
@@ -342,7 +342,7 @@ extern "C" void __cdecl Recv_Inventory(const BYTE* Msg)
 
     // Reset equipment slots in CharacterMachine.
     {
-        BYTE* cm = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+        BYTE* cm = (BYTE*)(uintptr_t)CharacterMachine;
         if (cm) {
             for (int s = 0; s < 12; ++s) {
                 int off = GetEquipSlotByteOffset(s);
@@ -391,8 +391,8 @@ extern "C" void __cdecl Recv_Inventory(const BYTE* Msg)
 
     SeedQuickPotionTypesFromInventory();
 
-    if (SceneFlag == 5 && DAT_07abf5d8) {
-        HeroEquipWatchdog(AsCharacter(DAT_07abf5d8));
+    if (SceneFlag == 5 && Hero) {
+        HeroEquipWatchdog(AsCharacter(Hero));
     }
 
 }

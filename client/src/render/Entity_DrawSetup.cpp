@@ -148,7 +148,7 @@ void __cdecl RenderPartObjectEffect(intptr_t param_1, int param_2, float *param_
     // pecho de los personajes demo del server-select (sin armadura). Eliminados
     // para ser fieles a IDA.
 
-    this_ = reinterpret_cast<BYTE*>(DAT_05828d58 + param_2 * BMD_STRIDE);
+    this_ = reinterpret_cast<BYTE*>(Models + param_2 * BMD_STRIDE);
     sVar3 = *(short *)(param_1 + 2);
     effectType = sVar3;
 
@@ -213,11 +213,11 @@ void __cdecl RenderPartObjectEffect(intptr_t param_1, int param_2, float *param_
         rotU = sinf((float)gMapManager.GetCurrentMap() * 0.0001f);
         *(float *)(param_1 + 0x6c) = rotU;
         *(float *)(param_1 + 0x70) = (float)WorldTime * -0.0005f;
-        *(char *)(DAT_05828d58 + effectType * BMD_STRIDE + 0x88 + BMD_FIELD_SHIFT) = 0;
+        *(char *)(Models + effectType * BMD_STRIDE + 0x88 + BMD_FIELD_SHIFT) = 0;
         BMD__RenderBody(this_, 2, *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha, *(int *)(param_1 + 100),
                      *(float *)(param_1 + 0x68), *(float *)(param_1 + 0x6c),
                      *(float *)(param_1 + 0x70), *(int *)(param_1 + 0x58), 1170);
-        *(char *)(DAT_05828d58 + effectType * BMD_STRIDE + 0x88 + BMD_FIELD_SHIFT) = -1;
+        *(char *)(Models + effectType * BMD_STRIDE + 0x88 + BMD_FIELD_SHIFT) = -1;
         *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[0] = 1.0f;
         *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[1] = 1.0f;
         *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[2] = 1.0f;

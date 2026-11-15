@@ -15,7 +15,7 @@ from X86Views import model_view
 
 EXTRA=r'''
 using byte=BYTE;
-std::uintptr_t DAT_05828d58;
+std::uintptr_t Models;
 float DAT_06970acc[12],DAT_06970afc[12],DAT_06970c4c[12],DAT_06970c7c[12];
 int currentMap;bool blocked;
 struct Map {int GetCurrentMap(){return currentMap;}}gMapManager;
@@ -36,7 +36,7 @@ MAIN=r'''
 template<class T>void Put(BYTE* p,T value){std::memcpy(p,&value,sizeof(value));}
 std::uint64_t Run(BYTE* memory,BYTE* entityMemory){
     constexpr unsigned tableBytes=1200*188+32;
-    DAT_05828d58=reinterpret_cast<std::uintptr_t>(memory+16);activeEntity=entityMemory+16;
+    Models=reinterpret_cast<std::uintptr_t>(memory+16);activeEntity=entityMemory+16;
     std::memset(memory,0xa5,tableBytes);eventDigest=14695981039346656037ull;events=0;
     const int models[]={419,431,471,506,546,570,607,608,671,676,703,708,735,740,767,772,790,865,958,543,957,0};
     for(unsigned trial=0;trial<8208;++trial){

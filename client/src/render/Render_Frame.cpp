@@ -487,7 +487,7 @@ void Render_Scene3D(void)
         DWORD now = Platform::GetTimer().Ticks();
         if (now - s_lastR3 > 1000) {
             s_lastR3 = now;
-            BYTE* hero = (BYTE*)DAT_07abf5d8;
+            BYTE* hero = (BYTE*)Hero;
             char b[300];
             float hx = hero ? *(float*)(hero + 0x10) : 0.0f;
             float hy = hero ? *(float*)(hero + 0x14) : 0.0f;
@@ -508,8 +508,8 @@ void Render_Scene3D(void)
     // ── 2. Camera position ────────────────────────────────────────────────────
     // Cámara autoritativa preparada al finalizar el paso de simulación.
     float camPos[3];
-    if (DAT_07abf5d8) {
-        BYTE* hero = (BYTE*)DAT_07abf5d8;
+    if (Hero) {
+        BYTE* hero = (BYTE*)Hero;
         // Nuestro port actual de MoveMainCamera no reconstruye todavía el
         // bool "spectator/start-position" del binario original y devuelve true
         // siempre en gameplay normal. Usar +0x170 acá rompe el frustum de los

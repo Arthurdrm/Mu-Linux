@@ -63,7 +63,7 @@ std::uint64_t RunClass(CHARACTER* character, BYTE* machine, BYTE* attribute, BYT
         std::memset(character, 0x5a, sizeof(*character)); std::memset(machine, 0x5a, 1412); std::memset(attribute, 0, 64);
         character->Object.Type = trial % 3 ? 390 : 391; character->Object.CurrentAction = actions[Input() % 10];
         character->Class = BYTE(trial); character->Skin = BYTE(Input() % 2); character->Change = BYTE(Input() % 2);
-        attribute[11] = BYTE(Input()); CharacterAttribute = attribute; DAT_07cf1ffc = character->Object.Type == 390 ? machine : nullptr;
+        attribute[11] = BYTE(Input()); CharacterAttribute = attribute; CharacterMachine = character->Object.Type == 390 ? machine : nullptr;
         for(int slot = 0; slot < 12; ++slot) {
             auto* item = reinterpret_cast<ITEM*>(machine + 536 + 68*slot); std::memset(item, 0, sizeof(*item));
             item->Type = itemTypes[Input() % 22]; item->Durability = item->Type == -1 ? 0 : BYTE(Input());
@@ -145,7 +145,7 @@ def harness(revision=None):
     scalar = re.search(r"struct OBJECT\s*\{.*?\};", item_harness(revision), re.S).group()
     prefix = prefix.replace("struct OBJECT { BYTE data[444]; };", scalar, 1).replace("CalculateAll(", "CalculateAllReal(")
     header, globals_source = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
-    name = "DAT_07cf1ffc"
+    name = "CharacterMachine"
     prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group() + re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     prefix += function(read_source("src/render/SMD_Parser.cpp", revision), "SetCharacterScale").replace("SetCharacterScale(", "SetCharacterScaleReal(", 1)
     prefix += SERVICES + function(read_source("src/game/item/ItemDefines.h", revision), "GetItemSection")

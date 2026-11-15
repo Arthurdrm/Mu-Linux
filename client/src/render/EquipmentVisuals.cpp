@@ -42,7 +42,7 @@ bool drawing = false;
 
 int Slot(const void *entity) {
     if (entity == CharacterView) return 400;
-    const uintptr_t address = (uintptr_t)entity, base = (uintptr_t)DAT_07abf5d0;
+    const uintptr_t address = (uintptr_t)entity, base = (uintptr_t)CharactersClient;
     if (!base || address < base || address - base >= 400 * sizeof(CHARACTER)) return -1;
     const uintptr_t offset = address - base;
     return offset % sizeof(CHARACTER) ? -1 : (int)(offset / sizeof(CHARACTER));
@@ -119,13 +119,13 @@ void Equipment_AddMesh(int model, const void *object, const float *light,
     if (owner.BoneMatrices) {
         mesh.relativeValid=RenderInverseMatrix(ownerBone,inverse);
         if (mesh.relativeValid) R_ConcatTransforms(inverse,mesh.root,mesh.relative);
-        if (!mesh.linked) BMD__RotationPosition((void *)(DAT_05828d58+owner.Type* BMD_STRIDE),(float *)ownerBone,mesh.offset,rotated);
+        if (!mesh.linked) BMD__RotationPosition((void *)(Models+owner.Type* BMD_STRIDE),(float *)ownerBone,mesh.offset,rotated);
     }
-    const BMD &context=*AsModel(DAT_05828d58+model* BMD_STRIDE);
+    const BMD &context=*AsModel(Models+model* BMD_STRIDE);
     for (int axis=0;axis<3;++axis) mesh.extraOrigin[axis]=context.BodyOrigin[axis]-owner.Position[axis]-rotated[axis];
     mesh.option = option; mesh.flags = flags; mesh.translate = translate;
     mesh.lod = _DAT_005597c8;
-    memcpy(mesh.context, (void *)(DAT_05828d58 + model * BMD_STRIDE), sizeof(mesh.context));
+    memcpy(mesh.context, (void *)(Models + model * BMD_STRIDE), sizeof(mesh.context));
     memcpy(mesh.bones, g_BoneScratch, sizeof(mesh.bones));
     memcpy(mesh.object, object, sizeof(mesh.object));
     memcpy(mesh.light, light, sizeof(mesh.light));
@@ -168,7 +168,7 @@ void Equipment_Draw(const CHARACTER* entity, int stage) {
         }
         const Mesh &mesh = frame.meshes[command.index];
         float drawAlpha=mesh.alpha;
-        void *model = (void *)(DAT_05828d58 + mesh.model * BMD_STRIDE);
+        void *model = (void *)(Models + mesh.model * BMD_STRIDE);
         EquipmentModelContext savedModel(model);
         memcpy(model, mesh.context, sizeof(mesh.context));
         memcpy(g_BoneScratch, mesh.bones, sizeof(mesh.bones));
@@ -190,7 +190,7 @@ void Equipment_Draw(const CHARACTER* entity, int stage) {
             context.BodyScale=owner.Scale;
             float rotated[3]{};
             if (!mesh.linked) {
-                void *ownerModel=(void *)(DAT_05828d58+owner.Type* BMD_STRIDE);
+                void *ownerModel=(void *)(Models+owner.Type* BMD_STRIDE);
                 EquipmentModelContext savedOwner(ownerModel);
                 AsModel(ownerModel)->BodyScale=owner.Scale;
                 BMD__RotationPosition(ownerModel,ownerBone,(float *)mesh.offset,rotated);

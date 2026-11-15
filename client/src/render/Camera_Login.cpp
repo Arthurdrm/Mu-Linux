@@ -16,6 +16,6 @@
 // Se mantiene void(): los callers (Game_SceneUpdate / Game_EnterWorldTick) no pasan la posición.
 void __cdecl Login_CameraUpdate(void) {
     // Wrapper: calls CreateFrustrum2D with login-scene entity[0] world position (+0x10).
-    CreateFrustrum2D((float *)(DAT_07abf5d0 + 0x10));
+    CreateFrustrum2D((float *)(CharactersClient + 0x10));
 }
 

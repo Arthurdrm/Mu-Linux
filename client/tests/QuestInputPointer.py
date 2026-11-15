@@ -44,7 +44,7 @@ MAIN = r'''
 template<class T> void Put(BYTE* p,T value) { std::memcpy(p,&value,sizeof(value)); }
 std::uint64_t RunInput(BYTE* memory,BYTE* attributes,BYTE* machine) {
     constexpr std::size_t size=0x1c890+32;
-    BYTE* quest=memory+16; activeQuest=quest; CharacterAttribute=attributes; DAT_07cf1ffc=machine;
+    BYTE* quest=memory+16; activeQuest=quest; CharacterAttribute=attributes; CharacterMachine=machine;
     std::uint64_t digest=14695981039346656037ull; coverage=0;
     const int margins[]={-120,0,107,320}, scripts[]={-1,0,199,200}, slotTypes[]={-1,0,1,2,3,2147483647}, links[]={-1,0,1,199,200,2147483647};
     const int xEdges[]={-1,0,24,25,34,35,106,144,155,189,190,212,300}, yEdges[]={-1,0,249,250,354,355,378,379,394,395,418,419,432,433}, rowEdges[]={-1,0,17,18};
@@ -122,7 +122,7 @@ def harness(revision=None):
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     prefix += "\n" + re.search(r"^#define DIALOG_SCRIPT_COUNT[^\n]+", header, re.M).group() + "\n"
     prefix += re.search(r"struct DIALOG_SCRIPT\s*\{.*?\n\};", header, re.S).group() + "\nstatic_assert(sizeof(DIALOG_SCRIPT)==0x400);\n"
-    names=("CharacterAttribute","DAT_07cf1ffc","DAT_005615dc","DAT_083a7c0c","DAT_083a4324","MouseY","MouseX","MouseLButtonPush","MouseLButton","MouseUpdateTime","MouseUpdateTimeMax","DAT_07d78094","MouseLButtonPop")
+    names=("CharacterAttribute","CharacterMachine","DAT_005615dc","DAT_083a7c0c","DAT_083a4324","MouseY","MouseX","MouseLButtonPush","MouseLButton","MouseUpdateTime","MouseUpdateTimeMax","DAT_07d78094","MouseLButtonPop")
     for name in names:
         # DAT_07d78094 paso a llamarse MouseOnWindow (T8e); el arnes sigue
         # usando el nombre viejo, asi que con el nuevo se agrega un alias.

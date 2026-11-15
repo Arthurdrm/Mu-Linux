@@ -196,7 +196,7 @@
 void SceneCharSelect_PrepareLighting()
 {
     const float pulse=(float)((float10)sinl((long double)WorldTime *
-        (long double)_DAT_005528e0) * (float10)_DAT_005526e4 + (float10)_DAT_005526e8);
+        (long double)0.002f) * (float10)0.2f + (float10)0.9f);
     // El slot de creación usa DWORD con sentinel -1; IDA lo compara con signo.
     const float brightness=(int)DAT_005616b0>=0 ? 0.2f : pulse;
     if (g_ObjectBucketGrid[0].Head) {
@@ -207,7 +207,7 @@ void SceneCharSelect_PrepareLighting()
     for (int slot=0;slot<5;++slot) {
         OBJECT &o=((CHARACTER *)CharactersClient)[slot].Object;
         const float light=slot==SelectedHero || slot==SelectedCharacter ?
-            1.0f : brightness*_DAT_00552504;
+            1.0f : brightness*0.5f;
         o.Light[0]=o.Light[1]=o.Light[2]=light;
     }
 }
@@ -291,7 +291,7 @@ int Scene_CharSelect(void)
             GL_SetBlendAdditive();   // Frame_UpdateTimer
             uVar12  = (unsigned int)(*(float*)&WorldTime);
             local_6c = (int)((longlong)((ulonglong)(uint)((int)uVar12 >> 0x1f) << 0x20 | uVar12 & 0xffffffff) % 0xe10);
-            local_70 = (float)local_6c * _DAT_00552a00;
+            local_70 = (float)local_6c * 0.1f;
             Effect_DrawRing(0x4f1, (float *)(CharactersClient + SelectedHero * CHARACTER_STRIDE + 0x10),
                          0x420c0000, 0x425c0000, 0x43160000,  local_70, 0, 0.0f);
             Effect_DrawRing(0x4f1, (float *)(CharactersClient + SelectedHero * CHARACTER_STRIDE + 0x10),
@@ -344,7 +344,7 @@ int Scene_CharSelect(void)
                     // que las alas, que sobresalen de la cabeza, no la tapen. Va en unidades
                     // del mundo para que escale con la distancia de cada personaje.
                     constexpr float kLabelLift = 70.0f;
-                    posBuf[2] = *(float *)(pcVar5 + iVar9 + 0x18) + _DAT_00552974 + kLabelLift;
+                    posBuf[2] = *(float *)(pcVar5 + iVar9 + 0x18) + 190.0f + kLabelLift;
                     fStack_5c = posBuf[0];
                     uStack_58 = *(undefined4 *)&posBuf[1];
                     fStack_54 = posBuf[2];
@@ -557,13 +557,13 @@ int Scene_CharSelect(void)
             // Character preview sub-render
             if (-1 < iVar9) {
                 DAT_005597c4 = 0;
-                fVar11 = (float10)sinl((long double)WorldTime * (long double)_DAT_005528e0);
+                fVar11 = (float10)sinl((long double)WorldTime * (long double)0.002f);
                 CameraFOV = 10.0f;
                 DAT_083a42b8 = 0; DAT_083a42bc = 0; DAT_083a42c0 = 0;   // CameraAngle = {0,0,0}
-                fVar11 = fVar11 * (float10)_DAT_005526e4 + (float10)_DAT_0055256c;
+                fVar11 = fVar11 * (float10)0.2f + (float10)1.0f;
                 _DAT_07abf138 = (float)fVar11;
-                _DAT_07abf13c = (float)(fVar11 * (float10)_DAT_00552530);
-                _DAT_07abf140 = (float)(fVar11 * (float10)_DAT_00552504);
+                _DAT_07abf13c = (float)(fVar11 * (float10)0.8f);
+                _DAT_07abf140 = (float)(fVar11 * (float10)0.5f);
                 Matrix_BuildFromEuler((float *)&DAT_083a42b8, afStack_30);   // AngleMatrix(CameraAngle, matrix)
                 // La entrada in1={-8,-800,79} y la salida de VectorIRotate van en arrays
                 // contiguos y la salida se lee reinterpretando los bits float (IDA-fiel).

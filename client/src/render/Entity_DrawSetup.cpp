@@ -450,11 +450,11 @@ LAB_after_render: ;
     // por encima con BMD__RenderBody flags=0x42.
     short pulseType = *(short*)(param_1 + 2);
     if (((param_6 & 0x3f) != 0) && ((pulseType < 0x310) || (0x316 < pulseType))) {
-        fVar10 = (float10)fsin((float10)WorldTime * (float10)_DAT_005528e0);
-        fVar10 = (fVar10 + (float10)_DAT_0055256c) * (float10)_DAT_00552504;
+        fVar10 = (float10)fsin((float10)WorldTime * (float10)0.002f);
+        fVar10 = (fVar10 + (float10)1.0f) * (float10)0.5f;
         *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[0] = (float)fVar10;
-        *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[1] = (float)(fVar10 * (float10)_DAT_005528b8);
-        *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[2] = (float)((float10)_DAT_0055256c - fVar10);
+        *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[1] = (float)(fVar10 * (float10)0.3f);
+        *(float *)&((BMD*)(uintptr_t)(this_))->BodyLight[2] = (float)((float10)1.0f - fVar10);
 
         // flags=0x42 (int flags, NOT a pointer!), f1=1.0, then anim data
         BMD__RenderBody(this_, 0x42, 1.0f,

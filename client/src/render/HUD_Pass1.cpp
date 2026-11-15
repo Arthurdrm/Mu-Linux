@@ -249,7 +249,7 @@ void RenderBooleans_(void)
                 float Position[3];
                 Position[0] = o->Position[0];
                 Position[1] = o->Position[1];
-                Position[2] = o->BoundingBoxMax[2] + o->Position[2] + _DAT_0055290c;
+                Position[2] = o->BoundingBoxMax[2] + o->Position[2] + 60.0f;
                 Projection(Position, &sx, &sy);
             } else {
                 Projection(c->Position, &sx, &sy);

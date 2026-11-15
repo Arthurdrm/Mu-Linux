@@ -1093,9 +1093,9 @@ int __cdecl Collision_ObbAxisOverlap(float *param_1, float *param_2, float *para
     float fV7 = param_15 * param_1[2] + param_13 * *param_1 + param_14 * param_1[1];
 
     float fOMin = fV3, fOMax = fV3;
-    if (fV5 <= _DAT_00552580) fOMin += fV5; else fOMax = fV3 + fV5;
-    if (fV6 <= _DAT_00552580) fOMin += fV6; else fOMax += fV6;
-    if (fV7 <= _DAT_00552580) fOMin += fV7; else fOMax += fV7;
+    if (fV5 <= 0.0f) fOMin += fV5; else fOMax = fV3 + fV5;
+    if (fV6 <= 0.0f) fOMin += fV6; else fOMax += fV6;
+    if (fV7 <= 0.0f) fOMin += fV7; else fOMax += fV7;
 
     if (fMin >= fOMax) return 0;
     if (fOMin >= fMax) return 0;
@@ -1421,30 +1421,30 @@ float __cdecl CreateAngle(float x1, float y1, float x2, float y2)
     float dx = x2 - x1;
     float dy = y2 - y1;
 
-    if (fabsf(dx) < _DAT_00552868) {
+    if (fabsf(dx) < 0.0001f) {
         // Nearly vertical — return 0 or 180
-        if (dy < _DAT_00552580) {
-            return _DAT_00552580; // 0 degrees
+        if (dy < 0.0f) {
+            return 0.0f; // 0 degrees
         }
-        return _DAT_005524ec; // 180 degrees
+        return 180.0f; // 180 degrees
     }
-    if (fabsf(dy) >= _DAT_00552868) {
+    if (fabsf(dy) >= 0.0001f) {
         // General case — PORT FIEL 1:1 (0x43E0DA): el IDA usa atan2(dy/dx, 1.0)
         // (= atan del RATIO, rango [-90,90]) y RECONSTRUYE el cuadrante con +180 si
         // dx<0. Antes usábamos atan2f(dy,dx) (dos args, que YA resuelve el cuadrante)
         // Y ADEMÁS sumábamos +180 → doble corrección de 180° cuando dx<0 → el hada
         // (y todo facing hacia la izquierda) apuntaba al revés. dx≠0 aquí (guard arriba).
-        float angle = atan2f(dy / dx, 1.0f) * _DAT_00552860 + _DAT_00552848;
-        if (dx < _DAT_00552580) {
-            angle += _DAT_005524ec; // +180 if dx negative (reconstrucción de cuadrante)
+        float angle = atan2f(dy / dx, 1.0f) * 57.29578f + 90.0f;
+        if (dx < 0.0f) {
+            angle += 180.0f; // +180 if dx negative (reconstrucción de cuadrante)
         }
         return angle;
     }
     // Nearly horizontal — return 90 or 270
-    if (dx < _DAT_00552580) {
-        return _DAT_00552864; // 270 degrees
+    if (dx < 0.0f) {
+        return 270.0f; // 270 degrees
     }
-    return _DAT_00552848; // 90 degrees
+    return 90.0f; // 90 degrees
 }
 
 // Angle_Clamp @ 0x0043E120 — Angle_Clamp(current, target, maxDelta)
@@ -2440,7 +2440,7 @@ int __cdecl Terrain_QuadEqual(const float* param_1, const float* param_2, int pa
     do {
         float diff = param_1[iVar1] - *p2;
         if (diff < 0.0f) diff = -diff;
-        if (_DAT_005528a8 < diff)
+        if (0.001f < diff)
             return 0;
         iVar1++;
         p2++;

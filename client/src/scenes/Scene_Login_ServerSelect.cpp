@@ -421,8 +421,8 @@ LAB_0051f44c:
                 // ECX=server*0x21e, EBP=chan*0x1a (ambos byte offsets).
                 if ((*((unsigned char*)&DAT_083a4606 + (int)fStack00000018 + iVar8) & 0x80) == 0x80) {
                     // FULL: red-ish
-                    fVar18 = fVar3 * _DAT_00552928;
-                    fVar20 = fVar3 * _DAT_00552504;
+                    fVar18 = fVar3 * 0.7f;
+                    fVar20 = fVar3 * 0.5f;
                 } else if ((*((unsigned char*)&DAT_083a4606 + (int)fStack00000018 + iVar8) & 0x7f) < 100) {
                     // LOW: greenish; special teal for channel_id % 20 == 0 or 14
                     fVar18 = fVar3;
@@ -430,11 +430,11 @@ LAB_0051f44c:
                         (fVar20 = fVar3,
                          (uint)*(ushort *)((char*)&DAT_083a4604 + (int)fStack00000018 + iVar8) % 0x14 == 0xe))
                     {
-                        fVar20 = fVar3 * _DAT_00552928;
+                        fVar20 = fVar3 * 0.7f;
                     }
                 } else {
                     // NORMAL: white
-                    fStack00000008 = fVar3 * _DAT_005528b4;
+                    fStack00000008 = fVar3 * 0.4f;
                     fVar18 = fStack00000008; fVar20 = fStack00000008;
                 }
                 Gfx::Color3f(fVar3, fVar18, fVar20);
@@ -471,14 +471,14 @@ LAB_0051f44c:
                     fStack00000008 = 0.0f;
                     if (uVar6 != 0) {
                         // Filled dots (gradient: darker on left, brighter on right)
-                        fVar20 = fVar18 + _DAT_00552d4c;
+                        fVar20 = fVar18 + 14.0f;
                         iStack0000001c = 0;
                         iStack00000020 = 0x14;
                         do {
                             iVar8 = (int)fStack00000008;
-                            fStack0000000c = (float)iStack00000020 * fVar3 * _DAT_005524f4;
-                            Gfx::Color3f((float)(int)fStack00000008 * fVar3 * _DAT_005524f4, fStack0000000c, fStack0000000c);
-                            GL_DrawTexture(0xf6, (float)iStack0000001c + _DAT_00552d48,
+                            fStack0000000c = (float)iStack00000020 * fVar3 * 0.1f;
+                            Gfx::Color3f((float)(int)fStack00000008 * fVar3 * 0.1f, fStack0000000c, fStack0000000c);
+                            GL_DrawTexture(0xf6, (float)iStack0000001c + 248.0f,
                                          fVar20, 3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 1.0f, '\x01', '\x01');
                             fStack00000008 = (float)(iVar8 + 1);
                             iStack00000020--;
@@ -487,14 +487,14 @@ LAB_0051f44c:
                         } while ((int)fStack00000008 < (int)uVar6);
                     }
                     // Empty dots (gray)
-                    fStack00000008 = fVar3 * _DAT_005524f4;
+                    fStack00000008 = fVar3 * 0.1f;
                     Gfx::Color3f(fStack00000008, fStack00000008, fStack00000008);
                     if (uVar6 < 0x14) {
-                        fVar18 = fVar18 + _DAT_00552d4c;
+                        fVar18 = fVar18 + 14.0f;
                         fVar3  = (float)(uVar6 * 5);
                         fStack0000000c = fVar18;
                         do {
-                            GL_DrawTexture(0xf6, (float)(int)fVar3 + _DAT_00552d48,
+                            GL_DrawTexture(0xf6, (float)(int)fVar3 + 248.0f,
                                          fVar18, 3.0f, 3.0f, 0.0f, 0.0f, 1.0f, 1.0f, '\x01', '\x01');
                             fVar3 = (float)((int)fVar3 + 5);
                         } while ((int)fVar3 < 100);

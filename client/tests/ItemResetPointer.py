@@ -64,10 +64,10 @@ std::uint64_t Run(BYTE* memory) {
         Require(object->CurrentAction==0 && object->PriorAction==0);
         if(object->Type<0) Require(object->Scale==0.8f && object->BlendMesh==-1 && object->HiddenMesh==-1 && result==0);
         const int first=mode==0 || mode==2 ? 12345 : 0, second=mode==0 || mode==2 ? 23456 : 0;
-        if(object->Type==414) Require(object->BlendMeshTexCoordU==static_cast<float>(first%10)*_DAT_005524f4 && result==first/10);
+        if(object->Type==414) Require(object->BlendMeshTexCoordU==static_cast<float>(first%10)*0.1f && result==first/10);
         if(object->Type==565 || object->Type==606) {
-            Require(object->BlendMeshTexCoordU==static_cast<float>(first%10)*_DAT_005524f4);
-            Require(object->BlendMeshTexCoordV==static_cast<float>(second%10)*_DAT_005524f4 && result==second/10);
+            Require(object->BlendMeshTexCoordU==static_cast<float>(first%10)*0.1f);
+            Require(object->BlendMeshTexCoordV==static_cast<float>(second%10)*0.1f && result==second/10);
         }
         for(int i=0;i<16;++i) Require(memory[i]==0x5a && memory[16+sizeof(OBJECT)+i]==0x5a);
         for(std::size_t i=0;i<sizeof(OBJECT);++i) { digest^=reinterpret_cast<BYTE*>(object)[i]; digest*=1099511628211ull; }

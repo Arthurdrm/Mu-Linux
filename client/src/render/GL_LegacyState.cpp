@@ -76,7 +76,7 @@ void __cdecl GL_SetPerspective(int fov, float aspect, int near_clip, float far_c
     float fovF  = Ff(fov);
     float nearF = Ff(near_clip);
     Gfx::Perspective((double)fovF, (double)aspect, (double)nearF, (double)far_clip);
-    double tanHalfFov = tan((double)fovF * (double)_DAT_00552cc4);
+    double tanHalfFov = tan((double)fovF * (double)0.008726646f);
     ViewportCenterX = OpenglWindowWidth / 2 + OpenglWindowX;
     ViewportCenterY = OpenglWindowHeight / 2 + OpenglWindowY;
     ScreenCenterYFlip = (float)((int)gWindow.GetWidth() - (int)ViewportCenterY);

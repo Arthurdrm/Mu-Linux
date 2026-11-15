@@ -76,7 +76,7 @@ void Sound_Update3DPositions(void)
     eulerAngles[2] = Ff(DAT_083a42c0);      // player yaw (CameraAngle[2] bits)
     Matrix_BuildFromEuler(eulerAngles, rotMatrix);
 
-    const float unitScale = _DAT_005524bc;  // world→DS3D unit conversion
+    const float unitScale = 0.004f;  // world→DS3D unit conversion
 
     for (int slot = 0; slot < 420; ++slot) {
         if (!Enable3DSound[slot])          continue;

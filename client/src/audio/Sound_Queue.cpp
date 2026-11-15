@@ -102,11 +102,11 @@ void __cdecl Render_DrawSprite(const OBJECT* object)
   // consume en esta pasada. Calcular el ajuste sin alterar la muestra base.
   fVar1 = AsObject(param_1)->AnimationFrame;
   if (*(char*)&AsObject(param_1)->Visible == 0) {
-    fVar1 -= _DAT_005524f4;
-    if (fVar1 < _DAT_005526e4) fVar1 = 0.2f;
+    fVar1 -= 0.1f;
+    if (fVar1 < 0.2f) fVar1 = 0.2f;
   } else {
-    fVar1 += _DAT_005524f4;
-    if (fVar1 > _DAT_0055256c) fVar1 = 1.0f;
+    fVar1 += 0.1f;
+    if (fVar1 > 1.0f) fVar1 = 1.0f;
   }
   fVar1 *= *(float *)(param_1 + 0xc);
   iVar2 = *(short *)(param_1 + 2) * TEXTURE_STRIDE;

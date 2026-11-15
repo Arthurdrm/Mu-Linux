@@ -263,8 +263,8 @@ unsigned long long __cdecl CheckInventorySpace(int p1, int p2, unsigned short* p
     // Convert mouse position to grid coords
     // gridX = ftol((MouseX - p1) * _DAT_00552a10 * _DAT_00552504 - ... + _DAT_00552504)
     // From assembly: FILD(MouseX - p1), FMUL(DAT_00552a10), FILD(itemW), FMUL(DAT_00552504), FSUB, FADD(DAT_00552504)
-    int gridX = (int)((float)(MouseX - p1) * _DAT_00552a10 - (float)itemW * _DAT_00552504 + _DAT_00552504);
-    int gridY = (int)((float)(MouseY - p2) * _DAT_00552a10 - (float)itemH * _DAT_00552504 + _DAT_00552504);
+    int gridX = (int)((float)(MouseX - p1) * 0.05f - (float)itemW * 0.5f + 0.5f);
+    int gridY = (int)((float)(MouseY - p2) * 0.05f - (float)itemH * 0.5f + 0.5f);
 
     // Count empty cells in the item's footprint
     int emptyCount = 0;

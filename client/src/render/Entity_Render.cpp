@@ -185,7 +185,7 @@ void __cdecl MoveCharacterClient(float *param_1)
   undefined2 uVar1;
 
   if (*(char *)param_1 != '\0') {
-    uVar1 = TestFrustrum2D(param_1[4] * _DAT_005524f8,param_1[5] * _DAT_005524f8,-20.0);
+    uVar1 = TestFrustrum2D(param_1[4] * 0.01f,param_1[5] * 0.01f,-20.0);
     AsObject(param_1)->Visible = (BYTE)uVar1;
     MoveMonsterClient(AsCharacter(param_1), AsObject(param_1));
     MoveCharacter((intptr_t)param_1);
@@ -337,7 +337,7 @@ RenderPartObject(intptr_t param_1,int param_2,const PART_t* param_3,float *param
   uint uVar1;
   undefined *puVar2;
 
-  if (_DAT_005524f8 < param_5) {
+  if (0.01f < param_5) {
     if (param_2 == 0x35c) {
       uVar1 = (int)param_6 >> 3 & 0xf;
       if (uVar1 == 0) {

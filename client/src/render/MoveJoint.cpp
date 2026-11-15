@@ -714,17 +714,17 @@ static char* MoveJoint_Type4e2(undefined1 *param_1, uint param_2, float* const l
 static char* MoveJoint_Type498(undefined1 *param_1, uint param_2, float* const local_30, float*& pfVar14, float*& pfVar15)
 {
     if (AsJoint(param_1)->SubType == 0) {
-        float fVar28 = AsJoint(param_1)->Direction[2] + _DAT_00552660;
+        float fVar28 = AsJoint(param_1)->Direction[2] + 5.0f;
         *pfVar15                         = *pfVar14;
         *(undefined4 *)&AsJoint(param_1)->Position[1]  = *(undefined4 *)&AsJoint(param_1)->TargetPosition[1];
         AsJoint(param_1)->Direction[2]      = fVar28;
         AsJoint(param_1)->Position[2]       = fVar28 + AsJoint(param_1)->Position[2];
     }
     if (4 < AsJoint(param_1)->LifeTime) return MoveJoint_Finish(param_1, param_2, local_30, true);
-    AsJoint(param_1)->Light[0] *= _DAT_00552a90;
-    AsJoint(param_1)->Light[1] *= _DAT_00552a90;
+    AsJoint(param_1)->Light[0] *= 0.7692308f;
+    AsJoint(param_1)->Light[1] *= 0.7692308f;
     {
-        float fVar28 = AsJoint(param_1)->Light[2] * _DAT_00552a90;
+        float fVar28 = AsJoint(param_1)->Light[2] * 0.7692308f;
         goto LAB_00473578_498;
 LAB_00473578_498:
         AsJoint(param_1)->Light[2] = fVar28;
@@ -746,20 +746,20 @@ static char* MoveJoint_Type10a(undefined1 *param_1, uint param_2, bool& bVar21, 
         }
         else {
             AsJoint(param_1)->Scale =
-                (float)AsJoint(param_1)->LifeTime * _DAT_00552540;
+                (float)AsJoint(param_1)->LifeTime * 3.0f;
             // IDA L898-913: rampa de 1 a 0 en los últimos 10 ticks de vida;
             // el joint viaja del punto de partida al de reunión.
-            float t_raw = (float)(AsJoint(param_1)->LifeTime + -10) * _DAT_00552a00;
+            float t_raw = (float)(AsJoint(param_1)->LifeTime + -10) * 0.1f;
             float t;
-            if (t_raw >= _DAT_0055256c)      t = _DAT_0055256c;   // 1.0
-            else if (t_raw >= _DAT_00552580) t = t_raw;           // 0.0 <= t < 1.0
+            if (t_raw >= 1.0f)      t = 1.0f;   // 1.0
+            else if (t_raw >= 0.0f) t = t_raw;           // 0.0 <= t < 1.0
             else                             t = 0.0f;
-            float inv_t = _DAT_0055256c - t;
+            float inv_t = 1.0f - t;
             Ring_ComputeOrbit(param_2 * 0x4539, local_d8, 1.4f);
             iVar16 = (intptr_t)AsJoint(param_1)->Target;
-            local_d8[0] = local_d8[0] * _DAT_00552900 + *pfVar14;
-            local_d8[1] = local_d8[1] * _DAT_00552900 + AsJoint(param_1)->TargetPosition[1];
-            local_d8[2] = local_d8[2] * _DAT_00552900 + AsJoint(param_1)->TargetPosition[2];
+            local_d8[0] = local_d8[0] * 300.0f + *pfVar14;
+            local_d8[1] = local_d8[1] * 300.0f + AsJoint(param_1)->TargetPosition[1];
+            local_d8[2] = local_d8[2] * 300.0f + AsJoint(param_1)->TargetPosition[2];
             local_a8[0] = AsObject(iVar16)->PosSword[0];
             local_a8[1] = AsObject(iVar16)->PosSword[1];
             local_a8[2] = AsObject(iVar16)->PosSword[2];
@@ -797,8 +797,8 @@ LAB_004702ce:
         }
         iVar16 = (intptr_t)AsJoint(param_1)->Target;
         fVar22 = fsin(((double)AsJoint(param_1)->LifeTime -
-                       (double)AsJoint(param_1)->Direction[1]) * (double)_DAT_00552874);
-        fVar24 = (double)_DAT_00552540;
+                       (double)AsJoint(param_1)->Direction[1]) * (double)0.05f);
+        fVar24 = (double)3.0f;
         AsJoint(param_1)->Direction[0] = (float)(fVar22 * fVar24);
         *pfVar15 = (float)(fVar22 * fVar24 + (double)*pfVar15);
         if (iVar16 == 0) return MoveJoint_Finish(param_1, param_2, local_30, true);
@@ -806,13 +806,13 @@ LAB_004702ce:
             int hp_val = AsObject(iVar16)->LifeTime;
             float fVar28;
             if (hp_val < 0x33) {
-                fVar28 = (float)hp_val * _DAT_00552a00;
+                fVar28 = (float)hp_val * 0.1f;
             }
             else {
-                fVar28 = (float)(100 - hp_val) * _DAT_00552aa4;
+                fVar28 = (float)(100 - hp_val) * 0.025f;
             }
-            if (_DAT_0055256c < fVar28) {
-                fVar28 = _DAT_0055256c;
+            if (1.0f < fVar28) {
+                fVar28 = 1.0f;
             }
             AsJoint(param_1)->Scale = fVar28;
         }
@@ -869,7 +869,7 @@ LAB_0047036e:
     iVar16   = (intptr_t)AsJoint(param_1)->Target;
     *pfVar14 = AsObject(iVar16)->Position[0];
     *(undefined4 *)&AsJoint(param_1)->TargetPosition[1] = *(undefined4*)&AsObject(iVar16)->Position[1];
-    AsJoint(param_1)->TargetPosition[2]      = AsObject(iVar16)->Position[2] + _DAT_00552488;
+    AsJoint(param_1)->TargetPosition[2]      = AsObject(iVar16)->Position[2] + 10.0f;
 
     iVar16 = AsJoint(param_1)->SubType;
 
@@ -928,12 +928,12 @@ LAB_0047036e:
     iVar13 = dc_signed + (int)(param_2 * 0xd1e3);
     local_a8[2] = 0.1113f;
     iVar16 = AsJoint(param_1)->SubType;
-    float fFreq  = _DAT_00552a9c;
-    float fScale = _DAT_00552aa0;
+    float fFreq  = 0.0613f;
+    float fScale = 0.048f;
     if (iVar16 == 1) {
         local_a8[2] = 0.05565f;
-        fFreq  = _DAT_00552a94;
-        fScale = _DAT_00552a98;
+        fFreq  = 0.03065f;
+        fScale = 0.024f;
     }
     int seed1 = iVar13 + 0x2b67;
     float ang0 = (float)iVar13 * fFreq;
@@ -952,24 +952,24 @@ LAB_0047036e:
 
     if (iVar16 == 0 || iVar16 == 4) {
         AsJoint(param_1)->Position[0] =
-            (float)(fVar24 * (double)_DAT_00552878 + (double)*pfVar14);
+            (float)(fVar24 * (double)80.0f + (double)*pfVar14);
         AsJoint(param_1)->Position[1] =
-            local_a8[1] * _DAT_00552878 + AsJoint(param_1)->TargetPosition[1];
+            local_a8[1] * 80.0f + AsJoint(param_1)->TargetPosition[1];
         AsJoint(param_1)->Position[2] =
-            local_a8[3] * _DAT_00552908 + AsJoint(param_1)->TargetPosition[2] + _DAT_005528fc;
+            local_a8[3] * 120.0f + AsJoint(param_1)->TargetPosition[2] + 110.0f;
         return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
     if (iVar16 == 1) {
         AsJoint(param_1)->Light[0] = 0.2f;  // 0.2f
         AsJoint(param_1)->Light[1] = 0.2f;
         AsJoint(param_1)->Position[0] =
-            (float)(fVar24 * (double)_DAT_00552938 + (double)*pfVar14);
+            (float)(fVar24 * (double)70.0f + (double)*pfVar14);
         AsJoint(param_1)->Position[1] =
-            local_a8[1] * _DAT_00552938 + AsJoint(param_1)->TargetPosition[1];
+            local_a8[1] * 70.0f + AsJoint(param_1)->TargetPosition[1];
         AsJoint(param_1)->Position[2] =
-            local_a8[3] * _DAT_00552958 + AsJoint(param_1)->TargetPosition[2];
+            local_a8[3] * 140.0f + AsJoint(param_1)->TargetPosition[2];
         {
-            float fVar28 = sin_s1 * _DAT_005526e4 + _DAT_005528b4;
+            float fVar28 = sin_s1 * 0.2f + 0.4f;
             AsJoint(param_1)->Light[2] = fVar28;
         }
         return MoveJoint_Finish(param_1, param_2, local_30, true);

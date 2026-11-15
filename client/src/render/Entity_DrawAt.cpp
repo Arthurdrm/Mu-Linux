@@ -103,7 +103,7 @@ void __cdecl Entity_DrawAt(intptr_t param_1, int param_2, undefined4 param_3, fl
     uint       uVar1;
     undefined *puVar2;
 
-    if (_DAT_005524f8 >= param_5)   // cull: scale too small
+    if (0.01f >= param_5)   // cull: scale too small
         return;
 
     // Resolve sub-class for DarkKnight (0x35c → 0x3b3/0x3b4)

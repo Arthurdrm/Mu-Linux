@@ -267,7 +267,7 @@ LAB_00501064:
             iVar12 = _rand();
             const int splashOffsetY = iVar12 % 400 + 200;
             fStack_1c = (float)splashOffsetY + *(float *)(Hero + 0x14);
-            fStack_18 = *(float *)(Hero + 0x18) + _DAT_00552900;
+            fStack_18 = *(float *)(Hero + 0x18) + 300.0f;
             fStack_2c = 0.0f; fStack_28 = 0.0f; fStack_24 = 0.0f;
             fStack_38 = 1.0f; fStack_34 = 1.0f; fStack_30 = 1.0f;
             CreateEffect(MODEL_FIRE, &fStack_20, &fStack_2c, &fStack_38,
@@ -287,7 +287,7 @@ LAB_00501064:
         iVar12 = _rand();
         const int cloudOffsetY = iVar12 % 5000 - 2500;
         fStack_34 = (float)cloudOffsetY + *(float *)(Hero + 0x14);
-        fStack_30 = *(float *)(Hero + 0x18) - _DAT_00552ab8;
+        fStack_30 = *(float *)(Hero + 0x18) - 1000.0f;
         fStack_20 = 1.0f; fStack_1c = 1.0f; fStack_18 = 1.0f;
         fStack_2c = 0.0f; fStack_28 = 0.0f; fStack_24 = 0.0f;
         CreateEffect(BITMAP_LIGHT, &fStack_38, &fStack_2c, &fStack_20,
@@ -335,7 +335,7 @@ LAB_00501064:
                     Boids[iVar14].SubType = 0;
                     (&DAT_0839bd08)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
                     (&DAT_0839bd14)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
-                    WSF(DAT_0839bcbc, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 3 + 6) * _DAT_005524f4);
+                    WSF(DAT_0839bcbc, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 3 + 6) * 0.1f);
                     uVar8 = _rand(); uVar8 &= 0x8000007f;
                     if ((int)uVar8 < 0) uVar8 = (uVar8 - 1 | 0xffffff80) + 1;
                     (&DAT_0839bd10)[iVar14 * (OBJECT_STRIDE / 4)] = uVar8 + 0x80;
@@ -344,7 +344,7 @@ LAB_00501064:
                     iVar12 = EnableEvent;
                     (&DAT_0839bcd0)[iVar14 * (OBJECT_STRIDE / 4)] = 0;
                     (&DAT_0839bcd4)[iVar14 * (OBJECT_STRIDE / 4)] = 0xc2b40000;
-                    WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar11 % 10) * _DAT_005524f4);
+                    WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar11 % 10) * 0.1f);
                     if (iVar12 == 3)
                         Boids[iVar14].SubType = 1;
                     iVar12 = _rand();
@@ -353,7 +353,7 @@ LAB_00501064:
                     uVar8 = (intptr_t)Hero;
                     iVar12 = gMapManager.GetCurrentMap();
                     WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar11 % 400 + 200) + *(float *)(Hero + 0x14));
-                    WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4)) = (float)(*(float *)(uVar8 + 0x18) + _DAT_00552900);
+                    WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4)) = (float)(*(float *)(uVar8 + 0x18) + 300.0f);
                 }
                 goto LAB_0050172b;
             }
@@ -490,7 +490,7 @@ LAB_00501064:
                 (&DAT_0839bd14)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
                 iVar12 = _rand();
                 pfVar1 = (float *)(&DAT_0839bcc0 + iVar14 * (OBJECT_STRIDE / 4));
-                WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 0x13a) * _DAT_005524f8);
+                WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 0x13a) * 0.01f);
                 uVar8 = _rand(); uVar8 &= 0x800003ff;
                 if ((int)uVar8 < 0) uVar8 = (uVar8 - 1 | 0xfffffc00) + 1;
                 *pfVar1 = (float)(int)(uVar8 - 0x200) + *(float *)(Hero + 0x10);
@@ -562,7 +562,7 @@ LAB_00501734:
                             (fVar25 = *pfVar1 - *(float *)(Hero + 0x10),
                              fVar7  = WSF(DAT_0839bcc4, iVar14 * (OBJECT_STRIDE / 4)) - *(float *)(Hero + 0x14),
                              fVar25 = SQRT(fVar25*fVar25 + fVar7*fVar7),
-                             _DAT_0055285c <= fVar25) && (fVar25 <= _DAT_00552850)) {
+                             200.0f <= fVar25) && (fVar25 <= 400.0f)) {
                             (&DAT_0839bdb4)[iVar2] = 1;
                         }
                         (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
@@ -570,8 +570,8 @@ LAB_00501734:
                         if ((int)uVar8 < 0) uVar8 = (uVar8 - 1 | 0xfffffff0) + 1;
                         fVar25 = (float)(int)(uVar8 - 8) + WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4));
                         (&DAT_0839bcc8)[iVar14 * (OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
-                        if (_DAT_0055285c <= fVar25) {
-                            if (_DAT_00552ab4 < fVar25)
+                        if (200.0f <= fVar25) {
+                            if (600.0f < fVar25)
                                 *(unsigned int *)(&DAT_0839bd78 + iVar2) = 0xc1200000;
                         } else {
                             *(unsigned int *)(&DAT_0839bd78 + iVar2) = 0x41200000;
@@ -619,9 +619,9 @@ LAB_00501cb5:
                         if ((int)uVar8 < 0) uVar8 = (uVar8 - 1 | 0xfffffff0) + 1;
                         WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4)) = (float)
                             ((float)(int)(uVar8-8) + WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)));
-                        fVar25 = WSF(DAT_0839bd7c, iVar14 * (OBJECT_STRIDE / 4)) - _DAT_00552940;
+                        fVar25 = WSF(DAT_0839bd7c, iVar14 * (OBJECT_STRIDE / 4)) - 0.005f;
                         (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
-                        if (fVar25 <= _DAT_0055256c)
+                        if (fVar25 <= 1.0f)
                             (&DAT_0839bdb4)[iVar2] = 0;
                     }
                 } else if (sVar5 == 0xb0) {
@@ -631,10 +631,10 @@ LAB_00501cb5:
                     fVar22 = (float10)fsin((float10)WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)));
                     fVar22 = Math_Fabs((float)fVar22);
                     WSF(DAT_0839bcc8, iVar14 * (OBJECT_STRIDE / 4)) = (float)
-                        ((float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) - fVar22*(float10)_DAT_0055297c
-                         + (float10)_DAT_00552ca4);
+                        ((float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) - fVar22*(float10)150.0f
+                         + (float10)350.0f);
                     WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)
-                        (WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)) + _DAT_005526e4);
+                        (WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)) + 0.2f);
                 } else if (sVar5 == 0xaf) {
                     // Snow: random drift
                     uVar8 = _rand(); uVar8 &= 0x8000001f;
@@ -648,19 +648,19 @@ LAB_00501cb5:
                     }
                     iVar12 = _rand();
                     *(float *)(&DAT_0839bd78 + iVar2) =
-                        (float)(iVar12 % 0xf - 7) * _DAT_005526e4 + *(float *)(&DAT_0839bd78 + iVar2);
+                        (float)(iVar12 % 0xf - 7) * 0.2f + *(float *)(&DAT_0839bd78 + iVar2);
                     fVar22 = RequestTerrainHeight(WSF(DAT_0839bcc0, iVar14*(OBJECT_STRIDE / 4)), WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)));
-                    if ((float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) < fVar22 + (float10)_DAT_00552598) {
+                    if ((float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) < fVar22 + (float10)50.0f) {
                         *(float *)(&DAT_0839bd78 + iVar2) =
-                            *(float *)(&DAT_0839bd78+iVar2) * _DAT_00552530 + _DAT_0055256c;
+                            *(float *)(&DAT_0839bd78+iVar2) * 0.8f + 1.0f;
                     }
-                    if (fVar22 + (float10)_DAT_00552900 < (float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4))) {
+                    if (fVar22 + (float10)300.0f < (float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4))) {
                         *(float *)(&DAT_0839bd78 + iVar2) =
-                            *(float *)(&DAT_0839bd78+iVar2) * _DAT_00552530 - _DAT_0055256c;
+                            *(float *)(&DAT_0839bd78+iVar2) * 0.8f - 1.0f;
                     }
                     iVar12 = _rand();
                     WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)
-                        ((float)(iVar12%0xf - 7) * _DAT_005528b8 + WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)));
+                        ((float)(iVar12%0xf - 7) * 0.3f + WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)));
                 } else if (sVar5 == 0x10a) {
                     // Firefly/butterfly: circular orbit
                     fVar22 = (float10)fsin((float10)WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)));
@@ -668,13 +668,13 @@ LAB_00501cb5:
                     fVar22 = (float10)fcos((float10)WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)));
                     WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) = (float)
                         ((float10)WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) - fVar22*(float10)WSF(DAT_0839bd7c, iVar14*(OBJECT_STRIDE / 4)));
-                    fVar22 = (float10)fsin((float10)(iStack_3c + iVar14*0x1429 + 0x4544) * (float10)_DAT_00552d28);
-                    fVar23 = (float10)fcos((float10)(iStack_3c + iVar14*0xa139 + 0x870b) * (float10)_DAT_00552d28);
+                    fVar22 = (float10)fsin((float10)(iStack_3c + iVar14*0x1429 + 0x4544) * (float10)0.0003f);
+                    fVar23 = (float10)fcos((float10)(iStack_3c + iVar14*0xa139 + 0x870b) * (float10)0.0003f);
                     WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) = (float)
-                        (fVar23 * fVar22 * (float10)_DAT_005524f8 + (float10)WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)));
+                        (fVar23 * fVar22 * (float10)0.01f + (float10)WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)));
                     fVar25 = *pfVar1 - *(float *)(uVar8 + 0x10);
                     fVar7  = WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) - *(float *)(uVar8 + 0x14);
-                    if (_DAT_00552d24 <= SQRT(fVar25*fVar25 + fVar7*fVar7)) *pcVar3 = '\0';
+                    if (1500.0f <= SQRT(fVar25*fVar25 + fVar7*fVar7)) *pcVar3 = '\0';
                     if (_rand() % 0x1400 == 0) *pcVar3 = '\0';
                     if (((10 < gMapManager.GetCurrentMap()) && (gMapManager.GetCurrentMap() < 0x11)) &&
                         ((int)(&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] < 1)) *pcVar3 = '\0';
@@ -691,7 +691,7 @@ LAB_00501cb5:
 
                     // Scale velocity by sub-state
                     if (gMapManager.GetCurrentMap() == MAP_ATLANS) {
-                        if (_DAT_00552660 <= WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4))) {
+                        if (5.0f <= WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4))) {
                             uVar8 = _rand(); uVar8 &= 0x8000001f;
                             if ((int)uVar8 < 0) uVar8 = (uVar8-1|0xffffffe0)+1;
                             fStack_30 = *(float *)(&DAT_0839bd78 + iVar2);
@@ -710,12 +710,12 @@ LAB_00501cb5:
                             *(unsigned int *)(&DAT_0839bd88 + iVar2) = 0x41700000;
                             fStack_38 = (float)(int)(uVar8+0x10) * WSF(DAT_0839bd7c, iVar14*(OBJECT_STRIDE / 4));
                         }
-                        fVar25 = WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)) + _DAT_005524f4;
+                        fVar25 = WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)) + 0.1f;
                         (&DAT_0839bd30)[iVar14*(OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
-                        if (_DAT_00552488 <= fVar25)
+                        if (10.0f <= fVar25)
                             (&DAT_0839bd30)[iVar14*(OBJECT_STRIDE / 4)] = 0;
                     } else {
-                        fStack_38 = WSF(DAT_0839bd7c, iVar14*(OBJECT_STRIDE / 4)) * _DAT_00552464;
+                        fStack_38 = WSF(DAT_0839bd7c, iVar14*(OBJECT_STRIDE / 4)) * 25.0f;
                         fStack_30 = *(float *)(&DAT_0839bd78 + iVar2);
                     }
                     fStack_34 = 0.0f;
@@ -728,8 +728,8 @@ LAB_00501cb5:
                     (&DAT_0839bcc4)[iVar14*(OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
                     uVar8 = (intptr_t)Hero;
                     WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)(fStack_24 + WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)));
-                    *(float *)(&DAT_0839bd70 + iVar2) = fStack_2c * _DAT_00552540 + fVar7;
-                    *(float *)(&DAT_0839bd74 + iVar2) = fStack_28 * _DAT_00552540 + fVar25;
+                    *(float *)(&DAT_0839bd70 + iVar2) = fStack_2c * 3.0f + fVar7;
+                    *(float *)(&DAT_0839bd74 + iVar2) = fStack_28 * 3.0f + fVar25;
                     fVar7  = fVar7 - *(float *)(uVar8 + 0x10);
                     fVar25 = fVar25 - *(float *)(uVar8 + 0x14);
                     { float f_dist = SQRT(fVar7*fVar7 + fVar25*fVar25);
@@ -752,10 +752,10 @@ LAB_00501cb5:
                 // Loop-kill conditions (state 7, terrain type = grass)
                 if ((((int)(&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] < 1) && (gMapManager.GetCurrentMap() == MAP_ATLANS)) &&
                     ((unsigned char)DAT_0838bc70[uStack_48] == 0x01)) {
-                    fVar25 = WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) + _DAT_005524ec;
-                    bVar20 = (_DAT_0055286c <= fVar25);
+                    fVar25 = WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) + 180.0f;
+                    bVar20 = (360.0f <= fVar25);
                     (&DAT_0839bcd4)[iVar14*(OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
-                    if (bVar20) WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) = (float)(fVar25 - _DAT_0055286c);
+                    if (bVar20) WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) = (float)(fVar25 - 360.0f);
                     (&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] = 10;
                     ++Boids[iVar14].SubType;
                 }
@@ -765,7 +765,7 @@ LAB_00501cb5:
                 // Proximity effects (cloud type: chance to play sound/effect)
                 fVar25 = *pfVar1 - *(float *)(Hero + 0x10);
                 fVar7  = WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) - *(float *)(Hero + 0x14);
-                if (SQRT(fVar25*fVar25 + fVar7*fVar7) < _DAT_00552ab4) {
+                if (SQRT(fVar25*fVar25 + fVar7*fVar7) < 600.0f) {
                     sVar5 = (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)];
                     pcVar19 = pcVar3;
                     if (sVar5 == 0xae) {
@@ -798,23 +798,23 @@ LAB_00501cb5:
                              (float *)(&DAT_0839bdbc + iVar2),
                              &DAT_0839bdb6 + iVar2, fVar25);
                 Matrix_BuildFromEuler((float *)(&DAT_0839bccc + iVar14*(OBJECT_STRIDE / 4)), (float *)(&DAT_0839bd40 + iVar2));
-                fStack_20 = WSF(DAT_0839bcbc, iVar14*(OBJECT_STRIDE / 4)) * _DAT_005528e4;
+                fStack_20 = WSF(DAT_0839bcbc, iVar14*(OBJECT_STRIDE / 4)) * 40.0f;
                 fStack_1c = 0.0f; fStack_18 = 0.0f;
                 Vector_Rotate(&fStack_20, (float *)(&DAT_0839bd40 + iVar2), &fStack_14);
                 WSF(DAT_0839bcc0, iVar14*(OBJECT_STRIDE / 4)) = (float)(fStack_14 + WSF(DAT_0839bcc0, iVar14*(OBJECT_STRIDE / 4)));
                 WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)) = (float)(fStack_10 + WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)));
                 WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)(fStack_c  + WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)));
                 fVar22 = RequestTerrainHeight(WSF(DAT_0839bcc0, iVar14*(OBJECT_STRIDE / 4)), WSF(DAT_0839bcc4, iVar14*(OBJECT_STRIDE / 4)));
-                WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)(fVar22 + (float10)_DAT_00552900);
+                WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)(fVar22 + (float10)300.0f);
                 fVar22 = (float10)fsin((float10)WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)));
                 fVar23 = Math_Fabs((float)fVar22);
-                fVar22 = (float10)_DAT_005524f0;
+                fVar22 = (float10)100.0f;
                 iVar12 = (&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)];
                 (&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] = iVar12 - 1;
                 WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) = (float)
                     ((float10)WSF(DAT_0839bcc8, iVar14*(OBJECT_STRIDE / 4)) - fVar23*fVar22 + fVar22);
                 WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)) = (float)
-                    (WSF(DAT_0839bcbc, iVar14*(OBJECT_STRIDE / 4)) * _DAT_00552874 + WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)));
+                    (WSF(DAT_0839bcbc, iVar14*(OBJECT_STRIDE / 4)) * 0.05f + WSF(DAT_0839bd30, iVar14*(OBJECT_STRIDE / 4)));
                 if (iVar12 - 1 < 1) *pcVar3 = '\0';
                 uVar8 = _rand(); uVar8 &= 0x8000007f;
                 bVar20 = (uVar8 == 0);

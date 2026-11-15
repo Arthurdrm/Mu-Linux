@@ -81,8 +81,8 @@ void __cdecl SetAttackSpeed(void) {
 }
 
 static void WritePlayerAttackSpeeds(char* P, int attackSpeed, int magicSpeed) {
-    float v34 = (float)attackSpeed * _DAT_005524bc;  // = AttackSpeed * 0.004
-    float v39 = (float)magicSpeed  * _DAT_005524bc;  // = MagicSpeed  * 0.004
+    float v34 = (float)attackSpeed * 0.004f;  // = AttackSpeed * 0.004
+    float v39 = (float)magicSpeed  * 0.004f;  // = MagicSpeed  * 0.004
 
     // Que v33/v38 aparezcan sin inicializar en el decompile es un artefacto de
     // Hex-Rays, no del binario: `v34` (= AttackSpeed*0.004) y `v39` (=

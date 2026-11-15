@@ -71,9 +71,9 @@ void __cdecl RenderGuildMark(float p1, float p2, float p3, float p4, int p5) {
     float Height = p4;
 
     // Draw background box (texture 0x116) slightly larger
-    GL_DrawTexture(0x116, p1 - _DAT_0055256c, p2 - _DAT_0055256c,
-                 Width + _DAT_0055264c, Height + _DAT_0055264c,
-                 0.0f, 0.0f, Width * _DAT_00552ae4, Height * _DAT_00552a20,
+    GL_DrawTexture(0x116, p1 - 1.0f, p2 - 1.0f,
+                 Width + 2.0f, Height + 2.0f,
+                 0.0f, 0.0f, Width * 0.03125f, Height * 0.033333335f,
                  '\x01', '\x01');
 
     // IDA: el buffer se llena con las dimensiones físicas de Bitmaps[34], no

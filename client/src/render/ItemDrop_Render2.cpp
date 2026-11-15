@@ -84,9 +84,9 @@ void RenderParticles(void)
                 uVar6 = (uint)pt.Frame & 0x80000003u;
                 if ((int)uVar6 < 0) uVar6 = (uVar6 - 1u | 0xfffffffcu) + 1u;
                 fVar19 = 1.0f; fVar18 = 0.25f; fVar17 = 0.0f;
-                fVar16 = (float)(int)uVar6 * _DAT_005528dc;
+                fVar16 = (float)(int)uVar6 * 0.25f;
                 fVar15 = pt.Angle[0];
-                fVar13 = fVar13 * _DAT_005528dc;
+                fVar13 = fVar13 * 0.25f;
                 break;
 
             // ── 0x4ab / 0x4ad: state-dependent column strip ────────────────
@@ -101,17 +101,17 @@ void RenderParticles(void)
                 uVar6 = (uint)pt.Frame & 0x80000003u;
                 if ((int)uVar6 < 0) uVar6 = (uVar6 - 1u | 0xfffffffcu) + 1u;
                 fVar19 = 1.0f; fVar18 = 0.25f; fVar17 = 0.0f;
-                fVar16 = (float)(int)uVar6 * _DAT_005528dc;
-                fVar13 = fVar13 * _DAT_005528dc;
+                fVar16 = (float)(int)uVar6 * 0.25f;
+                fVar13 = fVar13 * 0.25f;
                 break;
 
             // ── 0x4b6: 2-row × 2-col grid strip ───────────────────────────
             case 0x4b6:
                 fVar19 = 0.5f; fVar18 = 0.5f;
                 uVar6 = (uint)pt.Frame & 0x80000001u;
-                fVar17 = (float)((int)(uint)pt.Frame / 2) * _DAT_00552504;
+                fVar17 = (float)((int)(uint)pt.Frame / 2) * 0.5f;
                 if ((int)uVar6 < 0) uVar6 = (uVar6 - 1u | 0xfffffffeu) + 1u;
-                fVar16 = (float)(int)uVar6 * _DAT_00552504;
+                fVar16 = (float)(int)uVar6 * 0.5f;
                 fVar15 = 0.0f;
                 break;
 
@@ -121,13 +121,13 @@ void RenderParticles(void)
                 uint uVar11;
                 uVar6  = (uint)pt.Frame;
                 uVar11 = uVar6 & 0x80000003u;
-                fVar17 = (float)((int)(uVar6 + ((int)uVar6 >> 0x1f & 3u)) >> 2) * _DAT_005528dc
-                         + _DAT_00552940;
+                fVar17 = (float)((int)(uVar6 + ((int)uVar6 >> 0x1f & 3u)) >> 2) * 0.25f
+                         + 0.005f;
                 if ((int)uVar11 < 0) uVar11 = (uVar11 - 1u | 0xfffffffcu) + 1u;
                 fVar15 = (float)(int)uVar11;
                 // shared tail with 0x596
                 fVar19 = 0.24f; fVar18 = 0.24f;
-                fVar16 = fVar15 * _DAT_005528dc + _DAT_00552940;
+                fVar16 = fVar15 * 0.25f + 0.005f;
                 fVar15 = 0.0f;
                 break;
             }
@@ -137,9 +137,9 @@ void RenderParticles(void)
                 uVar6 = (uint)pt.Frame & 0x80000003u;
                 if ((int)uVar6 < 0) uVar6 = (uVar6 - 1u | 0xfffffffcu) + 1u;
                 fVar19 = 1.0f; fVar18 = 0.25f; fVar17 = 0.0f;
-                fVar16 = (float)(int)uVar6 * _DAT_005528dc;
+                fVar16 = (float)(int)uVar6 * 0.25f;
                 fVar15 = pt.Angle[0];
-                fVar13 = fVar13 * _DAT_005528dc;
+                fVar13 = fVar13 * 0.25f;
                 break;
 
             // ── 0x4c4: show anim on states 2/5, single-frame otherwise ────
@@ -153,11 +153,11 @@ void RenderParticles(void)
 
             // ── 0x4d9: 3×3 sprite-sheet (row = tick%9/3, col = tick%9%3) ──
             case 0x4d9:
-                fVar17 = (float)(((int)(uint)pt.Frame % 9) / 3) * _DAT_005528dc + _DAT_00552940;
+                fVar17 = (float)(((int)(uint)pt.Frame % 9) / 3) * 0.25f + 0.005f;
                 fVar15 = (float)(((int)(uint)pt.Frame % 9) % 3);
                 // shared tail with 0x596
                 fVar19 = 0.24f; fVar18 = 0.24f;
-                fVar16 = fVar15 * _DAT_005528dc + _DAT_00552940;
+                fVar16 = fVar15 * 0.25f + 0.005f;
                 fVar15 = 0.0f;
                 break;
 
@@ -186,14 +186,14 @@ void RenderParticles(void)
                             int iVar1 = (iVar4 - 1) % 3;
                             // interpolated world position
                             local_18[iVar10/4 + 3] =
-                                pfVar7[-0xf] - (float)local_3c * pfVar7[0] * _DAT_005524f4;
+                                pfVar7[-0xf] - (float)local_3c * pfVar7[0] * 0.1f;
 
                             int local_30 = (local_38 > 9) ? 10 : local_38;
                             uint local_34 = (uint)pt.LifeTime;
                             if ((int)local_34 > 9) local_34 = 10;
 
                             local_18[iVar10/4] =
-                                (float)(int)local_34 * _DAT_00552500 *
+                                (float)(int)local_34 * 0.001f *
                                 ((float)iVar9 * *(float *)((char *)pt.Light + 4 * (iVar5)) +
                                  (float)(10 - iVar9) * *(float *)((char *)pt.Light + 4 * (iVar1)))
                                 * (float)local_30;
@@ -234,7 +234,7 @@ void RenderParticles(void)
                     bool bEven;
                     if ((int)uVar6b < 0) bEven = (uVar6b - 1u | 0xfffffffeu) == 0xffffffffu;
                     else                 bEven = (uVar6b == 0);
-                    float fSpeed = bEven ? _DAT_00552914 : _DAT_00552acc;
+                    float fSpeed = bEven ? 0.02f : (-0.02f);
                     // update current_frame = delta * entry_speed * speed + base_frame
                     // (float field: escribir bits float, no truncar a int)
                     pt.Rotation = WorldTime * pt.Extra[0] * fSpeed
@@ -250,12 +250,12 @@ void RenderParticles(void)
                 uint uVar11;
                 uVar6  = (uint)pt.Frame;
                 uVar11 = uVar6 & 0x80000003u;
-                fVar17 = (float)((int)(uVar6 + ((int)uVar6 >> 0x1f & 3u)) >> 2) * _DAT_005528dc
-                         + _DAT_00552940;
+                fVar17 = (float)((int)(uVar6 + ((int)uVar6 >> 0x1f & 3u)) >> 2) * 0.25f
+                         + 0.005f;
                 if ((int)uVar11 < 0) uVar11 = (uVar11 - 1u | 0xfffffffcu) + 1u;
                 fVar15 = (float)(int)uVar11;
                 fVar19 = 0.24f; fVar18 = 0.24f;
-                fVar16 = fVar15 * _DAT_005528dc + _DAT_00552940;
+                fVar16 = fVar15 * 0.25f + 0.005f;
                 fVar15 = 0.0f;
                 break;
             }
@@ -265,7 +265,7 @@ void RenderParticles(void)
                 fVar15 = pt.Rotation;
                 fVar19 = 0.99f; fVar18 = 0.99f;
                 fVar17 = 0.11f; fVar16 = 0.11f;
-                fVar14 = fVar14 * _DAT_005528b8;
+                fVar14 = fVar14 * 0.3f;
                 fVar13 = fVar13 * pt.Gravity;
                 break;
 

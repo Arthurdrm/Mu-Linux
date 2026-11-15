@@ -112,9 +112,9 @@ Effect_DrawRing(int param_1,float *param_2,undefined4 param_3,undefined4 param_4
   float t = 0.0f;
   float fVar2 = 0.0f;
   do {
-    float fVar1 = t * _DAT_00552aac;
-    fVar2 = t + _DAT_0055256c;
-    float fVar3 = fVar2 * _DAT_00552aac;
+    float fVar1 = t * 0.083333336f;
+    fVar2 = t + 1.0f;
+    float fVar3 = fVar2 * 0.083333336f;
 
     // UV ramp — TEXCOORD(dest, U-float, V-bits) writes [U as float][V as int-bits]
     TEXCOORD(&uv[0][0], fVar1, 0x3f800000);
@@ -125,9 +125,9 @@ Effect_DrawRing(int param_1,float *param_2,undefined4 param_3,undefined4 param_4
     // Two rotation matrices around Z at angle1 / angle2.
     angles[0] = 0.0f;
     angles[1] = 0.0f;
-    angles[2] = t * _DAT_0055284c + param_6;
+    angles[2] = t * 30.0f + param_6;
     EulerToMatrix(angles, matA);
-    angles[2] = fVar2 * _DAT_0055284c + param_6;
+    angles[2] = fVar2 * 30.0f + param_6;
     EulerToMatrix(angles, matB);
 
     // Vert 0: matA * (0, param_3, 0) + center
@@ -174,7 +174,7 @@ Effect_DrawRing(int param_1,float *param_2,undefined4 param_3,undefined4 param_4
     }
     BufferedDraw::End();
     t = fVar2;
-  } while (fVar2 < _DAT_00552664);
+  } while (fVar2 < 12.0f);
   return;
 }
 
@@ -191,10 +191,10 @@ void Effect_TickFade(void)
     Joint_BoneOffsetApply(reinterpret_cast<BYTE*>(slot),1);
     // IDA lee/escribe estos campos como float, salvo el contador de vida.
     if (life<10) {
-      const double fade=(double)life*(double)_DAT_005524f4;
-      *(float *)(slot+0xe8)=(float)(fade*(double)_DAT_00552534);
+      const double fade=(double)life*(double)0.1f;
+      *(float *)(slot+0xe8)=(float)(fade*(double)0.6f);
       *(float *)(slot+0xec)=(float)fade;
-      *(float *)(slot+0xf0)=(float)(fade*(double)_DAT_00552530);
+      *(float *)(slot+0xf0)=(float)(fade*(double)0.8f);
     }
     *(float *)(slot+0x24)-=(float)life;
   }
@@ -228,14 +228,14 @@ void Effect_TickFlare(void)
       if (__ptype < 0x4b7) {
         if (__ptype < 0x4b5) {
           if ((__ptype == 7) &&
-             (fVar1 = *pfVar3 - _DAT_00552874, *pfVar3 = fVar1, fVar1 < _DAT_005524f4)) {
+             (fVar1 = *pfVar3 - 0.05f, *pfVar3 = fVar1, fVar1 < 0.1f)) {
             *(undefined1 *)(pfVar3 + -3) = 0;
           }
         }
         else {
 LAB_004794f9:
           if (__ptype == 1205) {
-            *pfVar3 = *pfVar3 + _DAT_005524bc;
+            *pfVar3 = *pfVar3 + 0.004f;
           }
           pfVar3[7] = 0.1;
           pfVar3[8] = 0.0;
@@ -244,7 +244,7 @@ LAB_004794f9:
             *(undefined1 *)(pfVar3 + -3) = 0;
           }
           if (__pcnt < 0x32) {
-            pfVar3[10] = (float)__pcnt * _DAT_00552914;
+            pfVar3[10] = (float)__pcnt * 0.02f;
           }
         }
       }
@@ -274,10 +274,10 @@ void DamageNumbers_Tick(void)
     for (DamagePoint& point : DAT_07c80110) {
         if (point.Active && --point.Delay < 0) {
             point.Position[2] = point.LifeTime + point.Position[2];
-            point.LifeTime = point.LifeTime - _DAT_005528b8;
-            if (point.LifeTime <= _DAT_00552580) point.Active = 0;
-            point.Scale = point.Scale - _DAT_00552660;
-            if (point.Scale < _DAT_00552834) point.Scale = 15.0f;
+            point.LifeTime = point.LifeTime - 0.3f;
+            if (point.LifeTime <= 0.0f) point.Active = 0;
+            point.Scale = point.Scale - 5.0f;
+            if (point.Scale < 15.0f) point.Scale = 15.0f;
         }
     }
 }

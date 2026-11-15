@@ -20,9 +20,9 @@ void BMD_SkinUpdate(void)
         float *pfVar11 = &DAT_00593008;          // source vertex array       (stride 3)
         short *psVar16 = &DAT_00590c32;          // parent bone index array   (stride 0x11)
         do {
-            float local_48 = pfVar11[-1] * _DAT_0055259c;
-            float local_44 = pfVar11[ 0] * _DAT_0055259c;
-            float local_40 = pfVar11[ 1] * _DAT_0055259c;
+            float local_48 = pfVar11[-1] * 1.0f;
+            float local_44 = pfVar11[ 0] * 1.0f;
+            float local_40 = pfVar11[ 1] * 1.0f;
             float local_3c, local_38, local_34;
             float local_30[12];
 

@@ -264,8 +264,8 @@ void __cdecl Entity_Render(void)
                 if (gMapManager.GetCurrentMap() == MAP_ICARUS) {  // World 10 (Icarus) — bamboleo
                     // IDA: sin((v15 + WorldTime) * flt_5528E0) * flt_552488 + z
                     *(float*)(v1 + 24) = (float)(sin(((double)v15 + (double)WorldTime)
-                                                     * (double)_DAT_005528e0)
-                                                 * (double)_DAT_00552488 + v22);
+                                                     * (double)0.002f)
+                                                 * (double)10.0f + v22);
                 }
 
                 // IDA (L161-163) pasa `*((short*)v1 + 1)` = v1+2 = el TYPE del entity
@@ -287,7 +287,7 @@ void __cdecl Entity_Render(void)
                     float scr[3];
                     scr[0] = v20;                              // world X
                     scr[1] = v21;                              // world Y
-                    scr[2] = v22 + _DAT_0055284c;              // world Z + name-tag offset
+                    scr[2] = v22 + 30.0f;              // world Z + name-tag offset
                     int sx = 0, sy = 0;
                     extern void __cdecl Camera_ProjectWorldToScreen(float*, int*, int*);
                     Camera_ProjectWorldToScreen(scr, &sx, &sy);
@@ -1197,7 +1197,7 @@ void EffectPool_TickRenderState() {
         if (!o.Live) continue;
         o.Visible = (BYTE)Frustum_TestSphere(o.Position, 400.0f);
         if (!o.Visible) continue;
-        if ((o.Type==239 || (o.Type==244 && (float)o.LifeTime>_DAT_00552488)) && o.Owner) {
+        if ((o.Type==239 || (o.Type==244 && (float)o.LifeTime>10.0f)) && o.Owner) {
             const int model = *((BYTE *)o.Owner + 136) + ITEM_MODEL_BASE;
             if (model >= 0 && model < 1024 && Hero) {
                 if (o.Type==239) o.Direction[2] -= 30.0f;

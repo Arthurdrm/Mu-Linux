@@ -38,10 +38,10 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     // Step 1 — FOV half-extents ───────────────────────────────────────────────
     // near_w = tan(FOV * PI/180) * (near_clip * viewscale) * screen_ratio + tile_scale
     // near_h = near_w * aspect_ratio
-    long double fov_tan = tanl((long double)Ff(CameraFOV) * (long double)_DAT_00552cc4);
-    long double near_w  = fov_tan * (long double)(Ff(CameraViewFar) * _DAT_005526e8) *
-                          (long double)param_1 + (long double)_DAT_005524f0;
-    long double near_h  = near_w * (long double)_DAT_00552adc;
+    long double fov_tan = tanl((long double)Ff(CameraFOV) * (long double)0.008726646f);
+    long double near_w  = fov_tan * (long double)(Ff(CameraViewFar) * 0.9f) *
+                          (long double)param_1 + (long double)100.0f;
+    long double near_h  = near_w * (long double)0.75f;
     // DESVIACION (in-game): la pirámide del binario es más angosta que la
     // vista real: usa tan(FOV/2) como semiancho sin el aspecto 4:3 y el alto
     // en 0.75 de eso.  Con el FOV de 35 alcanzaba; con 50 cortaba objetos y
@@ -49,15 +49,15 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     // (gluPerspective: semialto tan(FOV/2), semiancho * W/H de la ventana,
     // que en pantallas anchas no es 4:3).
     if (SceneFlag == 5 || gWindow.IsWide()) {
-        const long double depth = (long double)(Ff(CameraViewFar) * _DAT_005526e8);
-        near_h = fov_tan * depth + (long double)_DAT_005524f0;
+        const long double depth = (long double)(Ff(CameraViewFar) * 0.9f);
+        near_h = fov_tan * depth + (long double)100.0f;
         const long double aspect = (gWindow.GetHeight() > 0)
             ? (long double)gWindow.GetRealWidth() / (long double)gWindow.GetHeight() : (4.0L / 3.0L);
-        near_w = fov_tan * depth * (long double)param_1 * aspect + (long double)_DAT_005524f0;
+        near_w = fov_tan * depth * (long double)param_1 * aspect + (long double)100.0f;
     }
     // En selección y login anchos se usa también el semialto de la proyección:
     // ensanchar sólo near_w conserva un frustum demasiado bajo y recorta terreno.
-    float near_dist     = -(Ff(CameraViewFar) * _DAT_005526e8);  // negative near depth
+    float near_dist     = -(Ff(CameraViewFar) * 0.9f);  // negative near depth
 
     // Step 2 — 5 view-space corners ───────────────────────────────────────────
     corners[0]  = 0.0f;           // apex (origin)
@@ -116,13 +116,13 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     };
 
     // Near tile bounds — clamped [0, 0xFB = 251]
-    int iVar2 = floor4tile_min(local_7c, _DAT_005524f0);
+    int iVar2 = floor4tile_min(local_7c, 100.0f);
     FrustrumBoundMinX_1 = iVar2;
-    int iVar3 = floor4tile_min(local_84, _DAT_005524f0);
+    int iVar3 = floor4tile_min(local_84, 100.0f);
     FrustrumBoundMinY_1 = iVar3;
-    int iVar1 = floor4tile_max(local_80, _DAT_005524f0);
+    int iVar1 = floor4tile_max(local_80, 100.0f);
     FrustrumBoundMaxX_1 = iVar1;
-    FrustrumBoundMaxY_1 = floor4tile_max(local_88, _DAT_005524f0);
+    FrustrumBoundMaxY_1 = floor4tile_max(local_88, 100.0f);
 
     if (iVar2 < 0)              { iVar2 = 0; FrustrumBoundMinX_1 = 0; }
     if (iVar3 < 0)              { iVar3 = 0; FrustrumBoundMinY_1 = 0; }
@@ -134,13 +134,13 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     if (0xfb < (int)FrustrumBoundMaxY_1) FrustrumBoundMaxY_1 = 0xfb;
 
     // Extended (far) tile bounds — clamped [0, 0xEF = 239]
-    iVar2 = floor4tile_min(local_7c, _DAT_005524f0);
+    iVar2 = floor4tile_min(local_7c, 100.0f);
     FrustrumBoundMinX_2 = iVar2;
-    iVar3 = floor4tile_min(local_84, _DAT_005524f0);
+    iVar3 = floor4tile_min(local_84, 100.0f);
     FrustrumBoundMinY_2 = iVar3;
-    iVar1 = floor4tile_max(local_80, _DAT_005524f0);
+    iVar1 = floor4tile_max(local_80, 100.0f);
     FrustrumBoundMaxX_2 = iVar1;
-    FrustrumBoundMaxY_2 = floor4tile_max(local_88, _DAT_005524f0);
+    FrustrumBoundMaxY_2 = floor4tile_max(local_88, 100.0f);
 
     if (iVar2 < 0)              { iVar2 = 0; FrustrumBoundMinX_2 = 0; }
     if (iVar3 < 0)              { iVar3 = 0; FrustrumBoundMinY_2 = 0; }
@@ -233,8 +233,8 @@ void __cdecl Camera_SetMatrix(float *cam_pos)
     float* outX = (float*)&FrustrumX;
     float* outY = (float*)&FrustrumY;
     for (int i = 0; i < 4; i++) {
-        outX[i] = corners_world[i][0] / _DAT_005524f0;  // tile-space X
-        outY[i] = corners_world[i][1] / _DAT_005524f0;  // tile-space Y
+        outX[i] = corners_world[i][0] / 100.0f;  // tile-space X
+        outY[i] = corners_world[i][1] / 100.0f;  // tile-space Y
     }
 }
 
@@ -360,7 +360,7 @@ void __cdecl GL_BeginViewport(int param_1,int param_2,int param_3,int param_4)
   // 55.0f→int 55→Ff(55)=7.7e-44 → FOV≈0 → pantalla negra.
   // Solo el far necesita Ff() en el caller porque lo multiplicamos por _DAT_00552d34
   // (1.4f) ANTES de pasarlo — la multiplicación es en float-space aquí.
-  GL_SetPerspective(*(int*)&CameraFOV,(float)uVar3 / (float)uVar4,*(int*)&CameraViewNear,Ff(CameraViewFar) * _DAT_00552d34);
+  GL_SetPerspective(*(int*)&CameraFOV,(float)uVar3 / (float)uVar4,*(int*)&CameraViewNear,Ff(CameraViewFar) * 1.4f);
   Gfx::MatrixMode(Gfx::Matrix::ModelView);
   Gfx::PushMatrix();
   Gfx::LoadIdentity();

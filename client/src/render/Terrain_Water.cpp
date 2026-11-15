@@ -79,12 +79,12 @@ int __cdecl Terrain_Water(void)
         // Ocean / water mode: long period (720000 units)
         uVar14 = (long long)WorldTime;
         iVar4  = (int)((long long)uVar14 / 720000);
-        fVar11 = (float10)(int)((long long)uVar14 % 720000) * (float10)_DAT_005528e0;
+        fVar11 = (float10)(int)((long long)uVar14 % 720000) * (float10)0.002f;
     } else {
         // Terrain wave mode: short period (36000 units)
         uVar14 = (long long)WorldTime;
         iVar4  = (int)((long long)uVar14 / 36000);
-        fVar11 = (float10)(int)((long long)uVar14 % 36000) * (float10)_DAT_005524f8;
+        fVar11 = (float10)(int)((long long)uVar14 % 36000) * (float10)0.01f;
     }
 
     int iVar2b = gMapManager.GetCurrentMap();
@@ -103,10 +103,10 @@ int __cdecl Terrain_Water(void)
             waveColumns.resize(columns);
             fVar12=(float10)(int)FrustrumBoundMinX_1;
             for(int column=0;column<columns;++column) {
-                fVar1=iVar2b==8 ? _DAT_00552598 : _DAT_00552660;
+                fVar1=iVar2b==8 ? 50.0f : 5.0f;
                 fVar13=(float10)fsin(fVar12*(float10)fVar1+fVar11);
-                waveColumns[column]=(float)(fVar13*(float10)_DAT_00552488);
-                fVar12+=(float10)_DAT_0055256c;
+                waveColumns[column]=(float)(fVar13*(float10)10.0f);
+                fVar12+=(float10)1.0f;
             }
             do {
                 pfVar6=(float*)((char*)&TerrainGrassWind+(iVar9+FrustrumBoundMinX_1)*4);

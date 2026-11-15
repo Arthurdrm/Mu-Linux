@@ -156,7 +156,7 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
 
     pModel = (void *)(Models + *(short *)(param_1 + 2) * BMD_STRIDE);
     iVar2  = _rand();
-    fVar14 = (float)(iVar2 % 0x1e + 0x46) * _DAT_005524f8;
+    fVar14 = (float)(iVar2 % 0x1e + 0x46) * 0.01f;
 
     // Login scene special-case: SceneFlag==2, entity type 0x3c.
     if ((SceneFlag == 2) && (*(short *)(param_1 + 2) == 0x3c)) {
@@ -181,10 +181,10 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
         pfVar3 = (float *)(int)*(short *)(param_1 + 2);
         if (pfVar3 == (float *)0x38) {
             // Type 56 — portal gate: two fire jets from bone data
-            local_30 = fVar14 * _DAT_00552660;
-            local_24 = fVar14 * _DAT_00552534;
-            local_20 = fVar14 * _DAT_005528b8;
-            local_1c = fVar14 * _DAT_005524f4;
+            local_30 = fVar14 * 5.0f;
+            local_24 = fVar14 * 0.6f;
+            local_20 = fVar14 * 0.3f;
+            local_1c = fVar14 * 0.1f;
             BMD_TransformPosition(pModel, (float *)&DAT_0697139c, &local_18, local_c, '\0');
             float fSave = local_30;
             WorldEffects_AddSprite(0x47e, local_c, local_30, &local_24, param_1, 0, 0);
@@ -196,7 +196,7 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
             // Type 105 — NPC: Y-offset scroll + random smoke puffs (50% chance)
             *(undefined4 *)(param_1 + 0x68) = 0x3f800000;
             lVar10 = (longlong)WorldTime;   // IDA: (-(std::int64_t)WorldTime % 1000) * 0.001
-            *(float *)(param_1 + 0x70) = (float)(-(int)lVar10 % 1000) * _DAT_00552500;
+            *(float *)(param_1 + 0x70) = (float)(-(int)lVar10 % 1000) * 0.001f;
             uVar4 = _rand();
             randomRemainder = uVar4 & 0x80000001;
             if ((int)randomRemainder < 0)
@@ -263,8 +263,8 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
         pfVar3 = (float *)(*(short *)(param_1 + 2) + -1);
         switch (*(short *)(param_1 + 2)) {
         case 1:
-            local_24 = fVar14 * _DAT_005528b4;
-            local_20 = fVar14 * _DAT_00552928;
+            local_24 = fVar14 * 0.4f;
+            local_20 = fVar14 * 0.7f;
             local_1c = fVar14;
             BMD_TransformPosition(pModel, (float *)&DAT_06970afc, local_c, &local_18, '\0');
             WorldEffects_AddSprite(0x47e, &local_18, 0.5f,&local_24, param_1, 0, 0);
@@ -274,15 +274,15 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
             fVar14 = 0.5f;
             break;
         case 9:
-            local_24 = fVar14 * _DAT_005528b4;
-            local_20 = fVar14 * _DAT_00552928;
+            local_24 = fVar14 * 0.4f;
+            local_20 = fVar14 * 0.7f;
             local_1c = fVar14;
             BMD_TransformPosition(pModel, (float *)&DAT_06970acc, local_c, &local_18, '\0');
             fVar14 = 1.5f;
             break;
         case 0x11:
-            local_24 = fVar14 * _DAT_005528b4;
-            local_20 = fVar14 * _DAT_00552928;
+            local_24 = fVar14 * 0.4f;
+            local_20 = fVar14 * 0.7f;
             local_1c = fVar14;
             BMD_TransformPosition(pModel, (float *)&DAT_06970b5c, local_c, &local_18, '\0');
             WorldEffects_AddSprite(0x47e, &local_18, 1.0f,&local_24, param_1, 0, 0);
@@ -295,16 +295,16 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
             fVar14 = 1.0f;
             goto LAB_004fc55a;
         case 0x23:
-            local_24 = fVar14 * _DAT_005528b4;
-            local_20 = fVar14 * _DAT_00552928;
+            local_24 = fVar14 * 0.4f;
+            local_20 = fVar14 * 0.7f;
             local_1c = fVar14;
             BMD_TransformPosition(pModel, (float *)&DAT_06970b2c, local_c, &local_18, '\0');
             pfVar3 = (float *)WorldEffects_AddSprite(0x47e, &local_18, 1.5f,&local_24, param_1, 0, 0);
             return pfVar3;
         case 0x27:
             // Special portal: 2 rotating sparks + 4-bone fire loop + optional burst
-            local_24 = fVar14 * _DAT_005528b4;
-            local_20 = fVar14 * _DAT_00552530;
+            local_24 = fVar14 * 0.4f;
+            local_20 = fVar14 * 0.8f;
             local_1c = fVar14;
             uVar11 = (longlong)(WorldTime * 0.1f);   // IDA: (int)(std::int64_t)(WorldTime*0.1) % 360
             local_30 = (float)(int)((longlong)((ulonglong)(uint)((int)uVar11 >> 0x1f) << 0x20
@@ -359,10 +359,10 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
         if (entityType > 0x12 && entityType < 0x15) {
             if (*(short *)(param_1 + 2) == 0x13) {
                 uVar5 = 0x4f0; local_1c = 0.0f;
-                local_24 = fVar14; local_20 = _DAT_005526e4;
+                local_24 = fVar14; local_20 = 0.2f;
             } else {
-                local_24 = fVar14 * _DAT_005528b4;
-                uVar5 = 0x4a7; local_1c = fVar14; local_20 = _DAT_00552530;
+                local_24 = fVar14 * 0.4f;
+                uVar5 = 0x4a7; local_1c = fVar14; local_20 = 0.8f;
             }
             local_20 = fVar14 * local_20;
             uVar11 = (longlong)(WorldTime * 0.1f);   // IDA: (int)(std::int64_t)(WorldTime*0.1) % 360
@@ -387,23 +387,23 @@ float * __cdecl Entity_SpawnEffects(intptr_t param_1)
             local_30 = (float)(int)((longlong)((ulonglong)(uint)((int)uVar11 >> 0x1f) << 0x20
                                                | uVar11 & 0xffffffff) % 0x168);
             local_18 = *(float *)(param_1 + 0x10);
-            local_10 = *(float *)(param_1 + 0x18) + _DAT_005529e0;
+            local_10 = *(float *)(param_1 + 0x18) + 260.0f;
             WorldEffects_AddSprite(0x4a7, &local_18, 2.5f,&local_24, param_1,  local_30, 0);
             pfVar3 = (float *)WorldEffects_AddSprite(0x4a7, &local_18, 2.5f,&local_24, param_1, -local_30, 0);
         }
         // fallthrough to case 6
     case MAP_ARENA:
         if (*(short *)(param_1 + 2) == 9) {
-            local_24 = fVar14 * _DAT_00552534;
-            local_20 = fVar14 * _DAT_005528b8;
-            local_1c = fVar14 * _DAT_005524f4;
+            local_24 = fVar14 * 0.6f;
+            local_20 = fVar14 * 0.3f;
+            local_1c = fVar14 * 0.1f;
             // IDA pasa como entrada `Position`, que en este camino nadie
             // inicializó; en el binario ese lugar del stack vale cero.  Acá
             // era basura y el resplandor de la antorcha (Lost Tower, mapa 6)
             // nacía en cualquier lado.
             local_pos_buf[0] = 0.0f; local_pos_buf[1] = 0.0f; local_pos_buf[2] = 0.0f;
             BMD_TransformPosition(pModel, (float *)&DAT_06970acc, &local_18, local_c, '\0');
-            fVar14 = fVar14 * _DAT_00552660;
+            fVar14 = fVar14 * 5.0f;
             pfVar3 = local_c;
 LAB_004fc55a:
             pfVar3 = (float *)WorldEffects_AddSprite(0x47e, pfVar3, fVar14, &local_24, param_1, 0, 0);
@@ -417,12 +417,12 @@ LAB_004fc55a:
         entityType = *(short *)(param_1 + 2);
         switch (entityType) {
         case 0:
-            fVar9 = (float10)fsin((float10)WorldTime * (float10)_DAT_005528e0);
-            fVar9 = fVar9 * (float10)_DAT_005528b8 + (float10)_DAT_00552928;
-            local_24 = (float)(fVar9 * (float10)_DAT_00552d0c);
+            fVar9 = (float10)fsin((float10)WorldTime * (float10)0.002f);
+            fVar9 = fVar9 * (float10)0.3f + (float10)0.7f;
+            local_24 = (float)(fVar9 * (float10)0.58823526f);
             local_20 = (float)fVar9; local_1c = (float)fVar9;
             BMD_TransformPosition(pModel, (float *)&DAT_06970bbc, local_c, &local_18, '\0');
-            pfVar3 = (float *)WorldEffects_AddSprite(0x498, &local_18, (float)fVar9 * _DAT_00552660, &local_24, param_1, 0, 0);
+            pfVar3 = (float *)WorldEffects_AddSprite(0x498, &local_18, (float)fVar9 * 5.0f, &local_24, param_1, 0, 0);
             return pfVar3;
         case 0x3c:
             if (*(int *)(param_1 + 0x58) != -2) {
@@ -434,22 +434,22 @@ LAB_004fc55a:
             *(undefined4 *)(param_1 + 0x58) = 0xfffffffe;
             return pfVar3;
         case 0x3f:
-            fVar9 = (float10)fsin(((float10)*(float *)(param_1 + 0x24) * (float10)_DAT_00552660
-                                   + (float10)WorldTime) * (float10)_DAT_005528e0);
-            fVar9 = fVar9 * (float10)_DAT_005528b8 + (float10)_DAT_00552928;
-            local_24 = (float)(fVar9 * (float10)_DAT_00552d0c);
+            fVar9 = (float10)fsin(((float10)*(float *)(param_1 + 0x24) * (float10)5.0f
+                                   + (float10)WorldTime) * (float10)0.002f);
+            fVar9 = fVar9 * (float10)0.3f + (float10)0.7f;
+            local_24 = (float)(fVar9 * (float10)0.58823526f);
             local_20 = (float)fVar9; local_1c = (float)fVar9;
             BMD_TransformPosition(pModel, (float *)&DAT_06970afc, local_c, &local_18, '\0');
-            pfVar3 = (float *)WorldEffects_AddSprite(0x597, &local_18, (float)fVar9 * _DAT_005528f0, &local_24, param_1, 0, 0);
+            pfVar3 = (float *)WorldEffects_AddSprite(0x597, &local_18, (float)fVar9 * 1.5f, &local_24, param_1, 0, 0);
             return pfVar3;
         case 0x40:
-            fVar9 = (float10)fsin(((float10)*(float *)(param_1 + 0x24) * (float10)_DAT_00552660
-                                   + (float10)WorldTime) * (float10)_DAT_005528e0);
-            fVar14 = (float)(fVar9 * (float10)_DAT_005528b8 + (float10)_DAT_00552928);
-            local_20 = fVar14 * _DAT_00552d08;
+            fVar9 = (float10)fsin(((float10)*(float *)(param_1 + 0x24) * (float10)5.0f
+                                   + (float10)WorldTime) * (float10)0.002f);
+            fVar14 = (float)(fVar9 * (float10)0.3f + (float10)0.7f);
+            local_20 = fVar14 * 0.32f;
             local_24 = fVar14; local_1c = local_20;
             BMD_TransformPosition(pModel, (float *)&DAT_06970afc, local_c, &local_18, '\0');
-            pfVar3 = (float *)WorldEffects_AddSprite(0x597, &local_18, fVar14 * _DAT_005528f0, &local_24, param_1, 0, 0);
+            pfVar3 = (float *)WorldEffects_AddSprite(0x597, &local_18, fVar14 * 1.5f, &local_24, param_1, 0, 0);
             return pfVar3;
         case 0x46:
             *(undefined4 *)(param_1 + 0x58) = 0xfffffffe;
@@ -489,7 +489,7 @@ LAB_004fc55a:
                     if ((int)uVar4 < 0) uVar4 = (uVar4 - 1 | 0xffffff80) + 1;
                     local_10 = *(float *)(param_1 + 0x18);
                     local_14 = (float)(int)(uVar4 - 0x40) + *(float *)(param_1 + 0x14);
-                    Particle_Spawn(BITMAP_SMOKE, &local_18, pfVar6, pfVar13, 4, *(float *)(param_1 + 0xc) * _DAT_00552504, 0);
+                    Particle_Spawn(BITMAP_SMOKE, &local_18, pfVar6, pfVar13, 4, *(float *)(param_1 + 0xc) * 0.5f, 0);
                     bVar18 = 0;
                     pfVar17 = (float *)0x0; pfVar16 = (float *)0xffffffff;
                     pfVar15 = (float *)0x0; pfVar3  = (float *)0x0;
@@ -578,11 +578,11 @@ LAB_004fc55a:
             // bytes siguientes son {9,10,11}. No son un float sin inicializar.
             const unsigned char waveBones[7] = {1, 2, 4, 6, 9, 10, 11};
             iVar7 = 0;
-            fVar9 = (float10)fsin(((float10)*(float *)(param_1 + 0x24) * (float10)_DAT_005524fc
-                                   + (float10)WorldTime) * (float10)_DAT_00552500);
-            fVar9 = (fVar9 + (float10)_DAT_0055256c) * (float10)_DAT_00552504;
+            fVar9 = (float10)fsin(((float10)*(float *)(param_1 + 0x24) * (float10)20.0f
+                                   + (float10)WorldTime) * (float10)0.001f);
+            fVar9 = (fVar9 + (float10)1.0f) * (float10)0.5f;
             local_24 = (float)fVar9;
-            local_20 = (float)(fVar9 * (float10)_DAT_00552504);
+            local_20 = (float)(fVar9 * (float10)0.5f);
             do {
                 local_c[0] = 0.0f; local_c[1] = 0.0f; local_c[2] = 2.0f;
                 BMD_TransformPosition(pModel,
@@ -594,12 +594,12 @@ LAB_004fc55a:
                 iVar7++;
             } while (iVar7 < 7);
         } else if (iVar2 == 0xd) {
-            fVar9 = (float10)fsin((float10)WorldTime * (float10)_DAT_00552500);
+            fVar9 = (float10)fsin((float10)WorldTime * (float10)0.001f);
             local_c[0] = 0.0f; local_c[1] = 0.0f; local_c[2] = 0.0f;
-            fVar9 = fVar9 * (float10)_DAT_005528b8 + (float10)_DAT_00552928;
+            fVar9 = fVar9 * (float10)0.3f + (float10)0.7f;
             local_24 = (float)fVar9; local_20 = (float)fVar9; local_1c = (float)fVar9;
             BMD_TransformPosition(pModel, (float *)&DAT_06970b2c, local_c, &local_18, '\0');
-            pfVar3 = (float *)WorldEffects_AddSprite(0x4e1, &local_18, (float)fVar9 + _DAT_00552504, &local_24, param_1, 0, 0);
+            pfVar3 = (float *)WorldEffects_AddSprite(0x4e1, &local_18, (float)fVar9 + 0.5f, &local_24, param_1, 0, 0);
             return pfVar3;
         } else if ((iVar2 - 0x25) == 0) {
             // Type 0x25 — occasional lightning streaks
@@ -612,7 +612,7 @@ LAB_004fc55a:
                 uVar4 = (uint)uVar11 & 0x80000003;
                 bVar8 = ((uVar11 & 0x80000003) == 0);
                 if ((int)uVar4 < 0) bVar8 = ((uVar4 - 1 | 0xfffffffc) == 0xffffffff);
-                *(float *)(param_1 + 0x80) = *(float *)(param_1 + 0x80) + _DAT_0055256c;
+                *(float *)(param_1 + 0x80) = *(float *)(param_1 + 0x80) + 1.0f;
                 if (bVar8) {
                     Particle_Spawn(BITMAP_ADV_SMOKE + 1, (float *)(param_1 + 0x10), (float *)(param_1 + 0x1c), &local_24, 0, 1.0f, 0);
                     Particle_Spawn(BITMAP_ADV_SMOKE, (float *)(param_1 + 0x10), (float *)(param_1 + 0x1c), &local_24, 0, 1.0f, 0);
@@ -631,7 +631,7 @@ LAB_004fc55a:
                     bVar8 = (randomRemainder == 0);
                 }
                 pfVar3 = (float *)randomRemainder;
-                *(float *)(param_1 + 0x80) = *(float *)(param_1 + 0x80) + _DAT_0055256c;
+                *(float *)(param_1 + 0x80) = *(float *)(param_1 + 0x80) + 1.0f;
                 if (bVar8) {
                     pfVar3 = (float *)(param_1 + 0x1c);
                     pfVar6 = (float *)(param_1 + 0x10);

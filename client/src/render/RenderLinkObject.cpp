@@ -168,7 +168,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
                 (param_6 == 0x220) || (param_6 == 0x222))
             {
                 // BOW range 0x218-0x21e / 0x220 / 0x222
-                afStack_264[3] = _DAT_00552580;  // 0.0f
+                afStack_264[3] = 0.0f;  // 0.0f
                 afStack_264[4] = 20.0f;
                 afStack_264[5] = 180.0f;
                 Matrix_BuildFromEuler(afStack_264 + 3, local_228);
@@ -190,7 +190,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
             else
             {
                 // General weapon / staff / shield path
-                afStack_264[4] = _DAT_00552580;  // 0.0f
+                afStack_264[4] = 0.0f;  // 0.0f
                 afStack_264[3] = 70.0f;
                 afStack_264[5] = 90.0f;
                 Matrix_BuildFromEuler(afStack_264 + 3, local_228);
@@ -273,7 +273,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
         else if ((param_6 == 0x23a) || (param_6 == 0x1a3))
         {
             // Cloaking/magic channel special types
-            afStack_264[4] = _DAT_00552580;  // 0.0f
+            afStack_264[4] = 0.0f;  // 0.0f
             afStack_264[3] = 90.0f;
             afStack_264[5] = 90.0f;
             Matrix_BuildFromEuler(afStack_264 + 3, local_228);
@@ -283,8 +283,8 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
         }
         else if (param_6 == 0x222)
         {
-            afStack_264[4] = _DAT_00552580;
-            afStack_264[5] = _DAT_00552580;
+            afStack_264[4] = 0.0f;
+            afStack_264[5] = 0.0f;
             afStack_264[3] = 10.0f;
             Matrix_BuildFromEuler(afStack_264 + 3, local_228);
             local_21c =   0.0f;
@@ -569,8 +569,8 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
                  && (AsCharacter(param_4)->Object.Type == 0x186)
                  && (AsCharacter(param_4)->Object.CurrentAction > 0x21)
                  && (AsCharacter(param_4)->Object.CurrentAction < 0x5c)
-                 && (_DAT_00552660 <= AsCharacter(param_4)->Object.AnimationFrame)
-                 && (AsCharacter(param_4)->Object.AnimationFrame <= _DAT_00552488);
+                 && (5.0f <= AsCharacter(param_4)->Object.AnimationFrame)
+                 && (AsCharacter(param_4)->Object.AnimationFrame <= 10.0f);
         if (cond)
         {
             // Override PART animation frames: PriorAnimFrame = 2.0, AnimFrame = 3.2
@@ -634,7 +634,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
     // render de la pieza.
     gContentCatalog.RunEquippedEffects((const void*)(uintptr_t)param_4, drawModel, pModel2);
     // Luminosity = (float)(rand()%30 + 70) * _DAT_00552940
-    float fLum = (float)(iVar_rand % 0x1e + 0x46) * _DAT_00552940;
+    float fLum = (float)(iVar_rand % 0x1e + 0x46) * 0.005f;
     // `Light[3]` de IDA como array real: los 9 cases del switch de abajo lo pasan
     // como vec3 a CreateSprite (Ghidra lo había separado en TRES escalares
     // ebp-270h / -26Ch / -268h).
@@ -652,11 +652,11 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
     {
     case 0x1a3:  // MODEL_STAFF+10 equivalent — fire particles on bones 0..9
     {
-        Light[1] = fLum * _DAT_005528b8;
+        Light[1] = fLum * 0.3f;
         afStack_264[3] = 0.0f;
         afStack_264[4] = 0.0f;
         afStack_264[5] = 0.0f;
-        Light[2] = fLum * _DAT_005524f4;
+        Light[2] = fLum * 0.1f;
         // IDA: `while ((int)v43 < (int)flt_6970C4C)` es una direccion ABSOLUTA del
         // binario fuente; aca se usa el rango real dentro de g_BoneScratch:
         //   base = flt_6970AFC = g_BoneScratch + 0x60 = hueso 2
@@ -710,11 +710,11 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
                 afStack_264[5] = 0.0f;
                 BMD_TransformPosition(pModel2, (float*)&DAT_06970acc, afStack_264 + 3, afStack_264 + 6, '\x01');
                 int r1 = rand();
-                afStack_264[6] += (float)(r1 % 0x1e) - _DAT_00552834;
+                afStack_264[6] += (float)(r1 % 0x1e) - 15.0f;
                 int r2 = rand();
                 int iVar8 = 4;
-                local_248 += (float)(r2 % 0x1e) - _DAT_00552834;
-                local_244 += _DAT_005524fc;
+                local_248 += (float)(r2 % 0x1e) - 15.0f;
+                local_244 += 20.0f;
                 do {
                     int r3 = rand();
                     afStack_264[1] = 0.0f;
@@ -731,7 +731,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
 
     case 0x1d7:  // blue light pulse on bone
     {
-        Light[1] = fLum * _DAT_005526e8;
+        Light[1] = fLum * 0.9f;
         Light[2] = 0.0f;
         afStack_264[3] = 0.0f;
         afStack_264[4] = 0.0f;
@@ -741,23 +741,23 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
         Equipment_AddSprite(0x47e, afStack_264 + 6, 2.0f, Light, param_4, 0, 0);
         Light[0] = 0.5f;
         Light[1] = 0.5f;
-        float fVar15 = (float)sin((double)((float)WorldTime * _DAT_005528e0));
+        float fVar15 = (float)sin((double)((float)WorldTime * 0.002f));
         Light[2] = 0.5f;
-        Equipment_AddSprite(0x47e, afStack_264 + 6, fVar15 + _DAT_00552504, Light, param_4, 0, 0);
+        Equipment_AddSprite(0x47e, afStack_264 + 6, fVar15 + 0.5f, Light, param_4, 0, 0);
         return;
     }
 
     case 0x1fa:  // orbit sprite loop
     {
-        Light[0] = fLum * _DAT_005526e4;
+        Light[0] = fLum * 0.2f;
         afStack_264[3] = 0.0f;
         afStack_264[4] = 0.0f;
         afStack_264[5] = 0.0f;
         // Mismo bound absoluto que arriba, aca desde flt_6970ACC:
         //   (0xC4C - 0xACC) / 0x30 = 8 iteraciones -> huesos 1..8
         float* pfVar10 = (float*)&DAT_06970acc;
-        Light[1] = fLum * _DAT_005524f4;
-        Light[2] = fLum * _DAT_00552530;
+        Light[1] = fLum * 0.1f;
+        Light[2] = fLum * 0.8f;
         for (int nBone = 0; nBone < 8; ++nBone) {
             BMD_TransformPosition(pModel2, pfVar10, afStack_264 + 3, afStack_264 + 6, '\x01');
             Equipment_AddSprite(0x47e, afStack_264 + 6, 1.3f, Light, param_4, 0, 0);
@@ -773,9 +773,9 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
     {
         if (drawModel == 0x216)
         {
-            Light[0] = fLum * _DAT_00552534;
+            Light[0] = fLum * 0.6f;
             int iVar8 = 0x0d;
-            Light[2] = fLum * _DAT_00552530;
+            Light[2] = fLum * 0.8f;
             Light[1] = fLum;
             do {
                 Model_BoneParticle(pModel2, 0x4cf, iVar8, 1.0f, Light, param_4);
@@ -785,9 +785,9 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
         }
         if (drawModel == 0x221)
         {
-            Light[0] = fLum * _DAT_00552504;
+            Light[0] = fLum * 0.5f;
             int iVar8 = 0x0d;
-            Light[2] = fLum * _DAT_00552530;
+            Light[2] = fLum * 0.8f;
             Light[1] = Light[0];
             do {
                 Model_BoneParticle(pModel2, 0x4cf, iVar8, 1.0f, Light, param_4);
@@ -801,8 +801,8 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
             return;
         }
         // cases 0x214 and 0x215
-        Light[1] = fLum * _DAT_00552534;
-        Light[2] = fLum * _DAT_005526e4;
+        Light[1] = fLum * 0.6f;
+        Light[2] = fLum * 0.2f;
         Light[0] = fLum;
         Model_BoneParticle(pModel2, 0x4cf, 2, 1.0f, Light, param_4);
         Model_BoneParticle(pModel2, 0x4cf, 6, 1.0f, Light, param_4);
@@ -811,13 +811,13 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
 
     case 0x23a:  // MODEL_STAFF+10 alternate — orbit loop on DAT_06970a9c
     {
-        Light[1] = fLum * _DAT_005528b8;
+        Light[1] = fLum * 0.3f;
         int iVar7_loc = 0;
-        Light[2] = fLum * _DAT_005524f4;
+        Light[2] = fLum * 0.1f;
         Light[0] = fLum;
         do {
             afStack_264[0] = 0.4f;
-            afStack_264[3] = (float)iVar7_loc * _DAT_0055284c - _DAT_005524ec;
+            afStack_264[3] = (float)iVar7_loc * 30.0f - 180.0f;
             afStack_264[1] = 0.4f;
             afStack_264[2] = 0.4f;
             afStack_264[4] = -40.0f;
@@ -838,7 +838,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
 
     case 0x25f:  // electric charge effect
     {
-        Light[0] = fLum * _DAT_00552534;
+        Light[0] = fLum * 0.6f;
         Light[2] = fLum + fLum;
         afStack_264[3] = 15.0f;
         afStack_264[4] = -15.0f;
@@ -846,7 +846,7 @@ void __cdecl RenderLinkObject(float param_1, float param_2, float param_3,
         Light[1] = Light[0];
         BMD_TransformPosition(pModel2, (float*)&DAT_06970acc, afStack_264 + 3, afStack_264 + 6, '\x01');
         Equipment_AddSprite(0x4cf, afStack_264 + 6, 1.5f, Light, param_4, 0, 0);
-        Equipment_AddSprite(0x47e, afStack_264 + 6, fLum + _DAT_005528f0, Light, param_4, 0, 0);
+        Equipment_AddSprite(0x47e, afStack_264 + 6, fLum + 1.5f, Light, param_4, 0, 0);
         return;
     }
 

@@ -40,12 +40,12 @@ std::uint64_t Run(BYTE* entityMemory,BYTE* modelMemory,BYTE* owner){
         terrainCalls=0;Entity_GetLightScale(ENTITY_ARG,MODEL_ARG);
         float color[3];
         if(type==325){for(float& c:color)c=0.6f;Require(terrainCalls==0);}
-        else if(type==225 && flags&0x200){const float c=static_cast<float>((fsin(static_cast<float10>(WorldTime)*static_cast<float10>(_DAT_00552a08))+static_cast<float10>(_DAT_0055256c))*static_cast<float10>(_DAT_00552504));for(float& component:color)component=c;Require(terrainCalls==0);}
+        else if(type==225 && flags&0x200){const float c=static_cast<float>((fsin(static_cast<float10>(WorldTime)*static_cast<float10>(0.003f))+static_cast<float10>(1.0f))*static_cast<float10>(0.5f));for(float& component:color)component=c;Require(terrainCalls==0);}
         else{
             Require(terrainCalls==1);beforeModel[16+68]=contrast;
             const bool zero=terrain[0]==0 && terrain[1]==0 && terrain[2]==0;
             const bool fallback=zero && ((SceneFlag!=2 && SceneFlag!=4) || type==162);
-            for(int axis=0;axis<3;++axis){const float component=fallback?1.0f:terrain[axis];color[axis]=(contrast?component:component*_DAT_005524f4)+light[axis];}
+            for(int axis=0;axis<3;++axis){const float component=fallback?1.0f:terrain[axis];color[axis]=(contrast?component:component*0.1f)+light[axis];}
         }
         std::memcpy(beforeModel+16+72,color,12);
         Require(std::memcmp(beforeModel,modelMemory,224)==0 && std::memcmp(beforeEntity,entityMemory,480)==0 && std::memcmp(beforeOwner,owner,160)==0);

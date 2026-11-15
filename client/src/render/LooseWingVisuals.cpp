@@ -113,7 +113,7 @@ void LooseWingVisuals_TickPreviews() {
 // IDA: pose de Entity_Render (0x005038E0), antes de RenderPartObject.
 void LooseWingVisuals_TickGround(intptr_t entity) {
     OBJECT &o=*AsObject(entity);
-    if (o.Type!=790 || o.Alpha<=_DAT_005524f8) return;
+    if (o.Type!=790 || o.Alpha<=0.01f) return;
     void *model=(void *)(Models+790* BMD_STRIDE);
     EquipmentModelContext context(model);
     Scratch scratch;

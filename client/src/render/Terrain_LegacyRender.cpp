@@ -29,7 +29,7 @@ void __cdecl Terrain_RenderQuad(float p1, float p2, float p3, int p4, const floa
     int idx3 = iX + (iY + p4) * 0x100;
     int idx2 = p4 + idx3;
 
-    float scale = _DAT_005524f0;
+    float scale = 100.0f;
     float verts[4][3];
     verts[0][0] = p1 * scale;
     verts[0][1] = p2 * scale;
@@ -94,21 +94,21 @@ void __cdecl RenderTerrainBitmap(int p1, int p2, int p3, float p4)
     float* bmpData = (float*)((char*)Bitmaps + p1 * 0xE * sizeof(float));
     float bmpW = bmpData[8];
     float bmpH = bmpData[9];
-    float uvStepX = _DAT_00552cb4 / bmpW;  // 64.0 / width
-    float uvStepY = _DAT_00552cb4 / bmpH;  // 64.0 / height
+    float uvStepX = 64.0f / bmpW;  // 64.0 / width
+    float uvStepY = 64.0f / bmpH;  // 64.0 / height
 
-    float tileW = bmpW * _DAT_00552b9c;  // width * (1/64)
-    float tileH = bmpH * _DAT_00552b9c;  // height * (1/64)
+    float tileW = bmpW * 0.015625f;  // width * (1/64)
+    float tileH = bmpH * 0.015625f;  // height * (1/64)
 
     float fy = 0.0f;
     while (fy < tileH) {
         float fx = 0.0f;
         float uvY0 = fy * uvStepY;
-        float uvY1 = (fy + _DAT_0055256c) * uvStepY;
+        float uvY1 = (fy + 1.0f) * uvStepY;
 
         while (fx < tileW) {
             float uvX0 = fx * uvStepX;
-            float uvX1 = (fx + _DAT_0055256c) * uvStepX;
+            float uvX1 = (fx + 1.0f) * uvStepX;
             float uvRot[4][3] = {
                 { uvX0, uvY0, 0.0f },
                 { uvX1, uvY0, 0.0f },
@@ -117,23 +117,23 @@ void __cdecl RenderTerrainBitmap(int p1, int p2, int p3, float p4)
             };
             for (int i = 0; i < 4; ++i) {
                 float in[3] = {
-                    uvRot[i][0] - _DAT_00552504,
-                    uvRot[i][1] - _DAT_00552504,
+                    uvRot[i][0] - 0.5f,
+                    uvRot[i][1] - 0.5f,
                     0.0f
                 };
                 float out[3];
                 out[0] = in[0] * matrix[0][0] + in[1] * matrix[0][1] + in[2] * matrix[0][2];
                 out[1] = in[0] * matrix[1][0] + in[1] * matrix[1][1] + in[2] * matrix[1][2];
                 out[2] = in[0] * matrix[2][0] + in[1] * matrix[2][1] + in[2] * matrix[2][2];
-                uvRot[i][0] = out[0] + _DAT_00552504;
-                uvRot[i][1] = out[1] + _DAT_00552504;
+                uvRot[i][0] = out[0] + 0.5f;
+                uvRot[i][1] = out[1] + 0.5f;
                 uvRot[i][2] = out[2];
             }
 
             Terrain_RenderQuad((float)p2 + fx, (float)p3 + fy, 1.0f, 1, uvRot, '\x01', 1.0f);
-            fx += _DAT_0055256c;
+            fx += 1.0f;
         }
-        fy += _DAT_0055256c;
+        fy += 1.0f;
     }
 }
 

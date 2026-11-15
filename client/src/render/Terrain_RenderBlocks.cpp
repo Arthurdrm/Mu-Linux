@@ -24,8 +24,8 @@ void __cdecl AddTerrainLightClip(float xf, float yf, float Light[3], int Range, 
     // Buffer is a 256x256 grid of float[3] (RGB), stride 0xC per cell.
     // _DAT_00552594 = world-to-grid scale factor.
 
-    float gridX = xf * _DAT_00552594;
-    float gridY = yf * _DAT_00552594;
+    float gridX = xf * 0.01f;
+    float gridY = yf * 0.01f;
     int centerX = (int)gridX;
     int centerY = (int)gridY;
 
@@ -48,7 +48,7 @@ void __cdecl AddTerrainLightClip(float xf, float yf, float Light[3], int Range, 
                 float dist = (float)sqrt(dx * dx + dy * dy);
                 float falloff = ((float)Range - dist) / (float)Range;
 
-                if (_DAT_00552580 < falloff) {
+                if (0.0f < falloff) {
                     // Index into 256x256 terrain light buffer
                     int cellIdx = ((unsigned int)(iy) & 0xFF) * 0x100 + ((unsigned int)(ix) & 0xFF);
                     float* pCell = Buffer + cellIdx * 3;
@@ -56,19 +56,19 @@ void __cdecl AddTerrainLightClip(float xf, float yf, float Light[3], int Range, 
                     for (int ch = 0; ch < 3; ch++) {
                         float val = falloff * Light[ch] + pCell[ch];
                         pCell[ch] = val;
-                        if (val < _DAT_00552580) {
+                        if (val < 0.0f) {
                             pCell[ch] = 0.0f;
-                        } else if (val > _DAT_0055256c) {
+                        } else if (val > 1.0f) {
                             pCell[ch] = 1.0f;
                         }
                     }
                 }
 
                 ix++;
-                fX += _DAT_0055256c;  // 1.0f
+                fX += 1.0f;  // 1.0f
             } while (ix <= xEnd);
         }
-        fY += _DAT_0055256c;  // 1.0f
+        fY += 1.0f;  // 1.0f
         iy++;
     } while (iy <= yEnd);
 }
@@ -83,20 +83,20 @@ void __cdecl RenderTerrainBlock(float xf, float yf, int xi, int yi, bool EditFla
     float startX = xf;
     int row = 0;
     do {
-        float centerY = yf + _DAT_00552504;  // 0.5f
+        float centerY = yf + 0.5f;  // 0.5f
         int col = 0;
         xf = startX;
         do {
-            unsigned short visible = TestFrustrum2D(xf + _DAT_00552504, centerY, 0.0f);
+            unsigned short visible = TestFrustrum2D(xf + 0.5f, centerY, 0.0f);
             if (visible || CameraTopViewEnabled != 0) {
                 // RenderTerrainTile(xf, yf, col+xi, row+yi, 1.0f, 1, EditFlag)
                 // functions.h declares first 2 params as int; reinterpret float bits
                 RenderTerrainTile(*(int*)&xf, *(int*)&yf, col + xi, row + yi, 1.0f, 1, (int)EditFlag);
             }
-            xf = xf + _DAT_0055256c;  // 1.0f
+            xf = xf + 1.0f;  // 1.0f
             col++;
         } while (col < 4);
-        yf = yf + _DAT_0055256c;
+        yf = yf + 1.0f;
         row++;
     } while (row < 4);
 }
@@ -114,26 +114,26 @@ void __cdecl RenderTerrainFrustrum(bool EditFlag) {
         do {
             int maxX = (int)FrustrumBoundMaxX_1;  // FrustrumBoundMaxX_1
             if ((int)FrustrumBoundMinX_1 <= maxX) {
-                float centerY = blockY + _DAT_0055264c;  // 2.0f
+                float centerY = blockY + 2.0f;  // 2.0f
                 int xi = (int)FrustrumBoundMinX_1;  // FrustrumBoundMinX_1
                 float blockX = (float)xi;
                 do {
-                    unsigned short visible = TestFrustrum2D(blockX + _DAT_0055264c, centerY, -40.0f);
+                    unsigned short visible = TestFrustrum2D(blockX + 2.0f, centerY, -40.0f);
                     // DESVIACION: distancia de dibujado; el picking del mouse
                     // (EditFlag) no prueba los bloques fuera del radio de detalle,
                     // que con el alcance ampliado multiplicaban su costo.
                     if (visible && EditFlag &&
-                        !DrawDistance::Detailed((blockX + _DAT_0055264c) * _DAT_005524f0, centerY * _DAT_005524f0))
+                        !DrawDistance::Detailed((blockX + 2.0f) * 100.0f, centerY * 100.0f))
                         visible = 0;
                     if (visible || CameraTopViewEnabled != 0) {
                         RenderTerrainBlock(blockX, blockY, xi, yi, EditFlag);
                     }
-                    blockX = blockX + _DAT_00552650;  // 4.0f
+                    blockX = blockX + 4.0f;  // 4.0f
                     xi += 4;
                     maxX = (int)FrustrumBoundMaxX_1;
                 } while (xi <= maxX);
             }
-            blockY = blockY + _DAT_00552650;  // 4.0f
+            blockY = blockY + 4.0f;  // 4.0f
             yi += 4;
         } while (yi <= (int)FrustrumBoundMaxY_1);
     }

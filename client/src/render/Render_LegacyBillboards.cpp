@@ -132,17 +132,17 @@ fallthrough:;
 apply:;
     float fVar1 = param_2 * param_3;
     switch (uVar4) {
-    case 0:  param_4[2]=0.0f; param_4[0]=fVar1; param_4[1]=fVar1*_DAT_00552504; return;
-    case 1:  param_4[2]=0.0f; param_4[0]=fVar1; param_4[1]=fVar1*_DAT_005526e4; return;
-    case 2: case 3: { float h=fVar1*_DAT_00552504; param_4[0]=0.0f; param_4[1]=h; param_4[2]=fVar1; return; }
-    case 4:  { float h=fVar1*_DAT_00552530; param_4[0]=0.0f; param_4[1]=h; param_4[2]=fVar1*_DAT_005528b4; return; }
+    case 0:  param_4[2]=0.0f; param_4[0]=fVar1; param_4[1]=fVar1*0.5f; return;
+    case 1:  param_4[2]=0.0f; param_4[0]=fVar1; param_4[1]=fVar1*0.2f; return;
+    case 2: case 3: { float h=fVar1*0.5f; param_4[0]=0.0f; param_4[1]=h; param_4[2]=fVar1; return; }
+    case 4:  { float h=fVar1*0.8f; param_4[0]=0.0f; param_4[1]=h; param_4[2]=fVar1*0.4f; return; }
     case 5:  param_4[0]=fVar1; param_4[1]=fVar1; param_4[2]=fVar1; return;
-    case 6:  param_4[0]=fVar1*_DAT_00552534; param_4[1]=fVar1*_DAT_00552530; param_4[2]=fVar1*_DAT_005528b4; return;
-    case 7:  param_4[0]=fVar1*_DAT_005526e8; param_4[1]=fVar1*_DAT_00552530; param_4[2]=fVar1; return;
-    case 8:  { float h=fVar1*_DAT_00552530; param_4[0]=h; param_4[1]=h; param_4[2]=fVar1; return; }
-    case 9:  { float h=fVar1*_DAT_00552504; param_4[0]=h; param_4[1]=h; param_4[2]=fVar1*_DAT_00552530; return; }
-    case 10: param_4[0]=fVar1*_DAT_00552adc; param_4[1]=fVar1*_DAT_00552948; param_4[2]=fVar1*_DAT_00552504; return;
-    case 0xb: { float h=fVar1*_DAT_005526e4; param_4[0]=fVar1; param_4[1]=h; param_4[2]=h; return; }
+    case 6:  param_4[0]=fVar1*0.6f; param_4[1]=fVar1*0.8f; param_4[2]=fVar1*0.4f; return;
+    case 7:  param_4[0]=fVar1*0.9f; param_4[1]=fVar1*0.8f; param_4[2]=fVar1; return;
+    case 8:  { float h=fVar1*0.8f; param_4[0]=h; param_4[1]=h; param_4[2]=fVar1; return; }
+    case 9:  { float h=fVar1*0.5f; param_4[0]=h; param_4[1]=h; param_4[2]=fVar1*0.8f; return; }
+    case 10: param_4[0]=fVar1*0.75f; param_4[1]=fVar1*0.65f; param_4[2]=fVar1*0.5f; return;
+    case 0xb: { float h=fVar1*0.2f; param_4[0]=fVar1; param_4[1]=h; param_4[2]=h; return; }
     default: return;
     }
 }
@@ -177,10 +177,10 @@ void __cdecl Weapon_SetColorAlt(int param_1, float param_2, float param_3, float
     } else if (iVar4 == 1) {
         param_4[2] = 0.0f;
         param_4[0] = fVar1 * param_4[0];
-        param_4[1] = fVar1 * param_4[1] * _DAT_00552504;
+        param_4[1] = fVar1 * param_4[1] * 0.5f;
     } else if (iVar4 == 2) {
         param_4[0] = 0.0f;
-        param_4[1] = fVar1 * param_4[1] * _DAT_00552504;
+        param_4[1] = fVar1 * param_4[1] * 0.5f;
         param_4[2] = fVar1 * param_4[2];
     }
 }
@@ -293,7 +293,7 @@ void __cdecl DeleteCloth(CHARACTER* character, OBJECT* object, PART_t* part)
 // Uses __ftol for int grid coords from float positions.
 void __cdecl RenderTerrainAlphaBitmap(int type, float x, float y, float sx, float sy, float *col, float angle, float alpha)
 {
-    if (alpha == _DAT_0055256c)
+    if (alpha == 1.0f)
         BufferedDraw::Color3fv(col);
     else
         BufferedDraw::Color4f(col[0], col[1], col[2], alpha);
@@ -303,19 +303,19 @@ void __cdecl RenderTerrainAlphaBitmap(int type, float x, float y, float sx, floa
     Matrix_BuildFromEuler(rot_data, rot_mat);
     GL_BindTextureSlot(type);
 
-    float cx = x * _DAT_00552594;
-    float cy = y * _DAT_00552594;
+    float cx = x * 0.01f;
+    float cy = y * 0.01f;
     int icx = (int)cx;
     int icy = (int)cy;
     float size = (sx > sy) ? sx : sy;
     if (size <= 0.0f)
         return;
-    float half = size * _DAT_00552504;
-    float inv  = _DAT_0055256c / size;
+    float half = size * 0.5f;
+    float inv  = 1.0f / size;
     float xScale = (sy != 0.0f) ? (sx / sy) : 1.0f;
     int   itiles = (int)size + 1;   // IDA: (int)((__int64)v8 + 1), con v8 = tamano entero
     float loopRadius = (float)itiles;
-    float oneTile = _DAT_0055256c;
+    float oneTile = 1.0f;
 
     for (float tj = -loopRadius; tj <= loopRadius; tj += oneTile) {
         float v0 = ((tj + (float)icy - cy) + half) * inv;
@@ -325,16 +325,16 @@ void __cdecl RenderTerrainAlphaBitmap(int type, float x, float y, float sx, floa
             float u0 = ((ti + (float)icx - cx) + half) * inv;
             float u1 = ((ti + oneTile + (float)icx - cx) + half) * inv;
             float inp[4][3] = {
-                {u0 - _DAT_00552504, v0 - _DAT_00552504, 0.0f},
-                {u1 - _DAT_00552504, v0 - _DAT_00552504, 0.0f},
-                {u1 - _DAT_00552504, v1 - _DAT_00552504, 0.0f},
-                {u0 - _DAT_00552504, v1 - _DAT_00552504, 0.0f},
+                {u0 - 0.5f, v0 - 0.5f, 0.0f},
+                {u1 - 0.5f, v0 - 0.5f, 0.0f},
+                {u1 - 0.5f, v1 - 0.5f, 0.0f},
+                {u0 - 0.5f, v1 - 0.5f, 0.0f},
             };
             for (int k = 0; k < 4; k++) {
                 float out[3];
                 Vector_Rotate(inp[k], rot_mat, out);
-                corners[k][0] = xScale * out[0] + _DAT_00552504;
-                corners[k][1] = out[1] + _DAT_00552504;
+                corners[k][0] = xScale * out[0] + 0.5f;
+                corners[k][1] = out[1] + 0.5f;
                 corners[k][2] = out[2];
             }
             Terrain_RenderQuad((float)icx + ti, (float)icy + tj, 1.0f, 1,

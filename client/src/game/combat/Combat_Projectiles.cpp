@@ -204,11 +204,11 @@ void __cdecl CreateArrows(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, 
 
         if ((char)Skill == 1) {
             // Triple shot: center already created, now +offset and -offset
-            *pAngleZ += _DAT_00552834;
+            *pAngleZ += 15.0f;
             CreateArrow(c, o, to, SkillIndex, 1, SKKey);
-            *pAngleZ -= _DAT_0055284c;  // goes to negative offset from original
+            *pAngleZ -= 30.0f;  // goes to negative offset from original
             CreateArrow(c, o, to, SkillIndex, 1, SKKey);
-            *pAngleZ += _DAT_00552834;  // restore to original angle
+            *pAngleZ += 15.0f;  // restore to original angle
 
             // anti-tamper hash table — skipped (encrypt CharacterMachine)
             char* cm = static_cast<char*>(CharacterMachine);
@@ -217,15 +217,15 @@ void __cdecl CreateArrows(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, 
         }
         else if ((char)Skill == 2) {
             // Five-way shot: center already created, now 4 additional angles
-            *pAngleZ += _DAT_00552ab0;
+            *pAngleZ += 7.5f;
             CreateArrow(c, o, to, SkillIndex, 2, SKKey);
-            *pAngleZ += _DAT_00552ab0;
+            *pAngleZ += 7.5f;
             CreateArrow(c, o, to, SkillIndex, 2, SKKey);
-            *pAngleZ -= _DAT_00552584;   // jump to negative side
+            *pAngleZ -= 22.5f;   // jump to negative side
             CreateArrow(c, o, to, SkillIndex, 2, SKKey);
-            *pAngleZ -= _DAT_00552ab0;
+            *pAngleZ -= 7.5f;
             CreateArrow(c, o, to, SkillIndex, 2, SKKey);
-            *pAngleZ += _DAT_00552834;   // restore to original angle
+            *pAngleZ += 15.0f;   // restore to original angle
 
             // anti-tamper hash table — skipped (encrypt CharacterMachine)
             char* cm = static_cast<char*>(CharacterMachine);

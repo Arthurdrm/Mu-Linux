@@ -142,7 +142,7 @@ void __stdcall MoveObjects(void) {
         float pos[3];
         pos[0] = (float)(rand() % 900 - 300) + *(float*)((char*)Hero + 0x10);
         pos[1] = (float)(rand() % 900 - 300) + *(float*)((char*)Hero + 0x14);
-        pos[2] = (float)(rand() % 50) + *(float*)((char*)Hero + 0x18) + _DAT_00552994;
+        pos[2] = (float)(rand() % 50) + *(float*)((char*)Hero + 0x18) + 250.0f;
         unsigned int r = rand() & 0x80000003;
         if ((int)r < 0) r = (r - 1 | 0xFFFFFFFC) + 1;
         if (r == 0) {

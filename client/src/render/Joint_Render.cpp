@@ -74,7 +74,7 @@ void Trail_RenderAll(void)
           piVar4 = piVar2 + 0x5f;
           do {
             BufferedDraw::Begin(BufferedDraw::Primitive::TriangleFan);
-            fVar1 = _DAT_0055256c;
+            fVar1 = 1.0f;
             if (*(short*)&AsCharacter(g_TrailOwner[slotIdx])->Level == 0) {
               fVar1 = (float)(piVar2[1] - local_8) / (float)piVar2[1];
             }
@@ -86,7 +86,7 @@ void Trail_RenderAll(void)
             BufferedDraw::Vertex3fv((const float*)(piVar4 + -0x5a));
             BufferedDraw::TexCoord2f((float)local_8 / (float)iVar3,0);
             BufferedDraw::Vertex3fv((const float*)piVar4);
-            fVar1 = _DAT_0055256c;
+            fVar1 = 1.0f;
             if (*(short*)&AsCharacter(g_TrailOwner[slotIdx])->Level == 0) {
               fVar1 = (float)((piVar2[1] - local_8) + -1) / (float)piVar2[1];
             }

@@ -259,7 +259,7 @@ uint Scene_Login(void)
         }
         tStack_74.cx = (LONG)(float)(((uint)(iVar3 * 200) / 75000) * 5);
         GL_DrawTexture(0x14, 220.0f, 240.0f, (float)tStack_74.cx, 16.0f,
-                     0.0f, 0.0f, (float)tStack_74.cx * _DAT_00552b7c, 1.0f, '\x01', '\x01');
+                     0.0f, 0.0f, (float)tStack_74.cx * 0.00390625f, 1.0f, '\x01', '\x01');
         GL_ResetState();   // DisableAlphaBlend
 
         // Cancel button (0xf3=normal, 0xf4=highlighted)
@@ -289,8 +289,8 @@ uint Scene_Login(void)
     // ── Fade-in effect ────────────────────────────────────────────────────────
     if (CameraWalkCut == 1) {
         if (CurrentCameraCount < 0x10) {
-            tStack_74.cx = (LONG)((float)(0x10 - CurrentCameraCount) * _DAT_005526dc);
-            Gfx::Color3f((float)tStack_74.cx, (float)tStack_74.cx * _DAT_005526e8, (float)tStack_74.cx * _DAT_00552530);
+            tStack_74.cx = (LONG)((float)(0x10 - CurrentCameraCount) * 0.0625f);
+            Gfx::Color3f((float)tStack_74.cx, (float)tStack_74.cx * 0.9f, (float)tStack_74.cx * 0.8f);
         } else {
             CameraWalkCut = 2;
         }

@@ -62,7 +62,7 @@ void __cdecl Effect_SpawnBombRing(float *a1)
 // pero sin el save/restore de posicion: este no mueve el slot.
 void __cdecl ItemDrop_RenderGroundWeapon(intptr_t o) {
     // IDA: if ((double)AsObject(o)->LifeTime > 10.0)  -- o+96 es la vida del efecto.
-    if (_DAT_00552488 >= (float)AsObject(o)->LifeTime) return;
+    if (10.0f >= (float)AsObject(o)->LifeTime) return;
 
     const intptr_t owner = (intptr_t)((OBJECT*)(uintptr_t)(o))->Owner;
     if (!owner || !Models || !Hero) return;

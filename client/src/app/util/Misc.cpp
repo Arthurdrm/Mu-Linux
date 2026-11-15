@@ -50,11 +50,11 @@ void __cdecl CPhysicsManager_Move(void* physics_manager, float fTime)
   int iVar2;
 
   iVar2 = _rand();
-  _DAT_00590af0 = _DAT_00590af0 + (float)(iVar2 % 200 + -100) * _DAT_00552500;
-  if (_DAT_00590af0 < _DAT_00552570) {
+  _DAT_00590af0 = _DAT_00590af0 + (float)(iVar2 % 200 + -100) * 0.001f;
+  if (_DAT_00590af0 < (-0.2f)) {
     _DAT_00590af0 = -0.2;
   }
-  else if (_DAT_0055256c <= _DAT_00590af0) {
+  else if (1.0f <= _DAT_00590af0) {
     _DAT_00590af0 = 1.0;
   }
   if (sizeof(void*) != 4) return;   // Lista siempre vacia; sus nodos son de 32 bits.
@@ -168,21 +168,21 @@ void MoveItems(void)
     float *pVz = (float *)(ip + 288);
 
     *pZ  = *pVz + *pZ;
-    *pVz = *pVz - _DAT_005527d0;
+    *pVz = *pVz - 6.0f;
 
     float10 fVar3 = (float10)RequestTerrainHeight(*(float *)(ip + 88), *(float *)(ip + 92));
     short  sVar1  = *(short *)(ip + 74);
-    fVar3 = fVar3 + (float10)_DAT_0055284c;
+    fVar3 = fVar3 + (float10)30.0f;
     if ((399 < sVar1) && (sVar1 < 0x250)) {
-      fVar3 = fVar3 + (float10)_DAT_005528e4;
+      fVar3 = fVar3 + (float10)40.0f;
     }
     if (fVar3 < (float10)*pZ) {
       // Todavía en el aire: gira mientras cae.
       if ((sVar1 < 0x250) || (0x26f < sVar1)) {
-        *(float *)(ip + 100) = *pVz * _DAT_00552a28;
+        *(float *)(ip + 100) = *pVz * (-10.0f);
       }
       else {
-        *(float *)(ip + 104) = *pVz * _DAT_00552a28;
+        *(float *)(ip + 104) = *pVz * (-10.0f);
       }
     }
     else {

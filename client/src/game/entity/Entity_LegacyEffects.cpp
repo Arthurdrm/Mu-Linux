@@ -127,7 +127,7 @@ void __cdecl Entity_UpdateSparkleEffect(OBJECT* object)
 // IDA `sub_408940` devuelve `sub_408E30(this) != 0` — el "¿convergió?" que usa
 // el bucle de `sub_408900`. El port lo descartaba (void).
 int __cdecl Sound_UpdateChannel3D_Tick(int *param_1, float dt) {
-    double angle = (ClothSystem(param_1).Owner->Angle[2] + *(float*)&_DAT_005524ec) * *(float*)&_DAT_0055253c;
+    double angle = (ClothSystem(param_1).Owner->Angle[2] + 180.0f) * 0.017453292f;
     DAT_00590af4 = (float)(sin(angle)  * *(float*)&_DAT_00590af0);
     DAT_00590af8 = (float)(-cos(angle) * *(float*)&_DAT_00590af0);
     Cloth_Integrate(param_1, dt);

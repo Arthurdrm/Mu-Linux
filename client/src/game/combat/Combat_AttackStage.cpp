@@ -44,7 +44,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
                 float pos[3];
                 pos[0] = AsObject(o)->Position[0];
                 pos[1] = AsObject(o)->Position[1];
-                pos[2] = AsObject(o)->Position[2] + _DAT_00552908;
+                pos[2] = AsObject(o)->Position[2] + 120.0f;
 
                 // Random offsets (-300..+300)
                 pos[0] += (float)(rand() % 601 - 300);
@@ -53,9 +53,9 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
 
                 // Sin/cos offset from facing angle
                 float angleZ = AsObject(o)->Angle[2];
-                float rad = angleZ * _DAT_0055253c;
-                pos[0] -= sinf(rad) * _DAT_00552904;
-                pos[1] += cosf(rad) * _DAT_00552904;
+                float rad = angleZ * 0.017453292f;
+                pos[0] -= sinf(rad) * 1400.0f;
+                pos[1] += cosf(rad) * 1400.0f;
 
                 float* oAngle = (float*)(o + 0x1C);
                 Joint_Create(0x10a, pos, pos, oAngle, 2, o, 40.0f, -1, 0);  // IDA L125
@@ -95,10 +95,10 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
         short oType = AsObject(o)->Type;
         BYTE curAction = AsObject(o)->CurrentAction;
 
-        if (animFrame < _DAT_0055256c && oType == 0x186 && curAction == '>') {
+        if (animFrame < 1.0f && oType == 0x186 && curAction == '>') {
             // pass through to set attackTime = 15
         }
-        else if (animFrame < _DAT_00552660) {
+        else if (animFrame < 5.0f) {
             return true;
         }
         else {
@@ -142,11 +142,11 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
             // Spawn 2x CreateEffect(0x1F0) at attackTime == 8
             if (attackTime == 0x08) {
                 float angleZ = AsObject(o)->Angle[2];
-                float rad = angleZ * _DAT_0055253c;
+                float rad = angleZ * 0.017453292f;
                 float pos[3];
-                pos[0] = AsObject(o)->Position[0] + sinf(rad) * _DAT_00552598;
-                pos[1] = AsObject(o)->Position[1] - cosf(rad) * _DAT_00552598;
-                pos[2] = AsObject(o)->Position[2] + _DAT_005528fc;
+                pos[0] = AsObject(o)->Position[0] + sinf(rad) * 50.0f;
+                pos[1] = AsObject(o)->Position[1] - cosf(rad) * 50.0f;
+                pos[2] = AsObject(o)->Position[2] + 110.0f;
                 float light[3] = {1.0f, 1.0f, 1.0f};
 
                 CreateEffect(0x1F0, pos, (float*)(o + 0x1C), light,
@@ -162,12 +162,12 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
             int weapType = (int)AsCharacter(c)->Weapon[Hand].Type;
 
             for (int i = 0; i < 3; i++) {
-                float rad = AsObject(o)->Angle[2] * _DAT_0055253c;
+                float rad = AsObject(o)->Angle[2] * 0.017453292f;
                 float light[3] = {0.3f, 0.3f, 0.3f};
                 float pos[3];
-                pos[0] = AsObject(o)->Position[0] + sinf(rad) * _DAT_005528f8;
-                pos[1] = AsObject(o)->Position[1] - cosf(rad) * _DAT_005528f8;
-                pos[2] = AsObject(o)->Position[2] + _DAT_005528fc;
+                pos[0] = AsObject(o)->Position[0] + sinf(rad) * 145.0f;
+                pos[1] = AsObject(o)->Position[1] - cosf(rad) * 145.0f;
+                pos[2] = AsObject(o)->Position[2] + 110.0f;
 
                 // Random scatter when attackTime != 11
                 if (attackTime != 0x0B) {
@@ -198,7 +198,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
     // ── case '1' (0x31) — set attackTime to 15 if conditions met ────────
     case 0x31: {
         float animFrame = AsObject(o)->AnimationFrame;
-        if (animFrame < _DAT_00552660) return true;
+        if (animFrame < 5.0f) return true;
         if (AsObject(o)->Type != 0x186) return true;
         BYTE curAction = AsObject(o)->CurrentAction;
         if (curAction == 0x40 || curAction == 0x41) {
@@ -217,7 +217,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
 
         // Force animation frame when in attack action range
         if (oType == 0x186 && curAction > 0x21 && curAction < 0x5C) {
-            if (AsObject(o)->AnimationFrame >= _DAT_00552660) {
+            if (AsObject(o)->AnimationFrame >= 5.0f) {
                 AsObject(o)->PriorAnimationFrame = 4.0f; // PriorAnimationFrame
                 AsObject(o)->AnimationFrame = 5.0f; // AnimationFrame
             }
@@ -252,7 +252,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
                          (float*)(o + 0xE8), (float*)1, (float*)o, NULL, NULL, 0);
         }
 
-        if (AsObject(o)->AnimationFrame < _DAT_00552540) {
+        if (AsObject(o)->AnimationFrame < 3.0f) {
             g_iLimitAttackTime = 15;
             return true;
         }
@@ -271,7 +271,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
 
         // Final: update Models[0x186] bone data and set attackTime = 15
         intptr_t modelData = (intptr_t)AsModel(modelsBase + 0x186 * BMD_STRIDE)->Actions;
-        *(float*)(modelData + ModelActionByte(0x3D4)) = (float)(int)c + _DAT_005528f4;
+        *(float*)(modelData + ModelActionByte(0x3D4)) = (float)(int)c + 0.54f;
         AsCharacter(c)->SkillStage = 0x0F;
         g_iLimitAttackTime = 15;
         return true;
@@ -283,7 +283,7 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
             float angleDir[3];
             angleDir[0] = AsObject(o)->Angle[0];
             angleDir[1] = AsObject(o)->Angle[1];
-            angleDir[2] = AsObject(o)->Angle[2] - _DAT_005528e4;
+            angleDir[2] = AsObject(o)->Angle[2] - 40.0f;
 
             float* oPos = (float*)(o + 0x10);
             float* oLight = (float*)(o + 0xE8);
@@ -291,16 +291,16 @@ static bool __cdecl AttackStage_legacy_mismatched(intptr_t c, intptr_t o) {
             // 5x CreateEffect(0xCB) at different angle offsets
             CreateEffect(MODEL_MAGIC2, oPos, angleDir, oLight,
                          (float*)2, (float*)o, NULL, NULL, 0);
-            angleDir[2] += _DAT_005524fc;
+            angleDir[2] += 20.0f;
             CreateEffect(MODEL_MAGIC2, oPos, angleDir, oLight,
                          (float*)2, (float*)o, NULL, NULL, 0);
-            angleDir[2] += _DAT_005524fc;
+            angleDir[2] += 20.0f;
             CreateEffect(MODEL_MAGIC2, oPos, angleDir, oLight,
                          (float*)2, (float*)o, NULL, NULL, 0);
-            angleDir[2] += _DAT_005524fc;
+            angleDir[2] += 20.0f;
             CreateEffect(MODEL_MAGIC2, oPos, angleDir, oLight,
                          (float*)2, (float*)o, NULL, NULL, 0);
-            angleDir[2] += _DAT_005524fc;
+            angleDir[2] += 20.0f;
             CreateEffect(MODEL_MAGIC2, oPos, angleDir, oLight,
                          (float*)2, (float*)o, NULL, NULL, 0);
 
@@ -404,10 +404,10 @@ void __cdecl Combat_SpawnIdleAmbientParticle(OBJECT* object) {
     if (*(char*)&((OBJECT*)(uintptr_t)(param_1))->CurrentAction != '\x02') return;
 
     int r1 = rand();
-    float fX = ((float)(r1 % 200) + *(float*)(param_1 + 0x10)) - _DAT_005524f0;
+    float fX = ((float)(r1 % 200) + *(float*)(param_1 + 0x10)) - 100.0f;
 
     int r2 = rand();
-    float fZ = ((float)(r2 % 200) + *(float*)(param_1 + 0x14)) - _DAT_005524f0;
+    float fZ = ((float)(r2 % 200) + *(float*)(param_1 + 0x14)) - 100.0f;
 
     float pos[3] = { fX, *(float*)(param_1 + 0x14), *(float*)(param_1 + 0x18) };
     float scale[3] = { 1.0f, 1.0f, 0.0f };

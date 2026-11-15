@@ -106,7 +106,7 @@ void Equipment_AddMesh(int model, const void *object, const float *light,
     recording->commands.push_back({true, (unsigned int)recording->meshes.size(), currentStage});
     recording->meshes.emplace_back();
     Mesh &mesh = recording->meshes.back();
-    MaterialVisuals_Prepare(mesh.material,model,false,alpha>_DAT_005524f8 && !*((const BYTE *)object+140));
+    MaterialVisuals_Prepare(mesh.material,model,false,alpha>0.01f && !*((const BYTE *)object+140));
     mesh.model = model; mesh.alpha = alpha; mesh.level = level;
     mesh.part=part; mesh.stage=currentStage;
     if (part) memcpy(&mesh.partState,(void *)part,sizeof(mesh.partState));
@@ -212,7 +212,7 @@ void Equipment_Draw(const CHARACTER* entity, int stage) {
             BMD_Animation(model,reinterpret_cast<float*>(g_BoneScratch),frame,priorBits,mesh.partState.PriorAction,(unsigned int *)zero,zero,1,1);
             drawAlpha=owner.Alpha;
         }
-        if (drawAlpha<=_DAT_005524f8) continue;
+        if (drawAlpha<=0.01f) continue;
         _DAT_005597c8 = mesh.lod;
         float zero[3] = {}, bounds[15];
         Skeleton_Transform(model, reinterpret_cast<float*>(g_BoneScratch), zero, zero, bounds, mesh.translate);

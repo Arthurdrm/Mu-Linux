@@ -136,7 +136,7 @@ char __fastcall Quest_RenderRequiredItems(void *pThis, int /*edx*/, char a2, cha
             RenderItem3D((float)QuestX(30), sy, 20.0f, 20.0f, nType,
                          QUEST_ITEM_PREVIEW_DLL_FIX ? 0 : -1, 0, 0, false);
         }
-        sy += _DAT_00552464;
+        sy += 25.0f;
     }
     return ret;
 }

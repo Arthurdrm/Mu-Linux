@@ -97,10 +97,10 @@ void __cdecl RenderSkillIcon(int iIndex, float x, float y, float width, float he
 
     // RenderBitmap(298, x, y, width, height, u, v, uWidth, vHeight, 1, 1)
     GL_DrawTexture(0x12a, fX, fY, fWidth, fHeight,
-                 atlasU * _DAT_00552b7c,
-                 atlasV * _DAT_00552b7c,
-                 fWidth * _DAT_00552b7c,
-                 (fHeight - _DAT_0055256c) * _DAT_00552b7c,
+                 atlasU * 0.00390625f,
+                 atlasV * 0.00390625f,
+                 fWidth * 0.00390625f,
+                 (fHeight - 1.0f) * 0.00390625f,
                  1, 1);
 
     // anti-tamper hash table — skipped (encrypt CharacterMachine before read)
@@ -119,7 +119,7 @@ void __cdecl RenderSkillIcon(int iIndex, float x, float y, float width, float he
     // anti-tamper hash table — skipped (decrypt CharacterMachine after read)
 
     if (hotkey != 0xFF) {
-        RenderNumber2D(x + _DAT_00552650, y + _DAT_00552a4c, hotkey, 9.0f, 10.0f);
+        RenderNumber2D(x + 4.0f, y + 26.0f, hotkey, 9.0f, 10.0f);
     }
     DAT_00559c6c = (char)hotkey;
 }

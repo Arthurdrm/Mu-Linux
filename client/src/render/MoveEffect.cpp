@@ -256,7 +256,7 @@ static bool MoveEffect_Type194(float *& param_1, intptr_t& __owner_fVar13, float
 static bool MoveEffect_Circle(float *& param_1)
 {
   // LABEL_36 in IDA: scale = integer lifetime * 0.1.
-  AsObject(param_1)->BlendMeshLight = (float)*(int *)((char *)param_1 + 0x60) * _DAT_005524f4;
+  AsObject(param_1)->BlendMeshLight = (float)*(int *)((char *)param_1 + 0x60) * 0.1f;
   return false;
 }
 
@@ -266,15 +266,15 @@ static bool MoveEffect_Magic2(float *& param_1, const intptr_t& __cnt, intptr_t&
   pfVar10 = param_1 + 7;
   pfVar15 = param_1 + 4;
   iVar9 = 4;
-  AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_005524f4;
-  AsObject(param_1)->BlendMeshTexCoordU = (float)__cnt * _DAT_00552570;
+  AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.1f;
+  AsObject(param_1)->BlendMeshTexCoordU = (float)__cnt * (-0.2f);
   do {
     Particle_Spawn(BITMAP_SMOKE,pfVar15,pfVar10,AsObject(param_1)->Light,3,1.0,0);
     iVar9 = iVar9 + -1;
   } while (iVar9 != 0);
-  local_368 = local_36c * _DAT_005528b8;
+  local_368 = local_36c * 0.3f;
   local_360 = local_36c;
-  local_364 = local_36c * _DAT_00552534;
+  local_364 = local_36c * 0.6f;
   AddTerrainLight(*pfVar15,AsObject(param_1)->Position[1], (float*)&local_368,3, (float*)DAT_081cb608);
   if (AsObject(param_1)->SubType == 2) {
     local_334 = *pfVar10;
@@ -288,8 +288,8 @@ static bool MoveEffect_Magic2(float *& param_1, const intptr_t& __cnt, intptr_t&
     iVar12 = 0;
     local_32c = (float)(iVar9 % 10 + -5) + local_32c;
     uVar8 = _rand() % 32;
-    Particle_Spawn(BITMAP_SMOKE,pfVar15,pfVar10,&local_368,0xb,(float)(int)(uVar8 + 0x50) * _DAT_005529cc,iVar12);
-    local_34c = local_34c + _DAT_00552598;
+    Particle_Spawn(BITMAP_SMOKE,pfVar15,pfVar10,&local_368,0xb,(float)(int)(uVar8 + 0x50) * 0.015f,iVar12);
+    local_34c = local_34c + 50.0f;
     local_26c = 0x3f800000;
     local_268 = 0x3f800000;
     local_264 = 0x3f800000;
@@ -312,8 +312,8 @@ static bool MoveEffect_Storm(float *& param_1, const intptr_t& __cnt, bool& bVar
   pfVar14 = param_1 + 0x3a;
   pfVar10 = param_1 + 7;
   pfVar15 = param_1 + 4;
-  AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_005524f4;
-  AsObject(param_1)->BlendMeshTexCoordU = (float)__cnt * _DAT_005529c8;
+  AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.1f;
+  AsObject(param_1)->BlendMeshTexCoordU = (float)__cnt * (-0.1f);
   Particle_Spawn(BITMAP_SMOKE,pfVar15,pfVar10,pfVar14,3,1.0,0);
   local_32c = AsObject(param_1)->Angle[2];
   local_334 = 90.0;
@@ -321,17 +321,17 @@ static bool MoveEffect_Storm(float *& param_1, const intptr_t& __cnt, bool& bVar
   uVar8 = _rand() % 2;
   bVar16 = uVar8 == 0;
   if (bVar16) {
-    local_354 = *pfVar15 - _DAT_0055285c;
+    local_354 = *pfVar15 - 200.0f;
     local_350 = AsObject(param_1)->Position[1];
-    local_34c = AsObject(param_1)->Position[2] + _DAT_005529c4;
+    local_34c = AsObject(param_1)->Position[2] + 700.0f;
     Joint_Create(0x4e6,&local_354,pfVar15,&local_334,0,(intptr_t)param_1,10.0,-1,0);
   }
   uVar8 = _rand() % 2;
   bVar16 = uVar8 == 0;
   if (bVar16) {
-    local_354 = *pfVar15 + _DAT_0055285c;
+    local_354 = *pfVar15 + 200.0f;
     local_350 = AsObject(param_1)->Position[1];
-    local_34c = AsObject(param_1)->Position[2] + _DAT_005529c4;
+    local_34c = AsObject(param_1)->Position[2] + 700.0f;
     Joint_Create(0x4e6,&local_354,pfVar15,&local_334,0,(intptr_t)param_1,10.0,-1,0);
   }
   fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
@@ -348,9 +348,9 @@ static bool MoveEffect_Storm(float *& param_1, const intptr_t& __cnt, bool& bVar
     uVar8 = _rand() % 2;
     CreateEffect(uVar8 + 0xc5,pfVar22,pfVar10,pfVar14,pfVar21,pfVar23,pfVar25,pfVar27,bVar28);
   }
-  local_368 = local_36c * _DAT_00552990;
-  local_364 = local_36c * _DAT_005529c0;
-  local_360 = local_36c * _DAT_00552570;
+  local_368 = local_36c * (-0.4f);
+  local_364 = local_36c * (-0.3f);
+  local_360 = local_36c * (-0.2f);
   AddTerrainLight(*pfVar15,AsObject(param_1)->Position[1], (float*)&local_368,5, (float*)DAT_081cb608);
   if (((AsObject(param_1)->LifeTime) % 0xf == 0) && ((char *)(intptr_t)AsObject(param_1)->Owner == Hero)) {
     Entity_FindNearby_SendPacket((uint)AsObject(param_1)->Skill,pfVar15,150.0,*(byte *)(param_1 + 0x22),
@@ -362,14 +362,14 @@ static bool MoveEffect_Storm(float *& param_1, const intptr_t& __cnt, bool& bVar
 // IDA: MoveEffect (0x00466AD0), case MODEL_SAW.
 static bool MoveEffect_Saw(float *& param_1)
 {
-  AsObject(param_1)->Angle[2] = AsObject(param_1)->Angle[2] - _DAT_0055284c;
+  AsObject(param_1)->Angle[2] = AsObject(param_1)->Angle[2] - 30.0f;
   return false;
 }
 
 // IDA: MoveEffect (0x00466AD0), case 212.
 static bool MoveEffect_Type212(float *& param_1)
 {
-  AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] - _DAT_00552950;
+  AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] - 2.5f;
   Effect_SpawnProximityHit((intptr_t)param_1);
   return false;
 }
@@ -378,14 +378,14 @@ static bool MoveEffect_Type212(float *& param_1)
 static bool MoveEffect_Type215(float *& param_1, float& fVar13, float10& fVar17)
 {
   AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] + AsObject(param_1)->Gravity;
-  AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - _DAT_0055256c;
+  AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - 1.0f;
   fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
   if ((float10)AsObject(param_1)->Position[2] < fVar17) {
     AsObject(param_1)->Position[2] = (float)fVar17;
-    fVar13 = AsObject(param_1)->Gravity * _DAT_00552990;
+    fVar13 = AsObject(param_1)->Gravity * (-0.4f);
     AsObject(param_1)->LifeTime = AsObject(param_1)->LifeTime + -4;   // counter DWORD
     AsObject(param_1)->Gravity = fVar13;
-    AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] - _DAT_0055264c;
+    AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] - 2.0f;
   }
   return false;
 }
@@ -393,17 +393,17 @@ static bool MoveEffect_Type215(float *& param_1, float& fVar13, float10& fVar17)
 // IDA: MoveEffect (0x00466AD0), case MODEL_ARROW.
 static bool MoveEffect_Arrow(float *& param_1, float& fVar13, float10& fVar17, float10& fVar18, intptr_t& iVar9, longlong& lVar19, longlong& lVar20, float& local_360, float& local_364, float& local_368, float& local_36c, float*& pfVar10)
 {
-  local_368 = local_36c * _DAT_00552530;
-  local_364 = local_36c * _DAT_00552504;
-  local_360 = local_36c * _DAT_005526e4;
+  local_368 = local_36c * 0.8f;
+  local_364 = local_36c * 0.5f;
+  local_360 = local_36c * 0.2f;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
   pfVar10 = param_1 + 7;
   Particle_Spawn(BITMAP_FIRE,AsObject(param_1)->Position,pfVar10,&local_368,0,1.0,0);
   Effect_CollisionCheck((intptr_t)param_1);
   if (AsObject(param_1)->SubType == 3) {
-    fVar13 = *pfVar10 + _DAT_00552488;
+    fVar13 = *pfVar10 + 10.0f;
     *pfVar10 = fVar13;
-    if (_DAT_00552844 < fVar13) {
+    if (45.0f < fVar13) {
       *pfVar10 = 45.0;
     }
     lVar19 = (longlong)(AsObject(param_1)->Position[0] * 0.0099999998f);   // IDA Terrain_Load((std::int64_t)(x*0.01),...)
@@ -411,7 +411,7 @@ static bool MoveEffect_Arrow(float *& param_1, float& fVar13, float10& fVar17, f
     iVar9 = Terrain_GetTileIndex((uint)lVar19,(uint)lVar20);
     if ((((DAT_0838bc70)[iVar9] & 8) != 8) &&
        (fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]), (float10)AsObject(param_1)->Position[2] < fVar17)) {
-      fVar18 = (float10)_DAT_00552488;
+      fVar18 = (float10)10.0f;
       AsObject(param_1)->Direction[0] = 0.0;
       AsObject(param_1)->Direction[1] = 0.0;
       AsObject(param_1)->Direction[2] = 0.0;
@@ -429,10 +429,10 @@ static bool MoveEffect_ArrowSteel(float *& param_1, float& fVar13, float10& fVar
     pfVar10 = param_1 + 4;
     uVar29 = 0;
     lVar19 = (longlong)WorldTime;   // IDA: (std::int64_t)WorldTime * 0.1
-    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,0.5f,pfVar15,(intptr_t)param_1,(float)(int)lVar19 * _DAT_005524f4,uVar29);
+    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,0.5f,pfVar15,(intptr_t)param_1,(float)(int)lVar19 * 0.1f,uVar29);
     uVar29 = 0;
     lVar19 = (longlong)WorldTime;   // IDA: -(std::int64_t)WorldTime * 0.1
-    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,1.0f,pfVar15,(intptr_t)param_1,(float)-(int)lVar19 * _DAT_005524f4,uVar29);
+    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,1.0f,pfVar15,(intptr_t)param_1,(float)-(int)lVar19 * 0.1f,uVar29);
     iVar9 = 4;
     do {
       uVar8 = _rand() % 32;
@@ -453,17 +453,17 @@ static bool MoveEffect_ArrowSteel(float *& param_1, float& fVar13, float10& fVar
       Particle_Spawn(iVar12 % 3 + 0x4da,pfVar22,pfVar14,pfVar21,iVar24,fVar13,iVar30);
       iVar9 = iVar9 + -1;
     } while (iVar9 != 0);
-    AsObject(param_1)->Angle[1] = AsObject(param_1)->Angle[1] + _DAT_0055284c;
+    AsObject(param_1)->Angle[1] = AsObject(param_1)->Angle[1] + 30.0f;
   }
   else if (sVar3 == 0xe0) {
     pfVar15 = param_1 + 0x3a;
     pfVar10 = param_1 + 4;
     uVar29 = 0;
     lVar19 = (longlong)WorldTime;   // IDA: (std::int64_t)WorldTime * 0.1
-    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,0.5f,pfVar15,(intptr_t)param_1,(float)(int)lVar19 * _DAT_005524f4,uVar29);
+    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,0.5f,pfVar15,(intptr_t)param_1,(float)(int)lVar19 * 0.1f,uVar29);
     uVar29 = 0;
     lVar19 = (longlong)WorldTime;   // IDA: -(std::int64_t)WorldTime * 0.1
-    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,1.0f,pfVar15,(intptr_t)param_1,(float)-(int)lVar19 * _DAT_005524f4,uVar29);
+    CreateSprite(BITMAP_LIGHTNING + 1,pfVar10,1.0f,pfVar15,(intptr_t)param_1,(float)-(int)lVar19 * 0.1f,uVar29);
     local_35c = (float *)0x4;
     do {
       uVar8 = _rand() % 16;
@@ -486,10 +486,10 @@ static bool MoveEffect_ArrowSteel(float *& param_1, float& fVar13, float10& fVar
     pfVar10 = param_1 + 4;
     uVar29 = 0;
     lVar19 = (longlong)WorldTime;   // IDA: (std::int64_t)WorldTime * 0.1
-    CreateSprite(BITMAP_LIGHT,pfVar10,1.0f,&local_368,(intptr_t)param_1,(float)(int)lVar19 * _DAT_005524f4,uVar29);
+    CreateSprite(BITMAP_LIGHT,pfVar10,1.0f,&local_368,(intptr_t)param_1,(float)(int)lVar19 * 0.1f,uVar29);
     uVar29 = 0;
     lVar19 = (longlong)WorldTime;   // IDA: -(std::int64_t)WorldTime * 0.1
-    CreateSprite(BITMAP_LIGHT,pfVar10,2.0f,&local_368,(intptr_t)param_1,(float)-(int)lVar19 * _DAT_005524f4,uVar29);
+    CreateSprite(BITMAP_LIGHT,pfVar10,2.0f,&local_368,(intptr_t)param_1,(float)-(int)lVar19 * 0.1f,uVar29);
     iVar9 = 4;
     do {
       uVar8 = _rand() % 16;
@@ -504,12 +504,12 @@ static bool MoveEffect_ArrowSteel(float *& param_1, float& fVar13, float10& fVar
       iVar9 = iVar9 + -1;
     } while (iVar9 != 0);
     AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] + AsObject(param_1)->Gravity;
-    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - _DAT_0055256c;
+    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - 1.0f;
     fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
     if ((float10)AsObject(param_1)->Position[2] < fVar17) {
       AsObject(param_1)->Position[2] = (float)fVar17;
-      AsObject(param_1)->Gravity = AsObject(param_1)->Gravity * _DAT_00552990;
-      AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * _DAT_005528b4;
+      AsObject(param_1)->Gravity = AsObject(param_1)->Gravity * (-0.4f);
+      AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * 0.4f;
     }
     if ((AsObject(param_1)->LifeTime == 1) &&
        (Effect_SpawnSmokeBurst(pfVar10,'\x01'), (char *)(intptr_t)AsObject(param_1)->Owner == Hero)) {
@@ -517,8 +517,8 @@ static bool MoveEffect_ArrowSteel(float *& param_1, float& fVar13, float10& fVar
                    AsObject(param_1)->PKKey);
     }
   }
-  local_368 = local_36c * _DAT_00552534;
-  local_364 = local_36c * _DAT_00552530;
+  local_368 = local_36c * 0.6f;
+  local_364 = local_36c * 0.8f;
   local_360 = local_364;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
   Effect_CollisionCheck((intptr_t)param_1);
@@ -533,7 +533,7 @@ static bool MoveEffect_Type225(float *& param_1, char& cVar2, float& fVar13, flo
   pcVar11 = (char *)(intptr_t)AsObject(param_1)->Owner;
   AsObject(param_1)->BlendMeshLight = 1.3;
   fVar13 = AsObject(pcVar11)->Position[1];
-  fVar4 = AsObject(param_1)->Angle[2] + _DAT_00552488;
+  fVar4 = AsObject(param_1)->Angle[2] + 10.0f;
   AsObject(param_1)->Position[0] = AsObject(pcVar11)->Position[0];
   AsObject(param_1)->Position[2] = AsObject(pcVar11)->Position[2];
   cVar2 = *pcVar11;
@@ -559,7 +559,7 @@ static bool MoveEffect_Type228(float *& param_1, byte& bVar28, float10& fVar17, 
     *(undefined1 *)param_1 = 0;
     uVar8 = _rand() % 8;
     iVar9 = 5;
-    EarthQuake = (float)(int)(uVar8 - 8) * _DAT_005524f4;
+    EarthQuake = (float)(int)(uVar8 - 8) * 0.1f;
     do {
       bVar28 = 0;
       pfVar27 = (float *)0x0;
@@ -578,7 +578,7 @@ static bool MoveEffect_Type228(float *& param_1, byte& bVar28, float10& fVar17, 
   *pfVar10 = AsObject(param_1)->Direction[0] + *pfVar10;
   AsObject(param_1)->Position[1] = AsObject(param_1)->Direction[1] + AsObject(param_1)->Position[1];
   AsObject(param_1)->Position[2] = AsObject(param_1)->Direction[2] + AsObject(param_1)->Position[2];
-  *pfVar15 = _DAT_00552488 / AsObject(param_1)->Scale + *pfVar15;
+  *pfVar15 = 10.0f / AsObject(param_1)->Scale + *pfVar15;
   Particle_Spawn(BITMAP_SMOKE,pfVar10,pfVar15,AsObject(param_1)->Light,3,1.0,0);
   return true;
   return false;
@@ -590,23 +590,23 @@ static bool MoveEffect_MagicCircle1(float *& param_1, intptr_t& __owner_fVar13, 
 {
   if (AsObject(param_1)->SubType == 1) {
     local_368 = local_36c;
-    AsObject(param_1)->Scale = AsObject(param_1)->Scale + _DAT_005524f8;
+    AsObject(param_1)->Scale = AsObject(param_1)->Scale + 0.01f;
     local_364 = 0.0;
     local_360 = 0.0;
     AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,3, (float*)DAT_081cb608);
-    AsObject(param_1)->BlendMeshLight = (float)(AsObject(param_1)->LifeTime) * _DAT_00552a00;
+    AsObject(param_1)->BlendMeshLight = (float)(AsObject(param_1)->LifeTime) * 0.1f;
   }
   else {
     if (!validOwner(owner)) return true;
     __owner_fVar13 = (intptr_t)AsObject(param_1)->Owner;   // ver nota de __owner_* arriba
     fVar4 = *(float *)(__owner_fVar13 + 0x10);
     fVar5 = *(float *)(__owner_fVar13 + 0x14);
-    AsObject(param_1)->Scale = AsObject(param_1)->Scale + _DAT_005524f8;
+    AsObject(param_1)->Scale = AsObject(param_1)->Scale + 0.01f;
     fVar13 = *(float *)(__owner_fVar13 + 0x18);
     AsObject(param_1)->Position[0] = fVar4;
     AsObject(param_1)->Position[1] = fVar5;
     AsObject(param_1)->Position[2] = fVar13;
-    AsObject(param_1)->BlendMeshLight = (float)(AsObject(param_1)->LifeTime) * _DAT_00552a00;
+    AsObject(param_1)->BlendMeshLight = (float)(AsObject(param_1)->LifeTime) * 0.1f;
   }
   return false;
 }
@@ -646,9 +646,9 @@ static bool MoveEffect_Type239(float *& param_1, intptr_t& __owner_fVar13, bool&
   *pfVar15 = local_354 + *(float *)(__owner_fVar13 + 0x10);
   AsObject(param_1)->Position[1] = local_350 + *(float *)(__owner_fVar13 + 0x14);
   AsObject(param_1)->Position[2] = local_34c + *(float *)(__owner_fVar13 + 0x18);
-  AsObject(param_1)->Angle[2] = AsObject(param_1)->Angle[2] - _DAT_005529fc;
+  AsObject(param_1)->Angle[2] = AsObject(param_1)->Angle[2] - 18.0f;
   Particle_Spawn(BITMAP_SMOKE,pfVar15,pfVar10,AsObject(param_1)->Light,3,1.0,0);
-  local_368 = local_36c * _DAT_005528b8;
+  local_368 = local_36c * 0.3f;
   local_364 = local_368;
   local_360 = local_368;
   AddTerrainLight(*pfVar15,AsObject(param_1)->Position[1], (float*)&local_368,3, (float*)DAT_081cb608);
@@ -683,7 +683,7 @@ static bool MoveEffect_Type239(float *& param_1, intptr_t& __owner_fVar13, bool&
   } while (iVar9 < 4);
   local_354 = *pfVar15;
   local_350 = AsObject(param_1)->Position[1];
-  local_34c = AsObject(param_1)->Position[2] + _DAT_005524fc;
+  local_34c = AsObject(param_1)->Position[2] + 20.0f;
   local_368 = 1.0;
   local_364 = 0.8;
   local_360 = 0.6;
@@ -712,7 +712,7 @@ static bool MoveEffect_SkillBlast(float *& param_1, bool& bVar16, byte& bVar28, 
     local_280 = AsObject(param_1)->Position[1];
     AsObject(param_1)->Position[2] = (float)fVar17;
     pfVar15 = param_1 + 7;
-    local_27c = (float)(fVar17 + (float10)_DAT_00552878);
+    local_27c = (float)(fVar17 + (float10)80.0f);
     AsObject(param_1)->Direction[0] = 0.0;
     AsObject(param_1)->Direction[1] = 0.0;
     AsObject(param_1)->Direction[2] = 0.0;
@@ -744,9 +744,9 @@ static bool MoveEffect_SkillBlast(float *& param_1, bool& bVar16, byte& bVar28, 
   local_348 = AsObject(param_1)->Position[1];
   param_1[0x12] = AsObject(param_1)->Position[2];
   param_1[0x11] = local_348;
-  local_368 = local_36c * _DAT_005526e4;
+  local_368 = local_36c * 0.2f;
   local_360 = local_36c;
-  local_364 = local_36c * _DAT_005528b4;
+  local_364 = local_36c * 0.4f;
   AddTerrainLight(local_344,local_348, (float*)&local_368,2, (float*)DAT_081cb608);
   return false;
 }
@@ -754,7 +754,7 @@ static bool MoveEffect_SkillBlast(float *& param_1, bool& bVar16, byte& bVar28, 
 // IDA: MoveEffect (0x00466AD0), case MODEL_ARROW_DOUBLE.
 static bool MoveEffect_ArrowDouble(float *& param_1, float& fVar13, float& local_344, float& local_348, float& local_360, float& local_364, float& local_368, float& local_36c)
 {
-  fVar13 = AsObject(param_1)->Angle[1] + _DAT_0055284c;
+  fVar13 = AsObject(param_1)->Angle[1] + 30.0f;
   param_1[0x12] = AsObject(param_1)->Position[2];
   local_360 = local_36c;
   AsObject(param_1)->Angle[1] = fVar13;
@@ -762,8 +762,8 @@ static bool MoveEffect_ArrowDouble(float *& param_1, float& fVar13, float& local
   param_1[0x10] = local_344;
   local_348 = AsObject(param_1)->Position[1];
   param_1[0x11] = local_348;
-  local_368 = local_36c * _DAT_005526e4;
-  local_364 = local_36c * _DAT_005528b4;
+  local_368 = local_36c * 0.2f;
+  local_364 = local_36c * 0.4f;
   AddTerrainLight(local_344,local_348, (float*)&local_368,2, (float*)DAT_081cb608);
   Effect_CollisionCheck((intptr_t)param_1);
   return false;
@@ -773,9 +773,9 @@ static bool MoveEffect_ArrowDouble(float *& param_1, float& fVar13, float& local
 static bool MoveEffect_Type243(float *& param_1, float& local_360, float& local_364, float& local_368, float& local_36c)
 {
   local_360 = local_36c;
-  AsObject(param_1)->Angle[1] = AsObject(param_1)->Angle[1] + _DAT_0055284c;
-  local_368 = local_36c * _DAT_005526e4;
-  local_364 = local_36c * _DAT_005528b4;
+  AsObject(param_1)->Angle[1] = AsObject(param_1)->Angle[1] + 30.0f;
+  local_368 = local_36c * 0.2f;
+  local_364 = local_36c * 0.4f;
   AddTerrainLight(AsObject(param_1)->StartPosition[0],AsObject(param_1)->StartPosition[1], (float*)&local_368,2, (float*)DAT_081cb608);
   if (*(float *)&AsObject(param_1)->SubType != 0.0) {
     if (AsObject(param_1)->LifeTime == 13) {
@@ -832,14 +832,14 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
     AsObject(param_1)->StartPosition[1] = local_324 + AsObject(param_1)->Position[1];
     AsObject(param_1)->StartPosition[2] = local_320 + AsObject(param_1)->Position[2];
     fVar17 = RequestTerrainHeight(AsObject(param_1)->StartPosition[0], AsObject(param_1)->StartPosition[1]);
-    AsObject(param_1)->StartPosition[2] = (float)(fVar17 + (float10)_DAT_00552464);
+    AsObject(param_1)->StartPosition[2] = (float)(fVar17 + (float10)25.0f);
     Particle_Spawn(BITMAP_EXPLOTION,pfVar10,&local_340,&local_20c,0,0.5,0);
     iVar9 = 0;
     do {
       iVar12 = _rand();
       local_33c = 0.0;
       local_35c = (float *)(iVar12 % 0x3c);
-      local_340 = (float)(int)(intptr_t)local_35c - _DAT_0055290c;
+      local_340 = (float)(int)(intptr_t)local_35c - 60.0f;
       iVar12 = _rand();
       local_324 = AsObject(param_1)->StartPosition[1];
       local_320 = AsObject(param_1)->StartPosition[2];
@@ -865,7 +865,7 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
     local_33c = 0.0;
     local_338 = 0.0;
     CreateEffect(MODEL_WAVE,pfVar10,&local_340,pfVar15,(float *)0x0,(float *)0x0,(float *)0xffffffff,(float *)0x0,0);
-    AsObject(param_1)->StartPosition[2] = AsObject(param_1)->StartPosition[2] - _DAT_005524a8;
+    AsObject(param_1)->StartPosition[2] = AsObject(param_1)->StartPosition[2] - 27.0f;
     CreateEffect(MODEL_EARTHQUAKE3,pfVar10,&local_340,pfVar15,(float *)0x0,param_1,(float *)0x96,(float *)0x0,0);
     CreateEffect(MODEL_EARTHQUAKE,pfVar10,&local_340,pfVar15,(float *)0x0,param_1,(float *)0x96,(float *)0x0,0);
     CreateEffect(MODEL_EARTHQUAKE2,pfVar10,&local_340,pfVar15,(float *)0x0,param_1,(float *)0x96,(float *)0x0,0);
@@ -880,26 +880,26 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
       local_30c = (float)(int)(intptr_t)local_35c;
       // IDA L2095: `(double)SLODWORD(v356) * 72.0 + (double)*(int *)(o + 4)`
       // — el SubType es un DWORD; convertirlo como float daba siempre 0.
-      local_338 = (float)(int)local_358 * _DAT_005529f8 + (float)AsObject(param_1)->SubType;
+      local_338 = (float)(int)local_358 * 72.0f + (float)AsObject(param_1)->SubType;
       Matrix_BuildFromEuler(&local_340,local_15c);
       Vector_Rotate(&local_310,local_15c,&local_328);
       local_328 = local_328 + *pfVar10;
       local_324 = local_324 + AsObject(param_1)->StartPosition[1];
-      local_320 = local_320 + AsObject(param_1)->StartPosition[2] + _DAT_00552540;
+      local_320 = local_320 + AsObject(param_1)->StartPosition[2] + 3.0f;
       iVar9 = _rand();
       local_340 = 0.0;
       local_33c = 0.0;
       pfVar14 = (float *)(iVar9 % 0x32 + 0x28);
       iVar9 = _rand();
       local_35c = (float *)(iVar9 % 0x1e + -0xf);
-      local_338 = (float)(int)(intptr_t)local_35c + _DAT_00552844;
+      local_338 = (float)(int)(intptr_t)local_35c + 45.0f;
       lVar19 = (longlong)(local_328 * 0.0099999998f);   // IDA TERRAIN_INDEX((std::int64_t)(TargetPosition[0]*0.01),...)
       lVar20 = (longlong)(local_324 * 0.0099999998f);   // IDA TERRAIN_INDEX(...,(std::int64_t)(TargetPosition[1]*0.01))
       iVar9 = TERRAIN_INDEX((int)lVar19,(int)lVar20);
       bVar28 = (DAT_0838bc70)[iVar9];
       if ((((bVar28 & 4) != 4) || ((bVar28 & 8) != 8)) || ((bVar28 & 0x10) != 0x10)) {
         fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
-        local_320 = (float)(fVar17 + (float10)_DAT_00552540);
+        local_320 = (float)(fVar17 + (float10)3.0f);
         CreateEffect(MODEL_EARTHQUAKE4,&local_328,&local_340,pfVar15,(float *)0x0,param_1,pfVar14,(float *)0x0,0);
         CreateEffect(MODEL_EARTHQUAKE5,&local_328,&local_340,pfVar15,(float *)0x0,param_1,pfVar14,(float *)0x0,0);
       }
@@ -928,7 +928,7 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
       iVar9 = _rand();
       local_308 = 0;
       local_35c = (float *)(iVar9 % 0xf);
-      local_30c = (float)(int)(intptr_t)local_35c + _DAT_00552854;
+      local_30c = (float)(int)(intptr_t)local_35c + 85.0f;
       if (2 < (int)local_348) {
         local_358 = (float)_rand();
       }
@@ -966,8 +966,8 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
         bVar28 = (DAT_0838bc70)[iVar9];
         if ((((bVar28 & 4) != 4) || ((bVar28 & 8) != 8)) || ((bVar28 & 0x10) != 0x10)) {
           fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
-          pfVar15[1] = (float)(fVar17 + (float10)_DAT_00552540);
-          local_338 = local_338 + _DAT_00552864;
+          pfVar15[1] = (float)(fVar17 + (float10)3.0f);
+          local_338 = local_338 + 270.0f;
           CreateEffect(MODEL_EARTHQUAKE7,pfVar14,&local_340,AsObject(param_1)->Light,(float *)0x0,param_1,(float *)0x64,(float *)0x0,0);
           CreateEffect(MODEL_EARTHQUAKE8,pfVar14,&local_340,AsObject(param_1)->Light,(float *)0x0,param_1,(float *)0x64,(float *)0x0,0);
           pfVar10 = local_35c;
@@ -994,7 +994,7 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
       local_358 = 12.5;
       local_2e0 = 18.0;
       if (__cnt == 15) {
-        AsObject(param_1)->Gravity = AsObject(param_1)->Gravity * _DAT_005526d8;
+        AsObject(param_1)->Gravity = AsObject(param_1)->Gravity * (-1.0f);
       }
     }
     if (__cnt == 13) {
@@ -1034,26 +1034,26 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
       } while ((intptr_t)local_35c < 0x78);
       PlayBuffer(0x59, AsObject(param_1),0);
     }
-    fVar13 = AsObject(param_1)->Angle[0] + _DAT_00552878;
+    fVar13 = AsObject(param_1)->Angle[0] + 80.0f;
     AsObject(param_1)->Position[0] = AsObject(param_1)->StartPosition[0];
     AsObject(param_1)->Position[1] = AsObject(param_1)->StartPosition[1];
     AsObject(param_1)->Position[2] = AsObject(param_1)->StartPosition[2];
     AsObject(param_1)->Angle[0] = fVar13;
-    fVar17 = (float10)fsin(((float10)_DAT_005524fc - (float10)local_358) * (float10)local_2e0 *
-                           (float10)_DAT_005529f0 * (float10)_DAT_005529e8);
-    AsObject(param_1)->Direction[1] = (float)(fVar17 * (float10)_DAT_005529e0);
-    if ((local_358 < (float)_DAT_005529d8) || ((float)_DAT_005529d8 < local_358)) {
-      fVar13 = AsObject(param_1)->Gravity + _DAT_00552658;
+    fVar17 = (float10)fsin(((float10)20.0f - (float10)local_358) * (float10)local_2e0 *
+                           (float10)3.141592 * (float10)0.005555555555555556);
+    AsObject(param_1)->Direction[1] = (float)(fVar17 * (float10)260.0f);
+    if ((local_358 < (float)12.5) || ((float)12.5 < local_358)) {
+      fVar13 = AsObject(param_1)->Gravity + 8.0f;
     }
     else {
-      fVar13 = AsObject(param_1)->Gravity - _DAT_00552658;
+      fVar13 = AsObject(param_1)->Gravity - 8.0f;
     }
     AsObject(param_1)->Gravity = fVar13;
     Matrix_BuildFromEuler(AsObject(param_1)->HeadAngle,local_15c);
     Vector_Rotate(AsObject(param_1)->Direction,local_15c,&local_328);
     AsObject(param_1)->Position[0] = local_328 + AsObject(param_1)->StartPosition[0];
     AsObject(param_1)->Position[1] = local_324 + AsObject(param_1)->StartPosition[1];
-    AsObject(param_1)->Position[2] = local_320 + AsObject(param_1)->StartPosition[2] + AsObject(param_1)->Gravity + _DAT_0055285c;
+    AsObject(param_1)->Position[2] = local_320 + AsObject(param_1)->StartPosition[2] + AsObject(param_1)->Gravity + 200.0f;
   }
   return false;
 }
@@ -1061,13 +1061,13 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
 // IDA: MoveEffect (0x00466AD0), case MODEL_EARTHQUAKE.
 static bool MoveEffect_Earthquake(float *& param_1, const intptr_t& __cnt, intptr_t& uVar8)
 {
-  AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_005524f4 * _DAT_005529d4;
+  AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.1f * 0.33333334f;
   if (__cnt < 10) {
-    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_00552504;
+    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 0.5f;
   }
   if ((0xf < __cnt) && (__cnt % 3 == 0)) {
     uVar8 = _rand() % 8;
-    EarthQuake = (float)(int)(uVar8 - 4) * _DAT_005524f4;
+    EarthQuake = (float)(int)(uVar8 - 4) * 0.1f;
   }
   return false;
 }
@@ -1079,15 +1079,15 @@ static bool MoveEffect_Earthquake8(float *& param_1, const intptr_t& __cnt, floa
   if (0x1d < __cnt) {
     fVar4 = (float)(0x28 - __cnt);
   }
-  AsObject(param_1)->BlendMeshLight = (float)(int)fVar4 * _DAT_005524f4;
+  AsObject(param_1)->BlendMeshLight = (float)(int)fVar4 * 0.1f;
   if (__cnt < 0xf) {
-    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_00552504;
+    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 0.5f;
   }
   if (0xc < __cnt) {
     _rand();
   }
   local_368 = local_36c;
-  AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * _DAT_005529d0;
+  AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * (-0.01f);
   local_364 = 0.0;
   local_360 = 0.0;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,1, (float*)DAT_081cb608);
@@ -1098,8 +1098,8 @@ static bool MoveEffect_Earthquake8(float *& param_1, const intptr_t& __cnt, floa
 static bool MoveEffect_Tail(float *& param_1, const intptr_t& __cnt)
 {
   AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - AsObject(param_1)->Gravity;
-  AsObject(param_1)->Gravity = AsObject(param_1)->Gravity + _DAT_0055290c;
-  AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_00552a10;
+  AsObject(param_1)->Gravity = AsObject(param_1)->Gravity + 60.0f;
+  AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.05f;
   return false;
 }
 
@@ -1122,7 +1122,7 @@ static bool MoveEffect_Piercing(float *& param_1, float& fVar13, float& fVar4, i
     AsObject(param_1)->HeadAngle[2] = AsObject(pcVar11)->Angle[2];
     AsObject(param_1)->StartPosition[0] = *pfVar10;
     AsObject(param_1)->StartPosition[1] = AsObject(param_1)->Position[1];
-    fVar4 = AsObject(param_1)->Gravity + _DAT_00552848;
+    fVar4 = AsObject(param_1)->Gravity + 90.0f;
     AsObject(param_1)->StartPosition[2] = AsObject(param_1)->Position[2];
     *pfVar10 = AsObject(pcVar11)->Position[0];
     fVar13 = AsObject(pcVar11)->Position[2];
@@ -1140,7 +1140,7 @@ static bool MoveEffect_Piercing(float *& param_1, float& fVar13, float& fVar4, i
       fVar13 = (float)(iVar9 % 0x168);
       pfVar14 = param_1;
       uVar8 = _rand() % 8;
-      CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 8) * _DAT_005526e4,pfVar15,(intptr_t)pfVar14,fVar13,uVar29);
+      CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 8) * 0.2f,pfVar15,(intptr_t)pfVar14,fVar13,uVar29);
     }
     AsObject(param_1)->HeadAngle[1] = AsObject(param_1)->Gravity;
   }
@@ -1158,8 +1158,8 @@ static bool MoveEffect_Type256(float *& param_1, bool& bVar16, float& local_360,
   pfVar10 = param_1 + 4;
   Particle_Spawn(BITMAP_FIRE,pfVar10,AsObject(param_1)->Angle,&local_368,5,1.0,0);
   Particle_Spawn(BITMAP_FIRE,pfVar10,AsObject(param_1)->Angle,&local_368,5,1.0,0);
-  local_368 = local_36c * _DAT_00552534;
-  local_364 = local_36c * _DAT_00552530;
+  local_368 = local_36c * 0.6f;
+  local_364 = local_36c * 0.8f;
   local_360 = local_364;
   AddTerrainLight(*pfVar10,AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
   return false;
@@ -1171,7 +1171,7 @@ static bool MoveEffect_Ice(float *& param_1, intptr_t& __owner_fVar13, bool& bVa
 {
   fVar13 = *(float *)&AsObject(param_1)->SubType;
   if (fVar13 == 0.0) {
-    if (_DAT_00552660 <= AsObject(param_1)->AnimationFrame) {
+    if (5.0f <= AsObject(param_1)->AnimationFrame) {
       AsObject(param_1)->Velocity = 0.0;
       uVar8 = _rand() % 2;
       bVar16 = uVar8 == 0;
@@ -1184,15 +1184,15 @@ static bool MoveEffect_Ice(float *& param_1, intptr_t& __owner_fVar13, bool& bVa
         local_1c8 = (float)(int)(uVar8 + 0x20) + AsObject(param_1)->Position[2];
         Particle_Spawn(BITMAP_SMOKE,&local_1d0,AsObject(param_1)->Angle,AsObject(param_1)->Light,0,1.0,0);
       }
-      fVar13 = AsObject(param_1)->Alpha - _DAT_00552874;
+      fVar13 = AsObject(param_1)->Alpha - 0.05f;
       AsObject(param_1)->Alpha = fVar13;
-      if (fVar13 < _DAT_00552580) {
+      if (fVar13 < 0.0f) {
         *(undefined1 *)param_1 = 0;
       }
     }
-    local_368 = local_36c * _DAT_00552990;
-    local_364 = local_36c * _DAT_005529c0;
-    local_360 = local_36c * _DAT_00552570;
+    local_368 = local_36c * (-0.4f);
+    local_364 = local_36c * (-0.3f);
+    local_360 = local_36c * (-0.2f);
     iVar9 = 2;
     AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
     return false;
@@ -1204,7 +1204,7 @@ static bool MoveEffect_Ice(float *& param_1, intptr_t& __owner_fVar13, bool& bVa
     return false;
   }
   if ((*pcVar11 == '\0') || (((byte)*(undefined4 *)(pcVar11 + 0x78) & 0x20) != 0x20)) {
-    AsObject(param_1)->Alpha = AsObject(param_1)->Alpha - _DAT_00552874;
+    AsObject(param_1)->Alpha = AsObject(param_1)->Alpha - 0.05f;
   }
   else {
     bVar28 = *(char *)&AsObject(pcVar11)->CurrentAction;
@@ -1224,7 +1224,7 @@ LAB_0046934f:
 LAB_00469366:
       AsObject(param_1)->HiddenMesh = -2;   // IDA LABEL_246: HiddenMesh = -2 (oculta el hielo)
     }
-    bVar16 = _DAT_00552650 <= AsObject(param_1)->AnimationFrame;
+    bVar16 = 4.0f <= AsObject(param_1)->AnimationFrame;
     AsObject(param_1)->Position[0] = AsObject(pcVar11)->Position[0];
     fVar4 = AsObject(pcVar11)->Position[2];
     AsObject(param_1)->Position[1] = AsObject(pcVar11)->Position[1];
@@ -1237,10 +1237,10 @@ LAB_00469366:
   if (*(int*)&fVar13 == 1) {
     local_31c = 60.0;
     local_318 = 0;
-    AsObject(param_1)->HeadAngle[2] = AsObject(param_1)->HeadAngle[2] + _DAT_005524fc;
+    AsObject(param_1)->HeadAngle[2] = AsObject(param_1)->HeadAngle[2] + 20.0f;
     local_314 = 0;
-    fVar17 = (float10)fsin((float10)WorldTime * (float10)_DAT_005524f8);
-    AsObject(param_1)->Gravity = (float)(fVar17 * (float10)_DAT_005524fc + (float10)_DAT_0055284c);
+    fVar17 = (float10)fsin((float10)WorldTime * (float10)0.01f);
+    AsObject(param_1)->Gravity = (float)(fVar17 * (float10)20.0f + (float10)30.0f);
     Matrix_BuildFromEuler(AsObject(param_1)->HeadAngle,local_1a4 + 6);
     Vector_Rotate(&local_31c,local_1a4 + 6,&local_354);
     if (!validOwner(owner)) return true;
@@ -1265,22 +1265,22 @@ static bool MoveEffect_Fire(float *& param_1, int& param_2, byte& bVar28, float&
     if (*(int*)&fVar13 == 6) goto LAB_00469769;
     if (*(int*)&fVar13 == 5) {
       AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] + AsObject(param_1)->Gravity;
-      AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - _DAT_0055264c;
+      AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - 2.0f;
       fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
       local_348 = (float)fVar17;
       if (AsObject(param_1)->Position[2] < local_348) {
-        fVar13 = AsObject(param_1)->Position[2] + _DAT_00552488;
+        fVar13 = AsObject(param_1)->Position[2] + 10.0f;
         AsObject(param_1)->Gravity = 10.0;
         AsObject(param_1)->Position[2] = fVar13;
-        AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * _DAT_00552504;
-        AsObject(param_1)->Scale = AsObject(param_1)->Scale * _DAT_005529b4;
+        AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * 0.5f;
+        AsObject(param_1)->Scale = AsObject(param_1)->Scale * 1.1f;
       }
       lVar19 = (longlong)(AsObject(param_1)->Position[0] * 0.0099999998f);   // IDA Terrain_Load((std::int64_t)(x*0.01),...)
       lVar20 = (longlong)(AsObject(param_1)->Position[1] * 0.0099999998f);   // IDA Terrain_Load(...,(std::int64_t)(y*0.01))
       iVar9 = Terrain_GetTileIndex((uint)lVar19,(uint)lVar20);
       if ((AsObject(param_1)->LifeTime == 1) || (((DAT_0838bc70)[iVar9] & 8) == 8)) {
         local_224 = AsObject(param_1)->Position[0];
-        local_21c = local_348 + _DAT_00552878;
+        local_21c = local_348 + 80.0f;
         AsObject(param_1)->Position[2] = local_348;
         local_220 = AsObject(param_1)->Position[1];
         AsObject(param_1)->Direction[0] = 0.0;
@@ -1313,7 +1313,7 @@ LAB_00469772:
     lVar20 = (longlong)(AsObject(param_1)->Position[1] * 0.0099999998f);   // IDA Terrain_Load(...,(std::int64_t)(y*0.01))
     iVar9 = Terrain_GetTileIndex((uint)lVar19,(uint)lVar20);
     if (((DAT_0838bc70)[iVar9] & 8) == 8) {
-      if (AsObject(param_1)->Position[2] < _DAT_005529b0) {
+      if (AsObject(param_1)->Position[2] < (-200.0f)) {
         fVar17 = (float10)AsObject(param_1)->Position[2];
         goto LAB_004698ca;
       }
@@ -1324,7 +1324,7 @@ LAB_00469772:
       if (AsObject(param_1)->Position[2] < local_344) {
         uVar8 = _rand() % 4;
         iVar9 = 0;
-        EarthQuake = (float)(int)(uVar8 - 4) * _DAT_005524f4;
+        EarthQuake = (float)(int)(uVar8 - 4) * 0.1f;
         do {
           local_348 = AsObject(param_1)->Position[0] - *(float *)(iVar9 + 0x10 + CharactersClient);
           pcVar11 = (char *)(iVar9 + CharactersClient);
@@ -1332,7 +1332,7 @@ LAB_00469772:
           if ((((*pcVar11 != '\0') && (*(char *)&AsObject(pcVar11)->Visible != '\0')) && (pcVar11 != Hero)) &&
              ((FieldAs(pcVar11, AsCharacter(pcVar11)->Dead) == '\0' &&
               (SQRT(local_348 * local_348 + (float)(int)(intptr_t)local_35c * (float)(int)(intptr_t)local_35c) <=
-               _DAT_0055285c)))) {
+               200.0f)))) {
             if (AsObject(pcVar11)->Type == 0x186) {
               uVar8 = 0x82;
             }
@@ -1356,7 +1356,7 @@ LAB_004698ca:
     local_2b8 = *pfVar15;
     local_2b4 = AsObject(param_1)->Position[1];
     AsObject(param_1)->Position[2] = (float)fVar17;
-    fVar18 = (float10)_DAT_00552878;
+    fVar18 = (float10)80.0f;
     AsObject(param_1)->Direction[0] = 0.0;
     local_2b0 = (float)(fVar17 + fVar18);
     AsObject(param_1)->Direction[1] = 0.0;
@@ -1388,10 +1388,10 @@ LAB_004698ca:
         local_364 = 1.0;
         local_360 = 0.2;
         local_2b4 = (float)(iVar12 % 0xa0 + -100) + AsObject(param_1)->Position[1];
-        local_2b0 = AsObject(param_1)->Position[2] + _DAT_00552598;
+        local_2b0 = AsObject(param_1)->Position[2] + 50.0f;
         uVar8 = _rand() % 32;
         Particle_Spawn(BITMAP_SMOKE,&local_2b8,pfVar10,&local_368,0xb,
-                     (float)(int)(uVar8 + 0x50) * _DAT_005529cc,iVar24);
+                     (float)(int)(uVar8 + 0x50) * 0.015f,iVar24);
         iVar9 = iVar9 + -1;
       } while (iVar9 != 0);
     }
@@ -1400,7 +1400,7 @@ LAB_004698ca:
 LAB_00469a2f:
   fVar13 = *(float *)&AsObject(param_1)->SubType;
   if (*(int*)&fVar13 == 5) {
-    local_364 = local_36c * _DAT_005524f4;
+    local_364 = local_36c * 0.1f;
     local_368 = local_36c;
     *(float *)&AsObject(param_1)->HiddenMesh = 0.0;
     AsObject(param_1)->BlendMeshLight = 0.0;
@@ -1419,19 +1419,19 @@ LAB_00469ab9:
     }
     else if (fVar13 == 0.0) {
       uVar8 = _rand() % 4;
-      AsObject(param_1)->BlendMeshLight = (float)(int)(uVar8 + 4) * _DAT_005524f4;
+      AsObject(param_1)->BlendMeshLight = (float)(int)(uVar8 + 4) * 0.1f;
     }
     else {
       if (*(int*)&fVar13 != 6) goto LAB_00469ab9;
       uVar8 = _rand() % 4;
-      AsObject(param_1)->BlendMeshLight = (float)(int)(uVar8 + 4) * _DAT_005524f4;
+      AsObject(param_1)->BlendMeshLight = (float)(int)(uVar8 + 4) * 0.1f;
     }
     if (AsObject(param_1)->SubType == 6) {
-      local_368 = local_36c * _DAT_005524f4;
+      local_368 = local_36c * 0.1f;
       local_364 = local_36c;
     }
     else {
-      local_364 = local_36c * _DAT_005524f4;
+      local_364 = local_36c * 0.1f;
       local_368 = local_36c;
     }
     pfVar10 = param_1 + 4;
@@ -1443,11 +1443,11 @@ LAB_00469ab9:
     }
     else if (AsObject(param_1)->SubType == 3) {
       Ring_ComputeOrbit(param_2 * 0x14fb,&local_2f8,1.0);
-      local_2f8 = local_2f8 * _DAT_00552598;
-      local_2f4 = local_2f4 * _DAT_00552598;
+      local_2f8 = local_2f8 * 50.0f;
+      local_2f4 = local_2f4 * 50.0f;
       local_334 = 0.0;
       local_330 = 0.0;
-      local_2f0 = local_2f0 * _DAT_00552598;
+      local_2f0 = local_2f0 * 50.0f;
       local_32c = 0.0;
       local_368 = 1.0;
       local_364 = 1.0;
@@ -1455,10 +1455,10 @@ LAB_00469ab9:
       local_2ec = *pfVar10 + local_2f8;
       local_2e8 = AsObject(param_1)->Position[1] + local_2f4;
       local_2e4 = AsObject(param_1)->Position[2] + local_2f0;
-      Particle_Spawn(BITMAP_FIRE,&local_2ec,&local_334,&local_368,8,AsObject(param_1)->Scale * _DAT_00552950,0);
+      Particle_Spawn(BITMAP_FIRE,&local_2ec,&local_334,&local_368,8,AsObject(param_1)->Scale * 2.5f,0);
       uVar29 = 0;
       iVar9 = _rand();
-      CreateSprite(BITMAP_SHINY + 1,&local_2ec,AsObject(param_1)->Scale * _DAT_00552540,&local_368,0,
+      CreateSprite(BITMAP_SHINY + 1,&local_2ec,AsObject(param_1)->Scale * 3.0f,&local_368,0,
                    (float)(iVar9 % 0x168),uVar29);
     }
     else {
@@ -1475,11 +1475,11 @@ LAB_00469ab9:
 static bool MoveEffect_Poison(float *& param_1, const intptr_t& __cnt, float& fVar13, intptr_t& iVar9, float& local_360, float& local_364, float& local_368, float& local_36c)
 {
   local_364 = local_36c;
-  fVar13 = (float)__cnt * _DAT_005524f4;
+  fVar13 = (float)__cnt * 0.1f;
   AsObject(param_1)->BlendMeshLight = fVar13;
   AsObject(param_1)->Alpha = fVar13;
-  local_368 = local_36c * _DAT_005528b8;
-  local_360 = local_36c * _DAT_00552534;
+  local_368 = local_36c * 0.3f;
+  local_360 = local_36c * 0.6f;
   iVar9 = 2;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
   return false;
@@ -1496,10 +1496,10 @@ static bool MoveEffect_CircleLight(float *& param_1, bool& bVar16, byte& bVar28,
   if (0x1d < iVar12) {
     iVar9 = 0x28 - iVar12;
   }
-  AsObject(param_1)->BlendMeshLight = (float)iVar9 * _DAT_005524f4;
-  AsObject(param_1)->BlendMeshTexCoordU = (float)iVar12 * _DAT_005529d0;
+  AsObject(param_1)->BlendMeshLight = (float)iVar9 * 0.1f;
+  AsObject(param_1)->BlendMeshTexCoordU = (float)iVar12 * (-0.01f);
   iVar9 = _rand();
-  EarthQuake = (float)(iVar9 % 6 + -6) * _DAT_005524f4;
+  EarthQuake = (float)(iVar9 % 6 + -6) * 0.1f;
   uVar8 = _rand() % 4;
   bVar16 = uVar8 == 0;
   if (bVar16) {
@@ -1527,9 +1527,9 @@ static bool MoveEffect_CircleLight(float *& param_1, bool& bVar16, byte& bVar28,
     uVar8 = _rand() % 2;
     CreateEffect(uVar8 + 0xc5,pfVar14,pfVar10,pfVar15,pfVar22,pfVar21,pfVar23,pfVar25,bVar28);
   }
-  local_364 = local_36c * _DAT_00552530;
+  local_364 = local_36c * 0.8f;
   iVar9 = 4;
-  local_360 = local_36c * _DAT_005526e4;
+  local_360 = local_36c * 0.2f;
   local_368 = local_36c;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
   return false;
@@ -1541,7 +1541,7 @@ static bool MoveEffect_SkillInferno(float *& param_1, const intptr_t& __cnt, int
 {
   fVar4 = *(float *)&AsObject(param_1)->SubType;
   if (*(int*)&fVar4 == 2) {
-    AsObject(param_1)->Scale = AsObject(param_1)->Scale + _DAT_00552a0c;
+    AsObject(param_1)->Scale = AsObject(param_1)->Scale + 0.04f;
 LAB_00466e5e:
     if (*(int*)&fVar4 == 4) return false;
   }
@@ -1553,16 +1553,16 @@ LAB_00466e5e:
       iVar9 = (intptr_t)AsObject(__owner_fVar5)->Owner;
       if (!validOwner((void*)(uintptr_t)iVar9)) return true;
       AsObject(param_1)->Position[2] = *(float *)(__owner_fVar5 + 0x18);
-      AsObject(param_1)->Position[0] = *(float *)(iVar9 + 0x10) + _DAT_0055297c;
+      AsObject(param_1)->Position[0] = *(float *)(iVar9 + 0x10) + 150.0f;
       goto LAB_00466e5e;
     }
     if (*(int*)&fVar4 == 4) {
-      fVar7 = AsObject(param_1)->Scale + _DAT_00552a08;
+      fVar7 = AsObject(param_1)->Scale + 0.003f;
       if (!validOwner(owner)) return true;
       __owner_fVar5 = (intptr_t)AsObject(param_1)->Owner;   // ver nota de __owner_* arriba
       fVar6 = *(float *)(__owner_fVar5 + 0x10);
       AsObject(param_1)->Scale = fVar7;
-      fVar7 = fVar7 * _DAT_00552a04;
+      fVar7 = fVar7 * 24.0f;
       AsObject(param_1)->Position[0] = fVar6;
       AsObject(param_1)->Position[1] = *(float *)(__owner_fVar5 + 0x14);
       fVar7 = fVar7 + AsObject(param_1)->Gravity;
@@ -1571,8 +1571,8 @@ LAB_00466e5e:
       goto LAB_00466e5e;
     }
   }
-  AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_00552a10;
-  local_368 = local_36c * _DAT_00552a14;
+  AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.05f;
+  local_368 = local_36c * (-0.5f);
   iVar9 = 5;
   local_364 = local_368;
   local_360 = local_368;
@@ -1583,15 +1583,15 @@ LAB_00466e5e:
 // IDA: MoveEffect (0x00466AD0), case MODEL_EARTHQUAKE2.
 static bool MoveEffect_Earthquake2(float *& param_1, byte& bVar28, intptr_t& iVar9, float& local_1d4, undefined4& local_1d8, float& local_1dc, undefined4& local_228, float& local_22c, float& local_230, float& local_2a4, float& local_2a8, float& local_2ac, float& local_358, float& local_360, float& local_364, float& local_368, float& local_36c, float (&local_cc)[12], float*& pfVar10, float*& pfVar14, float*& pfVar15, float*& pfVar21, float*& pfVar22, float*& pfVar23, float*& pfVar25, intptr_t& uVar8)
 {
-  if (_DAT_00552598 < AsObject(param_1)->Scale) {
+  if (50.0f < AsObject(param_1)->Scale) {
     *(float *)&AsObject(param_1)->LifeTime = 0.0;
   }
   local_358 = *(float *)&AsObject(param_1)->LifeTime;
   if ((int)local_358 < 10) {
     if ((int)local_358 < 5) {
-      AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_00552504;
+      AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 0.5f;
     }
-    AsObject(param_1)->BlendMeshLight = (float)(int)local_358 * _DAT_005524f4;
+    AsObject(param_1)->BlendMeshLight = (float)(int)local_358 * 0.1f;
     if (4 < (int)local_358) {
       iVar9 = _rand();
       if ((float)(iVar9 % 10) == 0.0) {
@@ -1622,12 +1622,12 @@ static bool MoveEffect_Earthquake2(float *& param_1, byte& bVar28, intptr_t& iVa
     }
   }
   else {
-    AsObject(param_1)->BlendMeshLight = (float)(0x14 - (int)local_358) * _DAT_005524f4;
+    AsObject(param_1)->BlendMeshLight = (float)(0x14 - (int)local_358) * 0.1f;
   }
   local_364 = 0.0;
   local_360 = 0.0;
   iVar9 = 1;
-  AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * _DAT_005529d0;
+  AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * (-0.01f);
   local_368 = local_36c;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
   return false;
@@ -1638,9 +1638,9 @@ static bool MoveEffect_Earthquake5(float *& param_1, const intptr_t& __cnt, byte
 {
   if (__cnt < 0x1e) {
     if (__cnt < 0xf) {
-      AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_00552504;
+      AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 0.5f;
     }
-    AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_005524f4;
+    AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.1f;
     if (4 < __cnt) {
       iVar9 = _rand();
       if ((float)(iVar9 % 0xf) == 0.0) {
@@ -1671,12 +1671,12 @@ static bool MoveEffect_Earthquake5(float *& param_1, const intptr_t& __cnt, byte
     }
   }
   else {
-    AsObject(param_1)->BlendMeshLight = (float)(0x28 - __cnt) * _DAT_005524f4;
+    AsObject(param_1)->BlendMeshLight = (float)(0x28 - __cnt) * 0.1f;
   }
   local_364 = 0.0;
   local_360 = 0.0;
   iVar9 = 1;
-  AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * _DAT_005529d0;
+  AsObject(param_1)->BlendMeshTexCoordU = (float)(AsObject(param_1)->LifeTime) * (-0.01f);
   local_368 = local_36c;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
   return false;
@@ -1685,18 +1685,18 @@ static bool MoveEffect_Earthquake5(float *& param_1, const intptr_t& __cnt, byte
 // IDA: MoveEffect (0x00466AD0), case MODEL_WAVE.
 static bool MoveEffect_Wave(float *& param_1, const intptr_t& __cnt, intptr_t& iVar9, float& local_360, float& local_364, float& local_368, float& local_36c)
 {
-  if (AsObject(param_1)->Scale <= _DAT_0055264c) {
-    AsObject(param_1)->Scale = AsObject(param_1)->Scale + _DAT_00552a1c;
-    AsObject(param_1)->Position[0] = AsObject(param_1)->Position[0] - _DAT_00552a1c;
-    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_00552a18;
+  if (AsObject(param_1)->Scale <= 2.0f) {
+    AsObject(param_1)->Scale = AsObject(param_1)->Scale + 1.0f;
+    AsObject(param_1)->Position[0] = AsObject(param_1)->Position[0] - 1.0f;
+    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 1.8f;
   }
   else {
-    AsObject(param_1)->Scale = AsObject(param_1)->Scale + _DAT_005524f4;
-    AsObject(param_1)->Position[0] = AsObject(param_1)->Position[0] - _DAT_0055256c;
-    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_005528f0;
-    AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_00552a20;
+    AsObject(param_1)->Scale = AsObject(param_1)->Scale + 0.1f;
+    AsObject(param_1)->Position[0] = AsObject(param_1)->Position[0] - 1.0f;
+    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 1.5f;
+    AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.033333335f;
   }
-  local_368 = local_36c * _DAT_00552a14;
+  local_368 = local_36c * (-0.5f);
   iVar9 = 5;
   local_364 = local_368;
   local_360 = local_368;
@@ -1710,12 +1710,12 @@ static CaseExit MoveEffect_Type202(float *& param_1, intptr_t& __owner_fVar4, fl
 {
   if (!validOwner(owner)) return CaseExit::Return;
   __owner_fVar4 = (intptr_t)AsObject(param_1)->Owner;   // ver nota de __owner_* arriba
-  fVar6 = *(float *)(__owner_fVar4 + 0x18) + _DAT_005524f0;
+  fVar6 = *(float *)(__owner_fVar4 + 0x18) + 100.0f;
   fVar5 = *(float *)(__owner_fVar4 + 0x14);
   AsObject(param_1)->Position[0] = *(float *)(__owner_fVar4 + 0x10);
   AsObject(param_1)->Position[1] = fVar5;
   AsObject(param_1)->Position[2] = fVar6;
-  AsObject(param_1)->Angle[1] = AsObject(param_1)->Angle[1] + _DAT_005524fc;
+  AsObject(param_1)->Angle[1] = AsObject(param_1)->Angle[1] + 20.0f;
   return CaseExit::Next;
 }
 
@@ -1768,22 +1768,22 @@ static bool MoveEffect_IceSmall(float *& param_1, float& fVar13, float10& fVar17
     fVar13 = local_34c;
   }
   AsObject(param_1)->Position[2] = fVar13 + AsObject(param_1)->Position[2];
-  AsObject(param_1)->Direction[0] = AsObject(param_1)->Direction[0] * _DAT_005526e8;
-  AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * _DAT_005526e8;
-  AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] * _DAT_005526e8;
+  AsObject(param_1)->Direction[0] = AsObject(param_1)->Direction[0] * 0.9f;
+  AsObject(param_1)->Direction[1] = AsObject(param_1)->Direction[1] * 0.9f;
+  AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] * 0.9f;
   AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] + AsObject(param_1)->Gravity;
   if (*(float *)&AsObject(param_1)->SubType == 0.0) {
-    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - _DAT_00552540;
+    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - 3.0f;
     fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
     if (fVar17 <= (float10)AsObject(param_1)->Position[2]) {
-      fVar13 = AsObject(param_1)->Scale * _DAT_005529b8;
+      fVar13 = AsObject(param_1)->Scale * 32.0f;
     }
     else {
       AsObject(param_1)->Position[2] = (float)fVar17;
-      fVar13 = AsObject(param_1)->Gravity * _DAT_00552a14;
+      fVar13 = AsObject(param_1)->Gravity * (-0.5f);
       AsObject(param_1)->LifeTime = AsObject(param_1)->LifeTime + -4;   // counter DWORD
       AsObject(param_1)->Gravity = fVar13;
-      fVar13 = AsObject(param_1)->Scale * _DAT_005529bc;
+      fVar13 = AsObject(param_1)->Scale * 128.0f;
     }
     pfVar10 = param_1 + 7;
     *pfVar10 = *pfVar10 - fVar13;
@@ -1802,9 +1802,9 @@ static bool MoveEffect_IceSmall(float *& param_1, float& fVar13, float10& fVar17
   }
   else {
     if (AsObject(param_1)->SubType != 1) {
-      AsObject(param_1)->Angle[2] = AsObject(param_1)->Angle[2] + _DAT_005524fc;
+      AsObject(param_1)->Angle[2] = AsObject(param_1)->Angle[2] + 20.0f;
     }
-    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity + _DAT_00552504;
+    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity + 0.5f;
   }
   return false;
 }
@@ -1813,9 +1813,9 @@ static bool MoveEffect_IceSmall(float *& param_1, float& fVar13, float10& fVar17
 static bool MoveEffect_Earthquake3(float *& param_1, const intptr_t& __cnt, intptr_t& iVar9)
 {
   const auto& fade = EffectFadePresets[(iVar9 == 0xf7 || iVar9 == 0xfa) ? 0 : 1];
-  AsObject(param_1)->BlendMeshLight = (float)__cnt * _DAT_005524f4 * *fade.AlphaFactor;
+  AsObject(param_1)->BlendMeshLight = (float)__cnt * 0.1f * *fade.AlphaFactor;
   if (__cnt < fade.DescentThreshold)
-    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - _DAT_00552504;
+    AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] - 0.5f;
   return false;
 }
 
@@ -1827,17 +1827,17 @@ static bool MoveEffect_Stonecoffin(float *& param_1, float& fVar13, float10& fVa
   AsObject(param_1)->Position[0] = AsObject(param_1)->Direction[0] + AsObject(param_1)->Position[0];
   AsObject(param_1)->Position[1] = AsObject(param_1)->Position[1] + AsObject(param_1)->Direction[1];
   AsObject(param_1)->Position[2] = AsObject(param_1)->Direction[2] + AsObject(param_1)->Position[2];
-  fVar13 = AsObject(param_1)->Direction[0] * _DAT_005526e8;
+  fVar13 = AsObject(param_1)->Direction[0] * 0.9f;
   AsObject(param_1)->Direction[0] = fVar13;
-  local_348 = AsObject(param_1)->Direction[1] * _DAT_005526e8;
+  local_348 = AsObject(param_1)->Direction[1] * 0.9f;
   AsObject(param_1)->Direction[1] = local_348;
-  local_344 = AsObject(param_1)->Direction[2] * _DAT_005526e8;
+  local_344 = AsObject(param_1)->Direction[2] * 0.9f;
   AsObject(param_1)->Direction[2] = local_344;
   AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] + AsObject(param_1)->Gravity;
   if (AsObject(param_1)->SubType == 1) {
-    AsObject(param_1)->Direction[0] = fVar13 * _DAT_005529b4;
-    AsObject(param_1)->Direction[1] = local_348 * _DAT_005529b4;
-    AsObject(param_1)->Direction[2] = local_344 * _DAT_005529b4;
+    AsObject(param_1)->Direction[0] = fVar13 * 1.1f;
+    AsObject(param_1)->Direction[1] = local_348 * 1.1f;
+    AsObject(param_1)->Direction[2] = local_344 * 1.1f;
   }
   AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - *bounce.Gravity;
   fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
@@ -1845,10 +1845,10 @@ static bool MoveEffect_Stonecoffin(float *& param_1, float& fVar13, float10& fVa
   if (firstPair ? (float10)AsObject(param_1)->Position[2] < fVar17 : !(fVar17 <= (float10)AsObject(param_1)->Position[2])) {
     AsObject(param_1)->Position[2] = (float)fVar17;
     AsObject(param_1)->Gravity = AsObject(param_1)->Gravity * *bounce.Bounce;
-    fVar13 = AsObject(param_1)->Scale * _DAT_005529bc;
+    fVar13 = AsObject(param_1)->Scale * 128.0f;
     AsObject(param_1)->LifeTime = AsObject(param_1)->LifeTime - 5;
   } else {
-    fVar13 = AsObject(param_1)->Scale * _DAT_005526e0;
+    fVar13 = AsObject(param_1)->Scale * 16.0f;
   }
   pfVar10 = param_1 + 7;
   *pfVar10 = *pfVar10 - fVar13;
@@ -1905,11 +1905,11 @@ static bool MoveEffect_Firecracker(float *& param_1, float& fVar13, intptr_t& iV
   if (*(int*)&fVar13 == 1) {
     iVar9 = _rand();
     iVar12 = _rand();
-    local_368 = (float)(iVar12 % 3) * _DAT_005528b8 + _DAT_005528b4;
+    local_368 = (float)(iVar12 % 3) * 0.3f + 0.4f;
     uVar8 = _rand() % 4;
     local_360 = 0.0;
     iVar12 = 0x50;
-    local_364 = (float)(int)uVar8 * _DAT_005524f4;
+    local_364 = (float)(int)uVar8 * 0.1f;
     do {
       Particle_Spawn(BITMAP_FIRECRACKER,AsObject(param_1)->Position,AsObject(param_1)->Angle,&local_368,iVar9 % 0x1e,1.0,0);
       iVar12 = iVar12 + -1;
@@ -1917,9 +1917,9 @@ static bool MoveEffect_Firecracker(float *& param_1, float& fVar13, intptr_t& iV
     PlayBuffer(0x45, AsObject(param_1),0);
   }
   Particle_Spawn(BITMAP_FIRECRACKER,AsObject(param_1)->Position,AsObject(param_1)->Angle,AsObject(param_1)->Light,-1,1.0,0);
-  local_368 = local_36c * _DAT_005528b4;
-  local_364 = local_36c * _DAT_005528b8;
-  local_360 = local_36c * _DAT_005526e4;
+  local_368 = local_36c * 0.4f;
+  local_364 = local_36c * 0.3f;
+  local_360 = local_36c * 0.2f;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,1, (float*)DAT_081cb608);
   return false;
 }
@@ -1995,7 +1995,7 @@ static bool MoveEffect_Type1267(float *& param_1, bool& bVar16, float& fVar13, i
         pfVar15 = param_1;
         iVar12 = _rand();
         Particle_Spawn(BITMAP_SPARK + 1,&local_354,&local_334,&local_368,2,
-                     (float)(iVar12 % 0x32 + 10) * _DAT_00552594,(intptr_t)pfVar15);
+                     (float)(iVar12 % 0x32 + 10) * 0.01f,(intptr_t)pfVar15);
       }
       uVar29 = 0;
       iVar12 = _rand();
@@ -2003,7 +2003,7 @@ static bool MoveEffect_Type1267(float *& param_1, bool& bVar16, float& fVar13, i
       fVar13 = (float)(iVar12 % 0x168);
       pfVar14 = param_1;
       uVar8 = _rand() % 8;
-      CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 8) * _DAT_005526e4,pfVar15,(intptr_t)pfVar14,fVar13,uVar29);
+      CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 8) * 0.2f,pfVar15,(intptr_t)pfVar14,fVar13,uVar29);
     }
     else {
       uVar29 = 0;
@@ -2012,11 +2012,11 @@ static bool MoveEffect_Type1267(float *& param_1, bool& bVar16, float& fVar13, i
       fVar13 = (float)(iVar12 % 0x168);
       pfVar14 = param_1;
       uVar8 = _rand() % 8;
-      CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 8) * _DAT_005528b8,pfVar15,(intptr_t)pfVar14,fVar13,uVar29);
+      CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 8) * 0.3f,pfVar15,(intptr_t)pfVar14,fVar13,uVar29);
       pfVar15 = param_1;
       iVar12 = _rand();
       Particle_Spawn(BITMAP_SPARK + 1,&local_354,&local_334,&local_368,2,
-                   (float)(iVar12 % 0x32 + 10) * _DAT_00552594,(intptr_t)pfVar15);
+                   (float)(iVar12 % 0x32 + 10) * 0.01f,(intptr_t)pfVar15);
     }
     iVar9 = iVar9 + -1;
   } while (iVar9 != 0);
@@ -2029,16 +2029,16 @@ static bool MoveEffect_Type1271(float *& param_1, const intptr_t& __cnt, float& 
   if (__cnt < 0x10) {
     iVar9 = _rand();
     pfVar10 = param_1 + 4;
-    fVar17 = (float10)fsin((float10)(iVar9 % 1000) * (float10)_DAT_005524f8);
-    *pfVar10 = (float)(fVar17 * (float10)_DAT_00552488 + (float10)AsObject(param_1)->StartPosition[0]);
+    fVar17 = (float10)fsin((float10)(iVar9 % 1000) * (float10)0.01f);
+    *pfVar10 = (float)(fVar17 * (float10)10.0f + (float10)AsObject(param_1)->StartPosition[0]);
     iVar9 = _rand();
-    fVar17 = (float10)fsin((float10)(iVar9 % 1000) * (float10)_DAT_005524f8);
-    AsObject(param_1)->Position[1] = (float)(fVar17 * (float10)_DAT_00552488 + (float10)AsObject(param_1)->StartPosition[1]);
+    fVar17 = (float10)fsin((float10)(iVar9 % 1000) * (float10)0.01f);
+    AsObject(param_1)->Position[1] = (float)(fVar17 * (float10)10.0f + (float10)AsObject(param_1)->StartPosition[1]);
     AsObject(param_1)->Position[2] = AsObject(param_1)->Position[2] + AsObject(param_1)->Gravity;
-    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - _DAT_0055264c;
-    AsObject(param_1)->StartPosition[0] = AsObject(param_1)->StartPosition[0] - _DAT_00552488;
+    AsObject(param_1)->Gravity = AsObject(param_1)->Gravity - 2.0f;
+    AsObject(param_1)->StartPosition[0] = AsObject(param_1)->StartPosition[0] - 10.0f;
     Particle_Spawn(BITMAP_FIRE + 2,pfVar10,AsObject(param_1)->Angle,&local_368,7,1.0,0);
-    fVar13 = AsObject(param_1)->Light[0] + _DAT_005524f4;
+    fVar13 = AsObject(param_1)->Light[0] + 0.1f;
     pfVar15 = param_1 + 0x3a;
     uVar29 = 0;
     *pfVar15 = fVar13;
@@ -2049,7 +2049,7 @@ static bool MoveEffect_Type1271(float *& param_1, const intptr_t& __cnt, float& 
     pfVar14 = pfVar15;
     pfVar22 = param_1;
     uVar8 = _rand() % 4;
-    CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 4) * _DAT_005526e4,pfVar14,(intptr_t)pfVar22,fVar13,uVar29);
+    CreateSprite(BITMAP_SHINY + 1,pfVar10,(float)(int)(uVar8 + 4) * 0.2f,pfVar14,(intptr_t)pfVar22,fVar13,uVar29);
     uVar29 = 0;
     iVar9 = _rand();
     CreateSprite(BITMAP_LIGHT,pfVar10,1.0f,pfVar15,(intptr_t)param_1,(float)(iVar9 % 0x168),uVar29);
@@ -2057,14 +2057,14 @@ static bool MoveEffect_Type1271(float *& param_1, const intptr_t& __cnt, float& 
        (fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]), (float10)AsObject(param_1)->Position[2] < fVar17)) {
       local_354 = *pfVar10;
       local_350 = AsObject(param_1)->Position[1];
-      local_34c = AsObject(param_1)->Position[2] + _DAT_00552598;
+      local_34c = AsObject(param_1)->Position[2] + 50.0f;
       iVar9 = 0;
       local_368 = 1.0;
       local_364 = 1.0;
       local_360 = 1.0;
       uVar8 = _rand() % 32;
       Particle_Spawn(BITMAP_SMOKE,&local_354,AsObject(param_1)->Angle,&local_368,0xb,
-                   (float)(int)(uVar8 + 0x50) * _DAT_005529cc,iVar9);
+                   (float)(int)(uVar8 + 0x50) * 0.015f,iVar9);
     }
   }
   return false;
@@ -2091,25 +2091,25 @@ static bool MoveEffect_Skull(float *& param_1, const intptr_t& __cnt, intptr_t& 
     do {
       pfVar10 = local_35c;
       fVar13 = *(float *)&AsObject(param_1)->SubType;
-      fVar17 = (float10)(intptr_t)local_35c * (float10)_DAT_005529a0 +
-               (float10)(AsObject(param_1)->LifeTime) * (float10)_DAT_005529a4;
+      fVar17 = (float10)(intptr_t)local_35c * (float10)2.0943952f +
+               (float10)(AsObject(param_1)->LifeTime) * (float10)0.17f;
       if (fVar13 == 4.2039e-45f) {
         fVar17 = -fVar17;
       }
       if (!validOwner(owner)) return true;
       __owner_fVar4 = (intptr_t)AsObject(param_1)->Owner;   // ver nota de __owner_* arriba
-      fVar18 = (float10)fsin((float10)WorldTime * (float10)_DAT_00552998 +
-                             (float10)(intptr_t)local_35c * (float10)_DAT_0055299c);
-      local_35c = (float *)(int)(float)(fVar18 * (float10)_DAT_005524fc + (float10)_DAT_00552598);
+      fVar18 = (float10)fsin((float10)WorldTime * (float10)0.0031f +
+                             (float10)(intptr_t)local_35c * (float10)15.37f);
+      local_35c = (float *)(int)(float)(fVar18 * (float10)20.0f + (float10)50.0f);
       fVar18 = (float10)fsin(fVar17);
       local_260 = (float)(fVar18 * (float10)(intptr_t)local_35c +
                          (float10)*(float *)(__owner_fVar4 + 0x10));
       fVar17 = (float10)fcos(fVar17);
       local_25c = (float)(fVar17 * (float10)(intptr_t)local_35c +
                          (float10)*(float *)(__owner_fVar4 + 0x14));
-      fVar5 = _DAT_0055285c;
+      fVar5 = 200.0f;
       if (fVar13 == 4.2039e-45f) {
-        fVar5 = _DAT_00552994;
+        fVar5 = 250.0f;
       }
       local_258 = fVar5 * *(float *)(__owner_fVar4 + 0xc) + *(float *)(__owner_fVar4 + 0x18);
       local_1a4[0] = 0.65f;
@@ -2125,7 +2125,7 @@ static bool MoveEffect_Skull(float *& param_1, const intptr_t& __cnt, intptr_t& 
     } while ((intptr_t)local_35c < 3);
     break;
   case 2:   // 2.8026e-45f
-    local_1f4 = (float)__cnt * _DAT_005524f4;
+    local_1f4 = (float)__cnt * 0.1f;
     local_1f0 = local_1f4;
     local_1ec = local_1f4;
     CreateSprite(BITMAP_SKULL,AsObject(param_1)->Position,1.5f,&local_1f4,(intptr_t)AsObject(param_1)->Owner,0,0);
@@ -2136,19 +2136,19 @@ static bool MoveEffect_Skull(float *& param_1, const intptr_t& __cnt, intptr_t& 
 // IDA: MoveEffect (0x00466AD0), case 1382.
 static bool MoveEffect_Type1382(float *& param_1, intptr_t& iVar9, float (&local_1a4)[18], undefined4& local_314, undefined4& local_318, float& local_31c, float& local_32c, float& local_330, float& local_334, float& local_34c, float& local_350, float& local_354, float& local_360, float& local_364, float& local_368, float& local_36c, float*& pfVar10, float*& pfVar15)
 {
-  local_368 = local_36c * _DAT_00552504;
+  local_368 = local_36c * 0.5f;
   pfVar10 = param_1 + 4;
-  local_360 = local_36c * _DAT_00552530;
+  local_360 = local_36c * 0.8f;
   local_364 = local_368;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
   local_334 = AsObject(param_1)->Angle[0];
   local_330 = AsObject(param_1)->Angle[1];
-  local_32c = AsObject(param_1)->Angle[2] + _DAT_00552848;
+  local_32c = AsObject(param_1)->Angle[2] + 90.0f;
   local_368 = 1.0;
   local_364 = 1.0;
   local_360 = 1.0;
   iVar9 = _rand();
-  AsObject(param_1)->Scale = (float)(0xf - (AsObject(param_1)->LifeTime)) * _DAT_00552a10 * (float)(iVar9 % 3 + 2);
+  AsObject(param_1)->Scale = (float)(0xf - (AsObject(param_1)->LifeTime)) * 0.05f * (float)(iVar9 % 3 + 2);
   Matrix_BuildFromEuler(&local_334,local_1a4 + 6);
   local_31c = 0.0;
   local_318 = 0x41a00000;
@@ -2176,7 +2176,7 @@ static bool MoveEffect_Type1382(float *& param_1, intptr_t& iVar9, float (&local
 // IDA: MoveEffect (0x00466AD0), case BITMAP_ENERGY.
 static bool MoveEffect_Energy(float *& param_1, const intptr_t& __cnt, float& fVar13, float& fVar4, float& fVar5, float& fVar6, float& local_360, float& local_364, float& local_368, float*& pfVar10)
 {
-  fVar13 = (float)__cnt * _DAT_005526e4;
+  fVar13 = (float)__cnt * 0.2f;
   fVar4 = fVar13;
   fVar5 = fVar13;
   fVar6 = fVar13;
@@ -2196,8 +2196,8 @@ static bool MoveEffect_Energy(float *& param_1, const intptr_t& __cnt, float& fV
   pfVar10 = param_1 + 4;
   Particle_Spawn(BITMAP_ENERGY,pfVar10,AsObject(param_1)->Angle,&local_368,0,1.0,0);
   Particle_Spawn(BITMAP_SPARK + 1,pfVar10,AsObject(param_1)->Angle,&local_368,0,4.0,0);
-  local_368 = fVar13 * _DAT_005526e4;
-  local_364 = fVar13 * _DAT_005528b4;
+  local_368 = fVar13 * 0.2f;
+  local_364 = fVar13 * 0.4f;
   local_360 = fVar13;
   AddTerrainLight(*pfVar10,AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
   Effect_SpawnProximityHit((intptr_t)param_1);
@@ -2207,9 +2207,9 @@ static bool MoveEffect_Energy(float *& param_1, const intptr_t& __cnt, float& fV
 // IDA: MoveEffect (0x00466AD0), case 1191.
 static bool MoveEffect_Type1191(float *& param_1, const intptr_t& __cnt, intptr_t& iVar9, float& local_360, float& local_364, float& local_368)
 {
-  local_360 = (float)__cnt * _DAT_005526e4;
-  local_368 = local_360 * _DAT_005526e4;
-  local_364 = local_360 * _DAT_00552504;
+  local_360 = (float)__cnt * 0.2f;
+  local_368 = local_360 * 0.2f;
+  local_364 = local_360 * 0.5f;
   iVar9 = 2;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,iVar9, (float*)DAT_081cb608);
   return false;
@@ -2229,9 +2229,9 @@ static CaseExit MoveEffect_Type1196(float *& param_1, float& local_360, float& l
   local_364 = 1.0;
   local_360 = 1.0;
   Particle_Spawn(BITMAP_FIRE + 1,AsObject(param_1)->Position,AsObject(param_1)->Angle,&local_368,1,1.0,0);
-  local_364 = local_36c * _DAT_00552534;
+  local_364 = local_36c * 0.6f;
   local_368 = local_36c;
-  local_360 = local_36c * _DAT_005528b8;
+  local_360 = local_36c * 0.3f;
   AddTerrainLight(AsObject(param_1)->Position[0],AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
   return CaseExit::Next;
 }
@@ -2433,11 +2433,11 @@ void MoveEffect(float *param_1, int param_2)
     // `v356 = *(float *)&v4` es solo la copia de los BITS.
     const intptr_t __cnt = AsObject(param_1)->LifeTime;
     fVar13 = *(float *)&AsObject(param_1)->LifeTime;
-    local_36c = (float)(int)(intptr_t)local_35c * _DAT_005524f4;
+    local_36c = (float)(int)(intptr_t)local_35c * 0.1f;
     if (__cnt < 5) {
       local_35c = (float *)(5 - __cnt);
-      local_36c = local_36c - (float)(int)(intptr_t)local_35c * _DAT_005526e4;
-      if (local_36c < _DAT_00552580) {
+      local_36c = local_36c - (float)(int)(intptr_t)local_35c * 0.2f;
+      if (local_36c < 0.0f) {
         local_36c = 0.0;
       }
     }
@@ -2476,7 +2476,7 @@ void MoveEffect(float *param_1, int param_2)
             Particle_Spawn(BITMAP_FLAME,&local_354,AsObject(param_1)->Angle,&local_368,0,1.0,0);
             iVar9 = iVar9 + -1;
           } while (iVar9 != 0);
-          local_364 = local_36c * _DAT_005528b4;
+          local_364 = local_36c * 0.4f;
           local_368 = local_36c;
           local_360 = 0.0;
           AddTerrainLight(*pfVar10,AsObject(param_1)->Position[1], (float*)&local_368,3, (float*)DAT_081cb608);
@@ -2490,12 +2490,12 @@ void MoveEffect(float *param_1, int param_2)
             local_294 = AsObject(param_1)->Position[0];
             local_290 = AsObject(param_1)->Position[1];
             local_28c = AsObject(param_1)->Position[2];
-            local_368 = (float)__cnt * _DAT_005524f4;
+            local_368 = (float)__cnt * 0.1f;
             iVar9 = 0;
             local_364 = local_368;
             local_360 = local_368;
             do {
-              local_28c = local_28c + _DAT_005529a8;
+              local_28c = local_28c + 24.0f;
               if (iVar9 == 0) {
                 fVar13 = 12.0;
               }
@@ -2512,9 +2512,9 @@ void MoveEffect(float *param_1, int param_2)
                 AsObject(param_1)->Position[0] = AsObject(param_1)->Direction[0] + AsObject(param_1)->Position[0];
                 AsObject(param_1)->Position[1] = AsObject(param_1)->Direction[1] + AsObject(param_1)->Position[1];
                 AsObject(param_1)->Position[2] = AsObject(param_1)->Direction[2] + AsObject(param_1)->Position[2];
-                AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] - _DAT_005524f8;
+                AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] - 0.01f;
                 Particle_Spawn(BITMAP_LIGHT,AsObject(param_1)->Position,AsObject(param_1)->Angle,AsObject(param_1)->Light,1,AsObject(param_1)->Scale,0);
-                if (AsObject(param_1)->Direction[2] < _DAT_005529ac) {
+                if (AsObject(param_1)->Direction[2] < (-2.0f)) {
                   *(float *)&AsObject(param_1)->LifeTime = 0.0;
                 }
               }
@@ -2563,7 +2563,7 @@ void MoveEffect(float *param_1, int param_2)
               if ((float10)AsObject(param_1)->Position[2] < fVar17) {
                 local_354 = *pfVar10;
                 local_350 = AsObject(param_1)->Position[1];
-                local_34c = AsObject(param_1)->Position[2] + _DAT_00552878;
+                local_34c = AsObject(param_1)->Position[2] + 80.0f;
                 Particle_Spawn(BITMAP_EXPLOTION,&local_354,AsObject(param_1)->Angle,&local_368,0,1.0,0);
                 iVar9 = 6;
                 do {
@@ -2581,16 +2581,16 @@ void MoveEffect(float *param_1, int param_2)
                 } while (iVar9 != 0);
                 *(undefined1 *)param_1 = 0;
               }
-              local_368 = local_36c * _DAT_005526e4;
+              local_368 = local_36c * 0.2f;
               local_360 = local_36c;
-              local_364 = local_36c * _DAT_005528b4;
+              local_364 = local_36c * 0.4f;
               AddTerrainLight(*pfVar10,AsObject(param_1)->Position[1], (float*)&local_368,2, (float*)DAT_081cb608);
             }
           }
           else if ((iVar9 == 0x490) && (*(int*)&fVar13 == 30)) {
             local_354 = AsObject(param_1)->Position[0];
             local_350 = AsObject(param_1)->Position[1];
-            local_34c = AsObject(param_1)->Position[2] + _DAT_005524f0;
+            local_34c = AsObject(param_1)->Position[2] + 100.0f;
             Joint_Create(0x4ee,&local_354,&local_354,AsObject(param_1)->HeadAngle,0,(intptr_t)AsObject(param_1)->Owner,150.0,
                          AsObject(param_1)->PKKey,AsObject(param_1)->Skill);
           }
@@ -2653,7 +2653,7 @@ void MoveEffect(float *param_1, int param_2)
             fVar5 = AsObject(pcVar11)->Position[2];
             AsObject(param_1)->Position[0] = AsObject(pcVar11)->Position[0];
             AsObject(param_1)->Position[1] = AsObject(pcVar11)->Position[1];
-            AsObject(param_1)->Position[2] = fVar4 + fVar5 + _DAT_00552878;
+            AsObject(param_1)->Position[2] = fVar4 + fVar5 + 80.0f;
             Particle_Spawn(0x596,AsObject(param_1)->Position,AsObject(param_1)->Angle,AsObject(param_1)->Light,(0x1e - __cnt) / 2,1.0,0);
           }
         }

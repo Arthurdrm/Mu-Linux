@@ -37,8 +37,8 @@ void __cdecl RequestTerrainLight(float param_1,float param_2,float *param_3)
   longlong lVar11;
 
   if ((SceneFlag == 5) && (DAT_0839bc84 != '\0')) {
-    fVar3 = param_1 * _DAT_00552594;
-    fVar2 = param_2 * _DAT_00552594;
+    fVar3 = param_1 * 0.01f;
+    fVar2 = param_2 * 0.01f;
     lVar11 = (longlong)fVar3;   // IDA RequestTerrainLight: v3 = (std::int64_t)xfa  (xf*0.01)
     iVar4 = (int)lVar11;
     lVar11 = (longlong)fVar2;   // IDA RequestTerrainLight: v4 = (std::int64_t)yfa  (yf*0.01)
@@ -108,8 +108,8 @@ void __cdecl Entity_GetLightScale(uintptr_t param_1,uintptr_t param_2)
   if (object->Type == 0xe1)
     memcpy(&ownerFlags, reinterpret_cast<const BYTE*>(object->Owner) + 0x78, sizeof(ownerFlags));
   if ((object->Type == 0xe1) && ((ownerFlags & 0x200) == 0x200)) {
-    fVar1 = (float10)fsin((float10)WorldTime * (float10)_DAT_00552a08);
-    fVar1 = (fVar1 + (float10)_DAT_0055256c) * (float10)_DAT_00552504;
+    fVar1 = (float10)fsin((float10)WorldTime * (float10)0.003f);
+    fVar1 = (fVar1 + (float10)1.0f) * (float10)0.5f;
     model->BodyLight[0] = (float)fVar1;
     model->BodyLight[1] = (float)fVar1;
     model->BodyLight[2] = (float)fVar1;
@@ -155,9 +155,9 @@ void __cdecl Entity_GetLightScale(uintptr_t param_1,uintptr_t param_2)
       rgb[0] == 0.0f && rgb[1] == 0.0f && rgb[2] == 0.0f) {
     rgb[0] = rgb[1] = rgb[2] = 1.0f;
   }
-  local_8 = local_8 * _DAT_005524f4;
-  local_4 = local_4 * _DAT_005524f4;
-  model->BodyLight[0] = local_c * _DAT_005524f4 + object->Light[0];
+  local_8 = local_8 * 0.1f;
+  local_4 = local_4 * 0.1f;
+  model->BodyLight[0] = local_c * 0.1f + object->Light[0];
   model->BodyLight[1] = local_8 + object->Light[1];
   model->BodyLight[2] = local_4 + object->Light[2];
   return;

@@ -47,7 +47,7 @@ char* __stdcall PickObject_Mouse(void) {
                    SceneObjects::Contains(obj)) {
                 // Check: object alive, visible, and alpha above threshold
                 if ((*(char *)&AsObject(obj)->Live != '\0') && (*(char *)&AsObject(obj)->Visible != '\0') &&
-                    (_DAT_005524f8 <= AsObject(obj)->Alpha))
+                    (0.01f <= AsObject(obj)->Alpha))
                 {
                     // Get model from entity type
                     short modelType = AsObject(obj)->Type;

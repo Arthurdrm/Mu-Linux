@@ -250,6 +250,62 @@ static void MoveJoint_GenericTail(unsigned char *o)
     }
 }
 
+// Cola común de MoveJoint (IDA 0x00470030: LABEL_182 y LABEL_487).  reanchor
+// es false para el camino de los subtipos 7/11 que saltea LABEL_182.
+static char* MoveJoint_Finish(undefined1 *param_1, uint param_2, float *local_30, bool reanchor)
+{
+    int iVar16;
+    // Segment tick — excluded for types 0x4e6+submode6, 0x4ee, 0x4e7(lifetime>=10)
+    // IDA 00470030 LABEL_182 (comun a TODOS los tipos, justo antes del
+    // decremento de vida): los joints de SubType 7 re-anclan su Position a la
+    // TargetPosition guardada en o+68/72/76.
+    //
+    //     if ( *(_DWORD *)(o + 8) == 7 ) {
+    //         v109 = *(_DWORD *)(o + 72);  v110 = *(_DWORD *)(o + 76);
+    //         *v2 = *(float *)(o + 68);            // v2 = (float *)(o + 16)
+    //         *(_DWORD *)(o + 20) = v109;  *(_DWORD *)(o + 24) = v110;
+    //     }
+    //
+    // Faltaba entero. La cadena de 13 joints 1254 de Queen Rainer
+    // (MoveCharacterVisual case 0x141) se crea con SubType 7, asi que sus
+    // segmentos nacian y despues no seguian al hueso: las lineas quedaban
+    // sueltas en el aire en vez de acompanar al monstruo.
+    if (reanchor && AsJoint(param_1)->SubType == 7) {
+        AsJoint(param_1)->Position[0] = AsJoint(param_1)->TargetPosition[0];
+        AsJoint(param_1)->Position[1] = AsJoint(param_1)->TargetPosition[1];
+        AsJoint(param_1)->Position[2] = AsJoint(param_1)->TargetPosition[2];
+    }
+
+    // Orden de IDA en el epilogo:
+    //     LABEL_182 (re-ancla SubType 7)  ->  LABEL_487 (scroll de segmentos)
+    // El bloque de los subtipos 7/11 llama con reanchor = false: salta
+    // LABEL_182 pero SI pasa por LABEL_487; si no, esos joints no acumulan
+    // segmentos (estela de la flecha del arco -- cuatro 1249/sub11 que crea
+    // CreateEffect case 243 -- y la cadena de Queen Rainer).
+    iVar16 = AsJoint(param_1)->Type;
+    if (((iVar16 != 0x4e6) || (AsJoint(param_1)->SubType != 6)) &&
+        ((iVar16 != 0x4ee) &&
+         ((iVar16 != 0x4e7) || (10 < AsJoint(param_1)->LifeTime))))
+    {
+        Joint_SegmentTick((intptr_t)param_1, local_30);
+    }
+
+    // Decrement lifetime counter
+    const int remainingLife = AsJoint(param_1)->LifeTime - 1;
+    AsJoint(param_1)->LifeTime = remainingLife;
+    if (remainingLife >= 0) {
+        const int type = AsJoint(param_1)->Type;
+        const int subtype = AsJoint(param_1)->SubType;
+        if ((remainingLife % 12) != 0 && (type == 1249 || type == 1277) &&
+            (subtype == 4 || subtype == 12)) {
+            return MoveJoint(param_1, param_2);
+        }
+        return (char *)(intptr_t)remainingLife;
+    }
+    *param_1 = 0;
+    return (char *)(intptr_t)remainingLife;
+}
+
 char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
 {
     float   fVar2;
@@ -345,7 +401,7 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
             Particle_Spawn(BITMAP_EXPLOTION, pfVar15, AsJoint(param_1)->Angle,
                          AsJoint(param_1)->Light, 0, 1.0f, 0);
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4e2: Chain/rope follower ──────────────────────────────
@@ -395,7 +451,7 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
                 AsJoint(param_1)->Light[2] *= 2.0f / 3.0f;
             }
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x498: Quick fade-out ────────────────────────────────────
@@ -407,7 +463,7 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
             AsJoint(param_1)->Direction[2]      = fVar28;
             AsJoint(param_1)->Position[2]       = fVar28 + AsJoint(param_1)->Position[2];
         }
-        if (4 < AsJoint(param_1)->LifeTime) goto switchD_caseD_4ef;
+        if (4 < AsJoint(param_1)->LifeTime) return MoveJoint_Finish(param_1, param_2, local_30, true);
         AsJoint(param_1)->Light[0] *= _DAT_00552a90;
         AsJoint(param_1)->Light[1] *= _DAT_00552a90;
         {
@@ -416,7 +472,7 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
 LAB_00473578_498:
             AsJoint(param_1)->Light[2] = fVar28;
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x10a: Wispy follower ────────────────────────────────────
@@ -454,7 +510,7 @@ LAB_00473578_498:
                 pfVar15[1] = t * local_d8[1] + inv_t * local_a8[1];
                 pfVar15[2] = t * local_d8[2] + inv_t * local_a8[2];
             }
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
 
         if (iVar16 == 3) {
@@ -487,7 +543,7 @@ LAB_004702ce:
             fVar24 = (double)_DAT_00552540;
             AsJoint(param_1)->Direction[0] = (float)(fVar22 * fVar24);
             *pfVar15 = (float)(fVar22 * fVar24 + (double)*pfVar15);
-            if (iVar16 == 0) goto switchD_caseD_4ef;
+            if (iVar16 == 0) return MoveJoint_Finish(param_1, param_2, local_30, true);
             {
                 int hp_val = AsObject(iVar16)->LifeTime;
                 float fVar28;
@@ -502,7 +558,7 @@ LAB_004702ce:
                 }
                 AsJoint(param_1)->Scale = fVar28;
             }
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
 
         // Modes 0, 1, 4: orbit / spiral with trig
@@ -510,7 +566,7 @@ LAB_004702ce:
 LAB_0047036e:
             *(undefined4 *)&AsJoint(param_1)->LifeTime = 0;
             *param_1 = 0;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (iVar16 == 4) {
             if (((*(unsigned char *)((intptr_t)AsJoint(param_1)->Target + 0x78)) & 8) != 8)
@@ -643,7 +699,7 @@ LAB_0047036e:
                 local_a8[1] * _DAT_00552878 + AsJoint(param_1)->TargetPosition[1];
             AsJoint(param_1)->Position[2] =
                 local_a8[3] * _DAT_00552908 + AsJoint(param_1)->TargetPosition[2] + _DAT_005528fc;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (iVar16 == 1) {
             AsJoint(param_1)->Light[0] = 0.2f;  // 0.2f
@@ -658,9 +714,9 @@ LAB_0047036e:
                 float fVar28 = sin_s1 * _DAT_005526e4 + _DAT_005528b4;
                 AsJoint(param_1)->Light[2] = fVar28;
             }
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x48e → redirect to 0x4ed ───────────────────────────────
@@ -677,7 +733,7 @@ LAB_0047036e:
             float light_4e5_1[3] = { 0.8f, 0.4f, 1.0f };
             CreateSprite(BITMAP_LIGHT, pfVar15, 4.0f, light_4e5_1,
                           (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (subtype_4e5 == 3) {
             float orbit_4e5_3[3];
@@ -690,7 +746,7 @@ LAB_0047036e:
                           (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
             CreateSprite(BITMAP_SHINY + 1, pfVar15, 1.5f, light_4e5_3,
                           (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (subtype_4e5 == 2) {
             const int lifetime_4e5_2 = AsJoint(param_1)->LifeTime;
@@ -721,7 +777,7 @@ LAB_0047036e:
             CreateSprite(BITMAP_LIGHT, pfVar15, scale_4e5_2, light_4e5_2,
                           (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
             AsJoint(param_1)->Velocity += 5.0f;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (subtype_4e5 == 0 || subtype_4e5 == 5) {
             if (*(int *)&AsJoint(param_1)->Scale == 1117782016) {
@@ -768,11 +824,11 @@ LAB_0047036e:
             const float darkness_4e5 = (float)(rand() % 4 + 4) * -0.01f;
             float light_4e5[3] = { darkness_4e5, darkness_4e5, darkness_4e5 };
             AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light_4e5, 4, (float*)&DAT_081cb608[0]);
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
 
         // No default subtype branch exists in IDA for type 1253.
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // El tipo 1254 NO tiene bloque propio en IDA MoveJoint (0x00470030) -- su
@@ -783,7 +839,7 @@ LAB_0047036e:
     // (L785-791).
     if (iVar16 == 0x4e6) {
         MoveJoint_GenericTail(param_1);   // IDA: 1254 no tiene case -> cae en la cola generica
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4e7: Scatter effect ────────────────────────────────────
@@ -826,7 +882,7 @@ LAB_0047036e:
         } else {
             AsJoint(param_1)->Light[2] -= 10.12f;
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4e9: Glow ring ────────────────────────────────────────
@@ -840,7 +896,7 @@ LAB_0047036e:
             AsJoint(param_1)->Light[1] = fade_4e9;
             AsJoint(param_1)->Light[2] = fade_4e9;
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4ea: Crawling creature ────────────────────────────────
@@ -897,7 +953,7 @@ LAB_0047036e:
                 Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 3, 0.05f, 0);
             else
                 Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, AsJoint(param_1)->Light, 0, 1.0f, 0);
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (subtype_4ea == 2 || subtype_4ea == 3 || subtype_4ea == 4 || subtype_4ea == 5 || subtype_4ea == 8) {
             const intptr_t owner_4ea = (intptr_t)AsJoint(param_1)->Target;
@@ -922,7 +978,7 @@ LAB_0047036e:
                 Particle_Spawn(BITMAP_LIGHTNING + 1, pfVar15, AsJoint(param_1)->Angle, light_4ea, 0, 1.0f, 0);
             }
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4eb: Balloon/fireball ─────────────────────────────────
@@ -940,14 +996,14 @@ LAB_0047036e:
             AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
             AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
             AsJoint(param_1)->Light[2] = fade_4eb;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (subtype_4eb == 5) {
             const float fade_4eb = (float)(12 - lifetime_4eb) * 0.1f;
             AsJoint(param_1)->Light[0] = fade_4eb * 0.4f;
             AsJoint(param_1)->Light[1] = fade_4eb * 0.6f;
             AsJoint(param_1)->Light[2] = fade_4eb;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
 
         AsJoint(param_1)->Velocity += (subtype_4eb == 6 || subtype_4eb == 7) ? 2.0f : 4.0f;
@@ -986,7 +1042,7 @@ LAB_0047036e:
             CreateSprite(BITMAP_SHINY + 1, target_4eb, (float)(rand() % 8 + 8) * 0.2f,
                           AsJoint(param_1)->Light, (intptr_t)AsJoint(param_1)->Target, (float)(rand() % 360), 0);
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4ec: Seeker ───────────────────────────────────────────
@@ -1013,7 +1069,7 @@ LAB_0047036e:
         const float terrainLight = (float)(rand() % 4 + 4) * -0.01f;
         float light[3] = { terrainLight, terrainLight, terrainLight };
         AddTerrainLight(*pfVar15, AsJoint(param_1)->Position[1], (float*)light, 4, (float*)&DAT_081cb608[0]);
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4ed: Firefly random wander ────────────────────────────
@@ -1077,7 +1133,7 @@ LAB_0047036e:
             AsJoint(param_1)->Position[1] += rotated[1];
             AsJoint(param_1)->Position[2] += rotated[2];
         }
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4ee: Cannon/torpedo — 8-iter chain (no extra tick) ────
@@ -1123,7 +1179,7 @@ LAB_0047036e:
         AsJoint(param_1)->Light[0] = fade;
         AsJoint(param_1)->Light[1] = fade;
         AsJoint(param_1)->Light[2] = fade;
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ── Type 0x4fd: Orbital ring ─────────────────────────────────────
@@ -1168,7 +1224,7 @@ switchD_caseD_4fd:
             AsJoint(param_1)->Position[2] = (jsub != 0)
                 ? (AsJoint(param_1)->Position[2] - rise)
                 : (rise + AsJoint(param_1)->Position[2]);
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (jsub == 14) {
             // 00470030 LABEL_301/case 14.
@@ -1191,16 +1247,16 @@ switchD_caseD_4fd:
                 AsJoint(param_1)->SubType = 1;
                 AsJoint(param_1)->LifeTime = (life > 10) ? 10 : life;
             }
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (jsub == 2 || jsub == 13) {
-            if (AsJoint(param_1)->LifeTime > 25) goto switchD_caseD_4ef;
+            if (AsJoint(param_1)->LifeTime > 25) return MoveJoint_Finish(param_1, param_2, local_30, true);
             float step = AsJoint(param_1)->Direction[2] + (jsub == 2 ? 5.0f : 1.0f);
             *jposX                     = tgtX;
             AsJoint(param_1)->Position[1] = tgtY;
             AsJoint(param_1)->Direction[2] = step;
             AsJoint(param_1)->Position[2] = step + AsJoint(param_1)->Position[2];
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (jsub == 5) {
             float step = AsJoint(param_1)->Direction[2] - 60.0f;
@@ -1209,7 +1265,7 @@ switchD_caseD_4fd:
             AsJoint(param_1)->Direction[2] = step;
             AsJoint(param_1)->Position[2]  = step + AsJoint(param_1)->Position[2];
             AsJoint(param_1)->Scale  = (float)(_rand() % 4) + 6.0f;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (jsub == 4 || jsub == 6 || jsub == 12) {
             // 00470030 LABEL_301 subtipos 4, 6 y 12: los tres convergen en
@@ -1246,7 +1302,7 @@ switchD_caseD_4fd:
             *jposX = fsin(heading) * lateral + AsJoint(param_1)->TargetPosition[0];
             AsJoint(param_1)->Position[1] = fcos(heading) * lateral + AsJoint(param_1)->TargetPosition[1];
             AsJoint(param_1)->Position[2] = vertical + AsJoint(param_1)->TargetPosition[2];
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         // Los subtipos 8 y 9 usan una matriz APARTE (`v304`, declarada en L307), no
         // `local_30`, que es el `in2` de IDA: la matriz que arma el prologo con
@@ -1266,7 +1322,7 @@ switchD_caseD_4fd:
             AsJoint(param_1)->Position[2] = rotated[2] + AsJoint(param_1)->StartPosition[2];
             Matrix_BuildFromEuler(AsJoint(param_1)->Angle, jointMatrix_v304);
             AsJoint(param_1)->TargetPosition[2] += 10.0f;
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (jsub == 9) {
             // 00470030 LABEL_301/case 9.
@@ -1278,10 +1334,10 @@ switchD_caseD_4fd:
                 AsJoint(param_1)->Position[2] += AsJoint(param_1)->StartPosition[2];
                 Joint_SegmentTick((intptr_t)param_1, jointMatrix_v304);
             }
-            goto switchD_caseD_4ef;
+            return MoveJoint_Finish(param_1, param_2, local_30, true);
         }
         if (jsub == 3) {
-            goto switchD_caseD_4ef;   // IDA: case 3 → LABEL_447 (sin movimiento)
+            return MoveJoint_Finish(param_1, param_2, local_30, true);   // IDA: case 3 → LABEL_447 (sin movimiento)
         }
 
         // Subtipos 7 y 11 (IDA 0x00470030 L1302-1682).
@@ -1413,7 +1469,7 @@ switchD_caseD_4fd:
                     Particle_Spawn(BITMAP_EXPLOTION, ppos, jzero, jwhite, 1, 0.60000002f, 0);
                 }
             }
-            goto _skipLabel182;   // IDA: LABEL_447 -> LABEL_487, saltea LABEL_182
+            return MoveJoint_Finish(param_1, param_2, local_30, false);   // IDA: LABEL_447 -> LABEL_487, saltea LABEL_182
         }
     }
 
@@ -1446,64 +1502,14 @@ switchD_caseD_4fd:
         AsJoint(param_1)->Position[0] = fsin(heading) * lateral + AsJoint(param_1)->TargetPosition[0];
         AsJoint(param_1)->Position[1] = fcos(heading) * lateral + AsJoint(param_1)->TargetPosition[1];
         AsJoint(param_1)->Position[2] = vertical + AsJoint(param_1)->TargetPosition[2];
-        goto switchD_caseD_4ef;
+        return MoveJoint_Finish(param_1, param_2, local_30, true);
     }
 
     // ─────────────────────────────────────────────────────────────────
     // COMMON EPILOGUE
     // ─────────────────────────────────────────────────────────────────
 
-switchD_caseD_4ef:
-    // Segment tick — excluded for types 0x4e6+submode6, 0x4ee, 0x4e7(lifetime>=10)
-    // IDA 00470030 LABEL_182 (comun a TODOS los tipos, justo antes del
-    // decremento de vida): los joints de SubType 7 re-anclan su Position a la
-    // TargetPosition guardada en o+68/72/76.
-    //
-    //     if ( *(_DWORD *)(o + 8) == 7 ) {
-    //         v109 = *(_DWORD *)(o + 72);  v110 = *(_DWORD *)(o + 76);
-    //         *v2 = *(float *)(o + 68);            // v2 = (float *)(o + 16)
-    //         *(_DWORD *)(o + 20) = v109;  *(_DWORD *)(o + 24) = v110;
-    //     }
-    //
-    // Faltaba entero. La cadena de 13 joints 1254 de Queen Rainer
-    // (MoveCharacterVisual case 0x141) se crea con SubType 7, asi que sus
-    // segmentos nacian y despues no seguian al hueso: las lineas quedaban
-    // sueltas en el aire en vez de acompanar al monstruo.
-    if (AsJoint(param_1)->SubType == 7) {
-        AsJoint(param_1)->Position[0] = AsJoint(param_1)->TargetPosition[0];
-        AsJoint(param_1)->Position[1] = AsJoint(param_1)->TargetPosition[1];
-        AsJoint(param_1)->Position[2] = AsJoint(param_1)->TargetPosition[2];
-    }
-_skipLabel182:;
-
-    // Orden de IDA en el epilogo:
-    //     LABEL_182 (re-ancla SubType 7)  ->  LABEL_487 (scroll de segmentos)
-    // El `goto _skipLabel182` que usa el bloque de los subtipos 7/11 salta
-    // LABEL_182 pero SI pasa por LABEL_487; si no, esos joints no acumulan
-    // segmentos (estela de la flecha del arco -- cuatro 1249/sub11 que crea
-    // CreateEffect case 243 -- y la cadena de Queen Rainer).
-    iVar16 = AsJoint(param_1)->Type;
-    if (((iVar16 != 0x4e6) || (AsJoint(param_1)->SubType != 6)) &&
-        ((iVar16 != 0x4ee) &&
-         ((iVar16 != 0x4e7) || (10 < AsJoint(param_1)->LifeTime))))
-    {
-        Joint_SegmentTick((intptr_t)param_1, local_30);
-    }
-
-    // Decrement lifetime counter
-    const int remainingLife = AsJoint(param_1)->LifeTime - 1;
-    AsJoint(param_1)->LifeTime = remainingLife;
-    if (remainingLife >= 0) {
-        const int type = AsJoint(param_1)->Type;
-        const int subtype = AsJoint(param_1)->SubType;
-        if ((remainingLife % 12) != 0 && (type == 1249 || type == 1277) &&
-            (subtype == 4 || subtype == 12)) {
-            return MoveJoint(param_1, param_2);
-        }
-        return (char *)(intptr_t)remainingLife;
-    }
-    *param_1 = 0;
-    return (char *)(intptr_t)remainingLife;
+    return MoveJoint_Finish(param_1, param_2, local_30, true);
 }
 
 // end of MoveJoint

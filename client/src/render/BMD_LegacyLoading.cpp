@@ -182,9 +182,9 @@ void __cdecl AccessModel(int param_1, const char *param_2, const char *param_3, 
 
     char local_40[64];
     if (param_4 == -1) {
-        crt_sprintf(local_40, s__s_bmd_0055a7f8, param_3);
+        crt_sprintf(local_40, "%s.bmd", param_3);
     } else {
-        const char *pcVar1 = (param_4 < 10) ? s__s0_d_bmd_0055a7ec : s__s_d_bmd_0055a7e0;
+        const char *pcVar1 = (param_4 < 10) ? "%s0%d.bmd" : "%s%d.bmd";
         crt_sprintf(local_40, pcVar1, param_3, param_4);
     }
     BMD* model = AsModel(Models) + param_1;

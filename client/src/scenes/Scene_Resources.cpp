@@ -17,7 +17,7 @@ std::vector<int> selectBackdropTextures;
 
 const char* SelectBackdropPath()
 {
-  return gWindow.IsWide() ? "Data\\Logo\\Wide\\" : s_Data_Logo__005606a0;
+  return gWindow.IsWide() ? "Data\\Logo\\Wide\\" : "Data\\Logo\\";
 }
 }
 
@@ -41,7 +41,7 @@ void Scene_RefreshCharSelectBackdrop()
   MeshDraw::Release();
   BMD__Release(model);
   AccessModel(0xa4,SelectBackdropPath(),(const char*)&DAT_005606ac,5);
-  OpenTexture(0xa4,s_Logo__00560698,0x2601,'\x01');
+  OpenTexture(0xa4,"Logo\\",0x2601,'\x01');
   selectBackdropWide = gWindow.IsWide();
 }
 
@@ -57,27 +57,27 @@ void Scene_LoadAccountResources(void)
   int iVar1;
   int iVar2;
 
-  OpenTGA(s_Logo_0Account_new_tga_005607a8,0xc,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_0On_Botton_jpg_00560794,0xd,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_0On_Botton2_jpg_0056077c,0xe,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_0Text_Box_jpg_00560768,0xf,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_0New_Account01_tga_00560750,0x10,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_0New_Account02_tga_00560738,0x11,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_0Box_jpg_00560728,0x12,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Interface_Progress_Back_jpg_0056070c,0x13,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Interface_Progress_jpg_005606f4,0x14,0x2600,0x2900,0,'\x01');
-  AccessModel(0x3c,s_Data_Object1__0055f360,(const char*)&DAT_0055e834,1);
+  OpenTGA("Logo\\0Account_new.tga",0xc,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\0On_Botton.jpg",0xd,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\0On_Botton2.jpg",0xe,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\0Text_Box.jpg",0xf,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\0New_Account01.tga",0x10,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\0New_Account02.tga",0x11,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\0Box.jpg",0x12,0x2600,0x2900,0,'\x01');
+  OpenJPG("Interface\\Progress_Back.jpg",0x13,0x2600,0x2900,0,'\x01');
+  OpenJPG("Interface\\Progress.jpg",0x14,0x2600,0x2900,0,'\x01');
+  AccessModel(0x3c,"Data\\Object1\\",(const char*)&DAT_0055e834,1);
   iVar2 = 0xa0;
   do {
-    AccessModel(iVar2,s_Data_Logo__005606a0,(const char*)&DAT_005606ac,iVar2 + -0x9f);
+    AccessModel(iVar2,"Data\\Logo\\",(const char*)&DAT_005606ac,iVar2 + -0x9f);
     iVar1 = iVar2 + -0x9f;
     iVar2 = iVar2 + 1;
   } while (iVar1 < 4);
   SetMaxTextures(0x56a);
-  OpenTexture(0x3c,s_Object1__0055f354,0x2601,'\x01');
+  OpenTexture(0x3c,"Object1\\",0x2601,'\x01');
   iVar2 = 0;
   do {
-    OpenTexture(iVar2 + 0xa0,s_Logo__00560698,0x2601,'\x01');
+    OpenTexture(iVar2 + 0xa0,"Logo\\",0x2601,'\x01');
     iVar2 = iVar2 + 1;
   } while (iVar2 < 4);
   return;
@@ -95,39 +95,39 @@ void Scene_LoadCharSelectResources(void)
   int iVar1;
   intptr_t iVar2;
 
-  OpenTGA(s_Logo_Interface01_tga_00560a4c,0xc,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_Interface02_tga_00560a34,0xd,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_Interface03_tga_00560a1c,0xe,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_Interface04_tga_00560a04,0xf,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_New_Character201_tga_005609e8,0x10,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character202_jpg_005609cc,0x11,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_Delete01_tga_005609b8,0x12,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_Delete02_jpg_005609a4,0x13,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_Ok01_tga_00560994,0x14,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_Ok02_jpg_00560984,0x15,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_New_Character01_tga_00560968,0x16,0x2600,0x2900,0,'\x01');
-  OpenTGA(s_Logo_New_Character02_tga_0056094c,0x17,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character_Cancel_jpg_0056092c,0x18,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character_Ok_jpg_00560910,0x19,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character001_jpg_005608f4,0x1a,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character002_jpg_005608d8,0x1b,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character003_jpg_005608bc,0x1c,0x2600,0x2900,0,'\x01');
-  OpenJPG(s_Logo_New_Character004_jpg_005608a0,0x1d,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\Interface01.tga",0xc,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\Interface02.tga",0xd,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\Interface03.tga",0xe,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\Interface04.tga",0xf,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\New_Character201.tga",0x10,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character202.jpg",0x11,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\Delete01.tga",0x12,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\Delete02.jpg",0x13,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\Ok01.tga",0x14,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\Ok02.jpg",0x15,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\New_Character01.tga",0x16,0x2600,0x2900,0,'\x01');
+  OpenTGA("Logo\\New_Character02.tga",0x17,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character_Cancel.jpg",0x18,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character_Ok.jpg",0x19,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character001.jpg",0x1a,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character002.jpg",0x1b,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character003.jpg",0x1c,0x2600,0x2900,0,'\x01');
+  OpenJPG("Logo\\New_Character004.jpg",0x1d,0x2600,0x2900,0,'\x01');
   // El diorama clásico termina en los bordes del encuadre 4:3. La variante
   // amplia agrega suelo y bosque lateral para el viewport real del mundo.
   AccessModel(0xa4,SelectBackdropPath(),(const char*)&DAT_005606ac,5);
   selectBackdropWide = gWindow.IsWide();
   iVar2 = 0xaa;
   do {
-    AccessModel(iVar2,s_Data_Logo__005606a0,(const char*)&DAT_005607c0,iVar2 + -0xa9);
+    AccessModel(iVar2,"Data\\Logo\\",(const char*)&DAT_005607c0,iVar2 + -0xa9);
     iVar1 = iVar2 + -0xa9;
     iVar2 = iVar2 + 1;
   } while (iVar1 < 4);
   SetMaxTextures(0x56a);
-  OpenTexture(0xa4,s_Logo__00560698,0x2601,'\x01');
+  OpenTexture(0xa4,"Logo\\",0x2601,'\x01');
   iVar2 = 0;
   do {
-    OpenTexture(iVar2 + 0xaa,s_Logo__00560698,0x2600,'\x01');
+    OpenTexture(iVar2 + 0xaa,"Logo\\",0x2600,'\x01');
     iVar2 = iVar2 + 1;
   } while (iVar2 < 4);
   iVar2 = 0;

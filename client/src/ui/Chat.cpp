@@ -545,13 +545,13 @@ char Chat_ValidateInputCommand(void)
         if ((char)uVar2 == '\0') {
           uVar2 = FindTextA((char *)InputText,(char *)&DAT_00561750,'\0');
           if ((char)uVar2 == '\0') {
-            uVar2 = FindTextA((char *)InputText,s_Webzen_00561754,'\0');
+            uVar2 = FindTextA((char *)InputText,"Webzen",'\0');
             if ((char)uVar2 == '\0') {
-              uVar2 = FindTextA((char *)InputText,s_WebZen_0056175c,'\0');
+              uVar2 = FindTextA((char *)InputText,"WebZen",'\0');
               if ((char)uVar2 == '\0') {
-                uVar2 = FindTextA((char *)InputText,s_Webzen_00561764,'\0');
+                uVar2 = FindTextA((char *)InputText,"webzen",'\0');
                 if ((char)uVar2 == '\0') {
-                  uVar2 = FindTextA((char *)InputText,s_WEBZEN_0056176c,'\0');
+                  uVar2 = FindTextA((char *)InputText,"WEBZEN",'\0');
                   if ((char)uVar2 == '\0') {
                     uVar2 = FindTextA((char *)InputText,&DAT_07d4b4b0,'\0');
                     if ((char)uVar2 == '\0') {

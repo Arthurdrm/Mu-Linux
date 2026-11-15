@@ -15,11 +15,11 @@ void ClearCharacters(int n){events.push_back({4,n});}
 void Sound_ReleaseBuffer(int n){events.push_back({5,n});}
 std::vector<int> selectBackdropTextures;bool selectBackdropWide;
 struct Window{bool wide=false;bool IsWide(){return wide;}}gWindow;
-BYTE g_BitmapsRaw[2048*56];char DAT_005606ac[]="Backdrop",s_Logo__00560698[]="Logo/";
+BYTE g_BitmapsRaw[2048*56];char DAT_005606ac[]="Backdrop",s_Logo__00560698[]="Logo\\";
 const char* SelectBackdropPath(){return gWindow.wide?"Wide/":"Normal/";}
 namespace MeshDraw{void Release(){events.push_back({6,0});}}
 void AccessModel(int slot,const char* path,const char* name,int index){Require(slot==164&&std::strcmp(path,SelectBackdropPath())==0&&std::strcmp(name,"Backdrop")==0&&index==5);events.push_back({7,slot});}
-void OpenTexture(int slot,const char* path,int filter,char flag){Require(slot==164&&std::strcmp(path,"Logo/")==0&&filter==0x2601&&flag==1);events.push_back({8,slot});}
+void OpenTexture(int slot,const char* path,int filter,char flag){Require(slot==164&&std::strcmp(path,"Logo\\")==0&&filter==0x2601&&flag==1);events.push_back({8,slot});}
 '''
 MAIN=r'''
 int main(){

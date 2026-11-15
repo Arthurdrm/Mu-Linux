@@ -318,7 +318,7 @@ void __cdecl HashTable_Insert(void *this_,void *param_1_v,void *param_2_v)
       uVar9 = uVar9 + 1;
     } while (uVar9 < *(uint *)((intptr_t)this_ + 0xc));
   }
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______Insert_005580e8);
+  CErrorReport_Write(&DAT_055c9bf0,"Hash table full!!! Insert");
   return;
 }
 
@@ -395,7 +395,7 @@ void* __cdecl HashTable_GetNode(void *this_,void *param_1_v)
       uVar9 = uVar9 + 1;
     } while (uVar9 < *(uint *)((intptr_t)this_ + 0xc));
   }
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
+  CErrorReport_Write(&DAT_055c9bf0,"Hash table full!!! GetIndex");
   return (void*)0;
 }
 

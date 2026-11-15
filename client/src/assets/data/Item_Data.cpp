@@ -106,7 +106,7 @@ void __cdecl Item_LoadBMD(const char *path)
     CHAR msg[256];
     FILE *fp = (FILE *)crt_fopen(path, DAT_005580ac);  // "rb"
     if (!fp) {
-        crt_sprintf(msg, (const char *)s__s___File_not_exist__00558094, path);
+        crt_sprintf(msg, "%s - File not exist.", path);
         CErrorReport_Write(&DAT_055c9bf0, msg);
         Platform::GetWindow().ShowError(msg, nullptr, true, false);
         gWindow.RequestCloseApplication();
@@ -129,7 +129,7 @@ void __cdecl Item_LoadBMD(const char *path)
             cs ^= (DWORD)(cs + 0xe2f1) >> (((BYTE)(i >> 2) & 7) + 1);
     }
     if (stored_cs != cs) {
-        crt_sprintf(msg, (const char *)s__s___File_corrupted__00559bd4);
+        crt_sprintf(msg, "%s - File corrupted.");
         CErrorReport_Write(&DAT_055c9bf0, msg);
         Platform::GetWindow().ShowError(msg, nullptr, true, false);
         gWindow.RequestCloseApplication();

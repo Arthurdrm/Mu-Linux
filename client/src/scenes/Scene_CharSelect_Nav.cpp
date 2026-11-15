@@ -1152,7 +1152,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
         int iVar7 = 0;
         do {
             iVar3 = iVar7 + 1;
-            Platform::TextFormat((LPSTR)local_48, s__d___s_005580b0, iVar3,
+            Platform::TextFormat((LPSTR)local_48, "%d) %s", iVar3,
                       dlg->m_lpszAnswer[iVar7]);
             int iVar2 = SeparateTextIntoLines(local_48, pbVar6, 1, 0x26);
             if (iVar2 < 0) {
@@ -1167,7 +1167,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
     if (charCount == 0) {
         // Sin respuestas: el binario ofrece la de cerrar, GlobalText[609]
         // (disasm 0x4018B9: `push offset GlobalText+2C9Ah`, y 0x2C9AC/300 = 609).
-        Platform::TextFormat((LPSTR)local_48, s__d___s_005580b0, iVar3 + 1, GlobalText[609]);
+        Platform::TextFormat((LPSTR)local_48, "%d) %s", iVar3 + 1, GlobalText[609]);
         // Copy string to g_lpszDialogAnswer
         uint uVar4 = (uint)strlen(local_48) + 1;
         g_iNumAnswer = 1;

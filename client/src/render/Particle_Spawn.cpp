@@ -276,6 +276,469 @@ void InitializeFireParticle(char* particle, const ParticleFirePreset& preset)
 }
 } // namespace
 
+// ── Handlers de Particle_Spawn (T9d) ──────────────────────────────────────────
+// Cada case del switch por tipo vive en su propia función.  Reciben por
+// referencia las locales que usan; el slot ya está inicializado.
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_LIGHTNING.
+static void ParticleSpawn_Lightning(char*& pcVar11, float*& pfVar2, unsigned int& uVar8)
+{
+    // 0x4a6 — up-burst with fixed scale
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
+    *(float*)(pcVar11 + ParticleScaleOffset) = 1.8f;
+    *pfVar2 = 30.0f;
+    uVar8 = _rand() % 4;
+    *(float *)(pcVar11 + 0x28) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
+    uVar8 = _rand() % 4;
+    *(float *)(pcVar11 + 0x2c) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
+    uVar8 = _rand() % 4;
+    *(float *)(pcVar11 + 0x30) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
+    *(float *)(pcVar11 + 0x18) = *(float *)(pcVar11 + 0x18) + _DAT_005529e0;
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_SPARK.
+static void ParticleSpawn_Spark(int& iVar6, int& iVar7, float (&local_30)[12], float& local_34, float& local_38, float& local_3c, char*& pcVar11, float*& pfVar2, float*& pfVar3, unsigned int& uVar8)
+{
+    // 0x497 — matrix-transformed directional burst
+    uVar8 = _rand() % 4;
+    iVar7 = *(int *)(pcVar11 + 8);
+    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 4) * _DAT_005524f4;
+    if (((iVar7 != 0) && (iVar7 != 2)) && (iVar7 != 3)) {
+        uVar8 = _rand() % 8;
+        *(unsigned int *)(pcVar11 + 0x38) = uVar8 + 8;
+        return;
+    }
+    uVar8 = _rand() % 16;
+    *(unsigned int *)(pcVar11 + 0x38) = uVar8 + 0x18;
+    iVar7 = _rand();
+    *(float *)(pcVar11 + 0x24) = (float)(iVar7 % 0x168);
+    Matrix_BuildFromEuler(pfVar2, local_30);
+    uVar8 = _rand() % 16;
+    local_3c = 0.0f;
+    *(float *)(pcVar11 + 0x48) = (float)(int)(uVar8 + 6);
+    iVar7 = _rand();
+    local_38 = (float)(iVar7 % 0x14 + 0x14) * _DAT_005524f4;
+    if (*(int *)(pcVar11 + 8) == 2) {
+        *(float *)(pcVar11 + 0x0c) = *(float *)(pcVar11 + 0x0c) + *(float *)(pcVar11 + 0x0c);
+        local_3c = local_3c * _DAT_00552540;
+        local_38 = local_38 * _DAT_00552540;
+    }
+    local_34 = 0.0f;
+    Vector_Rotate(&local_3c, local_30, pfVar3);
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_MOTION_BLUR + 2.
+static void ParticleSpawn_Type1168(float& fVar4, char*& pcVar11)
+{
+    // 0x490 — glow with RGBA
+    fVar4 = *(float *)(pcVar11 + 0x24) + _DAT_0055293c;
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
+    *(float*)(pcVar11 + 0x48) = 0.1f;
+    *(float *)(pcVar11 + 0x40) = fVar4;
+}
+
+// IDA: Particle_Spawn (0x00475220), case 0x67, 0x68.
+static void ParticleSpawn_Type103(float& param_6, int& iVar6, int& iVar7, char*& pcVar11, float*& pfVar1)
+{
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 20;
+    iVar7 = _rand();
+    *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6 + 8) * _DAT_005524f4;
+    if ((*(int *)(pcVar11 + 4) != 0x68) && (*(int *)(pcVar11 + 8) != 1))
+        return;
+    iVar7 = _rand(); *pfVar1 = (float)(iVar7 % 10 + -5) + *pfVar1;
+    iVar7 = _rand(); *(float *)(pcVar11 + 0x14) = (float)(iVar7 % 10 + -5) + *(float *)(pcVar11 + 0x14);
+    iVar7 = _rand(); *(float *)(pcVar11 + 0x18) = (float)(iVar7 % 10 + -5) + *(float *)(pcVar11 + 0x18);
+    if (*(int *)(pcVar11 + 8) != 1) return;
+    *(float *)(pcVar11 + 0x0c) = param_6;
+    iVar7 = _rand();
+    *(float*)(pcVar11 + ParticleDriftOffset + 4) = 1.0f;
+    *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 100) * _DAT_00552890;
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_LIGHT.
+static void ParticleSpawn_Light(int& param_5, float& param_6, int& iVar6, int& iVar7, char*& pcVar11)
+{
+    // 0x47e — misc bubble/spark
+    if (param_5 == 0 || param_5 == 2) {
+        iVar7 = _rand(); *(int *)(pcVar11 + 0x38) = iVar7 % 10 + 10;
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 10) + _DAT_00552488;
+        iVar7 = _rand();
+    } else if (param_5 == 1) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 50;
+        return;
+    } else if (param_5 == 3) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
+        return;
+    } else if (param_5 == 4) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
+        *(float*)(pcVar11 + 0x48) = 0.0f;
+        *(float *)(pcVar11 + 0x40) = param_6;
+        *(float*)(pcVar11 + ParticleScaleOffset) = 2.0f;
+        return;
+    } else if (param_5 == 5) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 25;
+        return;
+    } else {
+        return;
+    }
+    *(float *)(pcVar11 + 0x0c) =
+        ((float)(iVar7 % 0x32) + _DAT_00552598) * param_6 * _DAT_00552594;
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_SPARK + 1.
+static void ParticleSpawn_Type1176(int& param_5, intptr_t& param_7, int& iVar6, int& iVar7, float (&local_30)[12], float& local_34, float& local_38, float& local_3c, char*& pcVar11, float*& pfVar1, float*& pfVar2, float*& pfVar3)
+{
+    // 0x498 — directional smoke/mist
+    if (param_5 == 1) {
+        iVar7 = _rand(); *pfVar2 = (float)(iVar7 % 0x168);
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x20) = (float)(iVar7 % 0x168);
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x24) = (float)(iVar7 % 0x168);
+        Matrix_BuildFromEuler(pfVar2, local_30);
+        local_3c = 0.0f; local_38 = -50.0f; local_34 = 0.0f;
+        Vector_Rotate(&local_3c, local_30, pfVar3);
+        return;
+    }
+    if (param_5 == 3) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 5;
+        return;
+    }
+    if (param_5 == 2) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 15;
+        *pfVar2 = 0.0f;
+        *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
+        *(float*)(pcVar11 + ParticleAngleOffset + 8) = 0.0f;
+        *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(pcVar11 + 0x14);
+        *(float *)(pcVar11 + 100) = *pfVar1;
+        *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
+        *pfVar3 = (*(float *)(param_7 + 0x10) - *pfVar1) * _DAT_00552a00;
+        *(float *)(pcVar11 + 0x50) =
+            (*(float *)(param_7 + 0x14) - *(float *)(pcVar11 + 0x14)) * _DAT_00552a00;
+        *(float *)(pcVar11 + 0x54) =
+            (*(float *)(param_7 + 0x18) - *(float *)(pcVar11 + 0x18)) * _DAT_00552a00;
+        return;
+    }
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_SPARK + 2, BITMAP_BLOOD, BITMAP_BLOOD + 1.
+static void ParticleSpawn_Type1177(float *& param_3, int& iVar7, float (&local_30)[12], float& local_34, float& local_38, float& local_3c, char*& pcVar11, float*& pfVar2, float*& pfVar3, unsigned int& uVar8)
+{
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 12;
+    uVar8 = _rand() % 4;
+    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 8) * _DAT_00552874;
+    iVar7 = _rand(); *pfVar2 = (float)(iVar7 % 0x168);
+    Matrix_BuildFromEuler(param_3, local_30);
+    local_3c = 0.0f;
+    uVar8 = _rand() % 16;
+    local_38 = -(float)(int)(uVar8 + 8);
+    iVar7 = _rand(); local_34 = (float)(iVar7 % 6 + -3);
+    Vector_Rotate(&local_3c, local_30, pfVar3);
+    if (*(int *)(pcVar11 + 4) == 0x4b6) {
+        *(float*)(pcVar11 + ParticleColorOffset) = 0.1f;
+        *(float*)(pcVar11 + ParticleColorOffset + 4) = 0.0f;
+        *(float*)(pcVar11 + ParticleColorOffset + 8) = 0.0f;
+    }
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_ENERGY.
+static void ParticleSpawn_Energy(float& param_6, int& iVar7, char*& pcVar11, unsigned int& uVar8)
+{
+    uVar8 = _rand() % 8;
+    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 6) * param_6 * _DAT_005524f4;
+    iVar7 = _rand();
+    *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_LIGHTNING + 1.
+static void ParticleSpawn_Type1191(float *& param_4, int& param_5, float& param_6, char*& pcVar11)
+{
+    if (param_5 >= 0 && param_5 < 4) {
+        const auto& preset = ParticleScalePresets[param_5];
+        if (preset.Lifetime >= 0)
+            *(int*)(pcVar11 + ParticleLifetimeOffset) = preset.Lifetime;
+        *(float*)(pcVar11 + ParticleScaleOffset) = param_5 == 3 ? param_6 : preset.Scale;
+    }
+    *(float *)(pcVar11 + 0x28) = *param_4    + _DAT_00552504;
+    *(float *)(pcVar11 + 0x2c) = param_4[1]  + _DAT_00552504;
+    *(float *)(pcVar11 + 0x30) = param_4[2]  + _DAT_00552504;
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_FIRE, BITMAP_FIRE + 2.
+static void ParticleSpawn_Fire(float& fVar4, int& iVar7, char*& pcVar11, float*& pfVar3, unsigned int& uVar8)
+{
+    // ── 0x4ab/0x4ad shared implementation ──────────────────────────────
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 24;
+    *pfVar3 = 0.0f;
+    uVar8 = _rand() % 16;
+    *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+    iVar7 = *(int *)(pcVar11 + 8);
+    *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 0x20) * _DAT_005529c8;
+    if ((iVar7 == 0) || (iVar7 == 5)) {
+        uVar8 = _rand() % 64;
+        fVar4 = (float)(int)(uVar8 + 0x80) * _DAT_005524f8;
+    } else if (iVar7 == 7) {
+        *pfVar3 = 0.0f;
+        uVar8 = _rand() % 32;
+        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+        *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 - 0x10) * _DAT_005529c8;
+        uVar8 = _rand() % 64;
+        fVar4 = (float)(int)(uVar8 + 0x80) * _DAT_00552ac0;
+    } else if (iVar7 == 9) {
+        iVar7 = _rand();
+        int s = iVar7 % 0x3c - 0x1e;
+        *(float *)(pcVar11 + 100) = (float)(int)s;
+        *(float *)(pcVar11 + 0x68) = (float)(int)s;
+        *(float *)(pcVar11 + 0x6c) =
+            _DAT_00552974 -
+            (float)(int)((s ^ (s >> 0x1f)) - (s >> 0x1f)) * _DAT_005528f0;
+        goto lab_4ab_setscale;
+    } else {
+        goto lab_4ab_setscale;
+    }
+    *(float *)(pcVar11 + 0x0c) = fVar4;
+lab_4ab_setscale:
+    if (*(int *)(pcVar11 + 8) == 1) {
+        uVar8 = _rand() % 4;
+        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 10) * _DAT_005524f8;
+    }
+    iVar7 = _rand();
+    *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_FIRE + 1, BITMAP_POUNDING_BALL.
+static void ParticleSpawn_Type1196(int& param_1, char*& pcVar11)
+{
+    ApplyParticleLinearMotion(pcVar11, ParticleLinearMotions[param_1 == 0x4ac ? 0 : 1]);
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_FLAME.
+static void ParticleSpawn_Flame(float *& param_4, int& param_5, intptr_t& param_7, long double& fVar12, long double& fVar13, float& fVar4, float& fVar5, int& iVar6, int& iVar7, char*& pcVar11, float*& pfVar1, float*& pfVar2, float*& pfVar3, unsigned int& uVar8)
+{
+    switch (param_5) {
+    case 0:
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 20;
+        *pfVar3 = 0.0f;
+        *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
+        uVar8 = _rand() % 128;
+        *(float *)(pcVar11 + 0x54) = (float)(int)(uVar8 + 0x80) * _DAT_00552934;
+        uVar8 = _rand() % 64;
+        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 0x40) * _DAT_005524f8;
+        return;
+    case 1:
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 15;
+        uVar8 = _rand() % 32;
+        *pfVar3 = 0.0f;
+        *(float *)(pcVar11 + 0x0c) =
+            (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
+        uVar8 = _rand() % 4;
+        break;
+    case 2:
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
+        uVar8 = _rand() % 32;
+        *(float *)(pcVar11 + 0x0c) =
+            (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
+        iVar7 = _rand();
+        fVar4 = *param_4; *pfVar3 = 0.0f;
+        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+        fVar5 = (float)(iVar7 % 0x50) * fVar4 * _DAT_00552594;
+        *(float *)(pcVar11 + 0x50) = fVar5;
+        Vector_AddRotated(pfVar1, pfVar2, pfVar3);
+        fVar4 = *param_4; *pfVar3 = 0.0f;
+        fVar4 = (fVar4 - fVar5) * _DAT_00552a48;
+        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+        *(float *)(pcVar11 + 0x50) = fVar4;
+        fVar13 = (long double)fsin((long double)WorldTime * (long double)_DAT_005528e0);
+        fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
+        *(float *)(pcVar11 + 0x28) = (float)fVar13;
+        fVar13 = fVar13 * (long double)_DAT_00552504;
+        *(float *)(pcVar11 + 0x2c) = (float)fVar13;
+        *(float *)(pcVar11 + 0x30) = (float)fVar13;
+        return;
+    case 3:
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
+        uVar8 = _rand() % 32;
+        *pfVar3 = 0.0f;
+        *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
+        fVar4 = (float)(int)(uVar8 + 0x20) * _DAT_005524f8;
+        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+        *(float *)(pcVar11 + 0x0c) = fVar4 + *(float *)(pcVar11 + 0x0c);
+        fVar13 = (long double)fsin((long double)WorldTime * (long double)_DAT_005528e0);
+        fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
+        *(float *)(pcVar11 + 0x28) = (float)fVar13;
+        fVar13 = fVar13 * (long double)_DAT_00552504;
+        *(float *)(pcVar11 + 0x2c) = (float)fVar13;
+        *(float *)(pcVar11 + 0x30) = (float)fVar13;
+        return;
+    case 4:
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 5;
+        uVar8 = _rand() % 32;
+        *(float*)(pcVar11 + 0x48) = 10.0f;
+        *(float *)(pcVar11 + 0x0c) =
+            (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
+        fVar12 = (long double)WorldTime;
+        fVar13 = (long double)_DAT_005528e0;
+        *(unsigned int *)(pcVar11 + 100) = *(unsigned int *)(param_7 + 0x10);
+        fVar13 = (long double)fsin(fVar12 * fVar13);
+        *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(param_7 + 0x14);
+        *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(param_7 + 0x18);
+        fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
+        *(float *)(pcVar11 + 0x28) = (float)fVar13;
+        fVar13 = fVar13 * (long double)_DAT_00552504;
+        *(float *)(pcVar11 + 0x2c) = (float)fVar13;
+        *(float *)(pcVar11 + 0x30) = (float)fVar13;
+        return;
+    case 5:
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 4;
+        *pfVar3 = 0.0f;
+        uVar8 = _rand() % 4;
+        break;
+    default:
+        return;
+    }
+    fVar4 = (float)(int)(uVar8 + 4) * _DAT_00552934;
+    *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+    *(float *)(pcVar11 + 0x50) = fVar4;
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_EXPLOTION, BITMAP_EXPLOTION + 1, BITMAP_SHINY, BITMAP_SHINY + 1, BITMAP_SHINY + 2, BITMAP_SHINY + 4, 0x596.
+static void ParticleSpawn_Explotion(int& param_1, int& param_5, char*& pcVar11)
+{
+    ApplyParticlePreset(pcVar11, param_1, param_5);
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_SMOKE + 1, BITMAP_SMOKE + 2.
+static void ParticleSpawn_Type1221(int& param_1, float *& param_3, int& param_5, char*& pcVar11)
+{
+    const auto& trajectory = ParticleTrajectories[param_1 - 1221];
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = trajectory.Lifetime;
+    trajectory.Initialize(pcVar11, param_5, param_3);
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_BUBBLE, BITMAP_FLOWER01, BITMAP_FLOWER01 + 1, BITMAP_FLOWER01 + 2.
+static void ParticleSpawn_Bubble(int& param_1, char*& pcVar11)
+{
+    ApplyParticleDispersion(pcVar11, param_1);
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_FIRECRACKER.
+static void ParticleSpawn_Firecracker(int& param_5, int& iVar10, int& iVar6, int& iVar7, int& iVar9, char*& pcVar11, float*& pfVar2, float*& pfVar3)
+{
+    *(float*)(pcVar11 + ParticleAngleOffset + 8) = 0.0f;
+    *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
+    *pfVar2 = 0.0f;
+    iVar7 = _rand(); *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+    if (param_5 != -1) {
+        iVar7 = param_5 + 0xf;
+        iVar10 = iVar7 / 2;
+        iVar9 = _rand(); *pfVar3                  = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934;
+        iVar9 = _rand(); *(float *)(pcVar11 + 0x50) = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934;
+        iVar9 = _rand();
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 50;
+        *(float*)(pcVar11 + ParticleScaleOffset) = 0.1f;
+        *(float *)(pcVar11 + 0x54) = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934 + _DAT_00552488;
+        return;
+    }
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 2;
+    *(float*)(pcVar11 + ParticleScaleOffset) = 0.25f;
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_FLARE.
+static void ParticleSpawn_Flare(int& param_5, float& param_6, float& fVar4, int& iVar7, char*& pcVar11, float*& pfVar1, float*& pfVar2, float*& pfVar3)
+{
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 60;
+    if ((param_5 == 0) || (param_5 == 3)) {
+        iVar7 = _rand();
+        fVar4 = (float)(iVar7 % 100) * _DAT_00552594 * _DAT_00552650;
+        fVar4 = fVar4 + _DAT_0055256c;
+    } else if (param_5 == 4) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 40;
+        iVar7 = _rand();
+        fVar4 = (float)(iVar7 % 100) * _DAT_00552594 * _DAT_00552660;
+        fVar4 = fVar4 + _DAT_0055256c;
+    } else if (param_5 == 2) {
+        iVar7 = _rand();
+        fVar4 = ((float)(iVar7 % 100) * _DAT_00552594 + _DAT_0055256c) * _DAT_00552660;
+    } else {
+        goto lab_4e1_skip_size;
+    }
+    *(float *)(pcVar11 + 0x48) = fVar4;
+lab_4e1_skip_size:
+    iVar7 = _rand(); *pfVar3 = (float)(iVar7 % 300 + -0x96);
+    iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6) * _DAT_005524f8 + param_6;
+    iVar7 = _rand();
+    *pfVar2 = 0.0f;
+    *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
+    *(float*)(pcVar11 + ParticleAngleOffset + 8) = 0.0f;
+    *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(pcVar11 + 0x14);
+    *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
+    *(float *)(pcVar11 + 100) = *pfVar1;
+    *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_CLOUD.
+static void ParticleSpawn_Cloud(int& param_5, float& param_6, int& iVar6, int& iVar7, char*& pcVar11, float*& pfVar1, float*& pfVar3)
+{
+    if (param_5 != 6) {
+        *(int*)(pcVar11 + ParticleLifetimeOffset) = 30;
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 1000);
+        iVar7 = _rand(); *pfVar1 = (float)(iVar7 % 500 + -0xfa) + *pfVar1;
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x14) = (float)(iVar7 % 500 + -0xfa) + *(float *)(pcVar11 + 0x14);
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x18) = (float)(iVar7 % 0x14 + 0x14) + *(float *)(pcVar11 + 0x18);
+        iVar7 = _rand();
+        *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
+        *(float *)(pcVar11 + 0x68) = (float)(iVar7 % 100) * _DAT_00552594;
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 0x14 + 0xb4) * _DAT_005524f8;
+        iVar7 = _rand();
+        *pfVar3 = 0.0f;
+        *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
+        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
+        *(float *)(pcVar11 + 0x58) = (float)(iVar7 % 0x1e) * _DAT_00552594 + param_6;
+        return;
+    }
+    InitializeRotatingImpulse(pcVar11, 0.2f);
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_ADV_SMOKE.
+static void ParticleSpawn_AdvSmoke(int& param_5, char*& pcVar11)
+{
+    InitializeParticleImpulse(pcVar11, param_5);
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case BITMAP_ADV_SMOKE + 1.
+static void ParticleSpawn_Type1382(char*& pcVar11)
+{
+    InitializeRotatingImpulse(pcVar11, 0.5f);
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case 0x598.
+static void ParticleSpawn_Type1432(int& param_5, char*& pcVar11)
+{
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 5;
+    *(float*)(pcVar11 + 0x48) = 0.0f;
+    *(float*)(pcVar11 + ParticleScaleOffset) = 4.0f;
+    if (param_5 >= 0 && param_5 < 3)
+        *(float*)(pcVar11 + ParticleRotationOffset) = ParticleFixedRotations[param_5];
+
+}
+
+// IDA: Particle_Spawn (0x00475220), case 0x599.
+static void ParticleSpawn_Type1433(int& iVar7, char*& pcVar11)
+{
+    *(int*)(pcVar11 + ParticleLifetimeOffset) = 7;
+    iVar7 = _rand();
+    *(float*)(pcVar11 + ParticleScaleOffset) = 1.2f;
+    *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 0x32 + 0x96) * _DAT_00552594;
+    iVar7 = _rand();
+    *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+
+}
+
 // IDA: Particle_Spawn (0x00475220)
 int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *param_4,
                          int param_5, float param_6, intptr_t param_7)
@@ -432,57 +895,15 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
             return iVar6;
         }
     }
-    case 1190: {
-        // 0x4a6 — up-burst with fixed scale
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
-        *(float*)(pcVar11 + ParticleScaleOffset) = 1.8f;
-        *pfVar2 = 30.0f;
-        uVar8 = _rand() % 4;
-        *(float *)(pcVar11 + 0x28) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
-        uVar8 = _rand() % 4;
-        *(float *)(pcVar11 + 0x2c) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
-        uVar8 = _rand() % 4;
-        *(float *)(pcVar11 + 0x30) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
-        *(float *)(pcVar11 + 0x18) = *(float *)(pcVar11 + 0x18) + _DAT_005529e0;
+    case 1190:
+        ParticleSpawn_Lightning(pcVar11, pfVar2, uVar8);
         return iVar6;
-    }
-    case BITMAP_SPARK: {
-        // 0x497 — matrix-transformed directional burst
-        uVar8 = _rand() % 4;
-        iVar7 = *(int *)(pcVar11 + 8);
-        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 4) * _DAT_005524f4;
-        if (((iVar7 != 0) && (iVar7 != 2)) && (iVar7 != 3)) {
-            uVar8 = _rand() % 8;
-            *(unsigned int *)(pcVar11 + 0x38) = uVar8 + 8;
-            return iVar6;
-        }
-        uVar8 = _rand() % 16;
-        *(unsigned int *)(pcVar11 + 0x38) = uVar8 + 0x18;
-        iVar7 = _rand();
-        *(float *)(pcVar11 + 0x24) = (float)(iVar7 % 0x168);
-        Matrix_BuildFromEuler(pfVar2, local_30);
-        uVar8 = _rand() % 16;
-        local_3c = 0.0f;
-        *(float *)(pcVar11 + 0x48) = (float)(int)(uVar8 + 6);
-        iVar7 = _rand();
-        local_38 = (float)(iVar7 % 0x14 + 0x14) * _DAT_005524f4;
-        if (*(int *)(pcVar11 + 8) == 2) {
-            *(float *)(pcVar11 + 0x0c) = *(float *)(pcVar11 + 0x0c) + *(float *)(pcVar11 + 0x0c);
-            local_3c = local_3c * _DAT_00552540;
-            local_38 = local_38 * _DAT_00552540;
-        }
-        local_34 = 0.0f;
-        Vector_Rotate(&local_3c, local_30, pfVar3);
+    case BITMAP_SPARK:
+        ParticleSpawn_Spark(iVar6, iVar7, local_30, local_34, local_38, local_3c, pcVar11, pfVar2, pfVar3, uVar8);
         return iVar6;
-    }
-    case 1168: {
-        // 0x490 — glow with RGBA
-        fVar4 = *(float *)(pcVar11 + 0x24) + _DAT_0055293c;
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
-        *(float*)(pcVar11 + 0x48) = 0.1f;
-        *(float *)(pcVar11 + 0x40) = fVar4;
+    case 1168:
+        ParticleSpawn_Type1168(fVar4, pcVar11);
         return iVar6;
-    }
     case 1151: {
         // IDA 0x475220 L810-814: `if (Type == 1151) { life =
         // rand() % 8 + 20; return; }`.  El port lo mandaba con un
@@ -493,372 +914,69 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
         return iVar6;
     }
     // IDA 0.98j: polvo de Tamachan, tipos 103/104; se conserva el camino activo.
-    case 103: case 104: {
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 20;
-        iVar7 = _rand();
-        *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6 + 8) * _DAT_005524f4;
-        if ((*(int *)(pcVar11 + 4) != 0x68) && (*(int *)(pcVar11 + 8) != 1))
-            return iVar6;
-        iVar7 = _rand(); *pfVar1 = (float)(iVar7 % 10 + -5) + *pfVar1;
-        iVar7 = _rand(); *(float *)(pcVar11 + 0x14) = (float)(iVar7 % 10 + -5) + *(float *)(pcVar11 + 0x14);
-        iVar7 = _rand(); *(float *)(pcVar11 + 0x18) = (float)(iVar7 % 10 + -5) + *(float *)(pcVar11 + 0x18);
-        if (*(int *)(pcVar11 + 8) != 1) return iVar6;
-        *(float *)(pcVar11 + 0x0c) = param_6;
-        iVar7 = _rand();
-        *(float*)(pcVar11 + ParticleDriftOffset + 4) = 1.0f;
-        *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 100) * _DAT_00552890;
+    case 103: case 104:
+        ParticleSpawn_Type103(param_6, iVar6, iVar7, pcVar11, pfVar1);
         return iVar6;
-    }
-    case BITMAP_LIGHT: {
-        // 0x47e — misc bubble/spark
-        if (param_5 == 0 || param_5 == 2) {
-            iVar7 = _rand(); *(int *)(pcVar11 + 0x38) = iVar7 % 10 + 10;
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 10) + _DAT_00552488;
-            iVar7 = _rand();
-        } else if (param_5 == 1) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 50;
-            return iVar6;
-        } else if (param_5 == 3) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
-            return iVar6;
-        } else if (param_5 == 4) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
-            *(float*)(pcVar11 + 0x48) = 0.0f;
-            *(float *)(pcVar11 + 0x40) = param_6;
-            *(float*)(pcVar11 + ParticleScaleOffset) = 2.0f;
-            return iVar6;
-        } else if (param_5 == 5) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 25;
-            return iVar6;
-        } else {
-            return iVar6;
-        }
-        *(float *)(pcVar11 + 0x0c) =
-            ((float)(iVar7 % 0x32) + _DAT_00552598) * param_6 * _DAT_00552594;
+    case BITMAP_LIGHT:
+        ParticleSpawn_Light(param_5, param_6, iVar6, iVar7, pcVar11);
         return iVar6;
-    }
-    case BITMAP_SPARK + 1: {
-        // 0x498 — directional smoke/mist
-        if (param_5 == 1) {
-            iVar7 = _rand(); *pfVar2 = (float)(iVar7 % 0x168);
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x20) = (float)(iVar7 % 0x168);
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x24) = (float)(iVar7 % 0x168);
-            Matrix_BuildFromEuler(pfVar2, local_30);
-            local_3c = 0.0f; local_38 = -50.0f; local_34 = 0.0f;
-            Vector_Rotate(&local_3c, local_30, pfVar3);
-            return iVar6;
-        }
-        if (param_5 == 3) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 5;
-            return iVar6;
-        }
-        if (param_5 == 2) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 15;
-            *pfVar2 = 0.0f;
-            *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
-            *(float*)(pcVar11 + ParticleAngleOffset + 8) = 0.0f;
-            *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(pcVar11 + 0x14);
-            *(float *)(pcVar11 + 100) = *pfVar1;
-            *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
-            *pfVar3 = (*(float *)(param_7 + 0x10) - *pfVar1) * _DAT_00552a00;
-            *(float *)(pcVar11 + 0x50) =
-                (*(float *)(param_7 + 0x14) - *(float *)(pcVar11 + 0x14)) * _DAT_00552a00;
-            *(float *)(pcVar11 + 0x54) =
-                (*(float *)(param_7 + 0x18) - *(float *)(pcVar11 + 0x18)) * _DAT_00552a00;
-            return iVar6;
-        }
+    case BITMAP_SPARK + 1:
+        ParticleSpawn_Type1176(param_5, param_7, iVar6, iVar7, local_30, local_34, local_38, local_3c, pcVar11, pfVar1, pfVar2, pfVar3);
         return iVar6;
-    }
-    case 1177: case BITMAP_BLOOD: case BITMAP_BLOOD + 1: {
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 12;
-        uVar8 = _rand() % 4;
-        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 8) * _DAT_00552874;
-        iVar7 = _rand(); *pfVar2 = (float)(iVar7 % 0x168);
-        Matrix_BuildFromEuler(param_3, local_30);
-        local_3c = 0.0f;
-        uVar8 = _rand() % 16;
-        local_38 = -(float)(int)(uVar8 + 8);
-        iVar7 = _rand(); local_34 = (float)(iVar7 % 6 + -3);
-        Vector_Rotate(&local_3c, local_30, pfVar3);
-        if (*(int *)(pcVar11 + 4) == 0x4b6) {
-            *(float*)(pcVar11 + ParticleColorOffset) = 0.1f;
-            *(float*)(pcVar11 + ParticleColorOffset + 4) = 0.0f;
-            *(float*)(pcVar11 + ParticleColorOffset + 8) = 0.0f;
-        }
+    case 1177: case BITMAP_BLOOD: case BITMAP_BLOOD + 1:
+        ParticleSpawn_Type1177(param_3, iVar7, local_30, local_34, local_38, local_3c, pcVar11, pfVar2, pfVar3, uVar8);
         return iVar6;
-    }
-    case BITMAP_ENERGY: {
-        uVar8 = _rand() % 8;
-        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 6) * param_6 * _DAT_005524f4;
-        iVar7 = _rand();
-        *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+    case BITMAP_ENERGY:
+        ParticleSpawn_Energy(param_6, iVar7, pcVar11, uVar8);
         return iVar6;
-    }
-    case BITMAP_LIGHTNING + 1: {
-        if (param_5 >= 0 && param_5 < 4) {
-            const auto& preset = ParticleScalePresets[param_5];
-            if (preset.Lifetime >= 0)
-                *(int*)(pcVar11 + ParticleLifetimeOffset) = preset.Lifetime;
-            *(float*)(pcVar11 + ParticleScaleOffset) = param_5 == 3 ? param_6 : preset.Scale;
-        }
-        *(float *)(pcVar11 + 0x28) = *param_4    + _DAT_00552504;
-        *(float *)(pcVar11 + 0x2c) = param_4[1]  + _DAT_00552504;
-        *(float *)(pcVar11 + 0x30) = param_4[2]  + _DAT_00552504;
+    case BITMAP_LIGHTNING + 1:
+        ParticleSpawn_Type1191(param_4, param_5, param_6, pcVar11);
         return iVar6;
-    }
-
     case BITMAP_FIRE:
     case BITMAP_FIRE + 2:
-        goto switchD_4ab_impl;
-
+        ParticleSpawn_Fire(fVar4, iVar7, pcVar11, pfVar3, uVar8);
+        return iVar6;
     case BITMAP_FIRE + 1:
     case BITMAP_POUNDING_BALL:
-        ApplyParticleLinearMotion(pcVar11, ParticleLinearMotions[param_1 == 0x4ac ? 0 : 1]);
+        ParticleSpawn_Type1196(param_1, pcVar11);
         return iVar6;
-
-    case BITMAP_FLAME: {
-        switch (param_5) {
-        case 0:
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 20;
-            *pfVar3 = 0.0f;
-            *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
-            uVar8 = _rand() % 128;
-            *(float *)(pcVar11 + 0x54) = (float)(int)(uVar8 + 0x80) * _DAT_00552934;
-            uVar8 = _rand() % 64;
-            *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 0x40) * _DAT_005524f8;
-            return iVar6;
-        case 1:
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 15;
-            uVar8 = _rand() % 32;
-            *pfVar3 = 0.0f;
-            *(float *)(pcVar11 + 0x0c) =
-                (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
-            uVar8 = _rand() % 4;
-            break;
-        case 2:
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
-            uVar8 = _rand() % 32;
-            *(float *)(pcVar11 + 0x0c) =
-                (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
-            iVar7 = _rand();
-            fVar4 = *param_4; *pfVar3 = 0.0f;
-            *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-            fVar5 = (float)(iVar7 % 0x50) * fVar4 * _DAT_00552594;
-            *(float *)(pcVar11 + 0x50) = fVar5;
-            Vector_AddRotated(pfVar1, pfVar2, pfVar3);
-            fVar4 = *param_4; *pfVar3 = 0.0f;
-            fVar4 = (fVar4 - fVar5) * _DAT_00552a48;
-            *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-            *(float *)(pcVar11 + 0x50) = fVar4;
-            fVar13 = (long double)fsin((long double)WorldTime * (long double)_DAT_005528e0);
-            fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
-            *(float *)(pcVar11 + 0x28) = (float)fVar13;
-            fVar13 = fVar13 * (long double)_DAT_00552504;
-            *(float *)(pcVar11 + 0x2c) = (float)fVar13;
-            *(float *)(pcVar11 + 0x30) = (float)fVar13;
-            return iVar6;
-        case 3:
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
-            uVar8 = _rand() % 32;
-            *pfVar3 = 0.0f;
-            *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
-            fVar4 = (float)(int)(uVar8 + 0x20) * _DAT_005524f8;
-            *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-            *(float *)(pcVar11 + 0x0c) = fVar4 + *(float *)(pcVar11 + 0x0c);
-            fVar13 = (long double)fsin((long double)WorldTime * (long double)_DAT_005528e0);
-            fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
-            *(float *)(pcVar11 + 0x28) = (float)fVar13;
-            fVar13 = fVar13 * (long double)_DAT_00552504;
-            *(float *)(pcVar11 + 0x2c) = (float)fVar13;
-            *(float *)(pcVar11 + 0x30) = (float)fVar13;
-            return iVar6;
-        case 4:
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 5;
-            uVar8 = _rand() % 32;
-            *(float*)(pcVar11 + 0x48) = 10.0f;
-            *(float *)(pcVar11 + 0x0c) =
-                (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
-            fVar12 = (long double)WorldTime;
-            fVar13 = (long double)_DAT_005528e0;
-            *(unsigned int *)(pcVar11 + 100) = *(unsigned int *)(param_7 + 0x10);
-            fVar13 = (long double)fsin(fVar12 * fVar13);
-            *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(param_7 + 0x14);
-            *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(param_7 + 0x18);
-            fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
-            *(float *)(pcVar11 + 0x28) = (float)fVar13;
-            fVar13 = fVar13 * (long double)_DAT_00552504;
-            *(float *)(pcVar11 + 0x2c) = (float)fVar13;
-            *(float *)(pcVar11 + 0x30) = (float)fVar13;
-            return iVar6;
-        case 5:
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 4;
-            *pfVar3 = 0.0f;
-            uVar8 = _rand() % 4;
-            break;
-        default:
-            return iVar6;
-        }
-        fVar4 = (float)(int)(uVar8 + 4) * _DAT_00552934;
-        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-        *(float *)(pcVar11 + 0x50) = fVar4;
+    case BITMAP_FLAME:
+        ParticleSpawn_Flame(param_4, param_5, param_7, fVar12, fVar13, fVar4, fVar5, iVar6, iVar7, pcVar11, pfVar1, pfVar2, pfVar3, uVar8);
         return iVar6;
-    }
-
     case BITMAP_EXPLOTION: case BITMAP_EXPLOTION + 1: case BITMAP_SHINY: case BITMAP_SHINY + 1:
     case BITMAP_SHINY + 2: case BITMAP_SHINY + 4: case 0x596:
-        ApplyParticlePreset(pcVar11, param_1, param_5);
+        ParticleSpawn_Explotion(param_1, param_5, pcVar11);
         return iVar6;
-
-    case BITMAP_SMOKE + 1: case 0x4c6: {
-        const auto& trajectory = ParticleTrajectories[param_1 - 1221];
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = trajectory.Lifetime;
-        trajectory.Initialize(pcVar11, param_5, param_3);
+    case BITMAP_SMOKE + 1: case 0x4c6:
+        ParticleSpawn_Type1221(param_1, param_3, param_5, pcVar11);
         return iVar6;
-    }
-
     case BITMAP_BUBBLE: case BITMAP_FLOWER01: case BITMAP_FLOWER01 + 1: case BITMAP_FLOWER01 + 2:
-        ApplyParticleDispersion(pcVar11, param_1);
+        ParticleSpawn_Bubble(param_1, pcVar11);
         return iVar6;
-
     case BITMAP_FIRECRACKER:
-        *(float*)(pcVar11 + ParticleAngleOffset + 8) = 0.0f;
-        *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
-        *pfVar2 = 0.0f;
-        iVar7 = _rand(); *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
-        if (param_5 != -1) {
-            iVar7 = param_5 + 0xf;
-            iVar10 = iVar7 / 2;
-            iVar9 = _rand(); *pfVar3                  = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934;
-            iVar9 = _rand(); *(float *)(pcVar11 + 0x50) = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934;
-            iVar9 = _rand();
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 50;
-            *(float*)(pcVar11 + ParticleScaleOffset) = 0.1f;
-            *(float *)(pcVar11 + 0x54) = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934 + _DAT_00552488;
-            return iVar6;
-        }
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 2;
-        *(float*)(pcVar11 + ParticleScaleOffset) = 0.25f;
+        ParticleSpawn_Firecracker(param_5, iVar10, iVar6, iVar7, iVar9, pcVar11, pfVar2, pfVar3);
         return iVar6;
-
-    case BITMAP_FLARE: {
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 60;
-        if ((param_5 == 0) || (param_5 == 3)) {
-            iVar7 = _rand();
-            fVar4 = (float)(iVar7 % 100) * _DAT_00552594 * _DAT_00552650;
-            fVar4 = fVar4 + _DAT_0055256c;
-        } else if (param_5 == 4) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 40;
-            iVar7 = _rand();
-            fVar4 = (float)(iVar7 % 100) * _DAT_00552594 * _DAT_00552660;
-            fVar4 = fVar4 + _DAT_0055256c;
-        } else if (param_5 == 2) {
-            iVar7 = _rand();
-            fVar4 = ((float)(iVar7 % 100) * _DAT_00552594 + _DAT_0055256c) * _DAT_00552660;
-        } else {
-            goto lab_4e1_skip_size;
-        }
-        *(float *)(pcVar11 + 0x48) = fVar4;
-lab_4e1_skip_size:
-        iVar7 = _rand(); *pfVar3 = (float)(iVar7 % 300 + -0x96);
-        iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6) * _DAT_005524f8 + param_6;
-        iVar7 = _rand();
-        *pfVar2 = 0.0f;
-        *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
-        *(float*)(pcVar11 + ParticleAngleOffset + 8) = 0.0f;
-        *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(pcVar11 + 0x14);
-        *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
-        *(float *)(pcVar11 + 100) = *pfVar1;
-        *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+    case BITMAP_FLARE:
+        ParticleSpawn_Flare(param_5, param_6, fVar4, iVar7, pcVar11, pfVar1, pfVar2, pfVar3);
         return iVar6;
-    }
-
     case BITMAP_CLOUD:
-        if (param_5 != 6) {
-            *(int*)(pcVar11 + ParticleLifetimeOffset) = 30;
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 1000);
-            iVar7 = _rand(); *pfVar1 = (float)(iVar7 % 500 + -0xfa) + *pfVar1;
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x14) = (float)(iVar7 % 500 + -0xfa) + *(float *)(pcVar11 + 0x14);
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x18) = (float)(iVar7 % 0x14 + 0x14) + *(float *)(pcVar11 + 0x18);
-            iVar7 = _rand();
-            *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
-            *(float *)(pcVar11 + 0x68) = (float)(iVar7 % 100) * _DAT_00552594;
-            iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 0x14 + 0xb4) * _DAT_005524f8;
-            iVar7 = _rand();
-            *pfVar3 = 0.0f;
-            *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
-            *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-            *(float *)(pcVar11 + 0x58) = (float)(iVar7 % 0x1e) * _DAT_00552594 + param_6;
-            return iVar6;
-        }
-        InitializeRotatingImpulse(pcVar11, 0.2f);
+        ParticleSpawn_Cloud(param_5, param_6, iVar6, iVar7, pcVar11, pfVar1, pfVar3);
         return iVar6;
-
     case BITMAP_ADV_SMOKE:
-        InitializeParticleImpulse(pcVar11, param_5);
+        ParticleSpawn_AdvSmoke(param_5, pcVar11);
         return iVar6;
-
     case BITMAP_ADV_SMOKE + 1:
-        InitializeRotatingImpulse(pcVar11, 0.5f);
+        ParticleSpawn_Type1382(pcVar11);
         return iVar6;
-
     case 0x598:
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 5;
-        *(float*)(pcVar11 + 0x48) = 0.0f;
-        *(float*)(pcVar11 + ParticleScaleOffset) = 4.0f;
-        if (param_5 >= 0 && param_5 < 3)
-            *(float*)(pcVar11 + ParticleRotationOffset) = ParticleFixedRotations[param_5];
+        ParticleSpawn_Type1432(param_5, pcVar11);
         return iVar6;
-
     case 0x599:
-        *(int*)(pcVar11 + ParticleLifetimeOffset) = 7;
-        iVar7 = _rand();
-        *(float*)(pcVar11 + ParticleScaleOffset) = 1.2f;
-        *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 0x32 + 0x96) * _DAT_00552594;
-        iVar7 = _rand();
-        *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
+        ParticleSpawn_Type1433(iVar7, pcVar11);
         return iVar6;
-
     default:
         return iVar6;
     }
 
-    // ── 0x4ab/0x4ad shared implementation ──────────────────────────────
-switchD_4ab_impl:
-    *(int*)(pcVar11 + ParticleLifetimeOffset) = 24;
-    *pfVar3 = 0.0f;
-    uVar8 = _rand() % 16;
-    *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-    iVar7 = *(int *)(pcVar11 + 8);
-    *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 0x20) * _DAT_005529c8;
-    if ((iVar7 == 0) || (iVar7 == 5)) {
-        uVar8 = _rand() % 64;
-        fVar4 = (float)(int)(uVar8 + 0x80) * _DAT_005524f8;
-    } else if (iVar7 == 7) {
-        *pfVar3 = 0.0f;
-        uVar8 = _rand() % 32;
-        *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-        *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 - 0x10) * _DAT_005529c8;
-        uVar8 = _rand() % 64;
-        fVar4 = (float)(int)(uVar8 + 0x80) * _DAT_00552ac0;
-    } else if (iVar7 == 9) {
-        iVar7 = _rand();
-        int s = iVar7 % 0x3c - 0x1e;
-        *(float *)(pcVar11 + 100) = (float)(int)s;
-        *(float *)(pcVar11 + 0x68) = (float)(int)s;
-        *(float *)(pcVar11 + 0x6c) =
-            _DAT_00552974 -
-            (float)(int)((s ^ (s >> 0x1f)) - (s >> 0x1f)) * _DAT_005528f0;
-        goto lab_4ab_setscale;
-    } else {
-        goto lab_4ab_setscale;
-    }
-    *(float *)(pcVar11 + 0x0c) = fVar4;
-lab_4ab_setscale:
-    if (*(int *)(pcVar11 + 8) == 1) {
-        uVar8 = _rand() % 4;
-        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 10) * _DAT_005524f8;
-    }
-    iVar7 = _rand();
-    *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
     return iVar6;
 }

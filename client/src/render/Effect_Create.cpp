@@ -812,9 +812,9 @@ CreateEffect(int param_1,float *param_2,float *param_3,float *param_4,float *par
   pfVar12 = param_3;
 LAB_00460dd8:
   pfVar8 = (float *)0x0;
-  pfVar17 = (float *)&DAT_07b11670[0];
+  pfVar17 = (float *)Effects;
   // El original corta con `if (0x7b2714f < (int)pfVar17)`, una dirección absoluta
-  // del binario. El pool DAT_07b11670 es de kEffectPoolSize slots: se recorre por
+  // del binario. El pool Effects es de kEffectPoolSize slots: se recorre por
   // cantidad de iteraciones.
   {
     bool found_slot = false;
@@ -1659,7 +1659,7 @@ LAB_00463ca2:
 void __cdecl Tamachan_Clear(void)
 {
   for (int i = 0; i < kEffectPoolSize; ++i) {
-    char *o = &DAT_07b11670[i * OBJECT_STRIDE];
+    char *o = (char *)&Effects[i];
     if (*o && *(short *)(o + 2) == 0xc1) {
       *o = 0;
       *(int *)(o + 96) = -1;
@@ -1693,7 +1693,7 @@ void __cdecl Tamachan_Spawn(void)
 void __cdecl Tamachan_Dismiss(void)
 {
   for (int i = 0; i < kEffectPoolSize; ++i) {
-    char *o = &DAT_07b11670[i * OBJECT_STRIDE];
+    char *o = (char *)&Effects[i];
     if (*o && *(short *)(o + 2) == 0xc1) {
       *(int *)(o + 96) = 10;
       AsObject(o)->AI = 3;

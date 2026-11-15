@@ -46,7 +46,7 @@ extern "C" void __cdecl DeleteCharacter(int Key)
 }
 
 // FUN_00460d20 @ 0x00460D20 — DeleteEffect(int Type, intptr_t Owner, int iSubType)
-// (69 bytes) — walks Effects pool DAT_07b11670 (200 × 0x1BC), zeroes any slot
+// (69 bytes) — walks the Effects pool (200 × 0x1BC), zeroes any slot
 // whose Type/Owner/SubType match. Active flag at slot+0; Type at slot+2 (short);
 // SubType at slot+4 (dword); Owner at slot+248 (= dword[62]).
 //
@@ -54,10 +54,10 @@ extern "C" void __cdecl DeleteCharacter(int Key)
 // `o[-2]` (short) = Type, o[0] = SubType, o[62] = Owner). Stride is 111 dwords.
 extern "C" void __cdecl DeleteEffect(int Type, intptr_t Owner, int iSubType)
 {
-    DWORD* o = (DWORD*)((char*)&DAT_07b11670[0] + 4);
+    DWORD* o = (DWORD*)((char*)Effects + 4);
     // El pool de efectos tiene 200 slots (IDA acota con `&unk_7B27154`:
     // (0x07B27154 - 0x07B11674) / 0x1BC = 200): se recorre el array entero.
-    DWORD* end = (DWORD*)((char*)&DAT_07b11670[0] + sizeof(DAT_07b11670) + 4);
+    DWORD* end = (DWORD*)((char*)Effects + sizeof(Effects) + 4);
     while (o < end) {
         if (*((BYTE*)o - 4) != 0 &&
             *((short*)o - 1) == (short)Type &&

@@ -63,7 +63,7 @@ std::uint64_t Region(const void* p)
         return (v >= b && v < b + size) ? (tag << 32) | (v - b) : 0;
     };
     if (!v) return 0;
-    if (auto r = in(DAT_07b11670, sizeof(DAT_07b11670), 1)) return r;
+    if (auto r = in(Effects, sizeof(Effects), 1)) return r;
     if (auto r = in(g_owners, sizeof(g_owners), 2)) return r;
     if (auto r = in(g_scratch, sizeof(g_scratch), 3)) return r;
     if (auto r = in(g_bones, sizeof(g_bones), 4)) return r;
@@ -204,8 +204,8 @@ FILE* g_dump = nullptr;   // EFFECT_REPLAY_DUMP=archivo: los bytes de cada slot,
 
 void HashSlot(int index)
 {
-    if (g_dump) { std::fwrite(&index, 4, 1, g_dump); std::fwrite(DAT_07b11670 + (std::size_t)index * OBJECT_STRIDE, OBJECT_STRIDE, 1, g_dump); }
-    const unsigned char* slot = reinterpret_cast<const unsigned char*>(DAT_07b11670) + (std::size_t)index * OBJECT_STRIDE;
+    if (g_dump) { std::fwrite(&index, 4, 1, g_dump); std::fwrite((char *)&Effects[index], OBJECT_STRIDE, 1, g_dump); }
+    const unsigned char* slot = reinterpret_cast<const unsigned char*>(&Effects[index]);
     MixU((unsigned)index);
     std::size_t pos = 0;
     for (std::size_t x86 : kPointerFields) {
@@ -217,12 +217,12 @@ void HashSlot(int index)
     Mix(slot + pos, OBJECT_STRIDE - pos);
 }
 
-bool Active(int index) { return DAT_07b11670[(std::size_t)index * OBJECT_STRIDE] != 0; }
+bool Active(int index) { return *reinterpret_cast<const char*>(&Effects[index]) != 0; }
 
 void ClearPool()
 {
     for (int i = 0; i < kEffectPoolSize; ++i)
-        if (Active(i)) std::memset(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE, 0, OBJECT_STRIDE);
+        if (Active(i)) std::memset((char *)&Effects[i], 0, OBJECT_STRIDE);
 }
 
 void FillOwner(unsigned char* c, unsigned seed)
@@ -285,7 +285,7 @@ void RunCase(const CaseArgs& a)
     CreateEffect(a.type, pos, angle, light, (float*)(intptr_t)a.sub, (float*)a.owner, (float*)(intptr_t)-1, nullptr, 0);
     for (int t = 0; t < a.ticks; ++t)
         for (int i = 0; i < kEffectPoolSize; ++i)
-            if (Active(i)) { MixU(0x7100u | (unsigned)t); ScrubStack(); MoveEffect(reinterpret_cast<float*>(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE), i); }
+            if (Active(i)) { MixU(0x7100u | (unsigned)t); ScrubStack(); MoveEffect(reinterpret_cast<float*>(&Effects[i]), i); }
 }
 
 bool RunGuarded(const CaseArgs& a)

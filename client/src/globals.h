@@ -1718,7 +1718,7 @@ extern float   _DAT_00552cf8;  // π/2 (used in SLERP degenerate case)
 extern float   _DAT_00552d00;  // SLERP near-parallel threshold (~1e-3)
 extern float   _DAT_00552a1c;  // animation speed multiplier
 // ── Effect pool ──────────────────────────────────────────────────────────────
-extern char    DAT_07b11670[kEffectPoolSize * OBJECT_STRIDE];   // Effect pool: 200 × 0x1bc (IDA: 0x07B11670..0x07B27150)
+extern OBJECT  Effects[kEffectPoolSize];   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
 // ── Monster_Data string literals ─────────────────────────────────────────────
 extern char    s_Data2_MonsterSetBase2_txt_00561530[];
 extern char    s_Data2_Monster__0055e06c[];  // "Data2/Monster/"

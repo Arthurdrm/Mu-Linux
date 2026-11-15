@@ -913,11 +913,11 @@ void __cdecl EffectPool_RenderAll(void)
     // DESVIACION (DLL Antilag, ret en 0x0046BBA0): sin efectos de skills.
     if (gUserSettings.GetAntilag(ANTILAG_SKILLS)) return;
     // HeadAngle (0x07B11698) está en offset +40 dentro del
-    // effect pool DAT_07b11670 (kEffectPoolSize entries; IDA: 200).
+    // effect pool Effects (kEffectPoolSize entries; IDA: 200).
     // En IDA: HeadAngle iter es float*, offsets negativos cubren la cabecera del
     // entry. v0 inicia en (float*)(pool + 40), recorre 200 entries de 111 floats.
     if (!DAT_05828d58) return;
-    float* HeadAngle = (float*)((char*)DAT_07b11670 + 40);
+    float* HeadAngle = (float*)((char*)Effects + 40);
     if (!HeadAngle) return;
 
     // Pool: 200 entries x 0x1bc bytes = 444B stride = 111 floats por entry.
@@ -1193,7 +1193,7 @@ void EffectPool_TickRenderState() {
     if (SceneFlag != 4 && SceneFlag != 5) return;
     if (gUserSettings.GetAntilag(ANTILAG_SKILLS) || !DAT_05828d58) return;
     for (int i = 0; i < kEffectPoolSize; ++i) {
-        OBJECT &o = *(OBJECT *)((char *)DAT_07b11670 + i * OBJECT_STRIDE);
+        OBJECT &o = *(OBJECT *)((char *)&Effects[i]);
         if (!o.Live) continue;
         o.Visible = (BYTE)Frustum_TestSphere(o.Position, 400.0f);
         if (!o.Visible) continue;

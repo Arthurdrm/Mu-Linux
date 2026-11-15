@@ -782,7 +782,7 @@ extern "C" void __cdecl RenderCharacterInfoWindow(int iPosX, int iPosY)
     {
         DWORD srvIdx = ServerSelectHi;
         DWORD channel = ServerLocalSelect;
-        const char* srvName = (const char*)&DAT_083a45d8 + srvIdx * 0x21e;
+        const char* srvName = ServerList[srvIdx].Name;
         const char* fmt = Packet_IsValidSockType((int)srvIdx, (int)channel)
                           ? GlobalText[460]
                           : GlobalText[461];

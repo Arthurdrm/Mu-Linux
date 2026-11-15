@@ -945,11 +945,15 @@ DWORD&   DAT_083a4330  = *(DWORD*)&CurrentCameraPosition[1];
 float&  _DAT_083a4334  = CurrentCameraPosition[2];
 DWORD&   DAT_083a4334  = *(DWORD*)&CurrentCameraPosition[2];
 float    DAT_083a45d4  = 0.0f;  // Scene_Dispatch — login background animation angle (sin-product)
-// ServerList buffer: 24 entries * stride 0x21e + padding. End bounds in the
-// original code were absolute (0x83a7ac6, 0x83a7ada). We make it a contiguous
-// buffer and the Scene_Login_ServerSelect loops use ((int)&DAT_083a45d8 + 0x34ee).
-char     DAT_083a45d8[0x3600] = {};  // 13824 bytes covers the original 0x3502 span.
-// Overlapping sub-symbols at the same address — accessed via macros in globals.h.
+// IDA: ServerList (0x083A45D8).  Era `char DAT_083a45d8[0x3600]` recorrido con
+// offsets crudos; el layout es el de SERVER_LIST_t (structs.h).
+SERVER_LIST_t ServerList[MAX_SERVER_HI] = {};
+static_assert(sizeof(SERVER_LIST_t) == 0x21e, "stride de ServerList");
+static_assert(offsetof(SERVER_LIST_t, Number) == 0x14 && offsetof(SERVER_LIST_t, extServer) == 0x15
+              && offsetof(SERVER_LIST_t, Server) == 0x16, "layout de SERVER_LIST_t");
+static_assert(offsetof(SERVER_LIST_t, Server) + offsetof(SERVER_t, Index) == 0x2c
+              && offsetof(SERVER_LIST_t, Server) + offsetof(SERVER_t, Percent) == 0x2e
+              && sizeof(SERVER_t) == 0x1a, "layout de SERVER_t");
 
 // Local server-name table (0x07D52C34). En el binario original es un buffer BSS
 // que ReceiveServerList (F4/02) lee para el nombre de cada grupo (stride 300,

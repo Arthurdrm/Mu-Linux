@@ -263,7 +263,7 @@ void Recv_CustomServerList(const BYTE* Msg)
 // {WORD ServerCode; BYTE UserTotal; pad} (stride 4). UserTotal (0..100) es el
 // load que Scene_Login_ServerSelect Pass 4 dibuja como cuadros llenos.
 // El nombre de cada grupo se copia desde DAT_07d52c34 (poblada por F4/04).
-// Layout del display array (DAT_083a45d8, stride 542 por slot):
+// Layout del display array (ServerList, SERVER_LIST_t de 542 bytes por slot):
 //   +0x14 num_channels · +0x2c channel_id (stride 26) · +0x2e load (stride 26)
 // Slot destino = 23 - (ServerCode/20)  (o 24 para el grupo evento 12).
 // ---------------------------------------------------------------------------
@@ -275,7 +275,7 @@ void Recv_ServerList(const BYTE* Msg)
     // Clear num_channels (+0x14) de todos los slots (25). Repuebla desde el
     // paquete; esto también elimina la entrada estática "MuServer" del slot 0.
     for (int s = 0; s < 25; s++)
-        *(unsigned char*)(DAT_083a45d8 + 542 * s + 0x14) = 0;
+        ServerList[s].Number = 0;
 
     if (count == 0)
         return;
@@ -289,18 +289,18 @@ void Recv_ServerList(const BYTE* Msg)
         if (group == 12) {
             slot = 24;
             // grupo evento: nombre desde GlobalText[559] (si existe)
-            if (GlobalText[559]) Platform::TextCopy(DAT_083a78a8, (const char*)GlobalText[559], 20);
+            if (GlobalText[559]) Platform::TextCopy(ServerList[24].Name, (const char*)GlobalText[559], 20);
         } else {
             slot = 23 - group;
             if (slot < 0 || slot > 24) continue;
             // nombre desde la tabla local poblada por F4/04
-            Platform::TextCopy(DAT_083a45d8 + 542 * slot, DAT_07d52c34 + 300 * group, 20);
+            Platform::TextCopy(ServerList[slot].Name, DAT_07d52c34 + 300 * group, 20);
         }
-        char* slotBase = DAT_083a45d8 + 542 * slot;
-        unsigned char chan = *(unsigned char*)(slotBase + 0x14);   // num_channels actual
-        *(unsigned short*)(slotBase + 0x2c + 26 * chan) = serverCode;  // channel_id
-        *(unsigned char*) (slotBase + 0x2e + 26 * chan) = load;        // load (UserTotal)
-        *(unsigned char*) (slotBase + 0x14) = chan + 1;               // ++num_channels
+        SERVER_LIST_t& srv = ServerList[slot];
+        unsigned char chan = srv.Number;            // canales cargados hasta ahora
+        srv.Server[chan].Index   = serverCode;      // channel_id
+        srv.Server[chan].Percent = load;            // UserTotal
+        srv.Number = chan + 1;
     }
     NetLog("NET:  → F4/02 ServerList parsed count=%d (loads applied)", count);
 }

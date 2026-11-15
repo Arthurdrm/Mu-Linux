@@ -365,7 +365,8 @@ struct SERVER_LIST_t
 // `CameraFOV = 45.0f` write the IEEE-754 bits (not an integer cast).
 
 // Connection: g_bGameServerConnected is declared in globals.h.
-#define ServerList          (*(SERVER_LIST_t(*)[MAX_SERVER_HI])&DAT_083a45d8)
+// IDA: ServerList (0x083A45D8) — 25 grupos × 0x21e; termina justo en 0x083A7AC6.
+extern SERVER_LIST_t ServerList[MAX_SERVER_HI];
 // `ServerNumber` es un nombre INVENTADO del port y describe mal el
 // campo.  `0x083A7C40` es la **cantidad de servidores** que trajo el F4/02
 // (`ReceiveServerList` L15: `unk_83A7C40 = ReceiveBuffer[5]`), y `Game_SceneUpdate`

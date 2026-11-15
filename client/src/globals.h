@@ -907,15 +907,6 @@ extern float&  _DAT_083a4334;  // alias → CurrentCameraPosition[2]
 extern DWORD&  DAT_083a4334;   // alias → CurrentCameraPosition[2] (DWORD view)
 extern char    g_lpszMessageBoxCustom[7][0x26];   // IDA: g_lpszMessageBoxCustom (0x083A44C4) — 7 líneas × 38
 extern float   DAT_083a45d4;   // login background animation angle (Scene_Dispatch)
-extern char    DAT_083a45d8[0x3600];   // server list buffer (stride 0x21e, 24 entries); overlaps sub-symbols below
-#define DAT_083a45ec   (*(DWORD*)(DAT_083a45d8 + 0x14))   // offset 0x083a45ec
-#define DAT_083a45ed   (*(char *)(DAT_083a45d8 + 0x15))   // offset 0x083a45ed
-#define DAT_083a4604   (*(DWORD*)(DAT_083a45d8 + 0x2c))   // offset 0x083a4604
-#define DAT_083a4606   (*(WORD *)(DAT_083a45d8 + 0x2e))   // offset 0x083a4606
-// Name-field aliases usados por ReceiveServerList (F4/02). Ambos caen dentro
-// del array DAT_083a45d8[0x3600]: slot 23 (0x30B2) y slot 24 (0x32D0).
-#define DAT_083a768a   (DAT_083a45d8 + 0x30B2)   // name field of display slot 23
-#define DAT_083a78a8   (DAT_083a45d8 + 0x32D0)   // name field of display slot 24 (event)
 // Local server-name table poblada por F4/04 (custom list); stride 300 por grupo.
 extern char    DAT_07d52c34[24 * 300];
 

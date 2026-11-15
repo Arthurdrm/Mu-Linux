@@ -26,7 +26,7 @@
 
 int AlphaBlendType=0;
 char CullFaceEnable=0,AlphaTestEnable=0,TextureEnable=0,DepthTestEnable=0,FogEnable=0;
-DWORD DepthMaskEnable=0,DAT_00561574=0xffffffffu;
+DWORD DepthMaskEnable=0,CachTexture=0xffffffffu;
 char* g_BitmapsRaw=ResourceTables::TextureBase();
 static std::vector<std::string> diagnostics;
 extern "C" void DbgLogPublic(const char* text){
@@ -111,7 +111,7 @@ Image DrawCase(int view,bool alpha,int path){
     const unsigned char pixels[16]{200,150,100,20,100,200,150,80,150,100,200,180,220,180,120,250};
     glTexImage2D(GL_TEXTURE_2D,0,alpha?GL_RGBA8:GL_RGB8,2,2,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
     Gfx::TexParameter(Gfx::TexParam::MinFilter,Gfx::TexValue::Linear);Gfx::TexParameter(Gfx::TexParam::MagFilter,Gfx::TexValue::Linear);
-    SetupView(view,alpha,texture);ResourceTables::EnsureTextures(36);std::memcpy(g_BitmapsRaw+35*0x38+0x2c,&texture,4);g_BitmapsRaw[35*0x38+0x28]=alpha?4:3;DAT_00561574=0xffffffffu;
+    SetupView(view,alpha,texture);ResourceTables::EnsureTextures(36);std::memcpy(g_BitmapsRaw+35*0x38+0x2c,&texture,4);g_BitmapsRaw[35*0x38+0x28]=alpha?4:3;CachTexture=0xffffffffu;
     unsigned char face[36]{},raw[48]{},normal[60]{};face[0]=3;float local[9]{-.7f,-.7f,.1f,.7f,-.7f,-.1f,0,.7f,.2f};float world[9];std::memcpy(world,local,sizeof(world));float colors[9]{.8f,.6f,.4f,.4f,.8f,.6f,.6f,.4f,.8f},uv[6]{0,0,1,0,.5f,1},body[3]{1,1,1},lighting[3]{1,1,1};
     for(int i=0;i<3;++i){short index=short(i);for(int offset:{2,10,18})std::memcpy(face+offset+i*2,&index,2);std::memcpy(raw+i*16+4,local+i*3,12);float n[3]{0,0,1};std::memcpy(normal+i*20+4,n,12);}
     int model=0;float bones[12]{1,0,0,0,0,1,0,0,0,0,1,0},direction[3]{0,0,1},coefficients[3]{.5f,.5f,.25f},origin[3]{};
@@ -133,7 +133,7 @@ Image DrawCase(int view,bool alpha,int path){
         glReadPixels(0,0,128,128,GL_RGBA,GL_UNSIGNED_BYTE,image.color.data());glReadPixels(0,0,128,128,GL_DEPTH_COMPONENT,GL_FLOAT,image.depth.data());
         Platform::timer.offset+=2101;
     }
-    BufferedDraw::Suspend();Gfx::DeleteTexture(texture);DAT_00561574=0xffffffffu;assert(glGetError()==GL_NO_ERROR);return image;
+    BufferedDraw::Suspend();Gfx::DeleteTexture(texture);CachTexture=0xffffffffu;assert(glGetError()==GL_NO_ERROR);return image;
 }
 void Images(){
     if(!Materials::Enabled())Materials::Toggle();

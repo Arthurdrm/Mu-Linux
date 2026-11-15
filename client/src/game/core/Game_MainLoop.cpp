@@ -209,7 +209,7 @@ void __cdecl Game_MainLoop(HDC param_1)
 
         // Print Screen conserva su captura independiente.
         if (PressKey(0x2c) & 0xff)
-            DAT_083a42ec ^= 1;
+            GrabEnable ^= 1;
 
         // Decrement countdown counters
         if (ChatTime > 0) ChatTime--;
@@ -323,7 +323,7 @@ void __cdecl Game_MainLoop(HDC param_1)
     if ((Platform::GetInput().KeyState(VK_SHIFT) >> 8) != 0)
         shiftHeld = 1 - shiftHeld;
 
-    if (DAT_083a42ec != '\0' && shiftHeld == 1)
+    if (GrabEnable != '\0' && shiftHeld == 1)
         UIChatLogWindow_AddText((const char*)&DAT_083a7c94, nameBuf, 1);
 
     // ── GL CLEAR ──────────────────────────────────────────────────────────────
@@ -363,7 +363,7 @@ void __cdecl Game_MainLoop(HDC param_1)
     Gfx::Disable(Gfx::Cap::Fog);         /* FogEnable es "fog-is-on" flag global del scene */
     Gfx::Color4f(1.0f, 1.0f, 1.0f, 1.0f);
     // Invalidar cache de última textura ligada para forzar rebind
-    DAT_00561574 = 0xFFFFFFFFu;
+    CachTexture = 0xFFFFFFFFu;
 
     // NOTA: el workaround `glDisable(GL_CULL_FACE)` aquí era no-op: cada
     // Scene_* llama GL_BeginViewport después y ese re-habilita GL_CULL_FACE
@@ -391,16 +391,16 @@ void __cdecl Game_MainLoop(HDC param_1)
     }
     { RenderProfile::Scope measured(RenderProfile::Pass::Restore);Simulation_EndRender(); }
 
-    if (DAT_083a42ec != '\0') {
+    if (GrabEnable != '\0') {
         if (DAT_083a410c != '\0')
             Monster_SaveSetBase("Data2/MonsterSetBase2.txt");
         GL_CaptureScreenshot();
     }
 
-    if (DAT_083a42ec != '\0' && shiftHeld == 0)
+    if (GrabEnable != '\0' && shiftHeld == 0)
         UIChatLogWindow_AddText((const char*)&DAT_083a7c98, nameBuf, 1);
 
-    DAT_083a42ec = '\0';
+    GrabEnable = '\0';
 
     CHK("ML/pre_swap");
     // ── SWAP BUFFERS ──────────────────────────────────────────────────────────

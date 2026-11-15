@@ -192,7 +192,7 @@ float    CameraViewFar  = 2000.0f;  // IDA: CameraViewFar (0x00561550)
 float    CameraFOV      = 55.0f;    // IDA: CameraFOV (0x00561554); MoveMainCamera lo reescribe a 35.0
 float    CameraDistanceTarget  = 0.0f;  // DAT_005616B4: MoveMainCamera target
 float    CameraDistance  = 0.0f;        // DAT_083A45D0: current MoveMainCamera distance
-DWORD    DAT_00561574  = 0;
+DWORD    CachTexture  = 0;   // IDA: CachTexture (0x00561574)
 // Buffer de la IP del server: Config_ReadServerAddr lo llena desde Config/ServerConfig.h.
 // szServerIpAddress apunta a este buffer; el valor inicial se reemplaza siempre.
 char     g_ServerIPBuf[128] = "connect.muonline.co.kr";
@@ -831,7 +831,7 @@ BYTE     g_TerrainObjTable[0x328] = {};   // ambient terrain-object table (sub_4
 float    DAT_081cb608[256 * 256 * 3] = {};
 // TerrainLightData[256*256][3].
 // FUN_004f71c0 (Terrain_FinalizeLighting) escribe 196608 floats acá.
-float    DAT_0828b608[256 * 256 * 3] = {};
+float    BackTerrainLight[256 * 256 * 3] = {};   // IDA: BackTerrainLight (0x0828B608)
 float    TerrainMappingAlpha[0x10000] = {};
 // Frustum plane normals: 5 planes × 3 floats
 float    FrustrumFaceNormal  = 0.0f;  // plane 0 normal X
@@ -938,7 +938,7 @@ DWORD&   DAT_083a42dc = *(DWORD*)&CameraPosition[2];
 char     CameraTopViewEnabled  = 0;  // DAT_083A42E9
 char     FogEnable  = 0;  // IDA: FogEnable (0x083A42EA)
 char     DAT_083a42eb  = 0;  // auto-drop trigger flag (inventory)
-DWORD    DAT_083a42ec  = 0;
+DWORD    GrabEnable  = 0;   // IDA: GrabEnable (0x083A42EC)
 DWORD    DAT_083a4320  = 0;
 DWORD    DAT_083a4328  = 0;
 // CurrentCameraPosition[3] @ 0x083a432c — 3 contiguous floats read by MoveCamera

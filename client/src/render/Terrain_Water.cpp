@@ -63,7 +63,7 @@ int __cdecl Terrain_Water(void)
                     // 0x004f9620-23 confirma byte-offset = iVar2*3*4).
                     // IDA copia el float (PrimaryTerrainLight[i][0]=BackTerrainLight[i][0]):
                     // bit-cast del source para preservarlo, igual que G/B.
-                    *(unsigned int *)((char*)&DAT_081cb608 + iVar3) = *(unsigned int*)&DAT_0828b608[iVar2 * 3];
+                    *(unsigned int *)((char*)&DAT_081cb608 + iVar3) = *(unsigned int*)&BackTerrainLight[iVar2 * 3];
                     *(unsigned int *)((char*)&DAT_081cb60c + iVar3) = (&DAT_0828b60c)[iVar2 * 3];
                     *(unsigned int *)((char*)&DAT_081cb610 + iVar3) = (&DAT_0828b610)[iVar2 * 3];
                     uVar8 = FrustrumBoundMinY_1;

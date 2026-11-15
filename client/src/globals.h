@@ -180,7 +180,7 @@ extern float   CameraViewFar;    // IDA: CameraViewFar (0x00561550)
 extern float   CameraFOV;        // IDA: CameraFOV (0x00561554)
 extern float   CameraDistanceTarget;   // DAT_005616B4: MoveMainCamera smoothing target
 extern float   CameraDistance;         // DAT_083A45D0: current MoveMainCamera distance
-extern DWORD   DAT_00561574;
+extern DWORD   CachTexture;   // IDA: CachTexture (0x00561574), último slot bindeado
 extern char   *szServerIpAddress; // IDA: szServerIpAddress (0x005615B8)
 #define PTR_s_connect_muonline_co_kr_005615b8  szServerIpAddress
 extern WORD    g_ServerPort; // IDA: g_ServerPort (0x005615BC)
@@ -773,14 +773,14 @@ extern BYTE    g_TerrainObjTable[0x328];
 // floats. Las macros de abajo proyectan DAT_081cb60c/610 en el 2do/3er DWORD del
 // slot, como el layout contiguo del binario original.
 extern float   DAT_081cb608[256 * 256 * 3];
-extern float   DAT_0828b608[256 * 256 * 3];   // TerrainLightData[256*256][3] post-normal lighting
+extern float   BackTerrainLight[256 * 256 * 3];   // IDA: BackTerrainLight (0x0828B608) - TerrainLightData[256*256][3] post-normal lighting
 // cb60c/cb610 son el 2do/3er DWORD del slot 0 de cb608 (y análogamente para
 // 0828b608). El código los accede como `(&DAT_*60c)[iVar2*3]` (lee el 2do campo
 // del slot iVar2) o `(char*)&DAT_*60c + iVar2*12` (escribe en el 2do campo).
 #define DAT_081cb60c   (*(DWORD*)((char*)&DAT_081cb608[0] + 4))
 #define DAT_081cb610   (*(DWORD*)((char*)&DAT_081cb608[0] + 8))
-#define DAT_0828b60c   (*(DWORD*)((char*)&DAT_0828b608[0] + 4))
-#define DAT_0828b610   (*(DWORD*)((char*)&DAT_0828b608[0] + 8))
+#define DAT_0828b60c   (*(DWORD*)((char*)&BackTerrainLight[0] + 4))
+#define DAT_0828b610   (*(DWORD*)((char*)&BackTerrainLight[0] + 8))
 extern float   TerrainMappingAlpha[0x10000];          // TerrainMappingAlpha[256*256] — blend factor layer1↔layer2 (IDA/DLL; NO es height)  [IDA 0x0834B608]
 extern float   FrustrumFaceNormal;  // frustum plane 0 normal X  [IDA 0x0838B7C4]
 extern float   DAT_0838b7c8;  // frustum plane 0 normal Y
@@ -886,7 +886,7 @@ extern DWORD&  DAT_083a42dc;   // alias → CameraPosition[2] (DWORD view)
 extern char    CameraTopViewEnabled;   // DAT_083A42E9: top-view / force-cull-bypass flag
 extern char    FogEnable;  // IDA: FogEnable (0x083A42EA) - reset to 0 each frame in Scene_Loading
 extern char    DAT_083a42eb;   // auto-drop trigger flag (inventory)
-extern DWORD   DAT_083a42ec;
+extern DWORD   GrabEnable;    // IDA: GrabEnable (0x083A42EC), captura de pantalla
 // DAT_083a42fc  — macro alias dentro de DAT_083a42f8 (ver bloque de dialog button rects)
 extern DWORD   DAT_083a4320;
 // DAT_083a4324 @ 0x083A4324 ES `g_iNumLineMessageBoxCustom` — la cantidad de

@@ -40,7 +40,7 @@
 //   DAT_083a7c14   — login sub-state
 //   FogEnable
 //   DAT_07e11d6e   — byte flag reset
-//   DAT_00559c8c   — InputTextWidth
+//   InputTextWidth   — InputTextWidth
 //   DAT_00559c78   — m_dwTextColor
 //   SetBackgroundTextColor   — m_dwBackColor
 //   DAT_055c9fec   — m_hFontDC (HDC usado para GetTextExtentPointA)
@@ -100,7 +100,7 @@ uint Scene_Login(void)
     GL_Begin2D();    // BeginBitmap — setup 2D ortho
 
     // ── Font / color setup ────────────────────────────────────────────────────
-    DAT_00559c8c = 0x77;                  // InputTextWidth = 119
+    InputTextWidth = 0x77;                  // InputTextWidth = 119
     GL_SetBlendSrcOver('\x01');                 // EnableAlphaTest(1)
     Gfx::Color3f(1.0f, 1.0f, 1.0f);
     DAT_00559c78 = 0xffd2e6ff;            // m_dwTextColor
@@ -156,7 +156,7 @@ uint Scene_Login(void)
     }
 
     // ── Version strings (bottom of screen) ───────────────────────────────────
-    DAT_00559c8c = 0x100;                 // InputTextWidth = 256
+    InputTextWidth = 0x100;                 // InputTextWidth = 256
     Gfx::Color3f(0.8f, 0.7f, 0.6f);
     uVar6 = 0xffffffff;
     DAT_00559c78 = 0xffffffff;

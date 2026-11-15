@@ -137,7 +137,7 @@ void __cdecl UI_InGameMenu(void)
             }
         } else {
             ErrorMessage = 110;
-            if ((int)DAT_07e91388 > 0) Item_ReturnPickedItem();
+            if ((int)pPickedItemKey > 0) Item_ReturnPickedItem();
         }
         state = ErrorMessage;
         PlayBuffer(0x19, 0, 0);             // PlayBuffer(25), siempre

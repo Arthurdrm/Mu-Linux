@@ -43,7 +43,7 @@ void ReceiveTradeExit97k(const BYTE* Msg, int Size)
 
     TradeOpened = 0;
     DAT_05826d30 = 0;
-    DAT_07e91388 = 0;
+    pPickedItemKey = 0;
     EquipmentItem = 0;
     m_nYourTradeGold = 0;
     m_nMyTradeGold = 0; // IDA: m_nMyTradeGold

@@ -12,7 +12,7 @@ extern "C" void __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int grid
 // 1. Calls FUN_004824c0() to get equipped weapon type index.
 // 2. If weapon == -1, returns immediately (no weapon equipped).
 // 3. anti-tamper hash table — skipped (encrypt CharacterMachine)
-// 4. If class == elf (2) and DAT_07e91388 == 0:
+// 4. If class == elf (2) and pPickedItemKey == 0:
 //    reads weapon item types from CharacterMachine equipment slots.
 //    - If elf-bow (type 0x80..0x86 or 0x91) equipped and crossbow slot empty:
 //      copies item to pPickedItem, sends equipment swap request to slot 0.
@@ -37,7 +37,7 @@ void __cdecl Item_AutoEquipAmmo(int /*unused*/) {
         return;
 
     // 0048B762..0048B78A: only an unblocked Elf enables the two-hand swap.
-    if ((characterAttribute[11] & 7) != 2 || DAT_07e91388 != 0)
+    if ((characterAttribute[11] & 7) != 2 || pPickedItemKey != 0)
         return;
 
     // DESVIACION: con un movimiento de item sin respuesta (EquipmentItem) no
@@ -86,7 +86,7 @@ void __cdecl Item_AutoEquipAmmo(int /*unused*/) {
     }
 
     ITEM* const source = (ITEM*)(OffsetInventoryItems + (size_t)inventorySlot * sizeof(ITEM));
-    memcpy(DAT_07e91350, source, sizeof(ITEM));
+    memcpy(pPickedItem, source, sizeof(ITEM));
 
     const int encodedSourceSlot = inventorySlot + 12;
     // IDA: `*(_DWORD *)&Inventory[32].Type = v26 + 12;` — el slot de origen,
@@ -97,7 +97,7 @@ void __cdecl Item_AutoEquipAmmo(int /*unused*/) {
     // IDA SendRequestEquipmentItem (0x43C250): `EquipmentItem = 1` antes de
     // enviar.  El port lo pone en cada call site.
     EquipmentItem = 1;
-    SendRequestEquipmentItem(0, encodedSourceSlot, (ITEM*)DAT_07e91350,
+    SendRequestEquipmentItem(0, encodedSourceSlot, (ITEM*)pPickedItem,
                                   0, targetEquipmentSlot);
     UIChatLogWindow_AddText(chatId, GlobalText[250], 1);
 }

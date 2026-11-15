@@ -9,7 +9,7 @@
 // FUN_005112F0 @ 0x005112F0 — Screen_UnprojectRay(screenX, screenY, outRay).
 // Converts screen pixel (param_1, param_2) to a world-space ray direction for mouse picking.
 // Uses viewport (DAT_0056156C=W, DAT_00561570=H), projection offsets (DAT_083A429C/A0),
-// projection scale (DAT_083A42A4/A8), z-depth DAT_00561550, and view matrix DAT_083A4140.
+// projection scale (DAT_083A42A4/A8), z-depth CameraViewFar, and view matrix DAT_083A4140.
 // DESVIACION (DLL Camera3D.cpp, SetDword 0x00511332/60/6C -> 0x005528CC):
 // la profundidad del punto sale de una constante de 2000 y no de
 // CameraViewFar, para que agrandar el alcance no cambie la posición de los

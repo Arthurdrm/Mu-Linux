@@ -53,7 +53,7 @@ extern "C" int g_GoldenArcherCustom = 0;
 #define GA_MouseLButtonPush  MouseLButtonPush
 #define GA_MouseLButtonPop   MouseLButtonPop
 #define GA_MouseLButton      MouseLButton
-#define GA_MouseOnWindow     DAT_07d78094
+#define GA_MouseOnWindow     MouseOnWindow
 #define GA_MouseUpdateTime   MouseUpdateTime
 #define GA_MouseUpdateMax    MouseUpdateTimeMax
 #define GA_InventoryStartX   (*(int*)&InventoryStartX)
@@ -63,7 +63,7 @@ extern "C" int g_GoldenArcherCustom = 0;
 #define GA_InputGold         InputGold
 #define GA_StorageGoldFlag   StorageGoldFlag
 #define GA_InputNumber       InputNumber
-#define GA_InputTextWidth    DAT_00559c8c
+#define GA_InputTextWidth    InputTextWidth
 #define GA_InputIndex        DAT_07e11d78
 #define GA_WindowWidth       ((int)gWindow.GetWidth())
 #define GA_WindowHeight      ((int)gWindow.GetHeight())

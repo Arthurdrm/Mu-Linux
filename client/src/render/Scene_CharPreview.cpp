@@ -29,7 +29,7 @@ void RenderInfomation3D(void)
   Gfx::LoadIdentity();
   GL_SetViewport(0, 0, gWindow.GetRealWidth(), gWindow.GetHeight());
   aspect = (float)((double)gWindow.GetRealWidth() / (double)(int)gWindow.GetHeight());
-  GL_SetPerspective(0x3f800000, aspect, (int)DAT_0056154c, DAT_00561550);
+  GL_SetPerspective(0x3f800000, aspect, *(int*)&CameraViewNear, CameraViewFar);
 
   Gfx::MatrixMode(Gfx::Matrix::ModelView);
   Gfx::PushMatrix();
@@ -39,7 +39,7 @@ void RenderInfomation3D(void)
   GL_EnableDepthWrites();
 
   level = DAT_07e91354;
-  itemType = *(short*)DAT_07e91350;
+  itemType = *(short*)pPickedItem;
   option1 = DAT_07e9136b;
   if (ErrorMessage == 0x99) {
     level = DAT_07ea5244;

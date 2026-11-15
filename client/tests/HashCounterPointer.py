@@ -11,6 +11,7 @@ from SceneObjectPointer import build_and_run, function, read_source
 SERVICES=r'''
 using uint=unsigned;using undefined4=std::uint32_t;using undefined1=BYTE;using byte=BYTE;
 void* DAT_07cf1ffc;int MAIN_HASH_CLASS;char DAT_07e11d6e,DAT_07eaa134;DWORD DAT_07eaa13c,CheckInventory,MouseX,MouseY,InventoryStartY,InventoryStartX,DAT_07ea840c,DAT_07ea8408,DAT_07ea9844,DAT_0055a3e4;char DAT_07e91350[68];
+#define pPickedItem DAT_07e91350
 float _DAT_00552cac=100,_DAT_00552c24=200,_DAT_00552c14=50,_DAT_00552ca8=150;
 BYTE *node,*memory;void* wantedKey;unsigned wantedOffset,factoryCalls;bool missing;int rightEdge;std::vector<DWORD> events;
 namespace Ui{constexpr int WindowRight=1;}

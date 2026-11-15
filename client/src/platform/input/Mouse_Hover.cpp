@@ -111,14 +111,14 @@ void Mouse_UpdateHoverTargets(void)
 
     // ── 3. Hover target detection ─────────────────────────────────────────────
 
-    if (DAT_07d78094 != '\0') goto process_click;
+    if (MouseOnWindow != '\0') goto process_click;
 
     {
         SHORT altState = Platform::GetInput().KeyState(0x12);  // VK_MENU = Alt
         if ((char)((unsigned short)altState >> 8) == (char)0x80)
         {
             // Alt held: item-on-ground first, then NPC, mob, player
-            if (DAT_07e91388 == 0)
+            if (pPickedItemKey == 0)
                 SelectedItem = ItemOnGround_HoverTest();
             if (SelectedItem == -1) {
                 SelectedNpc = Entity_SelectNearest(4);
@@ -175,7 +175,7 @@ void Mouse_UpdateHoverTargets(void)
                     if (SelectedCharacter != -1) goto done;
                     SelectedNpc = Entity_SelectNearest(4);  // NPC
                     if (SelectedNpc == -1) {
-                        if (DAT_07e91388 == 0)
+                        if (pPickedItemKey == 0)
                             SelectedItem = ItemOnGround_HoverTest();
                         if (SelectedItem == -1)
                             SelectedOperate = SpecialObject_HoverTest();
@@ -415,7 +415,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
                 if (ty < 0) ty = 0; if (ty > 255) ty = 255;
                 const unsigned char tile = TerrainMappingLayer1[tx + (ty << 8)];   // TerrainMappingLayer1
                 const unsigned char roof = (map == 0) ? 4 : 3;
-                if (tile == roof && (DWORD)tile != DAT_07e118e8)           // HeroTile
+                if (tile == roof && tile != HeroTile)
                     continue;
             }
             best_perp = d2;

@@ -242,14 +242,14 @@ unsigned long long __cdecl CheckInventorySpace(int p1, int p2, unsigned short* p
     // p3 = inventory array base (short*, stride 0x22 words = 0x44 bytes)
     // p4 = grid width, p5 = grid height
     //
-    // Uses DAT_07e91350 (pPickedItem type), DAT_07d78068 (ItemAttribute base) to get item Width/Height.
+    // Uses pPickedItem (pPickedItem type), DAT_07d78068 (ItemAttribute base) to get item Width/Height.
     // Converts MouseX/MouseY to grid coords using _DAT_00552a10 and _DAT_00552504 scale factors.
     // Returns low byte=1 if space available, 0 otherwise.
     // Also handles stackable item merging (arrows 0x1bf..0x1c8, potions 0x87/0x8f).
 
 
     // Get picked item dimensions from ItemAttribute table
-    short pickedType = *(short*)DAT_07e91350;
+    short pickedType = *(short*)pPickedItem;
     std::uintptr_t attrBase = (int)pickedType * 0x40 + DAT_07d78068;
     unsigned int itemW = (unsigned int)*(unsigned char*)(attrBase + 0x20);  // Width
     unsigned int itemH = (unsigned int)*(unsigned char*)(attrBase + 0x21);  // Height
@@ -308,7 +308,7 @@ unsigned long long __cdecl CheckInventorySpace(int p1, int p2, unsigned short* p
         }
         int cellIdx = gridY * p4 + gridX;
         int cellType = (int)*(short*)((char*)OffsetInventoryItems + cellIdx * 0x44);
-        int picked = (int)*(short*)DAT_07e91350;
+        int picked = (int)*(short*)pPickedItem;
 
         if (picked == cellType) {
             // Arrows (0x1bf < type < 0x1c9) stack with same range

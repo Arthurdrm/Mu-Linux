@@ -51,15 +51,14 @@ extern "C" {
     // 0x07E11D8C / 0x07E11D90.  Los escribe StartMatchCountDown (0x47EC00),
     // que atiende el opcode 0x92; declarados en globals.h para que el handler
     // los vea.
-    int   m_iMatchCountDownType   = 0;
-    DWORD m_dwMatchCountDownStart = 0;
+    int   m_iMatchCountDownType   = 0;   // IDA: m_iMatchCountDownType (0x07E11D8C)
+    DWORD m_dwMatchCountDownStart = 0;   // IDA: m_dwMatchCountDownStart (0x07E11D90)
     // m_iMatchTime vive en globals.cpp (0x00559CCC): lo escribe SetMatchInfo
     // desde el handler 0x9B.
     // MixState vive en globals.h (0x07EAA140): lo
     // escriben Item_ClickHandler al mandar el mix (= 1) y el handler del 0x86
     // (0 o 2), y lo leen la animacion de la caja de Chaos de abajo y el
     // `++MixState` que la hace avanzar.
-    int   AlphaBlendType          = 0;
 
     // Input fields — IDA exposes 10 slots (chat + whisper-target + ...).
     // InputText / InputLength son los globals DAT_07db8710 / DAT_07d780a8 que
@@ -357,8 +356,8 @@ void Render_QuickButtons_(void)
     // tapaba; el hit-test de cierre (sub_4E4760) seguia vivo en
     // [panelX+25,+49) x [panelY+395,+419).
     if (HUD_IsGuildListRuntime()) {
-        float iconX = (float)DAT_07e91788 + _DAT_00552464;
-        float iconY = (float)DAT_07e91784 + _DAT_0055246c;
+        float iconX = (float)GuildListStartX + _DAT_00552464;
+        float iconY = (float)GuildListStartY + _DAT_0055246c;
         Gfx::Color3f(1.0f, 1.0f, 1.0f);
         GL_DrawTexture(280, iconX, iconY, 24.0f, 24.0f,
                      0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
@@ -377,13 +376,13 @@ void Render_QuickButtons_(void)
 
     // Boton de cierre del panel de personaje.  IDA sub_4F5820 lo dibuja DESPUES
     // de RenderCharacterInfoWindow: antes del panel la textura (alcanza y=433)
-    // lo tapaba y quedaba un hitbox sin boton.  El origen DAT_07ea982c/30 lo
+    // lo tapaba y quedaba un hitbox sin boton.  El origen CharacterInfoStartX/Y lo
     // escribe el propio panel este mismo frame; el click lo atiende
     // CharacterInfo_HitTest en [panelX+25,+49) x [panelY+395,+419).  El texto
     // es byte_7D3A14C = GlobalText[222] ("Cerrar Info de Personaje (C)").
     if (HUD_IsCharacterInfoRuntime()) {
-        float iconX = (float)DAT_07ea982c + 25.0f;
-        float iconY = (float)DAT_07ea9830 + 395.0f;
+        float iconX = (float)CharacterInfoStartX + 25.0f;
+        float iconY = (float)CharacterInfoStartY + 395.0f;
         Gfx::Color3f(1.0f, 1.0f, 1.0f);
         GL_DrawTexture(280, iconX, iconY, 24.0f, 24.0f,
                      0.0f, 0.0f, 0.75f, 0.75f, 1, 1);

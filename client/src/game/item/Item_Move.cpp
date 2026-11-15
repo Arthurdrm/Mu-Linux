@@ -30,7 +30,7 @@
 //   };
 // Total: 3 + 1 + 1 + 4 + 1 + 1 = 11 bytes.
 //
-// `pItem` (= pPickedItem = DAT_07e91350) es un buffer ITEM 0x44 bytes; los
+// `pItem` (= pPickedItem = pPickedItem) es un buffer ITEM 0x44 bytes; los
 // primeros 4 son el wire format del server (per Recv_Inventory):
 //   pItem[0] = type byte 0
 //   pItem[1] = optByte (level<<3 | skill | luck | options)

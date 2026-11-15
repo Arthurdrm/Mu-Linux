@@ -476,12 +476,12 @@ static void SendMove_CloseWindows97k(void)
         if (!EquipmentItem) {                                 // EquipmentItem
             InventoryOpened = 0;
             CloseInventoryRelatedWindows();
-            if ((int)DAT_07e91388 > 0) Item_ReturnPickedItem();
+            if ((int)pPickedItemKey > 0) Item_ReturnPickedItem();
             const BYTE pkt[3] = { 0xC1, 0x03, 0x82 };        // cerrar baul
             gNetwork.SendC1(pkt, sizeof(pkt));
         }
     } else if (ChaosMixOpened) {
-        if (!Connection_Check(OffsetMixItems, 8, 4) || (int)DAT_07e91388 > 0) {
+        if (!Connection_Check(OffsetMixItems, 8, 4) || (int)pPickedItemKey > 0) {
             UIChatLogWindow_AddText("", GlobalText[593], 2);
         } else {
             const BYTE pkt[3] = { 0xC1, 0x03, 0x87 };        // cerrar Chaos Machine
@@ -546,7 +546,7 @@ static bool SendMove_ChaosBoxBlocks97k(const CHARACTER* character)
 {
     if ((const char*)character != (const char*)DAT_07abf5d8 || !ChaosMixOpened)
         return false;
-    if (Connection_Check(OffsetMixItems, 8, 4) && (int)DAT_07e91388 <= 0)
+    if (Connection_Check(OffsetMixItems, 8, 4) && (int)pPickedItemKey <= 0)
         return false;
     UIChatLogWindow_AddText("", GlobalText[593], 2);
     return true;
@@ -789,7 +789,6 @@ void __cdecl Combat_SendMovePathPacket(CHARACTER* character, const OBJECT* objec
 static float g_RightButtonPressSeconds_Attack = 0.0f;
 static float g_RightButtonReleaseTime_Attack = 0.0f;
 
-#define g_MouseOnWindow DAT_07d78094   // 0x07D78094, ver Player_InputTick.cpp
 
 // Correspondencia con el decompile de IDA (0049CBF0), para que los nombres
 // semanticos de abajo sigan siendo rastreables:
@@ -1319,7 +1318,7 @@ static void Attack_Label1585_97k(char* entity, int iType, bool hasTarget)
         return;                                               // IDA L9262
 
     if (iType == 6) {                                         // IDA L9266 — Teleport
-        if (DAT_07e91388 > 0)                                 // IDA L9268: pPickedItem
+        if (pPickedItemKey > 0)                                 // IDA L9268: pPickedItem
             return;
         const BYTE currentAction = (BYTE)*(char *)&AsObject(entity)->CurrentAction;         // IDA: v946
         if (*(WORD *)&AsObject(entity)->Type == 390) {
@@ -1365,7 +1364,7 @@ static void Attack_Label1585_97k(char* entity, int iType, bool hasTarget)
 
     if (iType == 15 && SelectedCharacter != -1) {             // IDA L9737
         char* const target = (char*)(uintptr_t)CharactersClient + CHARACTER_STRIDE * (int)SelectedCharacter;
-        if (PartyNumber <= 0 || DAT_07e91388 > 0) {   // IDA L9740
+        if (PartyNumber <= 0 || pPickedItemKey > 0) {   // IDA L9740
             return;
             }
         const char* const targetName = EntityName::Get(target);
@@ -1574,10 +1573,10 @@ void __cdecl Combat_DispatchHeroSkillAttack(void *entity_v /* IDA: c */)
     }
 
     // 8) MouseOnWindow (IDA Attack L1330) — si el cursor esta sobre una ventana
-    // de UI, no se ataca. `g_MouseOnWindow` lo puebla `MouseOnWindow_Update` en
+    // de UI, no se ataca. `MouseOnWindow` lo puebla `MouseOnWindow_Update` en
     // Player_InputTick.cpp (y el widget de chat le pasa su latch
     // `g_ChatLB_MouseOnWindow`).
-    if (g_MouseOnWindow) return;             // IDA L1330: MouseOnWindow (0x07D78094)
+    if (MouseOnWindow) return;             // IDA L1330: MouseOnWindow (0x07D78094)
 
     // 8b) Gate por estado de animacion (IDA Attack L1335-1345).  `c+261` es el
     // action-state; el heroe (entity_type 390) solo puede atacar desde los

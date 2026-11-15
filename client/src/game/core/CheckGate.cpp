@@ -74,9 +74,9 @@ void __cdecl CheckGate(void)
         if ((gateIndex >= 45 && gateIndex <= 49) ||
             (gateIndex >= 55 && gateIndex <= 56)) {
             const WORD helper = (WORD)ItemBehaviorType(*(const short*)((const BYTE*)CharacterMachine + 1080));
-            const WORD picked = (WORD)ItemBehaviorType(*(const short*)DAT_07e91350);
+            const WORD picked = (WORD)ItemBehaviorType(*(const short*)pPickedItem);
             if ((helper >= 418 && helper <= 419) ||
-                (DAT_07e91388 > 0 && picked >= 418 && picked <= 419)) {
+                (pPickedItemKey > 0 && picked >= 418 && picked <= 419)) {
                 UIChatLogWindow_AddText("", GlobalText[261], 2);
                 continue;
             }

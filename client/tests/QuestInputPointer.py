@@ -124,6 +124,14 @@ def harness(revision=None):
     prefix += re.search(r"struct DIALOG_SCRIPT\s*\{.*?\n\};", header, re.S).group() + "\nstatic_assert(sizeof(DIALOG_SCRIPT)==0x400);\n"
     names=("CharacterAttribute","DAT_07cf1ffc","DAT_005615dc","DAT_083a7c0c","DAT_083a4324","MouseY","MouseX","MouseLButtonPush","MouseLButton","MouseUpdateTime","MouseUpdateTimeMax","DAT_07d78094","MouseLButtonPop")
     for name in names:
+        # DAT_07d78094 paso a llamarse MouseOnWindow (T8e); el arnes sigue
+        # usando el nombre viejo, asi que con el nuevo se agrega un alias.
+        if name == "DAT_07d78094" and not re.search(r"\bDAT_07d78094\s*;", header):
+            name = "MouseOnWindow"
+            prefix += "\n#define DAT_07d78094 MouseOnWindow\n"
+        if name == "DAT_083a7c0c" and not re.search(r"\bDAT_083a7c0c\s*;", header):
+            name = "g_iNumAnswer"
+            prefix += "\n#define DAT_083a7c0c g_iNumAnswer\n"
         prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
         prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
     prefix += re.search(r"^DWORD\s+DAT_07cf5608\[[^;]+;", definitions, re.M).group()

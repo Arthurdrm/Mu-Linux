@@ -42,7 +42,7 @@ void Scene_MapTick(void)
         static_cast<BYTE*>(pvVar3)[0x584] = 1;
         HashTable_Insert(&MAIN_HASH_CLASS,pvVar3,puVar5);
       }
-      RenderItemInfo((void*)0x109,(void*)0x78,DAT_07e91350,'\0');
+      RenderItemInfo((void*)0x109,(void*)0x78,pPickedItem,'\0');
       puVar5 = (undefined4*)DAT_07cf1ffc;
     }
     goto LAB_004f6824;

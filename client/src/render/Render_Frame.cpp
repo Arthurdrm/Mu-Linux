@@ -86,7 +86,7 @@
 //                         tex ID = sub_type + 0x48d
 //   CheckSprites()    → Portal_Render()             — portales / warp pads
 //   GL_BeginSprite()    → Render_Flush()              — 1 instrucción, posiblemente glFlush
-//   if World == 2 && DAT_07e118e8 not in {3, >=10}:
+//   if World == 2 && HeroTile not in {3, >=10}:
 //     FUN_0046cb70()  → SkillEffect_Render() again  — segunda pasada en in-world state
 //   Render_DrawSpritePool()    → Sigil_RenderAll()           — círculos de invocación/sigils
 //                         itera DAT_07c85894 stride 0x1bc; tipos 0/1/2 → blend distinto

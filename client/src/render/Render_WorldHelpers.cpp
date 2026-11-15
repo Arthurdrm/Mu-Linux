@@ -129,7 +129,7 @@ void __cdecl RenderBoids(void)
                     const Materials::InheritedBlendScope shadowBlend;
                     if(!shadowBlend){
                         Gfx::Enable(Gfx::Cap::Blend);
-                        DAT_083a412c = 1;   // referencia: no describe los factores reales
+                        AlphaBlendType = 1;   // referencia: no describe los factores reales
                     }
                     BufferedDraw::Color4f(0.0f, 0.0f, 0.0f, 0.2f);
                     float wx = v0[-86];
@@ -606,7 +606,7 @@ extern "C" BOOL ChaosBoxRequestClose(void) {
         return TRUE;
     }
 
-    if (!ChaosBoxIsEmptyForClose() || DAT_07e91388 > 0) {
+    if (!ChaosBoxIsEmptyForClose() || pPickedItemKey > 0) {
         UIChatLogWindow_AddText("", GlobalText[593], 2);
         return FALSE;
     }

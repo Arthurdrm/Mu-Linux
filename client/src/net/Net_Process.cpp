@@ -133,7 +133,7 @@
 //               PlayBuffer(0x1d, 0, 0)    — inventory update + UI refresh
 //
 //   case 0x33:  if byte[3] != 0:
-//                 DAT_07e91388 = 0
+//                 pPickedItemKey = 0
 //                 STRUCT_DECRYPT(&MAIN_HASH_CLASS, DAT_07cf1ffc)  — decode g_CharData
 //                 DAT_07cf1ffc[0x152] = *(puVar8+2)
 //                 STRUCT_ENCRYPT(&MAIN_HASH_CLASS, puVar23)       — re-encode g_CharData
@@ -148,7 +148,7 @@
 //               Stores PIN buffer: DAT_07ea9834/38/3c ← puVar8[3/7/0xb]
 //               DAT_07ea983e = 0
 //               SetErrorMessage(0x79)  — ShowErrorDialog(0x79)
-//               Después (si DAT_07e91388 >= 1) corta, si no: cae al 0x37
+//               Después (si pPickedItemKey >= 1) corta, si no: cae al 0x37
 //               NOTA: el bloque XOR de envío de este case es el camino de
 //               respuesta al NACK de re-login del server — misma clave de 32 bytes, mismo loop de reintento.
 //
@@ -331,7 +331,7 @@
 //   F3/10: FUN_00426cf0(puVar8, iVar20)
 //   F3/11: FUN_004269f0(puVar8)
 //   F3/13: entity=FindCharacterIndex(byte[2]*256+byte[5]); ChangeCharacterExt(entity, puVar8+7)
-//   F3/14: DAT_07e91388=0; InsertInventoryItem(&DAT_07ea8410,8,8,byte[2],puVar8+5,0)
+//   F3/14: pPickedItemKey=0; InsertInventoryItem(&DAT_07ea8410,8,8,byte[2],puVar8+5,0)
 //          PlayBuffer(0x31, 0, 0)
 //   F3/20: DAT_05826d24 = byte[2]
 //   F3/22: DAT_05826c08 = puVar8[2]

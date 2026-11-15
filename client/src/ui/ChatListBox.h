@@ -12,5 +12,5 @@ void** ChatWidget_GetVTable(void* widget);
 
 // Widget hover flag — set by ChatListBox per-frame input handling, consumed
 // by cursor render.  (Storage in ChatListBox.cpp.)
-extern int MouseOnWindow;
+extern "C" int ChatLB_MouseOnWindowLocal;
 }

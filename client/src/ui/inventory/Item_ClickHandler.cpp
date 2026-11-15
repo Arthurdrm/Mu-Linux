@@ -75,8 +75,7 @@ extern "C" {
 static BYTE* const g_InventoryPoolForClickGuard = Inventory;
 
 // IDA aliases for our DAT_ globals
-#define pPickedItem        (*(BYTE(*)[0x44])DAT_07e91350)
-#define dword_7E91388      DAT_07e91388        // pickup-active flag
+#define dword_7E91388      pPickedItemKey        // pickup-active flag
 #define dword_7EA9800      DAT_07ea9800        // current inv base ptr
 // dword_7EA9844 NO existe: en el binario 0x7EA9844 es un BYTE flag (bSell).
 // La "posicion del item agarrado" vive en Inventory[32].Type → macro ItemPickedPos.
@@ -384,7 +383,6 @@ static bool GetHeroDropTile(BYTE* outX, BYTE* outY)
     return true;
 }
 
-extern "C" void __cdecl SyncPickedItemVisualState(void);
 
 // Devuelve el item agarrado a su slot de origen y suelta el cursor.
 // Se usa al cancelar los diálogos de confirmación (venta / drop al suelo).
@@ -796,7 +794,6 @@ void __cdecl InventoryGrid_Tick(char* origin_x, int origin_y, short* inv_base,
 
                 dword_7EA9800 = reinterpret_cast<BYTE*>(inv_base);
                 memcpy(pPickedItem, (BYTE*)(inv_base + 34 * abs), 0x44);
-                SyncPickedItemVisualState();
 
                 // Para el inventario principal, el índice del slot de origen incluye el
                 // 12 wear slots offset.

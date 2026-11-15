@@ -61,16 +61,12 @@ extern "C" void Net_SendNpcTalkClose(void);
 
 // Origen (esquina superior izquierda) de los paneles Character / Guild.
 //
-// Son los globals reales (CharacterInfoStartX/Y = DAT_07ea982c/30,
-// GuildListStartX/Y = DAT_07e91788/84), no copias locales: los hit-tests de
+// Son los globals reales (CharacterInfoStartX/Y = CharacterInfoStartX/30,
+// GuildListStartX/Y = GuildListStartX/84), no copias locales: los hit-tests de
 // cierre (GuildCreator_HitTest / CharacterInfo_HitTest en Net/SecondPassword,
 // port de sub_4E4760 L617-629 y sub_4E5DE0 L336-357) los leen, y
 // CharacterInfo_HitTest/Party_MemberClickHandler hacen early-return cuando el
 // origen es 0.
-#define CharacterInfoStartX  (*(int*)&DAT_07ea982c)
-#define CharacterInfoStartY  (*(int*)&DAT_07ea9830)
-#define GuildListStartX      (*(int*)&DAT_07e91788)
-#define GuildListStartY      (*(int*)&DAT_07e91784)
 // PartyStartX/Y (= Inventory[32].DamageMin / .SuccessfulBlocking en el IDA,
 // leídos por sub_4E5500 L168-175 para el botón de cerrar del panel de party).
 #define PartyStartX          (*(int*)&DAT_07ea5b24)
@@ -88,8 +84,8 @@ extern "C" void   __cdecl CreateGuildMark(int nMarkIndex, bool blend);
 extern "C" void GuildMark_InitializePalette(bool blend);
 extern "C" int    InputTextWidth;
 extern "C" BYTE   InputTextHide[10];
-#define dword_7E91388 DAT_07e91388
-extern "C" DWORD DAT_07e91388;
+#define dword_7E91388 pPickedItemKey
+extern "C" DWORD pPickedItemKey;
 extern "C" char   DAT_07ea51f5[64];
 extern "C" char   DAT_07eaa0dc;
 // ShopOpened/WarehouseOpened/ChaosMixOpened/EventWindowOpened/PartyOpened/
@@ -102,26 +98,13 @@ extern "C" int    dword_7EAA0CC, dword_7EAA0C8;
 extern "C" BYTE   Inventory[], OffsetInventoryItems[], OffsetTradeItems[], OffsetMixItems[], OffsetWarehouseItems[];
 extern "C" BYTE   ShopItems[];   // pool dedicado de la tienda
 extern "C" void   __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int gridW);
-extern "C" DWORD  DAT_07eaa131;
 
 #define g_bEventChipDialogEnable _g_bEventChipDialogEnable
 #define ItemAttribute            ((ITEM_ATTRIBUTE*)DAT_07d78068)
 
 
-// pPickedItem global (item being dragged).  Stored as int (cast to short
-// in IDA).  Level / byte_7E9136B accompany it.
 extern "C" {
-    int   pPickedItem            = -1;
-    int   Level                  = 0;
-    BYTE  byte_7E9136B           = 0;
     int   RepairEnable_0         = 0;      // repair button enable
-}
-
-extern "C" void __cdecl SyncPickedItemVisualState(void)
-{
-    pPickedItem = (int)(short)*(short*)DAT_07e91350;
-    Level = *(int*)(DAT_07e91350 + 4);
-    byte_7E9136B = *(BYTE*)(DAT_07e91350 + 27);
 }
 
 // Aliases for IDA float constants used by sub_5126E0.
@@ -161,17 +144,19 @@ int __cdecl sub_4E9300_(void)
 extern "C" void __cdecl sub_4F6420(int /*a1*/, int /*a2*/, int /*a3*/, int /*a4*/);
 void __cdecl sub_4F6420(int, int, int, int)
 {
-    SyncPickedItemVisualState();
-    if (pPickedItem < 0) return;
+    // pPickedItem es el ITEM que lleva el cursor (IDA 0x07E91350): el tipo,
+    // el nivel y el byte de opciones se leen de ahi.
+    const ITEM* picked = (const ITEM*)pPickedItem;
+    if (picked->Type < 0) return;
     if (dword_7E91388 <= 0) return;
 
-    ITEM_ATTRIBUTE* v0 = &ItemAttribute[(short)pPickedItem];
+    ITEM_ATTRIBUTE* v0 = &ItemAttribute[picked->Type];
     float Width  = (float)((double)v0->Width  * 20.0);
     float Height = (float)((double)v0->Height * 20.0);
     float sx = (float)((double)MouseX - Width  * 0.5);
     float sy = (float)((double)MouseY - Height * 0.5);
     RenderItem3D(sx, sy, Width, Height,
-                 (short)pPickedItem, Level, byte_7E9136B, 0, 1);
+                 picked->Type, picked->Level, picked->Option1, 0, 1);
 }
 
 // =============================================================================
@@ -347,7 +332,7 @@ extern "C" void __cdecl RenderServerDivision(void)
 
     gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_BOLD));
     float xa = (float)((double)InventoryStartX + 25.0);
-    if (DAT_07eaa131 != 0) {
+    if (g_bServerDivisionAccept != 0) {
         m_dwTextColor = 0xFFFF55FFu;   // -16738604
         GL_DrawTexture(291, xa, 240.0f, 16.0f, 16.0f, 0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
     } else {
@@ -363,7 +348,7 @@ extern "C" void __cdecl RenderServerDivision(void)
     RenderCenteredText((int)(xc + 60.0f), 355, GlobalText[229]);
 
     float xb = (float)((double)InventoryStartX + 35.0);
-    if (DAT_07eaa131 != 0) BufferedDraw::Color3f(1.0f, 1.0f, 1.0f);
+    if (g_bServerDivisionAccept != 0) BufferedDraw::Color3f(1.0f, 1.0f, 1.0f);
     else                          BufferedDraw::Color3f(0.5f, 0.5f, 0.5f);
     GL_DrawTexture(240, xb, 320.0f, 120.0f, 24.0f, 0.0f, 0.0f, 0.83203125f, 1.0f, 1, 1);
     RenderCenteredText((int)(xb + 60.0f), 325, GlobalText[228]);
@@ -1860,7 +1845,7 @@ extern "C" void __cdecl RenderEventWindow(void)
         const int maxLevel = bloodCastle ? m_iBloodCastleLimitLevel[limitRow][1]
                                          : m_iDevilSquareLimitLevel[row][1];
 
-        const bool inRect = button.Contains((int)MouseX, (int)MouseY) && DAT_07e91388 == 0;
+        const bool inRect = button.Contains((int)MouseX, (int)MouseY) && pPickedItemKey == 0;
 
         if (bloodCastle) {
             const bool permitted = (charLevel <= (unsigned)maxLevel && charLevel >= (unsigned)minLevel);

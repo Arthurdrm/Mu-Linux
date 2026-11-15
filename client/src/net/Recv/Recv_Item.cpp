@@ -252,7 +252,7 @@ bool ItemMove_LooksLikeStackMerge(BYTE* targetPool, int targetSlot, const BYTE* 
 
 void ItemMove_ClearPickedState()
 {
-    DAT_07e91388 = 0;
+    pPickedItemKey = 0;
     EquipmentItem = 0;
     EnableUse = 0;
     DAT_07ea5b18 = 0xFFFFFFFFu;
@@ -265,11 +265,8 @@ void ItemMove_ClearPickedState()
     g_ItemMoveSourcePool = 0;
     g_ItemMoveTargetPool = 0;
 
-    memset(DAT_07e91350, 0, sizeof(DAT_07e91350));
-    *(short*)DAT_07e91350 = (short)0xFFFF;
-    pPickedItem = -1;
-    Level = 0;
-    byte_7E9136B = 0;
+    memset(pPickedItem, 0, sizeof(pPickedItem));
+    *(short*)pPickedItem = (short)0xFFFF;
 
     // (Aca se borraban registros enteros de DAT_07ea8448/5b68/9880/7bc0 y
     //  DAT_07e11fb0, que eran copias sueltas sin lectores.  Ahora son alias de
@@ -310,22 +307,22 @@ void NetRecv_24(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     if (!sourcePool) sourcePool = OffsetInventoryItems;
     if (!targetPool) targetPool = OffsetInventoryItems;
     if (Msg[3] == 0xFF) {
-        bool stackMergeAck = ItemMove_LooksLikeStackMerge(targetPool, (int)Msg[4], (BYTE*)DAT_07e91350);
+        bool stackMergeAck = ItemMove_LooksLikeStackMerge(targetPool, (int)Msg[4], (BYTE*)pPickedItem);
         // Server denied. Restore picked item to source slot OR
         // sólo limpia el flag de "cargando" (el slot de origen todavía tiene
         // el item — lo limpiamos localmente al levantarlo, pero el server
         // no lo movió). Lo reinsertamos en el origen.
         if (!stackMergeAck) {
-            ItemMove_RestoreSlot(sourcePool, (int)DAT_07ea5b18, (BYTE*)DAT_07e91350);
+            ItemMove_RestoreSlot(sourcePool, (int)DAT_07ea5b18, (BYTE*)pPickedItem);
         } else if (g_ItemMoveTargetDurBefore >= 0) {
             // Merge parcial o destino lleno: lo que no entró vuelve al origen.
             // El server no avisa el origen si le queda algo (InventoryAddItemStack).
             const ITEM* target = (const ITEM*)OffsetInventoryItems + ((int)Msg[4] - 12);
             const int added = (int)target->Durability - g_ItemMoveTargetDurBefore;
-            const int left = (int)((ITEM*)DAT_07e91350)->Durability - (added > 0 ? added : 0);
+            const int left = (int)((ITEM*)pPickedItem)->Durability - (added > 0 ? added : 0);
             if (left > 0) {
                 BYTE item[sizeof(ITEM)];
-                memcpy(item, DAT_07e91350, sizeof(ITEM));
+                memcpy(item, pPickedItem, sizeof(ITEM));
                 ((ITEM*)item)->Durability = (BYTE)left;
                 ItemMove_RestoreSlot(sourcePool, (int)DAT_07ea5b18, item);
             }
@@ -339,7 +336,7 @@ void NetRecv_24(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             //
             // El item se construye SOLO desde los 4 bytes wire del server
             // (autoritativo), igual que el snapshot F3/10 y el buy 0x32: el ITEM struct
-            // agarrado (DAT_07e91350) NO está en formato wire y sus bytes 4-11
+            // agarrado (pPickedItem) NO está en formato wire y sus bytes 4-11
             // (Durability/Option1/x/y/Key…) se reinterpretarían como opciones/serial.
             // InsertInventoryItem lee hasta Item[4]; dejamos ext=0.
             BYTE targetSlot = Msg[4];
@@ -763,7 +760,7 @@ void NetRecv_83(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
                     g_ItemMoveSourcePool = &OffsetWarehouseItems[0];
                     g_ItemMoveTargetPool = &OffsetInventoryItems[0];
                     SendRequestEquipmentItem((int)DAT_07ea9804, (int)DAT_07ea9808,
-                        (ITEM*)DAT_07e91350, (int)DAT_07ea980c, (int)DAT_07ea9810);
+                        (ITEM*)pPickedItem, (int)DAT_07ea980c, (int)DAT_07ea9810);
                 }
             }
             DAT_00559f5f = 1;
@@ -835,7 +832,7 @@ void NetRecv_87(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     ChaosBoxCloseAck();
     InventoryOpened = 0;
     CloseInventoryRelatedWindows();
-    DAT_07e91388 = 0;
+    pPickedItemKey = 0;
     // The category selector is client-local (unlike the original
     // box lifecycle), so dismiss it if a close ACK races it.
     if (ErrorMessage == 143) {
@@ -852,7 +849,7 @@ void NetRecv_23(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     //   Msg[3] != 0  → drop OK
     //     If Msg[4] >= 12 → equipment slot update (UI_Main path)
     //     Else            → inventory slot drop (CharacterMachine update)
-    //   En los dos casos de éxito: limpia DAT_07e91388 (arrastre activo)
+    //   En los dos casos de éxito: limpia pPickedItemKey (arrastre activo)
     //   and reset SendDropItem = -1
     if (Size < 4) return;
     BYTE result = Msg[3];
@@ -865,12 +862,12 @@ void NetRecv_23(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     //    cursor (el slot ya está vacío desde el pickup).
     if (result == 0) {
         ItemMove_RestoreSlot(OffsetInventoryItems, (int)DAT_07ea5b18,
-                             (BYTE*)DAT_07e91350);
+                             (BYTE*)pPickedItem);
     } else {
         PlayBuffer(29, 0, 0);
     }
     ItemMove_ClearPickedState();
-    DAT_07e91388 = 0;
+    pPickedItemKey = 0;
     DAT_07e11990 = -1;  // SendDropItem = -1
 }
 

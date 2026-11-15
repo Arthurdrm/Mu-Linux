@@ -421,7 +421,7 @@ void Render_BottomHUD(void) { RenderMainFrameWindow_(); }
 // =============================================================================
 // Item_FindQuickSlotByCategory, RenderItem3D y Camera_BuildMouseRay ya están declaradas en
 // functions.h (que entra vía stdafx.h).
-extern "C" DWORD DAT_07e91388;
+extern "C" DWORD pPickedItemKey;
 extern "C" DWORD DAT_07eaa13c;
 
 // FUN_004f5ce0 (sub_4F5CE0) está portada en HUD_Pass6.cpp como sub_4F5CE0_().
@@ -482,7 +482,7 @@ void Render_HotbarItems3D_(void)
 
     if (!HUD_IsGoldenArcherPanelRuntime()) {
         FUN_004f5ce0(0, 0, 0, 0);
-        if (DAT_07e91388 > 0 && !DAT_07eaa13c) {
+        if (pPickedItemKey > 0 && !DAT_07eaa13c) {
             FUN_004f6420(0, 0, 0, 0);
         }
 

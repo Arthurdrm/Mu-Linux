@@ -23,6 +23,7 @@ BYTE* pools[5];
 #define Inventory (*reinterpret_cast<BYTE(*)[4352]>(pools[4]))
 #define dword_7EA9800 DAT_07ea9800
 alignas(ITEM) char DAT_07e91350[68];
+#define pPickedItem DAT_07e91350
 bool s_bPacketAfterEquipmentItem;
 BYTE s_byPacketAfterEquipmentItem[4];
 bool mergeAck;

@@ -225,7 +225,7 @@ extern "C" void Chat_SendChatLine(const char* text)
     // IDA WndProc L2077: `if ( InputLength[1] && m_bBlockWhisper )` -- sin
     // nombre, o con los susurros apagados (F3, m_bBlockWhisper = 0x559BF0),
     // la linea sale como chat normal aunque el campo de nombre tenga texto.
-    if (((const char*)&DAT_07db8810)[0] == '\0' || !DAT_00559bf0) {
+    if (((const char*)&DAT_07db8810)[0] == '\0' || !m_bBlockWhisper) {
         SendChat((char*)text);
         return;
     }
@@ -508,7 +508,7 @@ void __cdecl Chat_InputTick(void)
                     DAT_0055a3e4 = (DWORD)*(BYTE *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->CurrentSkill;
                     DAT_07ea840c = 0x140;
                     DAT_07ea8408 = 0x1bc;
-                    DAT_07d78094 = 1;
+                    MouseOnWindow = 1;
                     MouseUpdateTime = 0;
                     if (IsClickPushed()) {
                         DAT_07db870c = (DAT_07db870c == '\0') ? '\x01' : '\0';
@@ -533,7 +533,7 @@ void __cdecl Chat_InputTick(void)
                             {
                                 DAT_07ea840c = cellX0 + 0x150;
                                 DAT_07ea8408 = 0x172;
-                                DAT_07d78094 = 1;
+                                MouseOnWindow = 1;
                                 DAT_0055a3e4 = uVar14;
                                 if (IsClickPushed()) {
                                     MouseLButtonPush = '\0';
@@ -580,7 +580,7 @@ void __cdecl Chat_InputTick(void)
             //           if (GetAsyncKeyState(n + 48) >> 8) sub_4B0E80(n);
             //       if (GetAsyncKeyState(48) >> 8)         sub_4B0E80(0);
             //   }
-            if ((DAT_00559c84 == 0) && (DAT_07e11d71 == 0))
+            if ((DAT_00559c84 == 0) && (TabInputEnable == 0))
             {
                 if (((unsigned short)Platform::GetInput().KeyState(VK_MENU) >> 8) != 0x80)
                 {
@@ -783,7 +783,7 @@ void __cdecl Chat_InputTick(void)
     // pone en 1 al abrir el chat es **`g_TextMode` (DAT_00559c84)**, el mismo que
     // usa `HUD_HotkeyTick` (Player_InputTick.cpp).
     if (DAT_00559c84 != 0) return;   // g_TextMode  (input de texto activo)
-    if (DAT_07e11d71 != 0) return;   // g_IME_Mode  (composición DBCS/coreano)
+    if (TabInputEnable != 0) return;   // g_IME_Mode  (composición DBCS/coreano)
     if (TradeOpened != 0) return;   // TradeOpened
     if (GuildCreatorOpened != 0) return;   // GuildCreatorOpened
     if (GuildInputEnable != 0) return;   // g_ChatMode
@@ -805,7 +805,7 @@ void __cdecl Chat_InputTick(void)
                 if (DAT_07eaa132 == '\0') {
                     return;
                 }
-                if (DAT_07e91388 != 0) {
+                if (pPickedItemKey != 0) {
                     return;
                 }
                 // IDA L6671-6682: se alterna el BYTE 2 de dword_7EAA150 (el
@@ -838,7 +838,7 @@ void __cdecl Chat_InputTick(void)
                 // reparacion directamente (LABEL_1507); si no, pide tienda
                 // cerrada, inventario abierto y nivel >= 80.  Al port le
                 // faltaban la primera rama y el `!ShopOpened` de la segunda.
-                if (ShopOpened != 0 && DAT_07eaa132 != 0 && DAT_07e91388 == 0) {
+                if (ShopOpened != 0 && DAT_07eaa132 != 0 && pPickedItemKey == 0) {
                     DAT_07eaa134 = (DAT_07eaa134 == 0) ? 1 : 0;
                     ((BYTE*)&DAT_07eaa150)[2] = (DAT_07eaa134 != 0) ? 2 : 0;
                 } else if (ShopOpened == 0 && InventoryOpened != 0 && CharacterAttribute != nullptr) {

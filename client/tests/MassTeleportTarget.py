@@ -48,6 +48,7 @@ struct OBJECT{WORD Type;BYTE CurrentAction,Teleport;float Alpha,Position[3],Angl
 struct CHARACTER{BYTE Class;OBJECT Object;float TargetPosition[2];WORD Key;}heroView,targetView;
 char *hero,*characters,*Hero,*CharactersClient,*target;
 int DAT_07e91388,SelectedCharacter,PartyNumber,Teleport;DWORD TargetX,TargetY,DAT_07e11dc4,DAT_07e11dc8;
+#define pPickedItemKey DAT_07e91388
 DWORD DAT_07d78098,DAT_07d7809c,MovementSkillTarget,CurrentSkill;
 BYTE terrain[65536];unsigned char* TerrainWall=terrain;
 bool member;int castingSkill=15;std::vector<int> randoms,events;unsigned randomAt;std::vector<BYTE> packet;

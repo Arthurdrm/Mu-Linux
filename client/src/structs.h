@@ -382,9 +382,6 @@ struct SERVER_LIST_t
 // Camera / OpenGL — underlying storage is DWORD but the binary treats the
 // bit pattern as float. Use lvalue-float reinterpretation so assignments like
 // `CameraFOV = 45.0f` write the IEEE-754 bits (not an integer cast).
-#define CameraFOV           (*(float*)&DAT_00561554)
-#define CameraViewNear      (*(float*)&DAT_0056154c)
-#define CameraViewFar       (*(float*)&DAT_00561550)
 #define EarthQuake          _DAT_083a0210    // float
 
 // Connection: g_bGameServerConnected is declared in globals.h.

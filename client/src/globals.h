@@ -222,7 +222,7 @@ extern DWORD   DAT_005597c8;
 extern DWORD   DAT_0055987c;
 extern DWORD   DAT_005599b0;
 extern DWORD   DAT_005599e0;
-extern DWORD   DAT_00559bf0;   // IDA: m_bBlockWhisper (0x00559BF0), interruptor de susurros (F3)
+extern DWORD m_bBlockWhisper;   // IDA: m_bBlockWhisper (0x00559BF0)
 extern int    _DAT_00559b9c;   // wind speed result (fsin * tick, *10)
 extern DWORD   MouseUpdateTimeMax;  // IDA: MouseUpdateTimeMax (0x00559BEC) - movement cooldown threshold
 // Hover/selection state.  Names follow the 5.2 reference only where the
@@ -251,7 +251,7 @@ extern DWORD   SetBackgroundTextColor;   // IDA: DAT_00559c80 (0x00559C80)
 extern char    DAT_00559b80[];  // GM/admin name substring (Entity_FindNearby filter string)
 extern DWORD   InputEnable; // IDA: DAT_00559c84 (0x00559C84)
 extern DWORD   InputNumber;   // IDA: DAT_00559c88 (0x00559C88)
-extern DWORD   DAT_00559c8c;
+extern "C" int InputTextWidth;   // IDA: InputTextWidth (0x00559C8C)
 extern DWORD   DAT_00559c90;
 extern int     _InputTextMaxArr[8];
 // 0.97.40: tope en grapheme clusters por slot (0 = sólo el tope en bytes de
@@ -304,9 +304,9 @@ extern DWORD   DAT_0055a7c0;
 
 // ── Game loop / scene state (0x005615xx – 0x005617xx) ─────────────────────────
 // Nota: SceneFlag, g_hWnd y g_hDC se declaran en stdafx.h.
-extern DWORD   DAT_0056154c;
-extern DWORD   DAT_00561550;
-extern DWORD   DAT_00561554;
+extern float   CameraViewNear;   // IDA: CameraViewNear (0x0056154C)
+extern float   CameraViewFar;    // IDA: CameraViewFar (0x00561550)
+extern float   CameraFOV;        // IDA: CameraFOV (0x00561554)
 extern float   CameraDistanceTarget;   // DAT_005616B4: MoveMainCamera smoothing target
 extern float   CameraDistance;         // DAT_083A45D0: current MoveMainCamera distance
 extern DWORD   DAT_00561574;
@@ -675,9 +675,9 @@ extern char    DAT_07e113e4[5 * 256];   // historial de chat: 5 entradas x 256B
 
 // ── UI / HUD data (0x07e1xxxx – 0x07eaxxxx) ──────────────────────────────────
 extern DWORD  _DAT_07e118e4;   // player facing angle (float, sent in movement packets)
-extern DWORD   DAT_07e118e8;   // world/map type
+extern int     HeroTile;         // IDA: HeroTile (0x07E118E8)
 extern char    GuildInputEnable;   // char-select init flag  [IDA 0x07E11D70]
-extern char    DAT_07e11d71;   // char-select flag B
+extern char TabInputEnable;   // IDA: TabInputEnable (0x07E11D71)
 extern char    GoldInputEnable;   // char-select flag C  [IDA 0x07E11D72]
 extern int     InputGold;   // gold / currency (checked vs 0x2faf081)  [IDA 0x07E11D74]
 extern DWORD   DAT_07e11d78;   // InputIndex — indice del campo de input activo (lo rota el Tab)
@@ -691,8 +691,6 @@ extern float  _DAT_07e11d4c;   // facing tick reference (last frame time)
 extern float  _DAT_07e11d50;   // facing dt (delta * speed scale)
 extern BYTE    DAT_07e113d8[40];   // world-enter counter (memset writes 40 bytes)
 extern char&   DAT_07e113d9;   // alias de DAT_07e113d8[1] (password-mask flag)
-extern DWORD   DAT_07e11d8c;
-extern DWORD   DAT_07e11d90;
 extern DWORD   DAT_07e11d94;
 extern DWORD   DAT_07e11d98;
 extern DWORD   DAT_07e11da0;
@@ -714,7 +712,7 @@ extern DWORD   DAT_07e11e98;   // party HP bars (stride 0x24)
 #define DAT_07e11e9c (*(char*)(Party + 0x1C))
 extern char    DAT_07e11d6e;            // flag reset each login frame
 extern DWORD   DAT_07d552e4;            // UI inventory/item selection state
-extern DWORD   DAT_07d78094;            // UI click/selection flag
+extern int     MouseOnWindow;           // IDA: MouseOnWindow (0x07D78094) — cursor sobre una ventana de UI
 extern BYTE    DAT_07d780a8[40];         // username field length (memset writes 40 bytes)
 // InputLength[1] — el largo del campo 1 (destino del susurro).
 //
@@ -749,16 +747,20 @@ extern DWORD   DAT_07e127f8;
 constexpr int GROUND_ITEM_STRIDE = 0x48 + OBJECT_STRIDE;  // cabecera + OBJECT
 extern unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
 extern DWORD   DAT_07e12945;   // sprite render loop base (stride 0x204)
-extern char    DAT_07e91350[0x44];      // pPickedItem — sizeof(ITEM) = 0x44
-extern "C" DWORD   DAT_07e91388;
+extern char    pPickedItem[0x44];       // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
+// IDA: pPickedItem.Key (0x07E91388), "hay un item en el cursor".  En el
+// port es una variable aparte del campo Key de pPickedItem: el pickup con
+// click derecho y el auto-equipado de flechas copian el item con su Key
+// puesto y la bandera se prende recien cuando el pickup se concreta.
+extern "C" DWORD   pPickedItemKey;
 extern byte    DAT_07e9138e;   // UI grid selected column (byte, Item_ReturnPickedItem)
 extern byte    DAT_07e9138f;   // UI grid selected row (byte, Item_ReturnPickedItem)
 extern short   DAT_07e91394[10];   // IDA: word_7E91394
 extern char    DAT_07eaa1a4;       // IDA: byte_7EAA1A4
 extern DWORD   DAT_07e913a8;
 extern DWORD   DAT_07e91428;
-extern DWORD   DAT_07e91784;
-extern DWORD   DAT_07e91788;
+extern int GuildListStartY;   // IDA: GuildListStartY (0x07E91784)
+extern int GuildListStartX;   // IDA: GuildListStartX (0x07E91788)
 extern DWORD   DAT_07e919b8;
 // Tabla de nombres stride 80 (guild members / buffs). NO es un DWORD: los
 // consumidores (HUD_Pass2, HUD_Pass3, SecondPassword, SMD_Parser y el
@@ -796,11 +798,11 @@ extern char    DAT_07ea9815;
 extern char    DAT_07ea9816;
 extern char    DAT_07ea9817;
 
-extern DWORD   DAT_07ea982c;   // Screen3 panel origin X
-extern DWORD   DAT_07ea9830;   // Screen3 panel origin Y
+extern int CharacterInfoStartX;   // IDA: CharacterInfoStartX (0x07EA982C)
+extern int CharacterInfoStartY;   // IDA: CharacterInfoStartY (0x07EA9830)
 extern char    DAT_07ea9834[41];    // IDA: nombre remoto de Trade (0.97.40: 40 bytes del paquete + NUL)
 extern char    DAT_07ea983e;
-extern DWORD   DAT_07eaa0d0;
+extern "C" int g_nGuildMemberCount;     // IDA: g_nGuildMemberCount (0x07EAA0D0)
 extern DWORD   GuildPlayerKey;  // IDA: GuildPlayerKey (0x07EAA0D8)
 // 0x07EAA0E0 = PartyNumber. Era una copia que nadie escribia.
 #define DAT_07eaa0e0 (*(DWORD*)&PartyNumber)
@@ -1070,10 +1072,9 @@ extern DWORD   MoveSceneFrame; // IDA: MoveSceneFrame (0x083A7C00)
 extern DWORD   DAT_083a7c04;   // in-game UI context A
 extern DWORD   DAT_083a7c08;   // in-game UI context B
 extern char    DAT_083a7c09;   // in-game UI flag byte
-// DAT_083a7c0c @ 0x083A7C0C ES `g_iNumAnswer`.  Disassembly 0x40182E:
+// g_iNumAnswer @ 0x083A7C0C ES `g_iNumAnswer`.  Disassembly 0x40182E:
 // `89 35 0c 7c 3a 08` = `mov [0x083A7C0C], esi`.
-extern DWORD   DAT_083a7c0c;
-#define g_iNumAnswer  (*(int*)&DAT_083a7c0c)
+extern int     g_iNumAnswer;     // IDA: g_iNumAnswer (0x083A7C0C)
 extern DWORD   EnableMainRender;  // IDA: EnableMainRender (0x083A7C10)
 extern int     LoginSubState; // IDA: DAT_083a7c14 (0x083A7C14)
 extern DWORD   DAT_083a7c18;
@@ -1385,7 +1386,7 @@ extern DWORD   m_bBlockWhisper_1;  // IDA: m_bBlockWhisper_1 (0x07E11DAC) - comm
 // ReceiveTalk, SendMove, sub_492F10, Chat_InputTick, GetScreenWidth,
 // RenderServerDivision).  ServerDivisionOpened es un alias: el writer
 // (Net_Process, ReceiveTalk sub 5) y los readers tienen que ver el mismo byte.
-// El byte 1 de ese int es 0x07EAA131 (en el port, DAT_07eaa131 es un global aparte).
+// 0x07EAA131 es g_bServerDivisionAccept, un int aparte en el port.
 #define ServerDivisionOpened   (*(char*)&g_bServerDivisionEnable)
 extern char    DAT_07eaa132;           // guard for B-key toggle enable
 extern char    DAT_07eaa134;           // RepairEnable_0
@@ -1602,7 +1603,7 @@ extern float  _DAT_00552d44;   // UV scale U  (Texture_Draw2D)
 // Dialog text color control
 extern DWORD   DAT_00559c78;   // current text color ABGR (0xffffffff = white)
 // SetBackgroundTextColor — declared above as DWORD
-// DAT_00559c8c — declared above as DWORD
+// InputTextWidth — declarado arriba (int)
 // Toggle flags
 extern char    m_bAutoAttack;   // IDA: m_bAutoAttack (0x00559C5C)
 extern char    m_bWhisperSound;   // IDA: m_bWhisperSound (0x07E11D80) — aviso sonoro de susurros
@@ -1631,7 +1632,7 @@ extern char    g_lpszDialogAnswer[10][1][38];  // IDA: g_lpszDialogAnswer (0x083
 // Guild message decode state
 // DAT_083a7c08 — declared above as DWORD
 extern char    DAT_083a7c09;   // guild dialog flag B
-// DAT_083a7c0c — declared above as DWORD
+// g_iNumAnswer — declared above as DWORD
 // Zona del cursor / hit-test (también se usa en otros paneles)
 // MouseLButtonPush — declared above as DWORD
 // Y del cursor de selección en la lista de servers (también se usa en el panel 0x96)
@@ -1701,7 +1702,7 @@ extern char    lpString_07d55b18[300];     // dialog string 0x24
 extern char    lpString_07d5f94c[300];     // dialog string 0x8f (guild membership)
 
 // ── GL_State cached state globals ────────────────────────────────────────────
-extern int     DAT_083a412c;   // current blend mode (0=off 2=SrcOver 3=Add 4=SrcAlpha)
+extern int AlphaBlendType;   // IDA: AlphaBlendType (0x083A412C)
 extern char    AlphaTestEnable;  // IDA: AlphaTestEnable (0x083A411D) - cache (glEnable/Disable 0xBC0). El comentario viejo decia 'fog' y es FALSO: ver GL_SetAlphaTest/680.
 extern char    TextureEnable;  // IDA: TextureEnable (0x083A4125) - cache (glEnable/Disable 0xDE1 = GL_TEXTURE_2D). El comentario viejo decia 'depth test' y es FALSO.
 extern int     DAT_083a42f4;   // screenshot active flag
@@ -1970,7 +1971,7 @@ extern char    s__4d__4d_30__4d__4d__1_00559b58[]; // format string
 // IDA: pPickedItem.Level (0x07E91354) — el campo +4 del item levantado, no un
 // global aparte.  Como variable propia valía siempre 0 y los chequeos de
 // apilado comparaban contra nivel 0.
-#define DAT_07e91354 (*(DWORD*)&DAT_07e91350[4])
+#define DAT_07e91354 (*(DWORD*)&pPickedItem[4])
 extern char    DAT_07e9136a;   // picked item durability/option byte
 extern char    DAT_07e9136b;
 // Buffer del item del dialogo ShowCheckBox(153) -- 0x44 bytes, 0x07EA5240.
@@ -2227,7 +2228,6 @@ extern DWORD   MixState;  // IDA: MixState (0x07EAA140) - La etiqueta
                                // vieja ("SecondPassword timeout") era falsa: IDA lo
                                // llama MixState y sus writers son ReceiveMix (0x4366C0),
                                // el envio del mix y ReceiveTalk.
-extern "C" DWORD   DAT_07eaa131;   // SecondPassword checkbox/toggle state
 extern DWORD   RepairEnable; // IDA: DAT_07eaa138 (0x07EAA138)
 extern DWORD   TradeInventoryStartX;  // IDA: TradeInventoryStartX (0x07EA5290) - SecondPassword alt-panel origin X
 extern DWORD   TradeInventoryStartY;  // IDA: TradeInventoryStartY (0x07EA528C) - SecondPassword alt-panel origin Y
@@ -2386,8 +2386,7 @@ extern DWORD   DAT_00578200;    // name-filter BMD checksum seed
 extern char    lpText_07d2aa08[];  // fatal-error message string (shown by ExitProgram)
 
 // ── HeroTile — terrain tile type under the hero character ─────────────────────
-// DAT_07e118e8 ya declarado como DWORD cerca de la línea 546 (tipo de mundo/mapa)
-#define HeroTile ((int)DAT_07e118e8)
+// HeroTile ya declarado como DWORD cerca de la línea 546 (tipo de mundo/mapa)
 // World ya está declarado arriba.
 #ifndef World
 
@@ -2568,7 +2567,7 @@ extern DWORD   DAT_0055339c;       // JPEG natural order table
 // (HUD passes + ChatListBox) se perdían → texto blanco. DAT_00559c78/80 declarados arriba.
 #define m_dwTextColor  DAT_00559c78
 #define m_dwBackColor  SetBackgroundTextColor
-// g_iNumAnswer — alias de DAT_083a7c0c (ver arriba).
+// g_iNumAnswer — alias de g_iNumAnswer (ver arriba).
 // g_iNumLineMessageBoxCustom — alias de DAT_083a4324 (ver arriba).
 // g_lpszMessageBoxCustom — alias de DAT_083a44c4 (el buffer real de 7 lineas x
 // 0x26): los writers (ShowDialogText, CreateOkMessageBox) llenan DAT_083a44c4 y

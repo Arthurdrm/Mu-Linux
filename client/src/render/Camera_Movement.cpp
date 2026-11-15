@@ -18,7 +18,7 @@ void __stdcall MoveCamera(void) {
     // CurrentCameraPosition = DAT_083a432c[3], CurrentCameraAngle = DAT_083a7ad0[3]
     // CurrentCameraWalkDelta = DAT_083a7adc[6] (pos delta[3] + angle delta[3])
     // _DAT_00552d44 = step scale, _DAT_00552a30 = lerp speed
-    // SceneFlag = DAT_07e11980, CameraFOV = DAT_00561554
+    // SceneFlag = DAT_07e11980, CameraFOV = CameraFOV
     // CameraAngle = float[3] at 0x083a42b8, CameraPosition = float[3] at 0x083a42d4
 
     // Usar los arrays concretos en vez de `(float*)&DAT_*`: los DAT_* son

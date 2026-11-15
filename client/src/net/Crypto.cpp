@@ -773,7 +773,7 @@ int  __cdecl    Cloth_Solve(DWORD *a1);
 int __cdecl CSQuest_ProceedButton(void *param_1) {
     BYTE* quest = static_cast<BYTE*>(param_1);
     if (Ui::QuestBounds(gWindow.GetRightShift()).Contains((int)MouseX, (int)MouseY))
-        DAT_07d78094 = 1;                       // MouseOnWindow
+        MouseOnWindow = 1;                       // MouseOnWindow
 
     Quest_AnswerHitTest(param_1);
 

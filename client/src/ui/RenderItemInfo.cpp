@@ -1676,7 +1676,7 @@ static bool IsTooltipItem(const void* candidate)
         return start && address >= start && address - start < count * sizeof(ITEM) &&
                (address - start) % sizeof(ITEM) == 0;
     };
-    const bool known = candidate == DAT_07e91350 ||
+    const bool known = candidate == pPickedItem ||
         inSlots(OffsetInventoryItems, 64) || inSlots(OffsetTradeItems, 64) ||
         inSlots(OffsetMixItems, 64) || inSlots(OffsetWarehouseItems, 120) ||
         inSlots(Inventory, 160) || inSlots(ShopItems, 120) ||

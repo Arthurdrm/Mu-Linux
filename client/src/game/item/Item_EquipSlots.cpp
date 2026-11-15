@@ -149,7 +149,6 @@ bool Equip_CanPlace(const ITEM* item, int a5)
 //   * Con item levantado: valida si se puede equipar en este casillero (clase,
 //     dos manos, flechas, stats, nivel, restricciones de mapa), pinta la casilla
 //     (Color 2 = valido, 3 = invalido) y con click manda el 0x24.
-extern "C" void __cdecl SyncPickedItemVisualState(void);
 // IDA: sub_4CDC70 (0x004CDC70); Ghidra: FUN_004cdc70
 extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float h, int slotIdx)
 {
@@ -167,10 +166,10 @@ extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float
     BYTE* const CA   = (BYTE*)CharacterAttribute;
     BYTE* const slot = CM + 536 + 68 * a5;
     ITEM_ATTRIBUTE* const IA = (ITEM_ATTRIBUTE*)(uintptr_t)DAT_07d78068;
-    ITEM* const picked = (ITEM*)DAT_07e91350;              // pPickedItem
+    ITEM* const picked = (ITEM*)pPickedItem;              // pPickedItem
 
     // ── Sin item levantado ────────────────────────────────────────────────
-    if ((int)DAT_07e91388 <= 0) {
+    if ((int)pPickedItemKey <= 0) {
         const short type = *(short*)slot;
         if (type == -1 || !inside) return;
         DAT_07eaa164 = 1;                                   // byte_7EAA164
@@ -218,9 +217,8 @@ extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float
                 return;
         }
         DAT_07ea9800 = &OffsetInventoryItems[0];
-        memcpy(DAT_07e91350, slot, 0x44);                   // pPickedItem = *slot
-        DAT_07e91388 = 1;                                   // pPickedItem.Key (copia del port)
-        SyncPickedItemVisualState();
+        memcpy(pPickedItem, slot, 0x44);                   // pPickedItem = *slot
+        pPickedItemKey = 1;                                   // pPickedItem.Key (copia del port)
         g_ItemMoveSourcePool = &OffsetInventoryItems[0];
         g_ItemMoveTargetPool = 0;
         *(short*)slot = -1;

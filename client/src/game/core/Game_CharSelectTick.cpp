@@ -62,8 +62,8 @@ void Game_CharSelectTick(void)
         CameraAngle[2] = -45.0f;  // yaw = -45° (iso rotation around Z)
         ClearInput(1);
         DAT_00559c84 = 0;
-        DAT_07e11d71 = 0;
-        DAT_00559c8c = 0x100;
+        TabInputEnable = 0;
+        InputTextWidth = 0x100;
         // IDA: InputTextMax[0] = 42, [1] = 10. Desde 0.97.40 son caracteres:
         // el mensaje entra en 199 bytes y el nombre del susurro en 40.
         Input_SetLimit(0, (int)NetText::ChatMessageSize - 1, 0x2a);
@@ -115,12 +115,12 @@ void Game_CharSelectTick(void)
     Bisect_ChatMode("CST_post_4f95e0");
     CheckInventory  = 0;
     DAT_0055a3e4  = 0xffffffff;
-    DAT_07d78094  = 0;
+    MouseOnWindow  = 0;
 
     // DESVIACION (DLL Antilag, 0x00525483): sin interfaz se saltea como en la vista cenital.
     if (CameraTopViewEnabled == '\0' && !gUserSettings.GetAntilag(ANTILAG_INTERFACE)) {
         // Standard viewport mode
-        DAT_07d78094 = (MouseY > 0x1af) ? 1 : 0;
+        MouseOnWindow = (MouseY > 0x1af) ? 1 : 0;
         DAT_055c9b80 = 0;
         if (DAT_055c9ff0 && ChatWidget_GetVTable(DAT_055c9ff0)) {
             // vtable[+0x14] = slot 5 = ChatLB_tick (__fastcall, takes this+arg).
@@ -184,7 +184,7 @@ void Game_CharSelectTick(void)
     }
 
     if (ErrorMessage != 0)
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
 
     if (CameraTopViewEnabled == '\0')
         MoveItems();
@@ -200,7 +200,7 @@ void Game_CharSelectTick(void)
     //
     // O sea LABEL_108 es SALTEAR.
     // `weather` e `indoor_tiles` de Content/map/maps.toml.
-    const bool doLeaves = gMapManager.Current().weather && !gMapManager.Current().IsIndoor(DAT_07e118e8);
+    const bool doLeaves = gMapManager.Current().weather && !gMapManager.Current().IsIndoor(HeroTile);
     if (doLeaves) WeatherParticles_Update();
     Bisect_ChatMode("CST_post_skillFX");
     // Full world pipeline

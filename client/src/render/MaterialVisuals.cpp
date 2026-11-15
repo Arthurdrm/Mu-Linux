@@ -143,8 +143,8 @@ void MaterialVisuals_TickUi() {
             if (WarehouseOpened) PrepareGrid(OffsetWarehouseItems,120);
             if (ChaosMixOpened) PrepareGrid(OffsetMixItems,32);
             if (EventWindowOpened) PrepareGrid(OffsetMixItems,32);
-            if (DAT_07e91388>0 && !DAT_07eaa13c && *(short *)DAT_07e91350>=0)
-                MaterialVisuals_PrepareUiItem(*(short *)DAT_07e91350,*(int *)(DAT_07e91350+4));
+            if (pPickedItemKey>0 && !DAT_07eaa13c && *(short *)pPickedItem>=0)
+                MaterialVisuals_PrepareUiItem(*(short *)pPickedItem,*(int *)(pPickedItem+4));
             for (int slot=0; slot<3; ++slot) {
                 const int index=Item_FindQuickSlotByCategory(slot);
                 if (index!=-1) MaterialVisuals_PrepareUiItem(*(short *)(OffsetInventoryItems+index*68),*(int *)(OffsetInventoryItems+index*68+4));
@@ -152,7 +152,7 @@ void MaterialVisuals_TickUi() {
         }
     }
     if (ErrorMessage==0x97 && DAT_07eaa13c==1)
-        MaterialVisuals_PrepareUiItem(*(short *)DAT_07e91350,*(int *)(DAT_07e91350+4));
+        MaterialVisuals_PrepareUiItem(*(short *)pPickedItem,*(int *)(pPickedItem+4));
     else if (ErrorMessage==0x99)
         MaterialVisuals_PrepareUiItem(*(short *)DAT_07ea5240,*(int *)(DAT_07ea5240+4));
 }

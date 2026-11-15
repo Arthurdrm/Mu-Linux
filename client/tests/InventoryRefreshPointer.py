@@ -14,6 +14,7 @@ from SceneObjectPointer import build_and_run, function, read_source
 SERVICES=r'''
 using uint=unsigned int;using ushort=unsigned short;using std::uintptr_t;
 DWORD MouseUpdateTimeMax,DAT_07d78094,MouseUpdateTime,InventoryStartY,InventoryStartX,TradeInventoryStartY,TradeInventoryStartX,DAT_07eaa0c8,DAT_07eaa0cc,DAT_07eaa138,MixState,DAT_07eaa164,MouseLButtonPush,MouseY,MouseX,GoldenArcherOpenType;
+#define MouseOnWindow DAT_07d78094
 char InventoryOpened,ShopOpened,WarehouseOpened,ChaosMixOpened,TradeOpened,EventWindowOpened,DAT_07eaa134,CharacterOpened,PartyOpened;
 void *DAT_07cf1ffc,*CharacterAttribute;int MAIN_HASH_CLASS;
 BYTE *OffsetInventoryItems,*OffsetTradeItems,*OffsetWarehouseItems,*OffsetMixItems,*ShopItems,*Inventory,*node;

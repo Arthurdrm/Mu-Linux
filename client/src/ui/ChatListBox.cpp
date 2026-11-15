@@ -121,7 +121,7 @@ static int Chat_BBoxHit(int x, int y, int w, int h, int mode)
 // DESVIACION: mientras se escribe, el campo de texto ocupa la franja de los botones
 // del popup (415..444) y el original los ocultaba. Ahora suben 20 px, quedan siempre
 // visibles y siguen respondiendo.
-static bool ChatTyping() { return DAT_00559c84 != 0 || DAT_07e11d71 != 0; }
+static bool ChatTyping() { return DAT_00559c84 != 0 || TabInputEnable != 0; }
 // Los 5 botones del popup (gestos, ver chat, tamano, transparencia, emotes) quedan centrados
 // en la pantalla de 640: el cluster original era de 3 y arrancaba en 295.
 static float ChatButtonsX() { return 320.0f - (4.0f * ChatListBox_TabButtonSpacing + 16.0f) * 0.5f; }
@@ -605,7 +605,7 @@ static void __fastcall ChatLB_nullsub2(DWORD* /*self*/) {}
 // External deps:
 //   PlayBuffer / sub_40C500 — soft-stubbed (sound + key-repeat dispatch)
 //   unk_83A4128            — acumulador del scroll de rueda (nosotros usamos un static)
-extern "C" int  MouseOnWindow;
+extern "C" int  ChatLB_MouseOnWindowLocal;
 extern "C" int  g_ChatLB_MouseOnWindow;
 static int g_ChatLB_WheelAccum = 0;     // mirror of unk_83A4128
 static DWORD g_ChatLB_WheelTick = 0;
@@ -637,9 +637,9 @@ static int __fastcall ChatLB_handleScrollIn(DWORD* self)
     int  v17 = 0;
     bool keyHandled = false;
 
-    // Ver la nota de MouseOnWindow al final del archivo: el flag se recalcula
+    // Ver la nota de ChatLB_MouseOnWindowLocal al final del archivo: el flag se recalcula
     // entero en cada tick y se publica al salir para que Player_InputTick lo lea.
-    MouseOnWindow = 0;
+    ChatLB_MouseOnWindowLocal = 0;
 
     // ── Scroll con flechas (sólo cuando este widget tiene el foco del teclado) ──
     if (self[26] == 1 && dword_55C9B88 == self[7]) {
@@ -737,7 +737,7 @@ static int __fastcall ChatLB_handleScrollIn(DWORD* self)
         // Abajo: sólo si la lista desborda la ventana visible.
         int total = ((FnInt)vt[19])(self);
         if (total < (int)self[35]) {
-            v17 = 1; MouseOnWindow = 1; goto LABEL_53;
+            v17 = 1; ChatLB_MouseOnWindowLocal = 1; goto LABEL_53;
         }
 
         // ── Thumb drag region ──
@@ -781,12 +781,12 @@ static int __fastcall ChatLB_handleScrollIn(DWORD* self)
         }
         }
 LABEL_53:
-        v17 = 1; MouseOnWindow = 1;
+        v17 = 1; ChatLB_MouseOnWindowLocal = 1;
     } else if (ChatListBox_GetFocusState(self) == 1) {
         // El widget tenía el foco pero el mouse salió del rect — manejar la soltada del pulgar.
         if (MouseLButtonPush) {
             float* fself = (float*)self;
-            MouseOnWindow = 1;
+            ChatLB_MouseOnWindowLocal = 1;
             int rows = 3 * (((int)self[12] - (int)MouseY + 5) / 40);
             self[35] = (DWORD)rows;
             if (rows < 3) self[35] = 3;
@@ -809,7 +809,7 @@ LABEL_53:
             if (dword_55C9B7C == self[7]) dword_55C9B7C = 0;
         } else {
             float* fself = (float*)self;
-            MouseOnWindow = 1;
+            ChatLB_MouseOnWindowLocal = 1;
             float newY = (float)((double)MouseY - (double)fself[41]);
             fself[38] = newY;
             int total = ((FnInt)vt[19])(self);
@@ -846,8 +846,8 @@ LABEL_53:
         }
     }
 
-    // Publicar el flag para Player_InputTick (ver nota de MouseOnWindow).
-    g_ChatLB_MouseOnWindow = MouseOnWindow;
+    // Publicar el flag para Player_InputTick (ver nota de ChatLB_MouseOnWindowLocal).
+    g_ChatLB_MouseOnWindow = ChatLB_MouseOnWindowLocal;
     return v17;
 }
 
@@ -1753,17 +1753,17 @@ static int __stdcall ChatLB_isRowVisible(const BYTE* rowData)
 // g_bUseChatListBox ya está definido en globals.cpp.
 // En el original, /chatlistbox lo invierte en runtime. Nosotros sólo lo consumimos.
 
-// MouseOnWindow: el slot 7 escribe este `MouseOnWindow` local y al final lo
+// ChatLB_MouseOnWindowLocal: el slot 7 escribe este `ChatLB_MouseOnWindowLocal` local y al final lo
 // publica en el latch `g_ChatLB_MouseOnWindow`.  El flag que consume el resto
 // del build (Player_InputTick, para no mandar al personaje a caminar cuando el
-// click cae sobre una ventana) es `g_MouseOnWindow` (alias de DAT_07d78094 en
+// click cae sobre una ventana) es `g_MouseOnWindow` (alias de MouseOnWindow en
 // Game/Player_InputTick.cpp).
 //
 // No se puede escribir g_MouseOnWindow directo desde acá: Player_InputTick lo
 // resetea a 0 al principio de su propio tick (MouseOnWindow_Update), que corre
 // DESPUÉS del tick del ChatListBox.  Así que MouseOnWindow_Update consulta el
 // latch, que se reescribe entero en cada tick del widget (no se queda pegado).
-extern "C" int MouseOnWindow = 0;
+extern "C" int ChatLB_MouseOnWindowLocal = 0;
 extern "C" int g_ChatLB_MouseOnWindow = 0;
 
 // ===========================================================================

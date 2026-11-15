@@ -32,7 +32,7 @@
 //
 //  ServerSelectHi  g_SelectedServer     — index of highlighted server group (-1 = none)
 //  ServerSelectLo  g_SelectedChannel    — index of highlighted channel within group
-//  DAT_00559c8c                       — set to 0x100 on entry (scissor/clip enable?)
+//  InputTextWidth                       — set to 0x100 on entry (scissor/clip enable?)
 //  DAT_00559c78                       — set to 0xffffffff (clip mask full)
 //  SetBackgroundTextColor                       — set to 0 then 0x80000000
 //
@@ -170,7 +170,7 @@ int Scene_Login_ServerSelect(void)
 
     iVar8  = 0;
     puVar9 = (undefined1*)chan_buf;
-    DAT_00559c8c = 0x100;
+    InputTextWidth = 0x100;
     iStack00000004 = 0;
     puVar12 = (undefined1*)&DAT_083a45d8;
 

@@ -806,7 +806,6 @@ CreateEffect(int param_1,float *param_2,float *param_3,float *param_4,float *par
   float &local_44 = __frame[10];
   float &local_40 = __frame[11];
   float *const local_3c = &__frame[12];
-  undefined4 *puStack_4;
   float *result = nullptr;   // valor de retorno de los handlers
 
   pfVar12 = param_3;

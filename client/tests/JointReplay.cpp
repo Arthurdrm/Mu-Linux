@@ -38,6 +38,9 @@ alignas(16) unsigned char g_owners[2][sizeof(CHARACTER)];
 alignas(16) unsigned char g_bones[200 * 48];
 alignas(16) unsigned char g_textures[0x40000];
 alignas(16) unsigned char g_models[4096 * BMD_STRIDE];
+// CharacterMachine propio: BITMAP_JOINT_SPIRIT SubType 5 copia el serial de
+// proyectiles (CharacterMachine + 1408) a Weapon.
+alignas(16) unsigned char g_charMachine[0x800];
 
 std::uint64_t Region(const void* p)
 {
@@ -52,6 +55,7 @@ std::uint64_t Region(const void* p)
     if (auto r = in(g_bones, sizeof(g_bones), 4)) return r;
     if (auto r = in(g_textures, sizeof(g_textures), 5)) return r;
     if (auto r = in(g_models, sizeof(g_models), 6)) return r;
+    if (auto r = in(g_charMachine, sizeof(g_charMachine), 7)) return r;
     return 0xFFull << 32;
 }
 void MixP(const void* p) { MixU(Region(p)); }
@@ -178,8 +182,9 @@ void HashSlot(int i)
 
 void ClearPool()
 {
-    for (int i = 0; i < kJointPoolSize; ++i)
-        if (Active(i)) std::memset(Slot(i), 0, sizeof(JOINT));
+    // Todo el pool, no sólo los activos: un joint que murió en el caso
+    // anterior dejaría su contenido al que reuse el slot.
+    std::memset(Joints, 0, sizeof(Joints));
 }
 
 void FillOwner(unsigned char* c, unsigned seed)
@@ -256,6 +261,9 @@ int main()
         FillOwner(g_owners[0], 0); FillOwner(g_owners[1], 1);
         Hero = reinterpret_cast<char*>(g_owners[0]);
         ClearPool();
+        std::memset(g_charMachine, 0, sizeof(g_charMachine));
+        g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
+        DAT_07cf1ffc = g_charMachine;
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];
         const std::uint64_t total = g_hash;
@@ -265,7 +273,9 @@ int main()
             ++crashes; MixU(0xDEAD0000u | (unsigned)type);
             if (trace) std::fprintf(stderr, "crash %d %d %d\n", type, sub, ownerMode);
         }
-        for (int i = 0; i < kJointPoolSize; ++i) if (Active(i)) HashSlot(i);
+        // También los slots que murieron durante el caso: lo que dejan escrito
+        // lo hereda el próximo joint que los use.
+        for (int i = 0; i < kJointPoolSize; ++i) if (Active(i) || Slot(i)->Type != 0) HashSlot(i);
         const std::uint64_t caseHash = g_hash;
         if (perCase) std::fprintf(perCase, "%d %d %d %016llx\n", type, sub, ownerMode, (unsigned long long)caseHash);
         g_hash = total;

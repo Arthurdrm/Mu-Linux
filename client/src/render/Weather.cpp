@@ -23,7 +23,7 @@
 //   pcVar3[0]      — active flag (char)
 //   iVar2          = iVar14 * 0x1bc                — byte offset
 //   (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] — type (short, stride=0xde*2=0x1bc/1)
-//   WSLOT_DW(0x004) — mode flag (char)
+//   Boids[i].SubType (+0x04) — contador de modo (DWORD)
 //   (&DAT_0839bcbc)[iVar14*(OBJECT_STRIDE / 4)] — angular speed (float)
 //   (&DAT_0839bcc0)[iVar14*(OBJECT_STRIDE / 4)] — pos_x (float)
 //   (&DAT_0839bcc4)[iVar14*(OBJECT_STRIDE / 4)] — pos_y (float)
@@ -118,7 +118,6 @@
 // `(&DAT_0839bcb4)[iVar14*(OBJECT_STRIDE / 4)]` (char) deja el paso en 0x6f y pisa los slots
 // vecinos (el campo +0x04 tambien es un DWORD: es un contador, `(int)... + 1`,
 // `if (1 < (int)...)`).
-#define WSLOT_DW(off) (*(unsigned int *)&reinterpret_cast<char*>(&Boids[iVar14])[EntityOffset(off)])
 uint __cdecl Weather_Update(void)
 {
     float  *pfVar1;
@@ -331,9 +330,9 @@ LAB_00501064:
                     AsObject((char*)&Boids[iVar14])->Alpha = 1.0f;
                     (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                     (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f000000;
-                    WSLOT_DW(0x0dc) = 1;
+                    *(unsigned int *)&Boids[iVar14].LightEnable = 1;
                     (&DAT_0839be11)[iVar2] = 0;
-                    WSLOT_DW(0x004) = 0;
+                    Boids[iVar14].SubType = 0;
                     (&DAT_0839bd08)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
                     (&DAT_0839bd14)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
                     WSF(DAT_0839bcbc, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 3 + 6) * _DAT_005524f4);
@@ -347,7 +346,7 @@ LAB_00501064:
                     (&DAT_0839bcd4)[iVar14 * (OBJECT_STRIDE / 4)] = 0xc2b40000;
                     WSF(DAT_0839bd30, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar11 % 10) * _DAT_005524f4);
                     if (iVar12 == 3)
-                        WSLOT_DW(0x004) = 1;
+                        Boids[iVar14].SubType = 1;
                     iVar12 = _rand();
                     WSF(DAT_0839bcc0, iVar14 * (OBJECT_STRIDE / 4)) = (float)((float)(iVar12 % 600 + -100) + *(float *)(Hero + 0x10));
                     iVar11 = _rand();
@@ -392,9 +391,9 @@ LAB_00501064:
                 RenderFxSnapshots_New(pcVar3);
                 *pcVar3 = '\x01';
                 (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;   // scale = 1.0
-                WSLOT_DW(0x0dc) = 1;
+                *(unsigned int *)&Boids[iVar14].LightEnable = 1;
                 (&DAT_0839bd10)[iVar14 * (OBJECT_STRIDE / 4)] = 0;
-                WSLOT_DW(0x004) = 0;
+                Boids[iVar14].SubType = 0;
                 *(unsigned int *)(&DAT_0839bd98 + iVar2) = 0x3f000000;
                 *(unsigned int *)(&DAT_0839bd9c + iVar2) = 0x3f000000;
                 *(unsigned int *)(&DAT_0839bda0 + iVar2) = 0x3f000000;
@@ -416,7 +415,7 @@ LAB_00501064:
                 } else if (iVar12 == 3) {
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0xaf;   // snow
                     (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3e99999a;
-                    WSLOT_DW(0x0dc) = 0;
+                    *(unsigned int *)&Boids[iVar14].LightEnable = 0;
                     __light1 = true;
                 } else if (iVar12 == 10) {
                     if (iVar14 < 3) {
@@ -435,9 +434,9 @@ LAB_00501064:
                         WSF(DAT_0839bcbc, iVar14 * (OBJECT_STRIDE / 4)) = (float)(__rScale % 3 + 6) * 0.050000001f;
                         WSF(DAT_0839bd7c, iVar14 * (OBJECT_STRIDE / 4)) = (float)(_rand() % 10 + 10) * 0.02f;
                         const int __rSpeed = _rand();
-                        WSLOT_DW(0x0dc) = 1;
+                        *(unsigned int *)&Boids[iVar14].LightEnable = 1;
                         (&DAT_0839be11)[iVar2] = 0;
-                        WSLOT_DW(0x004) = 0;
+                        Boids[iVar14].SubType = 0;
                         (&DAT_0839bdb5)[iVar2] = 7;
                         (&DAT_0839bd08)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
                         (&DAT_0839bd14)[iVar14 * (OBJECT_STRIDE / 4)] = 0xffffffff;
@@ -456,7 +455,7 @@ LAB_00501064:
                     }
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0x10a;  // firefly
                     (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x400ccccd;
-                    WSLOT_DW(0x0dc) = 0;
+                    *(unsigned int *)&Boids[iVar14].LightEnable = 0;
                     (&DAT_0839bd10)[iVar14 * (OBJECT_STRIDE / 4)] = 0x2580;
                     (&DAT_0839bdb4)[iVar2] = 2;
                     __light1 = true;
@@ -470,7 +469,7 @@ LAB_00501064:
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = __fish + 0xb6;
                     (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = (_rand() % 100 < 90) ? 0x3e99999a   // 0.3
                                                                            : 0x3e800000;  // 0.25
-                    WSLOT_DW(0x0dc) = 0;
+                    *(unsigned int *)&Boids[iVar14].LightEnable = 0;
                     __light1 = true;
                 } else {
                     // Atlans, mitad norte: IDA apaga el slot y sale de la funcion.
@@ -758,9 +757,9 @@ LAB_00501cb5:
                     (&DAT_0839bcd4)[iVar14*(OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
                     if (bVar20) WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) = (float)(fVar25 - _DAT_0055286c);
                     (&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] = 10;
-                    WSLOT_DW(0x004) = (int)WSLOT_DW(0x004) + 1;
+                    ++Boids[iVar14].SubType;
                 }
-                if (1 < (int)WSLOT_DW(0x004)) *pcVar3 = '\0';
+                if (1 < Boids[iVar14].SubType) *pcVar3 = '\0';
                 (&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] = (int)(&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] - 1;
 
                 // Proximity effects (cloud type: chance to play sound/effect)

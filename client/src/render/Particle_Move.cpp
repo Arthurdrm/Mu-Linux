@@ -945,7 +945,12 @@ void __stdcall MoveParticles(void)
                 fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
                 P_LR(iVar9) = fVar15;
                 P_LG(iVar9) = fVar15;
-                goto label_4c4_0_4_shared;
+                P_LB(iVar9) = fVar15;
+                fVar15 = P_GRAV(iVar9) + _DAT_005526e4;
+                P_GRAV(iVar9) = fVar15;
+                P_POSZ(iVar9) += fVar15;
+                P_SCALE(iVar9) += _DAT_00552874;
+                break;
             }
             case 1:
                 {
@@ -970,7 +975,6 @@ void __stdcall MoveParticles(void)
                 P_LR(iVar9) = fVar15 * _DAT_00552b18;
                 P_LG(iVar9) = fVar15 * _DAT_00552b14;
                 fVar15 = fVar15 * _DAT_00552b10;
-                label_4c4_0_4_shared:
                 P_LB(iVar9) = fVar15;
                 fVar15 = P_GRAV(iVar9) + _DAT_005526e4;
                 P_GRAV(iVar9) = fVar15;
@@ -1098,7 +1102,20 @@ void __stdcall MoveParticles(void)
                         break;
                     }
                 } else {
-                    if (iVar5 == 0x499) goto label_4b5;
+                    if (iVar5 == 0x499) {
+                        // Mismo frenado que BITMAP_BLOOD (antes un goto a ese case).
+                        fVar15 = P_VELX(iVar9) * _DAT_00552b44;
+                        P_VELX(iVar9) = fVar15;
+                        float vy = P_VELY(iVar9) * _DAT_00552b44;
+                        P_VELY(iVar9) = vy;
+                        float vz = P_VELZ(iVar9) * _DAT_00552b44;
+                        P_VELZ(iVar9) = vz;
+                        P_FRAME(iVar9) = (0xc - P_LIFE(iVar9)) / 3;
+                        P_POSX(iVar9) += fVar15;
+                        P_POSY(iVar9) += vy;
+                        P_POSZ(iVar9) += vz;
+                        continue;
+                    }
                     if (iVar5 == 0x49c) {
                         P_ROT(iVar9) += _DAT_005524fc;
                     }
@@ -1285,7 +1302,10 @@ void __stdcall MoveParticles(void)
                 float lt3[3] = { 0.05f, 0.05f, 0.05f };
                 // fall through to color decay label
             }
-            goto label_light_decay;
+            P_LR(iVar9) -= _DAT_00552874;
+            P_LG(iVar9) -= _DAT_00552874;
+            P_LB(iVar9) -= _DAT_00552874;
+            continue;
         } // end iVar5 < 0x4a7
 
         // ── Types 0x4a7..0x4c3 ───────────────────────────────────────────────
@@ -1350,7 +1370,6 @@ void __stdcall MoveParticles(void)
                 continue;
             }
             P_ROT(iVar9) = fVar15;
-            label_light_decay:
             P_LR(iVar9) -= _DAT_00552874;
             P_LG(iVar9) -= _DAT_00552874;
             P_LB(iVar9) -= _DAT_00552874;
@@ -1359,7 +1378,7 @@ void __stdcall MoveParticles(void)
 
         case BITMAP_BLOOD:
         case BITMAP_BLOOD + 1:
-        label_4b5: {
+        {
             fVar15 = P_VELX(iVar9) * _DAT_00552b44;
             P_VELX(iVar9) = fVar15;
             float vy = P_VELY(iVar9) * _DAT_00552b44;

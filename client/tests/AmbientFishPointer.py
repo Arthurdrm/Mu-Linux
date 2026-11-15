@@ -26,7 +26,7 @@ SERVICES = r'''
 #include <cmath>
 using uint = unsigned int;
 char* Hero;
-std::uintptr_t DAT_05828d58;
+std::uintptr_t Models;
 BYTE* DAT_083a2e90;
 // Nombre nuevo del pool (T9f) sobre el mismo buffer; el viejo queda para las revisiones anteriores.
 #define Fishs (reinterpret_cast<OBJECT*>(DAT_083a2e90))
@@ -67,7 +67,7 @@ constexpr unsigned poolSize = 10 * OBJECT_STRIDE;
 unsigned typeSeen[1200];
 std::uint64_t Run(BYTE* poolMemory, BYTE* heroMemory){
     pool = poolMemory + 16; DAT_083a2e90 = pool; Hero = reinterpret_cast<char*>(heroMemory + 16);
-    static BYTE models[1200 * BMD_STRIDE]; DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);   // escribe CurrentAction en el modelo
+    static BYTE models[1200 * BMD_STRIDE]; Models = reinterpret_cast<std::uintptr_t>(models);   // escribe CurrentAction en el modelo
     std::uint64_t hash = 14695981039346656037ull;
     std::memset(typeSeen, 0, sizeof(typeSeen));
     for(int i = 0; i < 65536; ++i){ layer1[i] = 5; wall[i] = BYTE((i * 7) % 3 == 1 ? 2 : 0); }

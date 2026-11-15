@@ -977,7 +977,7 @@ int __cdecl Cloth_Solve(DWORD *a1)
     VerletNode_GetPos(anchor,Position);
     float v6=Position[0];Position[1]=-Position[1];Position[0]=Position[2];Position[2]=v6;
     OBJECT* owner=ClothSystem(a1).Owner;
-    BMD_TransformPosition(static_cast<void*>(AsModel(DAT_05828d58)+owner->Type),
+    BMD_TransformPosition(static_cast<void*>(AsModel(Models)+owner->Type),
       reinterpret_cast<float*>(owner->BoneMatrices+anchor->Bone),Position,WorldPosition,1);
     VerletNode_SetTarget(anchor,WorldPosition[0],*(int*)&WorldPosition[1],*(int*)&WorldPosition[2]);
   }
@@ -1054,7 +1054,7 @@ void __cdecl SpringMesh_Create(void *widget, OBJECT* entity, int slot, int type,
     static_cast<ClothMeshWidget*>(widget)->ModelType = model_type;
 
     // model data: DAT_05828d58 + model_type * 0xbc; face list at +0x28
-    const BMD* model_base = AsModel(DAT_05828d58) + model_type;
+    const BMD* model_base = AsModel(Models) + model_type;
     auto* face_list = reinterpret_cast<ClothModelMesh*>(model_base->Meshs);
     ClothModelMesh* face_entry = face_list + slot;
 

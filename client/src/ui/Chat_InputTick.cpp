@@ -449,7 +449,7 @@ void __cdecl Chat_InputTick(void)
         // DESVIACION (Fase 4): con el chat abierto y el foco en el campo del
         // mensaje, las flechas recorren los últimos mensajes enviados. Con el
         // foco en el nombre (Tab) siguen con los nombres de susurro.
-        if (InputEnable && DAT_07e11d78 == 0) {
+        if (InputEnable && InputIndex == 0) {
             if (ChatHistory::Browse(dir == 0)) PlayBuffer(0x19, 0, 0);
             continue;
         }

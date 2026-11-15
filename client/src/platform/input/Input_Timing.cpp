@@ -36,7 +36,7 @@ void ToggleFpsCounter() {
 // IDA: RenderDebugWindow
 void __cdecl UI_UpdateFpsCounter(void) {
     gFont.SelectFont(gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
-    DAT_00559c78 = 0xffffffff;
+    m_dwTextColor = 0xffffffff;
     SetBackgroundTextColor = 0xff000000;
     // DESVIACION: F12 muestra/oculta el contador bajo los avisos superiores
     // del lado izquierdo. El dibujo no consulta teclas ni avanza SIM.

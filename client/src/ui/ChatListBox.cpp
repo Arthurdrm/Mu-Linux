@@ -1061,7 +1061,6 @@ static int __fastcall ChatLB_advanceCursor(DWORD* self)
 // InputText/InputLength alias DAT_07db8710 / DAT_07d780a8
 // (ver HUD_Pass4.cpp). Usamos los mismos #define acá para compartir el storage
 // with WM_CHAR + RenderInputText.
-#define InputText   DAT_07db8710
 #define InputLength ((int*)(void*)DAT_07d780a8)
 
 static int __fastcall ChatLB_hitTestInput(DWORD* self)

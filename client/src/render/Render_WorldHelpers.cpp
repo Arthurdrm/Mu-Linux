@@ -58,7 +58,7 @@ void __cdecl RenderBoids(void)
     // Atlans e Icarus son los dos mundos donde `Weather_Update` spawnea estas
     // criaturas (el DLL de inyeccion NOPea esas dos ramas en 0x00501292 con el
     // comentario "Fix Atlans and Icarus Goldens Overflow").
-    if (!DAT_05828d58) return;
+    if (!Models) return;
 
     // El bound de IDA es `< &unk_83A0378` = 40 slots; lo expresamos como un
     // contador para no construir un puntero fuera del array.
@@ -101,8 +101,8 @@ void __cdecl RenderBoids(void)
                 //
                 // (56588 = 188 * 301, o sea el modelo del dragon.)
                 if (entType == 301 && *((int*)v0 - 89) == 1) {
-                    void* mdl301 = (void*)((uintptr_t)DAT_05828d58 + BMD_STRIDE * 301);
-                    void* mdlEnt = (void*)((uintptr_t)DAT_05828d58 + BMD_STRIDE * entType);
+                    void* mdl301 = (void*)((uintptr_t)Models + BMD_STRIDE * 301);
+                    void* mdlEnt = (void*)((uintptr_t)Models + BMD_STRIDE * entType);
                     RenderPartObjectBodyColor(mdl301, reinterpret_cast<uintptr_t>(v0 - 90),
                                               301, AsObject(v0 - 90)->Alpha, 0x48, 1.0f, -1);
                     RenderPartObjectBodyColor(mdlEnt, reinterpret_cast<uintptr_t>(v0 - 90),
@@ -123,7 +123,7 @@ void __cdecl RenderBoids(void)
 
                 // World != 10: render shadow on terrain.
                 if (gMapManager.GetCurrentMap() != MAP_ICARUS) {
-                    BYTE* model = (BYTE*)((uintptr_t)DAT_05828d58 + BMD_STRIDE * entType);
+                    BYTE* model = (BYTE*)((uintptr_t)Models + BMD_STRIDE * entType);
                     // DESVIACION R4k: habilitar mezcla sin cambiar sus factores,
                     // y recuperar activación/caché al salir de esta sombra.
                     const Materials::InheritedBlendScope shadowBlend;
@@ -194,7 +194,7 @@ void __cdecl Entity_Render(void)
                 }
                 if (v5 < 0 || v5 >= 1200) goto next_entry;
 
-                BYTE* model = (BYTE*)((uintptr_t)DAT_05828d58 + (uintptr_t)v5 * BMD_STRIDE);
+                BYTE* model = (BYTE*)((uintptr_t)Models + (uintptr_t)v5 * BMD_STRIDE);
                 AsModel(model)->CurrentAction = 0;
                 AsModel(model)->Skin = (char)((*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class) & 7);
                 AsModel(model)->CurrentAction = AsObject(v1)->CurrentAction;
@@ -714,16 +714,16 @@ void __cdecl RenderMonsterName(int /*unused*/, int /*unused*/, int /*unused*/, i
                 // ANTERIOR en vez de forzar 0, para que los items queden igual que cuando no
                 // se apunta a nada.
                 const DWORD savedBack = SetBackgroundTextColor;
-                const DWORD savedText = DAT_00559c78;
+                const DWORD savedText = m_dwTextColor;
                 SetBackgroundTextColor = 0xFF000064;  // m_dwBackColor (rojo oscuro, ABGR)
-                DAT_00559c78 = 0xFFC8E6FF;  // m_dwTextColor (celeste)
+                m_dwTextColor = 0xFFC8E6FF;  // m_dwTextColor (celeste)
                 // IDA LABEL_35: `RenderCenteredText(v13 / 2, 10, v3)`, con v13
                 // del MISMO arbol que GetScreenWidth (0x4CB520): 260 con
                 // inventario + panel lateral, 450 con cualquier panel, 640 sin
                 // ninguno.
                 RenderCenteredText(GetScreenWidth() / 2, 10, name);
                 SetBackgroundTextColor = savedBack;
-                DAT_00559c78 = savedText;
+                m_dwTextColor = savedText;
             } else if (kind != 2) {
                 // IDA: TODO lo que no es monstruo va a CreateChat (el port lo
                 // limitaba a kind == 1).
@@ -792,7 +792,7 @@ void __cdecl RenderFishs(int /*unused*/, int /*unused*/, int /*unused*/, int /*u
                     typeCode != 188 && typeCode != 189 && __world != 10) {
                     GL_SetBlendSrcOver('\x01');                  // EnableAlphaTest(1)
                     BufferedDraw::Color4f(0.0f, 0.0f, 0.0f, 0.2f);     // shadow color
-                    float* modelData = (float*)(DAT_05828d58 + BMD_STRIDE * (int)typeCode);
+                    float* modelData = (float*)(Models + BMD_STRIDE * (int)typeCode);
                     if (modelData) {
                         AsModel(modelData)->BodyOrigin[2] = RequestTerrainHeight(posX, posY);  // height
                         AsModel(modelData)->BodyOrigin[0] = posX;
@@ -839,7 +839,7 @@ void __cdecl RenderFishs(int /*unused*/, int /*unused*/, int /*unused*/, int /*u
 // devuelve. Por eso guarda/restaura pos (16/20/24), angle (28/32/36) y type.
 void __cdecl RenderWheelWeapon(intptr_t o)
 {
-    if (!o || !DAT_05828d58 || !Hero) return;
+    if (!o || !Models || !Hero) return;
 
     // ── guardar el estado original del slot ──
     const int savedX     = *(int *)&AsObject(o)->Position[0];
@@ -871,7 +871,7 @@ void __cdecl RenderWheelWeapon(intptr_t o)
     const float alpha = sample ? sample->alpha : AsObject(o)->Alpha;
 
     // Volcar posición/acción/skin al slot del modelo compartido.
-    BYTE* mdl = (BYTE*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * model_id;
+    BYTE* mdl = (BYTE*)(uintptr_t)Models + BMD_STRIDE * model_id;
     *(float*)(mdl + 116 + BMD_FIELD_SHIFT) = zUp;
     *(BYTE*) (mdl + 160 + BMD_FIELD_SHIFT) = sample ? sample->action : AsObject(o)->CurrentAction;                       // CurrentAction
     *(BYTE*) (mdl + 152 + BMD_FIELD_SHIFT) = (BYTE)(*(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->Class & 7); // clase
@@ -916,7 +916,7 @@ void __cdecl EffectPool_RenderAll(void)
     // effect pool Effects (kEffectPoolSize entries; IDA: 200).
     // En IDA: HeadAngle iter es float*, offsets negativos cubren la cabecera del
     // entry. v0 inicia en (float*)(pool + 40), recorre 200 entries de 111 floats.
-    if (!DAT_05828d58) return;
+    if (!Models) return;
     float* HeadAngle = (float*)((char*)Effects + 40);
     if (!HeadAngle) return;
 
@@ -991,7 +991,7 @@ void __cdecl EffectPool_RenderAll(void)
 
         // Type 266: gate effect with BMD_Animation + RenderPartObject.
         if (type == 266) {
-            BYTE* model = (BYTE*)((uintptr_t)DAT_05828d58 + BMD_STRIDE * 266 + 0x0);
+            BYTE* model = (BYTE*)((uintptr_t)Models + BMD_STRIDE * 266 + 0x0);
             float angles_in[3]  = { v0[-3], v0[-2], v0[-1] };
             float headA[3]      = { v0[0],  v0[1],  v0[2]  };
             BMD_Animation(model, reinterpret_cast<float*>(&DAT_06970a9c),
@@ -1151,7 +1151,7 @@ void __cdecl StopBuffer(int Buffer, int /*Object*/) { Sound_StopBuffer(Buffer); 
 
 // DESVIACION: fauna y luces de skills se preparan con pose SIM a 25 Hz.
 void Fauna_TickSprites() {
-    if (!DAT_05828d58) return;
+    if (!Models) return;
     if (SceneFlag == 5) {
         for (int i = 0; i < 40; ++i) {
             intptr_t entity = (intptr_t)((char*)&Boids[i]);
@@ -1162,7 +1162,7 @@ void Fauna_TickSprites() {
             float brightness = (float)(rand() % 32 + (o.Type == 175 ? 64 : 128)) * 0.01f;
             float color[3] = {brightness * 0.2f, brightness * 0.4f, brightness * 0.4f};
             if (o.Type == 175) { CreateSprite(BITMAP_LIGHT, o.Position, 1.0f, color, entity, 0, 0); continue; }
-            void *model = (void *)(DAT_05828d58 + o.Type * BMD_STRIDE);
+            void *model = (void *)(Models + o.Type * BMD_STRIDE);
             EquipmentModelContext context(model);
             const float angle = o.Angle[2];
             o.Angle[2] += 90.0f;
@@ -1191,7 +1191,7 @@ void Fauna_TickSprites() {
 
 void EffectPool_TickRenderState() {
     if (SceneFlag != 4 && SceneFlag != 5) return;
-    if (gUserSettings.GetAntilag(ANTILAG_SKILLS) || !DAT_05828d58) return;
+    if (gUserSettings.GetAntilag(ANTILAG_SKILLS) || !Models) return;
     for (int i = 0; i < kEffectPoolSize; ++i) {
         OBJECT &o = *(OBJECT *)((char *)&Effects[i]);
         if (!o.Live) continue;

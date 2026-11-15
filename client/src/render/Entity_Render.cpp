@@ -347,7 +347,7 @@ RenderPartObject(intptr_t param_1,int param_2,const PART_t* param_3,float *param
         param_2 = 0x3b4;
       }
     }
-    this_ = (void *)(DAT_05828d58 + param_2 * BMD_STRIDE);
+    this_ = (void *)(Models + param_2 * BMD_STRIDE);
     *(undefined1 *)&((BMD*)(uintptr_t)(this_))->HideSkin = param_9;
     *(undefined4 *)&((BMD*)(uintptr_t)(this_))->BodyScale = *(undefined4 *)(param_1 + 0xc);
     *(undefined1 *)&((BMD*)(uintptr_t)(this_))->ContrastEnable = *(undefined1 *)(param_1 + 0xe4);

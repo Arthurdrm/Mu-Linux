@@ -42,22 +42,22 @@ extern "C" bool GuildMark_EnsureRenderTarget(void)
 extern "C" void GuildMark_InitializePalette(bool blend)
 {
     const DWORD alpha = blend ? 0u : 0x80000000u;
-    DAT_07e11f34[0]  = alpha;
-    DAT_07e11f34[1]  = 0xFF000000u;
-    DAT_07e11f34[2]  = 0xFF808080u;
-    DAT_07e11f34[3]  = 0xFFFFFFFFu;
-    DAT_07e11f34[4]  = 0xFF0000FFu;
-    DAT_07e11f34[5]  = 0xFF0080FFu;
-    DAT_07e11f34[6]  = 0xFF00FFFFu;
-    DAT_07e11f34[7]  = 0xFF00FF80u;
-    DAT_07e11f34[8]  = 0xFF00FF00u;
-    DAT_07e11f34[9]  = 0xFF80FF00u;
-    DAT_07e11f34[10] = 0xFFFFFF00u;
-    DAT_07e11f34[11] = 0xFFFF8000u;
-    DAT_07e11f34[12] = 0xFFFF0000u;
-    DAT_07e11f34[13] = 0xFFFF0080u;
-    DAT_07e11f34[14] = 0xFFFF00FFu;
-    DAT_07e11f34[15] = 0xFF8000FFu;
+    MarkColor[0]  = alpha;
+    MarkColor[1]  = 0xFF000000u;
+    MarkColor[2]  = 0xFF808080u;
+    MarkColor[3]  = 0xFFFFFFFFu;
+    MarkColor[4]  = 0xFF0000FFu;
+    MarkColor[5]  = 0xFF0080FFu;
+    MarkColor[6]  = 0xFF00FFFFu;
+    MarkColor[7]  = 0xFF00FF80u;
+    MarkColor[8]  = 0xFF00FF00u;
+    MarkColor[9]  = 0xFF80FF00u;
+    MarkColor[10] = 0xFFFFFF00u;
+    MarkColor[11] = 0xFFFF8000u;
+    MarkColor[12] = 0xFFFF0000u;
+    MarkColor[13] = 0xFFFF0080u;
+    MarkColor[14] = 0xFFFF00FFu;
+    MarkColor[15] = 0xFF8000FFu;
 }
 
 // IDA: FUN_004F02F0 — renderiza el emblema de guild en pantalla.
@@ -84,7 +84,7 @@ void __cdecl RenderGuildMark(float p1, float p2, float p3, float p4, int p5) {
     DWORD* pixelBuf = (DWORD*)Bitmaps[0x22].Buffer;
     // `DAT_07e11f34` es un array de 16: se indexa directo.
     if (p5 < 0 || p5 > 15) return;
-    DWORD color = DAT_07e11f34[p5];  // MarkColor[p5]
+    DWORD color = MarkColor[p5];  // MarkColor[p5]
 
     if (p5 == 0) {
         // No guild — fill black, draw gray cross pattern

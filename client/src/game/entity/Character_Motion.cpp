@@ -210,10 +210,10 @@ LABEL_129:
         short v53 = AsCharacter(c)->Object.Type;
         if (v53 != 390 || (AsCharacter(c)->Object.SubType >= 206 && AsCharacter(c)->Object.SubType <= 208)) {
             // Models[v53].SoundIdle (offset 170)
-            short modSnd = *(short*)((char*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * v53 + 170 + BMD_FIELD_SHIFT);
+            short modSnd = *(short*)((char*)(uintptr_t)Models + BMD_STRIDE * v53 + 170 + BMD_FIELD_SHIFT);
             if (modSnd != (short)0xFFFF) {
                 int v55 = rand() % 2;
-                short s = *(short*)((char*)(uintptr_t)DAT_05828d58
+                short s = *(short*)((char*)(uintptr_t)Models
                                     + BMD_STRIDE * v53 + 2 * v55 + 170 + BMD_FIELD_SHIFT);
                 // PlayBuffer(s + 170, c, 0) — sound playback (PlayBuffer en nuestra port)
                 PlayBuffer(s + 170, AsObject(c), 0);
@@ -447,7 +447,7 @@ label_119:
     if (etype != 0x186 || (AsCharacter(param_1)->Object.SubType > 0xcd && AsCharacter(param_1)->Object.SubType < 0xd1)) {
         if (AsCharacter(param_1)->Object.SubType > 0xcd && AsCharacter(param_1)->Object.SubType < 0xd1)
             PlayBuffer(0x5d, AsObject(param_1), 0);
-        if (*(short *)(DAT_05828d58 + 0xaa + BMD_FIELD_SHIFT + etype * BMD_STRIDE) != -1) {
+        if (*(short *)(Models + 0xaa + BMD_FIELD_SHIFT + etype * BMD_STRIDE) != -1) {
             // IDA 0x443930 L288-289:
             //     v19 = rand() % 2;
             //     PlayBuffer(*(short*)(Models + 2*(v19 + 94*type) + 170) + 170, c, 0);
@@ -456,7 +456,7 @@ label_119:
             // leería campos ajenos del struct de modelo.
             int v19 = rand() % 2;
             int iVar9 = 0;
-            PlayBuffer(AsModel(DAT_05828d58 + etype * BMD_STRIDE)->Sounds[v19] + 0xaa, AsObject(param_1), iVar9);
+            PlayBuffer(AsModel(Models + etype * BMD_STRIDE)->Sounds[v19] + 0xaa, AsObject(param_1), iVar9);
         }
     }
 }
@@ -982,7 +982,7 @@ LABEL_41:
             }
         }
         // Non-player or player[206-208]: model action sound at +178
-        short modSnd = *(short*)((char*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * v14 + 178 + BMD_FIELD_SHIFT);
+        short modSnd = *(short*)((char*)(uintptr_t)Models + BMD_STRIDE * v14 + 178 + BMD_FIELD_SHIFT);
         if (modSnd != -1) {
             PlayBuffer(modSnd + 170, AsObject(c), 0);
         }
@@ -1035,7 +1035,7 @@ void __cdecl MoveCharacter(intptr_t p1)
     // `BoneMatrix[3 * bone]`.  No usar un buffer local: los huesos que
     // BMD_Animation no escribe quedarian con basura de stack.
     float (* const BoneMatrix)[3][4] = (float (*)[3][4])g_BoneScratch;
-    intptr_t   v422 = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)DAT_05828d58;  // model slot
+    intptr_t   v422 = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)Models;  // model slot
     bool  bEventNpc = false;
     intptr_t Owner = 0;
     intptr_t v390  = 0;
@@ -1328,7 +1328,7 @@ void __cdecl MoveCharacter(intptr_t p1)
 
     // L818-839: bone-particle effect (o+404 = effect counter)
     if (*(BYTE*)&((OBJECT*)(uintptr_t)(o))->HurtByOneToOne) {
-        intptr_t This = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)DAT_05828d58;
+        intptr_t This = BMD_STRIDE * (AsObject(o)->Type) + (intptr_t)Models;
         memset(p1f, 0, sizeof(p1f));
         for (intptr_t kk = 0; kk < *(short*)(This + 34); ++kk) {
             intptr_t v401 = reinterpret_cast<ModelAnimationBone*>(AsModel(This)->Bones)[kk].Parent;
@@ -1960,7 +1960,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
     if (!entity_ptr) return;
 
     // Model slot = DAT_05828d58 + entity_type * 0xbc
-    void *model = (void *)(DAT_05828d58 + (int)AsCharacter(entity_ptr)->Object.Type * BMD_STRIDE);
+    void *model = (void *)(Models + (int)AsCharacter(entity_ptr)->Object.Type * BMD_STRIDE);
 
     // If model has no action data: copy cached transform params to render slots
     if (*(short *)(static_cast<BYTE*>(model) + 0x26) == 0) {

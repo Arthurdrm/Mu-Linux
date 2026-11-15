@@ -54,7 +54,7 @@ void RenderDerivedState_Begin() {
         SceneFlag==4 ? CharSelectSceneInitialized && CurrentProtocolState>50 :
         SceneFlag==5 && EnableMainRender && LoadingWorld<=30;
     if (!ready) return;
-    active=true; scene=SceneFlag; world=gMapManager.GetCurrentMap(); models=DAT_05828d58;
+    active=true; scene=SceneFlag; world=gMapManager.GetCurrentMap(); models=Models;
     // DESVIACION: los slots libres de personajes e items no se dibujan ni se
     // interpolan; copiar sólo los vivos.
     if (CharactersClient) for (int slot=0; slot<400; ++slot) {
@@ -101,7 +101,7 @@ void RenderDerivedState_Forget(const void *owner) {
 void RenderDerivedState_End() {
     if (!active) return;
     active=false;
-    if (scene!=SceneFlag || world!=gMapManager.GetCurrentMap() || models!=DAT_05828d58) return;
+    if (scene!=SceneFlag || world!=gMapManager.GetCurrentMap() || models!=Models) return;
     for (std::size_t i=0; i<used; ++i) {
         Block &block=blocks[i];
         if (!block.valid) continue;

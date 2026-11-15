@@ -18,7 +18,7 @@ int attackSpeedCalls;
 void SetAttackSpeed() { ++attackSpeedCalls; events.push_back(40000); }
 void CallAttack(CHARACTER* character) { CALL_ATTACK; }
 std::uint64_t RunAttack(CHARACTER* character, BYTE* models, BYTE* items) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     DAT_07d78068 = reinterpret_cast<std::uintptr_t>(items + 65536);
     activeCharacter = character; g_EnableSound = TRUE;
     for(int slot = 0; slot < 420; ++slot) { MaxBufferChannel[slot] = 4; Enable3DSound[slot] = true; }

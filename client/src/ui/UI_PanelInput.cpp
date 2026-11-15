@@ -169,7 +169,7 @@ void __cdecl GuildCreator_HitTest(void) {
                     } else {
                         // IDA: strcpy(&dword_7EA51EC, InputText[0])
                         memset(DAT_07ea51ec, 0, sizeof(DAT_07ea51ec));
-                        TextEngine::CopyTruncated(DAT_07ea51ec, sizeof(DAT_07ea51ec), (const char*)DAT_07db8710[0]);
+                        TextEngine::CopyTruncated(DAT_07ea51ec, sizeof(DAT_07ea51ec), (const char*)InputText[0]);
             
                         // El rango de guild entero es Encrypt=0 -> C1 plano, y
                         // `gNetwork.SendC1` aplica el mismo chain-XOR sobre 3..len-1
@@ -232,7 +232,7 @@ void __cdecl GuildCreator_HitTest(void) {
             // DAT_07db8710 es char[10][256] — escribimos el primer byte del slot 0
             // explícitamente. (Los globals 8714/8718 son símbolos separados: también se
             // limpian, para terminar en NUL lo que haya quedado del username.)
-            DAT_07db8710[0][0] = 0;
+            InputText[0][0] = 0;
             DAT_07db8714 = 0;
             DAT_07db8718 = 0;
             *(DWORD*)DAT_07d780a8 = 0;

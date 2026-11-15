@@ -103,7 +103,7 @@ uint Scene_Login(void)
     InputTextWidth = 0x77;                  // InputTextWidth = 119
     GL_SetBlendSrcOver('\x01');                 // EnableAlphaTest(1)
     Gfx::Color3f(1.0f, 1.0f, 1.0f);
-    DAT_00559c78 = 0xffd2e6ff;            // m_dwTextColor
+    m_dwTextColor = 0xffd2e6ff;            // m_dwTextColor
     SetBackgroundTextColor = 0;                     // m_dwBackColor
     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
 
@@ -159,7 +159,7 @@ uint Scene_Login(void)
     InputTextWidth = 0x100;                 // InputTextWidth = 256
     Gfx::Color3f(0.8f, 0.7f, 0.6f);
     uVar6 = 0xffffffff;
-    DAT_00559c78 = 0xffffffff;
+    m_dwTextColor = 0xffffffff;
 
     // Version string 1 (memcpy loop generado por MSVC)
     pcVar8 = &DAT_07d4b12c;

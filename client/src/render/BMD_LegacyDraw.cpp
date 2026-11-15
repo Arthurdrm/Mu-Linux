@@ -208,7 +208,7 @@ void __cdecl RenderObjectScreen(int Type, unsigned int ItemLevel, unsigned char 
     }
     ObjectSelect_Type = modelType;
 
-    void* model = (void*)(DAT_05828d58 + (int)modelType * BMD_STRIDE);
+    void* model = (void*)(Models + (int)modelType * BMD_STRIDE);
     *(BYTE*)&((BMD*)(uintptr_t)(model))->CurrentAction = 0;
     *(float*)&((BMD*)(uintptr_t)(model))->BodyHeight = inventoryPose.BodyHeight;
     float scale = (int)ItemLevel < 0 ? inventoryPose.NegativeLevelScale : inventoryPose.Scale;

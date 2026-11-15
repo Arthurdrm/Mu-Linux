@@ -99,7 +99,7 @@ bool __cdecl BMD__PlayAnimation(void *This, float *AnimationFrame, float *PriorA
 extern "C" bool __cdecl CharacterAnimation(intptr_t c, intptr_t o)
 {
     short type = AsObject(o)->Type;
-    BYTE* model = (BYTE*)(uintptr_t)DAT_05828d58 + BMD_STRIDE * type;
+    BYTE* model = (BYTE*)(uintptr_t)Models + BMD_STRIDE * type;
     float speed = 0.0f;
 
     // model+38 = actionCount (short). If the model has actions, look up speed

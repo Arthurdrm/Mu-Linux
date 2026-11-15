@@ -80,7 +80,6 @@ static inline void AE_TransformPosition(uintptr_t model, const void* mat,
                                         float* pos, float* out, int flag)
 { BMD_TransformPosition((void*)(uintptr_t)model, (float*)mat, pos, out, (char)flag); }
 
-#define Models                        DAT_05828d58
 #define Matrix                        DAT_07abf444   // IDA `Matrix` @ 0x07ABF444
 #define operator_new(n)               AE_new((size_t)(n))
 #define delete__(p)                   AE_delete((DWORD)(uintptr_t)(p))
@@ -103,7 +102,7 @@ void __cdecl AttackEffect(intptr_t Owner)
   // Guard de port (no esta en IDA): si la tabla de modelos todavia no esta
   // cargada, `Models + 188*type` seria un puntero basura que TransformPosition
   // deferenciaria.
-  if (!Owner || !DAT_05828d58) return;
+  if (!Owner || !Models) return;
 
   intptr_t v2; // edi
   char v3; // al
@@ -2147,4 +2146,3 @@ LABEL_75:
 #undef TransformPosition
 #undef PlayBuffer
 #undef CreateEffect
-#define CreateEffect CreateEffect

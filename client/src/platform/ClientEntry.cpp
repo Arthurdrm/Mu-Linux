@@ -690,9 +690,9 @@ int main(int, char**)
     // durante la carga del mapa (state=5). Los spawns de entidades de la escena de
     // login deferencian DAT_05828d58 + etype*0xbc + offset y crashean si es NULL.
     // Alocamos un fallback en cero, grande como para etype hasta ~0x300.
-    if (DAT_05828d58 == 0) {
+    if (Models == 0) {
         DAT_06f42a58=ResourceTables::ModelBase();
-        DAT_05828d58 = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
+        Models = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
     }
 
     // Class name table (DAT_07d2b494, stride 300, indexed por cidx = (klass&7) +

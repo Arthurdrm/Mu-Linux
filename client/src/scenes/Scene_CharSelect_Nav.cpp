@@ -1692,7 +1692,7 @@ LABEL_85:
                     PlayBuffer(rand() % 2 + 40, AsObject(c), 0);
                 }
                 short modelType = AsCharacter(c)->Object.Type;
-                const BYTE* modelBase = reinterpret_cast<const BYTE*>(DAT_05828d58) + BMD_STRIDE * modelType;
+                const BYTE* modelBase = reinterpret_cast<const BYTE*>(Models) + BMD_STRIDE * modelType;
                 if (*(const unsigned short*)&((BMD*)(uintptr_t)(modelBase))->Sounds[2] != 0xFFFF) {
                     const BMD* soundModel = AsModel(modelBase);
                     PlayBuffer(soundModel->Sounds[2 + rand() % 2] + 170, AsObject(c), 0);
@@ -1704,7 +1704,7 @@ LABEL_85:
                 PlayBuffer(rand() % 2 + 40, AsObject(c), 0);
             }
             short modelType = AsCharacter(c)->Object.Type;
-            const BYTE* modelBase = reinterpret_cast<const BYTE*>(DAT_05828d58) + BMD_STRIDE * modelType;
+            const BYTE* modelBase = reinterpret_cast<const BYTE*>(Models) + BMD_STRIDE * modelType;
             if (*(const unsigned short*)&((BMD*)(uintptr_t)(modelBase))->Sounds[2] != 0xFFFF) {
                 const BMD* soundModel = AsModel(modelBase);
                 PlayBuffer(soundModel->Sounds[2 + rand() % 2] + 170, AsObject(c), 0);
@@ -1811,7 +1811,7 @@ void __cdecl SetPlayerShock(CHARACTER* c, int Hit)
         }
         if (etype != 284) {
             // Monster-table sound lookup: Models[etype].Sound[rand()%2]
-            const BYTE* modelsBase = reinterpret_cast<const BYTE*>(DAT_05828d58);
+            const BYTE* modelsBase = reinterpret_cast<const BYTE*>(Models);
             const short* sndTbl = reinterpret_cast<const short*>(modelsBase + BMD_STRIDE * etype + 174 + BMD_FIELD_SHIFT);
             if ((unsigned short)*sndTbl != 0xFFFF) {
                 int v6 = sndTbl[rand() % 2] + 170;

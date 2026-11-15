@@ -202,7 +202,7 @@ void __cdecl BMD__Release(BMD* model) {
 void __cdecl DeleteObjects(void) {
     // free all model slots
     for (int slot = 0; slot < 0xa0; ++slot)
-        BMD__Release(AsModel(DAT_05828d58) + slot);
+        BMD__Release(AsModel(Models) + slot);
 
     // IDA 0x004FFD50: descargar cada celda desde la cola hacia la cabeza.
     // El límite cuenta las 256 celdas y no depende del ancho de los punteros.
@@ -744,7 +744,7 @@ float __cdecl MoveHumming(float *param_1, float *param_2, float *param_3, float 
 void __cdecl BMD__RenderBody(void *model, int flags, float f1, int f2, float f3, float f4, float f5, int f6, int rgba) {
     // Valida un slot completo del pool real, no una dirección virtual de Windows.
     // Linux ELF32 puede reservar este pool por encima de 2 GB.
-    const uintptr_t base = static_cast<uintptr_t>(DAT_05828d58);
+    const uintptr_t base = static_cast<uintptr_t>(Models);
     const uintptr_t address = reinterpret_cast<uintptr_t>(model);
     constexpr size_t stride = sizeof(BMD);
     if (!base || address < base) return;
@@ -788,7 +788,7 @@ void __cdecl BMD__RenderBody(void *model, int flags, float f1, int f2, float f3,
 // SetMonsterSound @ 0x00509810 — Model_SetAnimationSlots(slot_idx, s0, s1, s2, s3, s4)
 // Writes 5 shorts into model slot at DAT_05828d58 + slot_idx * 0xbc + 0xaa.
 void __cdecl Model_SetAnimationSlots(int param_1, int param_2, int param_3, int param_4, int param_5, int param_6) {
-    auto* model = AsModel(DAT_05828d58) + param_1;
+    auto* model = AsModel(Models) + param_1;
     model->Sounds[0] = (short)param_2;
     model->Sounds[1] = (short)param_3;
     model->Sounds[2] = (short)param_4;

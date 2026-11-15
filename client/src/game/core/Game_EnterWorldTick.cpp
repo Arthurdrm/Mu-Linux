@@ -99,7 +99,7 @@ static void Send_CharSelectPacket(void)
     pkt[2] = 0xF3;
     pkt[3] = 0x03;
 
-    NetText::ToServer(pkt + 4, NAME, (const char*)DAT_07db8710);
+    NetText::ToServer(pkt + 4, NAME, (const char*)InputText);
 
     // Char slot byte: DAT_07abf20c low nibble * 0x10 + high nibble
     pkt[4 + NAME] = (BYTE)((char)DAT_07abf20c * 0x10 + ((BYTE*)&DAT_07abf20c)[1]);
@@ -128,7 +128,7 @@ static void Send_CharCreatePacket(void)
     pkt[2] = 0xF3;
     pkt[3] = 0x01;      // sub 0x01 = CREATE
 
-    NetText::ToServer(pkt + 4, NAME, (const char*)DAT_07db8710);   // typed char name (InputText[0])
+    NetText::ToServer(pkt + 4, NAME, (const char*)InputText);   // typed char name (InputText[0])
 
     // Class byte: page*0x10 + byte1 → 0/16/32/48 = DW/DK/FE/MG.
     pkt[4 + NAME] = (BYTE)((char)DAT_07abf20c * 0x10 + ((BYTE*)&DAT_07abf20c)[1]);
@@ -230,7 +230,7 @@ void Game_EnterWorldTick(void)
         GuildInputEnable = 0; TabInputEnable = 0; GoldInputEnable = 0;
         InputEnable = 1;
         ClearInput(1);
-        DAT_07e11d78 = 0;
+        InputIndex = 0;
         InputTextWidth = 0x5a;
         InputNumber = 1;
 
@@ -561,11 +561,11 @@ void Game_EnterWorldTick(void)
                 PlayBuffer(0x1b, 0, 0);
 
                 // Validate username length
-                int ulen = (int)strlen((char*)DAT_07db8710);
+                int ulen = (int)strlen((char*)InputText);
                 if (ulen < 4) {
                     if (ErrorMessage == 0) ErrorMessage = 0x7a; else NextErrorMessage = 0x7a;
                 } else {
-                    if (Chat_ValidateInputCommand() == '\0' && !CheckSpecialText((const BYTE*)DAT_07db8710)) { // IDA: FUN_00406B30
+                    if (Chat_ValidateInputCommand() == '\0' && !CheckSpecialText((const BYTE*)InputText)) { // IDA: FUN_00406B30
                         DAT_083a7c18 = 0x1c;
                         ErrorMessage = NextErrorMessage;
                         NextErrorMessage = 0;

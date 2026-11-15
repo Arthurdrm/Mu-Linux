@@ -6,7 +6,7 @@ from GatePointer import PREAMBLE
 from SceneObjectPointer import ROOT,read_source,function,build_and_run
 
 SERVICES=r'''
-uintptr_t DAT_05828d58;FILE* SMDFile;
+uintptr_t Models;FILE* SMDFile;
 namespace ResourceTables {std::size_t ModelCount(){return 4;}void EnsureModels(std::size_t n){Require(n<=4);}}
 namespace Platform {struct FS{FILE* Open(const char* p,const char* m){return std::fopen(p,m);}};FS& GetFileSystem(){static FS fs;return fs;}}
 '''
@@ -55,7 +55,7 @@ void CheckModel(BMD& m,bool flip){Require(m.NumBones==3 && m.NumMeshs==2 && m.Nu
  Require(a.Faces[0].Count==3 && Near(a.Normals[0].Direction[2],1) && Near(a.UVs[0].V,flip?0:1));Require(meshes[1].NormalCount==1 && meshes[1].Normals[0].Direction[0]==0 && meshes[1].Normals[0].Direction[1]==0 && meshes[1].Normals[0].Direction[2]==0);
 }
 void Run(BYTE* table,char* path){
- DAT_05828d58=reinterpret_cast<uintptr_t>(table+16);auto* models=reinterpret_cast<BMD*>(table+16);
+ Models=reinterpret_cast<uintptr_t>(table+16);auto* models=reinterpret_cast<BMD*>(table+16);
  for(unsigned flip=0;flip<2;++flip){std::memset(table,0x5a,4*sizeof(BMD)+32);models[1]={};std::vector<BYTE> before(table,table+4*sizeof(BMD)+32);std::strcpy(path,MODEL_PATH);auto* sentinel=std::tmpfile();Require(sentinel);SMDFile=sentinel;std::fputs("tablas",sentinel);std::rewind(sentinel);
   OpenSMDModel(1,path,2,static_cast<char>(flip));Require(SMDFile==sentinel && std::ftell(sentinel)==0);CheckModel(models[1],flip!=0);
   std::strcpy(path,ANIM_PATH);OpenSMDAnimation(1,path,1);auto& m=models[1];Require(m.NumActions==1);auto* a=reinterpret_cast<Smd::Action*>(m.Actions);auto* b=reinterpret_cast<Smd::Bone*>(m.Bones);Require(a[0].Frames==2 && a[0].Lock==1);float speed;std::memcpy(&speed,a[0].Flags+4,4);Require(speed==0.3f);

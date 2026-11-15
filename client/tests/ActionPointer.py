@@ -47,7 +47,7 @@ MAIN = r'''
 void* Call(OBJECT* object, int action) { return CALL_ACTION; }
 void Cast(OBJECT* object) { CALL_CAST; }
 std::uint64_t RunCasting(BYTE* models, OBJECT* object) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     digest = 14695981039346656037ull;
     for(short type : {0, 1, 302, 390})
     for(short limit : {0, 5, 6, 87, 88})
@@ -72,7 +72,7 @@ std::uint64_t RunCasting(BYTE* models, OBJECT* object) {
     return digest;
 }
 void RunAll(BYTE* models, BYTE* pool) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     CharactersClient = reinterpret_cast<std::uintptr_t>(pool);
     const short limit = 150;
     std::memcpy(models + 390 * 188 + 38, &limit, 2);
@@ -100,7 +100,7 @@ void RunAll(BYTE* models, BYTE* pool) {
     }
 }
 std::uint64_t Run(BYTE* models, OBJECT* object) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     digest = 14695981039346656037ull;
     for(short type = 0; type < 8; ++type)
     for(short limit : {-1, 0, 1, 76, 77, 255, 32767})
@@ -131,7 +131,7 @@ std::uint64_t Run(BYTE* models, OBJECT* object) {
         Hash(object, sizeof(*object)); Hash(&accepted, sizeof(accepted));
     }
     Require(Call(nullptr, 76) == nullptr);
-    DAT_05828d58 = 0;
+    Models = 0;
     OBJECT unchanged; std::memcpy(&unchanged, object, sizeof(unchanged));
     Require(Call(object, 76) == nullptr && std::memcmp(object, &unchanged, sizeof(unchanged)) == 0);
     return digest;
@@ -169,8 +169,8 @@ int main() {
 def harness(revision=None):
     header = read_source("src/globals.h", revision)
     globals_source = read_source("src/globals.cpp", revision)
-    declaration = re.search(r"extern [^;\n]*\bDAT_05828d58\s*;", header).group()
-    definition = re.search(r"^[^/\n]*\bDAT_05828d58\s*=\s*[^;]+;", globals_source, re.M).group()
+    declaration = re.search(r"extern [^;\n]*\bModels\s*;", header).group()
+    definition = re.search(r"^[^/\n]*\bModels\s*=\s*[^;]+;", globals_source, re.M).group()
     declaration += re.search(r"extern [^;\n]*\bCharactersClient\s*;", header).group()
     definition += re.search(r"^[^/\n]*\bCharactersClient\s*=\s*[^;]+;", globals_source, re.M).group()
     all_actions = function(read_source("src/scenes/Scene_CharSelect_Nav.cpp", revision), "Characters_SetActionAll")

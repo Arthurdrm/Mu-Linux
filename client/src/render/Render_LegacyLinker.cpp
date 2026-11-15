@@ -65,7 +65,7 @@ void __cdecl AccessModelWithTextures(int id, char* path, char* name, int param) 
     // alloc) con stride 16 bytes. Esa tabla tiene `numBones` entries de 0x10
     // bytes c/u: sólo escribir speeds hasta el límite de bones disponibles
     // (overflow con NPCs de pocos bones).
-    intptr_t slotBase = DAT_05828d58 + id * BMD_STRIDE;
+    intptr_t slotBase = Models + id * BMD_STRIDE;
     char* actionsTable = (char*)AsModel(slotBase)->Actions;
     short numBones = *(short*)(slotBase + 38);   // realmente numBones, but anim speed lookup uses this
     if (actionsTable && numBones > 0) {
@@ -333,7 +333,7 @@ void __cdecl RenderItem3D(float sx, float sy, float Width, float Height,
     // o numMesh están en garbage. Retornar silencioso si modelo no listo.
     {
         if (modelId < 0 || modelId >= ResourceTables::ModelCount()) return;
-        char* modelEntry = (char*)DAT_05828d58 + modelId * BMD_STRIDE;
+        char* modelEntry = (char*)Models + modelId * BMD_STRIDE;
         short numMesh = *(short*)(modelEntry + 0x24);
         intptr_t meshBase = (intptr_t)((BMD*)(uintptr_t)(modelEntry))->Meshs;
         // Books 1..16 are loaded at model IDs 880..895.  The original

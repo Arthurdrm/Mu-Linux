@@ -5,9 +5,9 @@ from pathlib import Path
 from ModelReleaseLifecycle import prefix
 from SceneObjectPointer import function,read_source,build_and_run
 SERVICES=r'''
-std::vector<std::pair<int,int>> events;static BMD table[380];uintptr_t DAT_05828d58=reinterpret_cast<uintptr_t>(table);
+std::vector<std::pair<int,int>> events;static BMD table[380];uintptr_t Models=reinterpret_cast<uintptr_t>(table);
 BMD* AsModel(uintptr_t p){return reinterpret_cast<BMD*>(p);}
-void BMD__Release(BMD* p){auto n=reinterpret_cast<uintptr_t>(p)-DAT_05828d58;Require(n%sizeof(BMD)==0&&n/sizeof(BMD)<380);events.push_back({1,int(n/sizeof(BMD))});}
+void BMD__Release(BMD* p){auto n=reinterpret_cast<uintptr_t>(p)-Models;Require(n%sizeof(BMD)==0&&n/sizeof(BMD)<380);events.push_back({1,int(n/sizeof(BMD))});}
 void BMD__Release(uintptr_t p){BMD__Release(reinterpret_cast<BMD*>(p));}
 void UnloadImage(int n){events.push_back({2,n});}
 void DeleteObjects(){events.push_back({3,0});}
@@ -23,7 +23,7 @@ void OpenTexture(int slot,const char* path,int filter,char flag){Require(slot==1
 '''
 MAIN=r'''
 int main(){
- if(sizeof(void*)==8)Require(DAT_05828d58>0xffffffffull);
+ if(sizeof(void*)==8)Require(Models>0xffffffffull);
  std::uint64_t hash=14695981039346656037ull;
  auto Check=[&](const std::vector<std::pair<int,int>>& expected){Require(events==expected);for(const auto& e:events)for(std::uint32_t v:{std::uint32_t(e.first),std::uint32_t(e.second)})for(unsigned j=0;j<4;++j){hash^=BYTE(v>>(8*j));hash*=1099511628211ull;}events.clear();};
  std::vector<std::pair<int,int>> expected;

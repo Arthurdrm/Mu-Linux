@@ -58,7 +58,7 @@ void Reset(){
     std::memcpy(g_ObjectBucketGrid,expectedGrid,sizeof(expectedGrid));Check();
 }
 void ModelUnload(){
-    for(unsigned i=0;i<0x7580;i+=0xbc)expectedEvents.push_back(0x100000+i+DAT_05828d58);
+    for(unsigned i=0;i<0x7580;i+=0xbc)expectedEvents.push_back(0x100000+i+Models);
     for(unsigned cell=0;cell<256;++cell)while(!lists[cell].empty())ModelRemove(cell,lists[cell].back());
     for(unsigned i=0x23;i<0x68;++i)expectedEvents.push_back(0x200000+i);
 }

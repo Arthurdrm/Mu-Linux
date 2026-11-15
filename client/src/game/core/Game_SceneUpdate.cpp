@@ -64,7 +64,7 @@ static void LoginScene_ApplySafeObjectAnim()
             continue;
 
         short type = AsObject(obj)->Type;
-        char* model = (char*)(DAT_05828d58 + type * BMD_STRIDE);
+        char* model = (char*)(Models + type * BMD_STRIDE);
         if (model) {
             AsModel(model)->CurrentAction = AsObject(obj)->CurrentAction;
             BMD__PlayAnimation((void*)model,
@@ -158,7 +158,7 @@ int Game_SceneUpdate(void)
         // CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
         //              (unsigned)(0 | (g_ServerPort)));
         DAT_083a7c48 = 1;
-        DAT_083a7c40 = 0;
+        ServerListCount = 0;
 
         // ── Flujo ConnectServer ──────────────────────────────────
         // Si ServerConfig tiene ConnectServer (ConnectServerPort != 0), conectamos YA
@@ -301,7 +301,7 @@ int Game_SceneUpdate(void)
         // Copy version string → username buffer
         {
             int vlen = (int)strlen((char*)lpData_055c9ba0);
-            memcpy(DAT_07db8710, lpData_055c9ba0, vlen + 1);
+            memcpy(InputText, lpData_055c9ba0, vlen + 1);
             // InputTextMax is a per-slot array. IDA canonical init sets BOTH
             // slots so password accepts input too; only setting slot 0 used to
             // silently reject every keystroke in the password field.
@@ -310,7 +310,7 @@ int Game_SceneUpdate(void)
             InputNumber = 2;
             DAT_07e113d9 = 1;
             *(DWORD*)DAT_07d780a8 = vlen;
-            DAT_07e11d78 = (vlen != 0) ? 1 : 0;
+            InputIndex = (vlen != 0) ? 1 : 0;
         }
 
         // Populate server list UI (120 × Widget_Draw)
@@ -475,7 +475,7 @@ int Game_SceneUpdate(void)
                     IsClickPushed())
                 {
                     MouseLButtonPush = '\0';
-                    DAT_07e11d78 = (unsigned)i;
+                    InputIndex = (unsigned)i;
                     ErrorMessage = NextErrorMessage;
                     NextErrorMessage = 0;
                 }
@@ -510,19 +510,19 @@ int Game_SceneUpdate(void)
             PlayBuffer(0x19, 0, 0);
 
             // Check username empty
-            int ulen = (int)strlen((char*)DAT_07db8710);
+            int ulen = (int)strlen((char*)InputText);
             if (ulen == 0) {
                 // No username: set slot error
                 if (ErrorMessage == 0) { ErrorMessage = 100; }
                 else                   { NextErrorMessage = 100; }
-                DAT_07e11d78 = 0;
+                InputIndex = 0;
                 DAT_005616a0 = 1;
             } else {
                 int plen = (int)strlen((char*)DAT_07db8810);
                 if (plen == 0) {
                     if (ErrorMessage == 0) { ErrorMessage = 0x65; }
                     else                   { NextErrorMessage = 0x65; }
-                    DAT_07e11d78 = 1;
+                    InputIndex = 1;
                     DAT_005616a0 = 1;
                 }
             }
@@ -537,17 +537,17 @@ int Game_SceneUpdate(void)
                 DAT_083a7ac8 = Platform::GetTimer().Ticks();
                 DAT_083a4320 = 0;
                 CErrorReport_Write(&DAT_055c9bf0, "> Try to Login ... %s",
-                             (char*)DAT_07db8710);
+                             (char*)InputText);
 
                 // Copy username to packet staging buffer
-                int ulen = (int)strlen((char*)DAT_07db8710) + 1;
-                memcpy(LogInID, DAT_07db8710, ulen);
+                int ulen = (int)strlen((char*)InputText) + 1;
+                memcpy(LogInID, InputText, ulen);
                 LogIn = 1;
                 CurrentProtocolState = 0x13;
 
                 // Build login packet [0xC1][0xF1] + user(10) + pass(10) + tick(4) + 5 obf + 16 raw
                 BYTE user[10] = {0}, pass[10] = {0};
-                memcpy(user, DAT_07db8710, (std::min)(ulen - 1, 10));
+                memcpy(user, InputText, (std::min)(ulen - 1, 10));
                 memcpy(pass, DAT_07db8810, (std::min)((int)strlen((char*)DAT_07db8810), 10));
                 // NOTE: companion client (Mu-linux-97K/Source/Client/Main/Reconnect.cpp:222-224)
                 // does NOT pre-process account/password — they're fed RAW into
@@ -671,7 +671,7 @@ LAB_00520fd8:
             switch (respCode) {
             case 0x0b: // Login OK
                 LoginSubState = 2;
-                DAT_07e11d78 = 0;
+                InputIndex = 0;
                 InputNumber = 2;
                 if (respCode == 0) {
                     NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
@@ -685,9 +685,9 @@ LAB_00520fd8:
             case 0x0c:
             case 0x0d:
                 if (respCode == 0x0d) {
-                    DAT_07e11d78 = 6;
+                    InputIndex = 6;
                 } else {
-                    DAT_07e11d78 = 0;
+                    InputIndex = 0;
                     if (respCode == 0) {
                         NextErrorMessage = 0;
                         goto state_fail_common;
@@ -732,9 +732,9 @@ state_fail_common:
             case 0x1f: case 0x20: case 0x21: case 0x22: case 0x23: case 0x24:
             case 0x25: case 0x26:
                 if (respCode == 0x15) {
-                    DAT_07e11d78 = 1;
+                    InputIndex = 1;
                 } else {
-                    DAT_07e11d78 = 0;
+                    InputIndex = 0;
                     if (respCode == 0) {
                         LoginSubState = 2;
                         NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
@@ -781,13 +781,13 @@ state_fail_common:
                 ClearInput(1);
                 {
                     int vlen = (int)strlen((char*)lpData_055c9ba0);
-                    memcpy(DAT_07db8710, lpData_055c9ba0, vlen + 1);
+                    memcpy(InputText, lpData_055c9ba0, vlen + 1);
                     DAT_07e113d9 = 1;
                     InputNumber = 2;
                     *(DWORD*)DAT_07d780a8 = vlen;
                     InputTextMax = 10;
                     _DAT_00559c98 = 10;
-                    DAT_07e11d78 = (vlen != 0) ? 1 : 0;
+                    InputIndex = (vlen != 0) ? 1 : 0;
                 }
                 return 10;
 

@@ -23,7 +23,7 @@ void SetAttackSpeed() { Require(actionCalls == 0); ++attackSpeedCalls; }
 MAIN = r'''
 void CallMagic(CHARACTER* character) { CALL_MAGIC; }
 std::uint64_t RunMagic(CHARACTER* character, BYTE* models) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     activeCharacter = character; digest = 14695981039346656037ull; seed = 0x97c444a8;
     actionCalls = attackSpeedCalls = randomDraws = 0;
     CallMagic(nullptr); Require(actionCalls == 0 && attackSpeedCalls == 0 && randomDraws == 0);

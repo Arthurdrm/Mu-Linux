@@ -88,7 +88,7 @@ void ApplyPersistentSkillEffect97k(BYTE* entity, WORD effect, BYTE state)
 // acá no hace falta posicionarlo.
 void CreateMagicShiny97k(BYTE* entity, int hand)
 {
-    if (!entity || hand < 0 || hand > 1 || DAT_05828d58 == 0) return;
+    if (!entity || hand < 0 || hand > 1 || Models == 0) return;
     const intptr_t bones = *(intptr_t*)&AsObject(entity)->BoneMatrices;
     if (bones == 0) return;
 
@@ -97,7 +97,7 @@ void CreateMagicShiny97k(BYTE* entity, int hand)
     float offset[3] = { 0.0f, 0.0f, 0.0f };
     float position[3];
     float light[3] = { 1.0f, 0.5f, 0.2f };
-    void* const model = (void*)(uintptr_t)(DAT_05828d58 + type * BMD_STRIDE);
+    void* const model = (void*)(uintptr_t)(Models + type * BMD_STRIDE);
 
     BMD_TransformPosition(model, (float*)(uintptr_t)(bones + bone * 0x30),
                  offset, position, 1);

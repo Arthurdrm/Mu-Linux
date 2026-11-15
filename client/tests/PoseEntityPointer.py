@@ -21,7 +21,7 @@ inline OBJECT* AsObject(void* p){return static_cast<OBJECT*>(p);}inline const OB
 TRANSFORMS
 STRUCTURES
 std::vector<PreparedBones> prepared;PreparedBones* geometryPose;bool batchActive;
-uintptr_t DAT_05828d58,CharactersClient;float* globalBones;
+uintptr_t Models,CharactersClient;float* globalBones;
 #define DAT_06970a9c (*reinterpret_cast<DWORD*>(globalBones))
 char DAT_05826e18[200*16];float parentStore[12];
 #define DAT_06989c9c parentStore[0]
@@ -53,7 +53,7 @@ std::uint64_t Run(BYTE* data,BYTE* pool,BYTE* models,BYTE* boneMem){
   const std::uint32_t previous[]={0u,0x80000000u,0x3f400000u,0x7fc12345u};std::memcpy(&subject->PriorAnimationFrame,&previous[(trial/23)%4],4);
   for(unsigned i=0;i<3;++i){subject->Position[i]=float(int(trial%17)-8+int(i));subject->Angle[i]=float(i*30);subject->HeadAngle[i]=float(i*5);subject->BoundingBoxMax[i]=float(i+4);}
   auto* alternate=reinterpret_cast<float*>(data+4096);subject->BoneMatrices=reinterpret_cast<vec34_t*>(alternate);subject->BoundingBoxMin[0]=0;subject->BoundingBoxMin[1]=-2;subject->BoundingBoxMin[2]=-3;
-  activeModel=models+16+subject->Type*188;std::memset(activeModel-16,0xa5,220);DAT_05828d58=reinterpret_cast<uintptr_t>(models+16);CharactersClient=reinterpret_cast<uintptr_t>(pool+16);const auto bonePtr=static_cast<std::uint32_t>(reinterpret_cast<uintptr_t>(data+16)),actionPtr=static_cast<std::uint32_t>(reinterpret_cast<uintptr_t>(data+512));Store(activeModel,44,bonePtr);Store(activeModel,48,actionPtr);Store(activeModel,34,short(2));Store(activeModel,38,short(2));Store(activeModel,84,int(-1));Store(activeModel,132,2.0f);data[16+34]=0;data[16+140+34]=trial&1;
+  activeModel=models+16+subject->Type*188;std::memset(activeModel-16,0xa5,220);Models=reinterpret_cast<uintptr_t>(models+16);CharactersClient=reinterpret_cast<uintptr_t>(pool+16);const auto bonePtr=static_cast<std::uint32_t>(reinterpret_cast<uintptr_t>(data+16)),actionPtr=static_cast<std::uint32_t>(reinterpret_cast<uintptr_t>(data+512));Store(activeModel,44,bonePtr);Store(activeModel,48,actionPtr);Store(activeModel,34,short(2));Store(activeModel,38,short(2));Store(activeModel,84,int(-1));Store(activeModel,132,2.0f);data[16+34]=0;data[16+140+34]=trial&1;
   frozen.boneHeaders.assign(data+16,data+16+280);frozen.actionHeaders.assign(data+512,data+512+32);std::memcpy(cached.inputModel.data(),activeModel,188);Context(cached.inputModel.data());std::memcpy(cached.model.data(),cached.inputModel.data(),188);for(unsigned i=0;i<3;++i)Store(cached.model.data(),120+i*4,float(9-i));Store(cached.model.data(),164,3.75f);Store(cached.model.data(),168,short(8));cached.model[160]=171;
   std::memcpy(cached.object.data(),subject,444);cached.boneCount=2;cached.valid=true;cached.writesParent=(trial>>1)&1;cached.originalModel=activeModel;for(unsigned i=0;i<24;++i)cached.bones[i]=float(10+i);for(unsigned i=0;i<32;++i)cached.quaternions[i]=char(32+i);for(unsigned i=0;i<12;++i)cached.parent[i]=float(200+i);
   translation=(trial/16)%3==0?0:(trial/16)%3==1?1:-1;selection=selections[(trial/48)%6];EditFlag=(trial/29)%2?2:0;batchActive=operation==0;const unsigned mode=trial%16;

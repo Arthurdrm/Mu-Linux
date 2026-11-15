@@ -537,7 +537,7 @@ LAB_00501734:
         if (*pcVar3 != '\0') {
             sVar5  = (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)];
             fVar25 = 1.0f;
-            pvVar9 = (void *)(DAT_05828d58 + sVar5 * BMD_STRIDE);
+            pvVar9 = (void *)(Models + sVar5 * BMD_STRIDE);
             if (sVar5 == 0x12d) fVar25 = 0.5f;
 
             if ((EnableEvent == 0) || (sVar5 != 0x12d)) {

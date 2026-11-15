@@ -235,7 +235,7 @@ void __cdecl Draw_RenderObject(void *param_1_v, int param_2, int param_3, char p
 {
     unsigned char *param_1 = (unsigned char *)param_1_v;
     // Model context for this entity type
-    void *model = (void *)(DAT_05828d58 + AsObject(param_1)->Type * BMD_STRIDE);
+    void *model = (void *)(Models + AsObject(param_1)->Type * BMD_STRIDE);
 
 
     // Invisible guard — IDA Draw_RenderObject L82:

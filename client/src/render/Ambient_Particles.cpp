@@ -155,7 +155,7 @@ bool AmbientSpawn(OBJECT* o, int world)
 // IDA L182-310: movimiento, rebote contra paredes y vida útil.
 void AmbientMove(OBJECT* o, int slotIndex)
 {
-    void* model = (void*)(DAT_05828d58 + o->Type * BMD_STRIDE);
+    void* model = (void*)(Models + o->Type * BMD_STRIDE);
     *(BYTE*)((BYTE*)model + 0xa0 + BMD_FIELD_SHIFT) = o->CurrentAction;
     BMD__PlayAnimation(model, &o->AnimationFrame, &o->PriorAnimationFrame,
                        &o->PriorAction, o->Velocity * 0.5f);

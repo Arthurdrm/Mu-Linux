@@ -48,7 +48,7 @@ unsigned s_clock = 0;
 
 BMD* PlayerModel()
 {
-    return AsModel(reinterpret_cast<BYTE*>(DAT_05828d58) + BMD_STRIDE * 390);
+    return AsModel(reinterpret_cast<BYTE*>(Models) + BMD_STRIDE * 390);
 }
 
 void Bind(int channel, int emote)

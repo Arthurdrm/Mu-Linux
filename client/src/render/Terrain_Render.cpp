@@ -61,7 +61,7 @@ static void Terrain_ProcessObjects(bool simulation)
                            chunkIter++ < 4096 &&
                            SceneObjects::Contains(entity))
                     {
-                        if (*entity == '\0' || !DAT_05828d58 ||
+                        if (*entity == '\0' || !Models ||
                             *(short*)(entity + 2) < 0 || *(short*)(entity + 2) >= ResourceTables::ModelCount())
                         {
                             entity = reinterpret_cast<char*>(AsObject(entity)->SceneNext);

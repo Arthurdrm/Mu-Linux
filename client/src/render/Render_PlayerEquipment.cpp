@@ -186,7 +186,7 @@ bool __cdecl CheckFullSet(uintptr_t c) {
 // Models + 188*390 + 48 = byte offset 73368 dentro de DAT_05828d58.
 // IDA: *(_DWORD *)(Models + 73368) = player_model->Actions ptr.
 static inline float* GetPlayerActions() {
-    return reinterpret_cast<float*>(AsModel(DAT_05828d58 + BMD_STRIDE * 390)->Actions);
+    return reinterpret_cast<float*>(AsModel(Models + BMD_STRIDE * 390)->Actions);
 }
 static inline float GetPlayerActionPlaySpeed(int byteOffset) {
     float* actions = GetPlayerActions();
@@ -218,7 +218,7 @@ static void RenderWeaponFX(intptr_t c, intptr_t o, intptr_t v121, float Targetj,
     // 'model' = global BMD entry at DAT_05828d58 + 188*entity_type. Pasado a
     // BMD_TransformPosition/TransformPos como ECX (this_) — usado para leer scale y
     // calcular bbox. NO confundir con `entity_o` que tiene el bone buffer.
-    void* model = (void*)(uintptr_t)((char*)(uintptr_t)DAT_05828d58
+    void* model = (void*)(uintptr_t)((char*)(uintptr_t)Models
                                      + BMD_STRIDE * (int)*(short*)(o + 2));
     void* entity_o = (void*)(uintptr_t)o;  // entity pointer with bone buffer at +0x114
     float WorldPosition[3];
@@ -714,7 +714,7 @@ extern "C" void Render_PlayerHelper(intptr_t c, intptr_t o)
 
     // Sprite glow at transformed position (20, 0, 15) in bone[34]
     unsigned char v102 = AsCharacter(c)->Helper.LinkBone;   // = 34
-    void* model = (void*)(uintptr_t)((char*)(uintptr_t)DAT_05828d58
+    void* model = (void*)(uintptr_t)((char*)(uintptr_t)Models
                                      + BMD_STRIDE * (int)*(short*)(o + 2));
     void* entity_o = (void*)(uintptr_t)o;
     float* boneMat = BoneMat48(entity_o, v102);

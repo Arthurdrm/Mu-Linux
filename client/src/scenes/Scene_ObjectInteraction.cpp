@@ -51,11 +51,11 @@ char* __stdcall PickObject_Mouse(void) {
                 {
                     // Get model from entity type
                     short modelType = AsObject(obj)->Type;
-                    if (modelType < 0 || modelType >= ResourceTables::ModelCount() || !DAT_05828d58) {
+                    if (modelType < 0 || modelType >= ResourceTables::ModelCount() || !Models) {
                         obj = reinterpret_cast<char*>(AsObject(obj)->SceneNext);
                         continue;
                     }
-                    BMD* model = AsModel(DAT_05828d58) + modelType;
+                    BMD* model = AsModel(Models) + modelType;
 
                     // Copiar los campos del objeto al modelo conservando los bits de float.
                     memcpy(&model->BodyScale, &AsObject(obj)->Scale, sizeof(float));

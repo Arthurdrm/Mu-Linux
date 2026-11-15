@@ -180,7 +180,7 @@ void __cdecl OpenMonsterModel(int param_1)
   int iVar5;
 
   iVar1 = param_1 + 0x10e;
-  iVar2 = DAT_05828d58 + iVar1 * BMD_STRIDE;
+  iVar2 = Models + iVar1 * BMD_STRIDE;
   if (((DAT_0055a7c4 == '\0') || ((*(short *)(iVar2 + 0x26) < 1 && (*(short *)(iVar2 + 0x24) < 1))))
      && (AccessModel(iVar1,s_Data_Monster__0055ddf8,s_Monster_0055de08,param_1 + 1),
         *(short *)(iVar2 + 0x24) != 0)) {
@@ -273,75 +273,75 @@ LAB_005099d1:
     case 0:
     case 0x1e:
       Model_SetAnimationSlots(iVar1,0,1,2,3,4);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 0x14;
       return;
     case 1:
       Model_SetAnimationSlots(iVar1,5,6,7,8,9);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 271 + 0x54 + BMD_FIELD_SHIFT) = 5;
+      *(undefined4 *)(Models + BMD_STRIDE * 271 + 0x54 + BMD_FIELD_SHIFT) = 5;
       return;
     case 2:
       Model_SetAnimationSlots(iVar1,10,0xb,0xb,0xb,0xc);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 272 + 0x54 + BMD_FIELD_SHIFT) = 7;
+      *(undefined4 *)(Models + BMD_STRIDE * 272 + 0x54 + BMD_FIELD_SHIFT) = 7;
       return;
     case 3:
     case 0x1d:
     case 0x27:
       Model_SetAnimationSlots(iVar1,0xf,0x10,0x11,0x12,0x13);
       if (param_1 == 3) {
-        *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 273 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
+        *(undefined4 *)(Models + BMD_STRIDE * 273 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
         return;
       }
       if (param_1 == 0x1d) {
-        *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 299 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+        *(undefined4 *)(Models + BMD_STRIDE * 299 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
         return;
       }
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 0x13;
+      *(undefined4 *)(Models + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 0x13;
       return;
     case 4:
       Model_SetAnimationSlots(iVar1,0x14,0x15,0x16,0x17,0x18);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 274 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 274 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 5:
       Model_SetAnimationSlots(iVar1,0x19,0x1a,0x1b,0x1c,0x1d);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 275 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 275 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 6:
       Model_SetAnimationSlots(iVar1,0x1e,0x1f,0x1e,0x1f,0x1f);
       return;
     case 7:
       Model_SetAnimationSlots(iVar1,0x23,0x24,0x25,0x26,0x27);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 277 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 277 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 8:
       Model_SetAnimationSlots(iVar1,0x20,0x21,0x21,0x21,0x22);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 278 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
+      *(undefined4 *)(Models + BMD_STRIDE * 278 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
       return;
     case 9:
       Model_SetAnimationSlots(iVar1,0xd,0xd,0xd,0xd,0xd);
       return;
     case 10:
       Model_SetAnimationSlots(iVar1,0x28,0x29,0x2a,0x2b,0x2c);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 280 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 280 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0xb:
       Model_SetAnimationSlots(iVar1,0x2d,0x2e,0x2f,0x30,0x31);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 281 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 281 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0xc:
     case 0xd:
       Model_SetAnimationSlots(0x11a,0x44,0x44,0x46,0x46,0x47);
       Model_SetAnimationSlots(0x11b,0x44,0x45,0x46,0x46,0x47);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 282 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 283 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 282 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 283 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0xe:
       Model_SetAnimationSlots(iVar1,0xffff,0xffff,0x41,0x42,0x43);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 284 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 284 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x14)) = 0x3eb33333;
       return;
     case 0xf:
       Model_SetAnimationSlots(iVar1,0x32,0x33,0x32,0x32,0x34);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 285 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
+      *(undefined4 *)(Models + BMD_STRIDE * 285 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
       return;
     case 0x10:
       Model_SetAnimationSlots(iVar1,0x38,0x39,0x3a,0x3a,0x3b);
@@ -351,47 +351,47 @@ LAB_005099d1:
       return;
     case 0x12:
       Model_SetAnimationSlots(iVar1,0x3c,0x3d,0x3e,0x3f,0x40);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 288 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
+      *(undefined4 *)(Models + BMD_STRIDE * 288 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
       return;
     case 0x13:
       Model_SetAnimationSlots(iVar1,0x48,0x49,0x4a,0x4b,0x4c);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 289 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 289 + 0x54 + BMD_FIELD_SHIFT) = 6;
       return;
     case 0x14:
       Model_SetAnimationSlots(iVar1,0x4d,0x4e,0x4f,0x50,0x51);
       return;
     case 0x15:
       Model_SetAnimationSlots(iVar1,0x52,0x52,0x53,0x53,0x54);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 291 + 0x54 + BMD_FIELD_SHIFT) = 5;
+      *(undefined4 *)(Models + BMD_STRIDE * 291 + 0x54 + BMD_FIELD_SHIFT) = 5;
       return;
     case 0x16:
       Model_SetAnimationSlots(iVar1,0x55,0x56,0x57,0x58,0x59);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 292 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 292 + 0x54 + BMD_FIELD_SHIFT) = 6;
       return;
     case 0x17:
       Model_SetAnimationSlots(iVar1,0x5a,0x5b,0x5c,0x5d,0x5e);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 293 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 293 + 0x54 + BMD_FIELD_SHIFT) = 6;
       return;
     case 0x18:
       Model_SetAnimationSlots(iVar1,0x5f,0x60,0x61,0x62,99);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 294 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
+      *(undefined4 *)(Models + BMD_STRIDE * 294 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
       return;
     case 0x19:
       Model_SetAnimationSlots(iVar1,100,0x65,0x66,0x67,0x68);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 295 + 0x54 + BMD_FIELD_SHIFT) = 5;
+      *(undefined4 *)(Models + BMD_STRIDE * 295 + 0x54 + BMD_FIELD_SHIFT) = 5;
       return;
     case 0x1a:
       Model_SetAnimationSlots(iVar1,0x69,0x69,0x6a,0x6a,0x6b);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 296 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 296 + 0x54 + BMD_FIELD_SHIFT) = 6;
       return;
     case 0x1b:
       Model_SetAnimationSlots(iVar1,0x6c,0x6d,0x6e,0x6f,0x70);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 297 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      *(undefined1 *)(DAT_05828d58 + BMD_STRIDE * 297 + 0x88 + BMD_FIELD_SHIFT) = 1;
+      *(undefined4 *)(Models + BMD_STRIDE * 297 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined1 *)(Models + BMD_STRIDE * 297 + 0x88 + BMD_FIELD_SHIFT) = 1;
       return;
     case 0x1c:
       Model_SetAnimationSlots(iVar1,0x71,0x72,0x73,0x74,0x75);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 298 + 0x54 + BMD_FIELD_SHIFT) = 5;
+      *(undefined4 *)(Models + BMD_STRIDE * 298 + 0x54 + BMD_FIELD_SHIFT) = 5;
       return;
     case 0x1f:
       Model_SetAnimationSlots(iVar1,0x7b,0x7b,0x7c,0x7c,0x7d);
@@ -419,16 +419,16 @@ LAB_005099d1:
       return;
     case 0x23:
       Model_SetAnimationSlots(iVar1,0x87,0x87,0x88,0x88,0x89);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 305 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
+      *(undefined4 *)(Models + BMD_STRIDE * 305 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
       return;
     case 0x24:
     case 0x28:
       Model_SetAnimationSlots(iVar1,0x8a,0x8b,0x8a,0x8b,0x8c);
       if (param_1 == 0x24) {
-        *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 306 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
+        *(undefined4 *)(Models + BMD_STRIDE * 306 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
         return;
       }
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 6;
       return;
     case 0x25:
       Model_SetAnimationSlots(iVar1,0x8d,0x8d,0x8e,0x8e,0x8d);
@@ -438,37 +438,37 @@ LAB_005099d1:
       return;
     case 0x29:
       Model_SetAnimationSlots(iVar1,0x8f,0x8f,0x90,0x90,0x90);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 311 + 0x54 + BMD_FIELD_SHIFT) = 3;
+      *(undefined4 *)(Models + BMD_STRIDE * 311 + 0x54 + BMD_FIELD_SHIFT) = 3;
       return;
     case 0x2a:
       Model_SetAnimationSlots(iVar1,0x91,0x92,0x93,0x94,0x95);
       OpenJPG(s_Monster_bv01_2_jpg_0055cfb8,0x56b,0x2601,0x2901,0,'\x01');
       OpenJPG(s_Monster_bv02_2_jpg_0055cfa4,0x56c,0x2601,0x2901,0,'\x01');
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 312 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 312 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0x2b:
       Model_SetAnimationSlots(iVar1,0x96,0x96,0x97,0x98,0x99);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 313 + 0x54 + BMD_FIELD_SHIFT) = 7;
+      *(undefined4 *)(Models + BMD_STRIDE * 313 + 0x54 + BMD_FIELD_SHIFT) = 7;
       return;
     case 0x2c:
       Model_SetAnimationSlots(iVar1,0x9a,0x9a,0x9b,0x9b,0x9c);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 314 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 314 + 0x54 + BMD_FIELD_SHIFT) = 6;
       return;
     case 0x2d:
       Model_SetAnimationSlots(iVar1,0x9d,0x9e,0x9f,0x9f,0x9f);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 315 + 0x54 + BMD_FIELD_SHIFT) = 6;
+      *(undefined4 *)(Models + BMD_STRIDE * 315 + 0x54 + BMD_FIELD_SHIFT) = 6;
       return;
     case 0x2e:
       Model_SetAnimationSlots(iVar1,0xffff,0xffff,0xa2,0xa2,4);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 316 + 0x54 + BMD_FIELD_SHIFT) = 7;
+      *(undefined4 *)(Models + BMD_STRIDE * 316 + 0x54 + BMD_FIELD_SHIFT) = 7;
       return;
     case 0x2f:
       Model_SetAnimationSlots(iVar1,0x56,0x56,0xa1,0xa1,4);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 317 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 317 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0x30:
       Model_SetAnimationSlots(iVar1,0xa0,0xa4,0xffff,0xffff,0xa3);
-      *(undefined4 *)(DAT_05828d58 + BMD_STRIDE * 318 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
+      *(undefined4 *)(Models + BMD_STRIDE * 318 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0x31:
       *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;

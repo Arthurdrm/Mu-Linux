@@ -398,7 +398,7 @@ void __cdecl UI_InGameMenu(void)
                 const char* name = EntityName::Get(CharactersClient + hero * CHARACTER_STRIDE);
                 NetText::ToServer(pkt + 4, NAME, name);
             }
-            NetText::ToServer(pkt + 4 + NAME, 10, (const char*)DAT_07db8710);   // InputText[0]
+            NetText::ToServer(pkt + 4 + NAME, 10, (const char*)InputText);   // InputText[0]
             gNetwork.Send(pkt, sizeof(pkt));
         }
         // Las dos ramas terminan igual (sub_513C10 LABEL_32 / L2183-2187).
@@ -598,7 +598,7 @@ void __cdecl UI_InGameMenu(void)
         pkt[1] = (BYTE)sizeof(pkt);
         pkt[2] = 0x53;
         NetText::ToServer(pkt + 3, NAME, &byte_7E91790[kGuildMemberRecordSize * memberIdx]);
-        NetText::ToServer(pkt + 3 + NAME, 10, (const char*)DAT_07db8710);
+        NetText::ToServer(pkt + 3 + NAME, 10, (const char*)InputText);
         gNetwork.SendC1(pkt, (int)sizeof(pkt));
         goto tail;
     }
@@ -883,10 +883,10 @@ void __cdecl UI_InGameMenu(void)
             pkt[2] = 0x83;
             pkt[3] = 1;
             memcpy(pkt + 4, &pin, 2);
-            NetText::ToServer(pkt + 6, 10, (const char*)DAT_07db8710);    // InputText[0]
+            NetText::ToServer(pkt + 6, 10, (const char*)InputText);    // InputText[0]
             gNetwork.SendC1(pkt, sizeof(pkt));
         }
-        memset(DAT_07db8710, 0, 10);                           // InputText[0][0..9]
+        memset(InputText, 0, 10);                           // InputText[0][0..9]
         *(DWORD*)DAT_07d780a8 = 0;                             // InputLength[0]
         goto tail;
     }
@@ -1011,7 +1011,7 @@ void __cdecl UI_InGameMenu(void)
         //  no son los del binario: 0x36 para el 119 y 0x30 para el 121.)
 
         case 0x7e:
-            memset(DAT_07db8710, 0, 0x100);
+            memset(InputText, 0, 0x100);
             *(DWORD*)DAT_07d780a8 = 0;
             DAT_07d552e4  = 0;
             // IDA consume MouseLButtonPush al cancelar. Estos dos latches son

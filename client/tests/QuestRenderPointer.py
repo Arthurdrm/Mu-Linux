@@ -238,7 +238,7 @@ def harness(revision=None):
     prefix+=re.search(r"struct ITEM_ATTRIBUTE\b.*?\n\};",structs,re.S).group()+"\nstatic_assert(sizeof(ITEM_ATTRIBUTE)==64);\n"
     prefix+="\n".join(re.findall(r"^constexpr\s+(?:int|short)\s+\w+\s*=[^;]+;",read_source("src/game/item/ItemDefines.h",revision),re.M))
     header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
-    names=("DAT_00559c78","SetBackgroundTextColor","DAT_083a7c0c","DAT_083a4324","MouseLButtonPush","MouseLButtonPop","MouseLButton","MouseY","MouseX","_DAT_00552464","DAT_055c9e44","DAT_07d78068")
+    names=("m_dwTextColor","SetBackgroundTextColor","DAT_083a7c0c","DAT_083a4324","MouseLButtonPush","MouseLButtonPop","MouseLButton","MouseY","MouseX","_DAT_00552464","DAT_055c9e44","DAT_07d78068")
     for name in names:
         # DAT_083a7c0c paso a llamarse g_iNumAnswer (T8e).
         if name=="DAT_083a7c0c" and not re.search(r"\bDAT_083a7c0c\s*;",header): name="g_iNumAnswer"

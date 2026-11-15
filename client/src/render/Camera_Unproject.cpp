@@ -32,9 +32,9 @@ void __cdecl Camera_BuildMouseRay(int param_1, int param_2, float *param_3) {
                       ? CameraViewFar : kScreenVectorDepth;
     float view_dir[3];
     view_dir[0] =  (float)(int)((UINT)gWindow.PixelFromUiX(param_1) - ViewportCenterX)
-                 * _DAT_083a42a4 * depth;
+                 * PerspectiveX * depth;
     view_dir[1] = -((float)(int)((UINT)(gWindow.GetHeight() * param_2) / 0x1e0 - ViewportCenterY)
-                 * _DAT_083a42a8 * depth);
+                 * PerspectiveY * depth);
     view_dir[2] = -depth;
 
     float cam_fwd_neg[3] = {

@@ -34,7 +34,7 @@ struct PickingCamera : CameraPose {
     bool valid = false;
     int scene, world, mode;
     DWORD matrix[12], origin[3], centerX, centerY;
-    DWORD width, height, x, y, projectionBits[2];
+    DWORD width, height, x, y;
     float target[3], projection[2], centerYFlip;
 };
 PickingCamera camera;
@@ -62,8 +62,7 @@ void CaptureCamera() {
     camera.centerX = ViewportCenterX; camera.centerY = ViewportCenterY;
     camera.width = OpenglWindowWidth; camera.height = OpenglWindowHeight;
     camera.x = OpenglWindowX; camera.y = OpenglWindowY;
-    camera.projection[0] = _DAT_083a42a4; camera.projection[1] = _DAT_083a42a8;
-    camera.projectionBits[0] = PerspectiveX; camera.projectionBits[1] = PerspectiveY;
+    camera.projection[0] = PerspectiveX; camera.projection[1] = PerspectiveY;
     camera.centerYFlip = ScreenCenterYFlip;
 }
 
@@ -121,13 +120,13 @@ void PrepareItems() {
 
 void PrepareCharacter(CHARACTER &c) {
     OBJECT &o = c.Object;
-    void *model = (void *)(DAT_05828d58 + o.Type * BMD_STRIDE);
+    void *model = (void *)(Models + o.Type * BMD_STRIDE);
     if (*(short *)((char *)model + 0x26) == 0) return;
     // DESVIACION: la sincronización del equipo puede cambiar piezas/acción y
     // liberar tela. Debe preceder a su pose SIM y no ejecutarse desde el draw.
     if (SceneFlag == 5 && (void *)&c == (void *)Hero) {
         HeroEquipWatchdog(&c);
-        model = (void *)(DAT_05828d58 + o.Type * BMD_STRIDE);
+        model = (void *)(Models + o.Type * BMD_STRIDE);
     }
     char context[sizeof(BMD)];
     memcpy(context, model, sizeof(context));
@@ -160,7 +159,7 @@ void PrepareCharacter(CHARACTER &c) {
             if (piece.Type == -1) continue;
             const int type = gContentCatalog.EntityDrawModel(&c, piece.Type);
             if (type != 707 || o.Alpha <= _DAT_005524f8) continue;
-            void *pants = (void *)(DAT_05828d58 + type * BMD_STRIDE);
+            void *pants = (void *)(Models + type * BMD_STRIDE);
             memcpy(context, pants, sizeof(context));
             *(float *)((char *)pants + 0x68 + BMD_FIELD_SHIFT) = o.Scale;
             memcpy((char *)pants + 0x6c + BMD_FIELD_SHIFT, o.Position, sizeof(o.Position));
@@ -196,7 +195,7 @@ void Simulation_PrepareStep()
     WorldEffects_BeginStep();
     MoltSilhouette_BeginStep();
     camera.valid=false;
-    if (!SceneReady() || !CharactersClient || !DAT_05828d58) return;
+    if (!SceneReady() || !CharactersClient || !Models) return;
     if (SceneFlag==4) SceneCharSelect_PrepareLighting();
     PrepareCamera();
     // BMD_Animation usa estos temporales compartidos; la publicación SIM sólo
@@ -251,8 +250,7 @@ void Simulation_RestorePickingCamera()
     ViewportCenterX = camera.centerX; ViewportCenterY = camera.centerY;
     OpenglWindowWidth = camera.width; OpenglWindowHeight = camera.height;
     OpenglWindowX = camera.x; OpenglWindowY = camera.y;
-    _DAT_083a42a4 = camera.projection[0]; _DAT_083a42a8 = camera.projection[1];
-    PerspectiveX = camera.projectionBits[0]; PerspectiveY = camera.projectionBits[1];
+    PerspectiveX = camera.projection[0]; PerspectiveY = camera.projection[1];
     ScreenCenterYFlip = camera.centerYFlip;
 }
 

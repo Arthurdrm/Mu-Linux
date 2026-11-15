@@ -613,7 +613,7 @@ void InitializeMonster73(CHARACTER* character)
 {
     BYTE* c = reinterpret_cast<BYTE*>(character);
     auto* meshes = reinterpret_cast<ClothModelMesh*>(
-        AsModel(DAT_05828d58 + BMD_STRIDE * AsCharacter(c)->Object.Type)->Meshs);
+        AsModel(Models + BMD_STRIDE * AsCharacter(c)->Object.Type)->Meshs);
     if (meshes) {
         meshes[0].Unknown0[0] = 1;
         meshes[1].Unknown0[0] = 0;
@@ -627,7 +627,7 @@ void InitializeMonster73(CHARACTER* character)
 void InitializeMonster77(CHARACTER* character)
 {
     BYTE* c = reinterpret_cast<BYTE*>(character);
-    *(unsigned char*)(uintptr_t)(DAT_05828d58 + BMD_STRIDE * 325 + 0x88 + BMD_FIELD_SHIFT) = 0;
+    *(unsigned char*)(uintptr_t)(Models + BMD_STRIDE * 325 + 0x88 + BMD_FIELD_SHIFT) = 0;
 }
 
 // IDA: CreateMonster (0x0045CCF0), configuración especial del tipo 88.

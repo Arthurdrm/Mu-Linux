@@ -559,7 +559,7 @@ static bool MoveEffect_Type228(float *& param_1, byte& bVar28, float10& fVar17, 
     *(undefined1 *)param_1 = 0;
     uVar8 = _rand() % 8;
     iVar9 = 5;
-    _DAT_083a0210 = (float)(int)(uVar8 - 8) * _DAT_005524f4;
+    EarthQuake = (float)(int)(uVar8 - 8) * _DAT_005524f4;
     do {
       bVar28 = 0;
       pfVar27 = (float *)0x0;
@@ -1067,7 +1067,7 @@ static bool MoveEffect_Earthquake(float *& param_1, const intptr_t& __cnt, intpt
   }
   if ((0xf < __cnt) && (__cnt % 3 == 0)) {
     uVar8 = _rand() % 8;
-    _DAT_083a0210 = (float)(int)(uVar8 - 4) * _DAT_005524f4;
+    EarthQuake = (float)(int)(uVar8 - 4) * _DAT_005524f4;
   }
   return false;
 }
@@ -1324,7 +1324,7 @@ LAB_00469772:
       if (AsObject(param_1)->Position[2] < local_344) {
         uVar8 = _rand() % 4;
         iVar9 = 0;
-        _DAT_083a0210 = (float)(int)(uVar8 - 4) * _DAT_005524f4;
+        EarthQuake = (float)(int)(uVar8 - 4) * _DAT_005524f4;
         do {
           local_348 = AsObject(param_1)->Position[0] - *(float *)(iVar9 + 0x10 + CharactersClient);
           pcVar11 = (char *)(iVar9 + CharactersClient);
@@ -1499,7 +1499,7 @@ static bool MoveEffect_CircleLight(float *& param_1, bool& bVar16, byte& bVar28,
   AsObject(param_1)->BlendMeshLight = (float)iVar9 * _DAT_005524f4;
   AsObject(param_1)->BlendMeshTexCoordU = (float)iVar12 * _DAT_005529d0;
   iVar9 = _rand();
-  _DAT_083a0210 = (float)(iVar9 % 6 + -6) * _DAT_005524f4;
+  EarthQuake = (float)(iVar9 % 6 + -6) * _DAT_005524f4;
   uVar8 = _rand() % 4;
   bVar16 = uVar8 == 0;
   if (bVar16) {
@@ -1957,10 +1957,10 @@ static bool MoveEffect_Type1267(float *& param_1, bool& bVar16, float& fVar13, i
       *(char*)param_1 = 0; return true;
     }
     const int ownerModel = *(const short*)((const char*)owner + 2);
-    if (!DAT_05828d58 || ownerModel < 0 || ownerModel >= ResourceTables::ModelCount()) {
+    if (!Models || ownerModel < 0 || ownerModel >= ResourceTables::ModelCount()) {
       *(char*)param_1 = 0; return true;
     }
-    pvVar1 = (void *)(DAT_05828d58 + ownerModel * BMD_STRIDE);
+    pvVar1 = (void *)(Models + ownerModel * BMD_STRIDE);
     *(float *)((intptr_t)pvVar1 + 0x6c + BMD_FIELD_SHIFT) = AsObject(param_1)->StartPosition[0];
     *(float *)((intptr_t)pvVar1 + 0x70 + BMD_FIELD_SHIFT) = AsObject(param_1)->StartPosition[1];
     *(float *)((intptr_t)pvVar1 + 0x74 + BMD_FIELD_SHIFT) = AsObject(param_1)->StartPosition[2];
@@ -2824,7 +2824,7 @@ void MoveEffect(float *param_1, int param_2)
     if ((((sVar3 != 0xee) && (sVar3 != 0xef)) && (sVar3 != 0xf4)) &&
        (((sVar3 != 0xc5 && (sVar3 != 0xc6)) || (AsObject(param_1)->SubType != 5)))) {
       if ((0xad < sVar3) && (sVar3 < 0x10d)) {
-        pvVar1 = (void *)(DAT_05828d58 + sVar3 * BMD_STRIDE);
+        pvVar1 = (void *)(Models + sVar3 * BMD_STRIDE);
         fVar13 = AsObject(param_1)->Velocity;
         *(undefined1 *)((intptr_t)pvVar1 + 0xa0 + BMD_FIELD_SHIFT) = AsObject(param_1)->CurrentAction;
         BMD__PlayAnimation(pvVar1,&AsObject(param_1)->AnimationFrame,&AsObject(param_1)->PriorAnimationFrame,(undefined1*)&AsObject((intptr_t)param_1)->PriorAction,fVar13);

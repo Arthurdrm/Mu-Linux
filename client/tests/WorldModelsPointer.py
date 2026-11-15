@@ -53,7 +53,7 @@ static int DAT_083a4100;
 struct ModelStub { short NumBones; };
 static ModelStub g_model{};
 static ModelStub* AsModel(char*) { return &g_model; }
-static uintptr_t DAT_05828d58 = 0;
+static uintptr_t Models = 0;
 constexpr uintptr_t BMD_STRIDE = 0;
 '''
 

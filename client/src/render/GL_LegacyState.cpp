@@ -80,8 +80,8 @@ void __cdecl GL_SetPerspective(int fov, float aspect, int near_clip, float far_c
     ViewportCenterX = OpenglWindowWidth / 2 + OpenglWindowX;
     ViewportCenterY = OpenglWindowHeight / 2 + OpenglWindowY;
     ScreenCenterYFlip = (float)((int)gWindow.GetWidth() - (int)ViewportCenterY);
-    _DAT_083a42a4 = (float)(tanHalfFov / (double)(OpenglWindowWidth / 2) * (double)aspect);
-    _DAT_083a42a8 = (float)(tanHalfFov / (double)(OpenglWindowHeight / 2)
+    PerspectiveX = (float)(tanHalfFov / (double)(OpenglWindowWidth / 2) * (double)aspect);
+    PerspectiveY = (float)(tanHalfFov / (double)(OpenglWindowHeight / 2)
                             * ((double)(int)gWindow.GetHeight() / (double)(int)OpenglWindowHeight));
 }
 // FUN_00511950 @ 0x00511950 — Screen_ToGLX

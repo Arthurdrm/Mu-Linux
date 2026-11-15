@@ -270,7 +270,7 @@ void Recv_CustomServerList(const BYTE* Msg)
 void Recv_ServerList(const BYTE* Msg)
 {
     unsigned char count = Msg[5];
-    DAT_083a7c40 = count;
+    ServerListCount = count;
 
     // Clear num_channels (+0x14) de todos los slots (25). Repuebla desde el
     // paquete; esto también elimina la entrada estática "MuServer" del slot 0.

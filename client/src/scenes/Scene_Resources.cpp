@@ -24,7 +24,7 @@ const char* SelectBackdropPath()
 void Scene_RefreshCharSelectBackdrop()
 {
   if (selectBackdropWide == gWindow.IsWide()) return;
-  BMD* model = AsModel(DAT_05828d58) + 0xa4;
+  BMD* model = AsModel(Models) + 0xa4;
   // Mantener las texturas de ambas variantes durante esta escena. El modelo
   // comparte texturas con otras mallas y puede alternar repetidas veces.
   const int count = model->NumMeshs;
@@ -133,8 +133,8 @@ void Scene_LoadCharSelectResources(void)
   iVar2 = 0;
   do {
     iVar1 = iVar2 + 0xbc;
-    ModelActionSpeed(AsModel(DAT_05828d58 + BMD_STRIDE * (170 + iVar2 / 0xbc))->Actions, 0) = 0.3f;
-    ModelActionSpeed(AsModel(DAT_05828d58 + BMD_STRIDE * (170 + iVar2 / 0xbc))->Actions, 1) = 0.3f;
+    ModelActionSpeed(AsModel(Models + BMD_STRIDE * (170 + iVar2 / 0xbc))->Actions, 0) = 0.3f;
+    ModelActionSpeed(AsModel(Models + BMD_STRIDE * (170 + iVar2 / 0xbc))->Actions, 1) = 0.3f;
     iVar2 = iVar1;
   } while (iVar1 < 0x2f0);
   return;
@@ -189,7 +189,7 @@ void ReleaseCharacterSceneData(void)
   } while (iVar1 < 0x5aa);
   DeleteObjects();
   for (int slot = 0xaa; slot < 0xae; ++slot)
-    BMD__Release(AsModel(DAT_05828d58) + slot);
+    BMD__Release(AsModel(Models) + slot);
   ClearCharacters(-1);
   return;
 }

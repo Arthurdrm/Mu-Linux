@@ -113,7 +113,7 @@ void __cdecl Entity_DrawAt(intptr_t param_1, int param_2, undefined4 param_3, fl
         else if (uVar1 == 2) param_2 = 0x3b4;
     }
 
-    pModel = (void *)(DAT_05828d58 + param_2 * BMD_STRIDE);
+    pModel = (void *)(Models + param_2 * BMD_STRIDE);
 
     // Copy entity fields into model block
     *(undefined1 *)&((BMD*)(uintptr_t)(pModel))->HideSkin = param_9;

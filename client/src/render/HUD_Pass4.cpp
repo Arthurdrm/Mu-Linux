@@ -43,7 +43,6 @@ extern "C" {
 // MacroTime es 0x07E11D7C (IDA lo decrementa en Game_MainLoop y lo pone en
 // 100 al disparar una macro): tiene que ser el global, no una variable propia.
 
-#define InputText   DAT_07db8710                    // char[10][256]
 #define InputLength ((int*)(void*)DAT_07d780a8)     // 10 × DWORD lengths
 
 // ── Local globals (kept here to avoid widening globals.h further) ───────────
@@ -74,13 +73,10 @@ extern "C" {
     //
     //   InputFrame = DAT_07e11d2c — contador del parpadeo del caret; Chat.cpp
     //     usa el mismo `% 2` sobre el global.
-    #define InputIndex   DAT_07e11d78
-    #define InputFrame   DAT_07e11d2c
 
     // Guild mark colour palette (16 entries × DWORD ARGB).
     // Es el global real 0x7E11F34 (= DAT_07e11f34), el que lee `RenderGuildMark`
     // (0x4F02F0) y llena `CreateGuildMark`.
-    #define MarkColor DAT_07e11f34
 
     // Per-mark 8×8 nibble palette source (16 marks × 80 bytes — matches IDA
     // stride 80 for byte_7E919C5).  Storage opened here; the engine's mark

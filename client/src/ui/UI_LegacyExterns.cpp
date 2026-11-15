@@ -104,7 +104,7 @@ static void SkillTooltip_RenderLines(int sx, int sy, char lines[][100], int coun
 
     int lineY = drawY + padY;
     for (int i = 0; i < count; ++i) {
-        DAT_00559c78 = (i == 0) ? 0xFFFFFF00 : 0xFFFFFFFF;
+        m_dwTextColor = (i == 0) ? 0xFFFFFF00 : 0xFFFFFFFF;
         m_dwBackColor = 0;
         CUIRenderText_RenderText((HDC)(uintptr_t)DAT_055c9ff8, drawX + padX, lineY, lines[i], 0);
         lineY += lineH;
@@ -830,7 +830,7 @@ void __cdecl CUIRenderText_RenderText(HDC /*hdc_unused*/, int x, int y, const ch
             if (endChar   > drawLen)  endChar   = drawLen;
             if (endChar <= startChar) continue;
 
-            DWORD fg    = (run == 0) ? DAT_00559c78 : markers[run - 1].fg;
+            DWORD fg    = (run == 0) ? m_dwTextColor : markers[run - 1].fg;
             DWORD bc    = (run == 0) ? SetBackgroundTextColor : markers[run - 1].bg;
             int   runPx = (run == 0) ? 0            : markers[run - 1].pixelStart;
             float runX  = (float)x + (float)runPx;   // pixel + pixel

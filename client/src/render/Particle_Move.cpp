@@ -1219,7 +1219,7 @@ void __stdcall MoveParticles(void)
                         intptr_t entPtr = P_ENT(iVar9);
                         if (entPtr != 0) {
                             float localP[3] = { 0.0f, 0.0f, 0.0f };
-                            void* mdl = (void*)((char*)DAT_05828d58 + *(short*)(entPtr + 2) * BMD_STRIDE);
+                            void* mdl = (void*)((char*)Models + *(short*)(entPtr + 2) * BMD_STRIDE);
                             intptr_t boneTab = *(intptr_t*)&AsObject(entPtr)->BoneMatrices;
                             long long lBone = (long long)(double)P_ROT(iVar9); // __ftol analog
                             // Guard del port (IDA no lo tiene): sin tabla de huesos

@@ -65,7 +65,7 @@ static void WritePlayerAttackSpeeds(char* P, int attackSpeed, int magicSpeed);
 void __cdecl SetAttackSpeed(void) {
     const BYTE* ca = static_cast<const BYTE*>(CharacterAttribute);
     if (ca == 0) return;
-    const BYTE* models = reinterpret_cast<const BYTE*>(DAT_05828d58);
+    const BYTE* models = reinterpret_cast<const BYTE*>(Models);
     if (models == 0) return;
 
     // Read stats (16-bit unsigned)

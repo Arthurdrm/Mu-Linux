@@ -52,7 +52,6 @@ extern "C" {
 // es el contador de debounce del walker (Player_InputTick.cpp).
 // (Pendiente: portar el F3/0x20 `SummonLife = ReceiveBuffer[4]`, el único
 //  productor del valor; hasta entonces queda en 0 y la barra no se dibuja.)
-#define SummonLife               SummonLife
 #define g_bEventChipDialogEnable _g_bEventChipDialogEnable
 #define byte_7E113E4         (*(char(*)[5][256])&DAT_07e113e4)
 #define flt_7E118E4_PTR      (((char*)&DAT_07e113e4) + 5*256)  // one past last
@@ -427,7 +426,7 @@ int RenderEquipedHelperLife_(bool a2)
     const WORD helperType = hero ? *(const WORD*)&AsCharacter(hero)->Helper.Type : 0;
 
     DWORD backupBgTextColor = SetBackgroundTextColor;
-    DWORD backupTextColor   = DAT_00559c78;
+    DWORD backupTextColor   = m_dwTextColor;
 
     if (helperType >= MODEL_HELPER_ANGEL && helperType <= MODEL_HELPER_DINORANT) {
         const float posY = a2 ? 24.0f : 4.0f;
@@ -460,7 +459,7 @@ int RenderEquipedHelperLife_(bool a2)
         gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_NORMAL));
         EnableAlphaTest(true);
         SetBackgroundTextColor = 0x80000000u;
-        DAT_00559c78 = 0xFFFFFFFFu;
+        m_dwTextColor = 0xFFFFFFFFu;
 
         // IDA centra el texto en el rango [x, x+50] (sub_47F6F0 recibe x en st0
         // y x+50 como 2do arg).  Nuestra reimplementacion de esa funcion toma
@@ -487,7 +486,7 @@ int RenderEquipedHelperLife_(bool a2)
         gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_NORMAL));
         EnableAlphaTest(true);
         SetBackgroundTextColor = 0x80000000u;
-        DAT_00559c78 = 0xFFFFFFFFu;
+        m_dwTextColor = 0xFFFFFFFFu;
 
         const char* summonText = GlobalText[356] ? GlobalText[356] : "";
         SIZE ts = { 0, 0 };
@@ -502,7 +501,7 @@ int RenderEquipedHelperLife_(bool a2)
     }
 
     SetBackgroundTextColor = backupBgTextColor;
-    DAT_00559c78 = backupTextColor;
+    m_dwTextColor = backupTextColor;
     return retY;
 }
 

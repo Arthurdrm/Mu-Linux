@@ -80,8 +80,8 @@ void MaterialVisuals_PrepareUiItem(int itemType, int level) {
     int drawLevel=level;
     const int model=ItemMaterials_ResolvePreviewModel(itemType,level,&drawLevel);
     if (wingPlanning ? model!=790 : !RandomMaterial(model)) return;
-    if (!DAT_05828d58) return;
-    const char *bmd=(const char *)DAT_05828d58+model* BMD_STRIDE;
+    if (!Models) return;
+    const char *bmd=(const char *)Models+model* BMD_STRIDE;
     const short meshes=*(const short *)(bmd+0x24);
     const auto meshBase=(uintptr_t)((BMD*)(uintptr_t)(bmd))->Meshs;
     // El mismo guard de RenderItem3D, antes de crear su objeto local.

@@ -25,7 +25,7 @@ int Particle_Spawn(int type, float* position, float* angle, float* light, int fl
 MAIN = r'''
 void CallShock(CHARACTER* character, int hit) { CALL_SHOCK; }
 std::uint64_t RunShock(CHARACTER* character, BYTE* models) {
-    DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models);
+    Models = reinterpret_cast<std::uintptr_t>(models);
     g_EnableSound = TRUE; activeCharacter = character;
     for(int slot = 0; slot < 420; ++slot) { MaxBufferChannel[slot] = 4; Enable3DSound[slot] = true; }
     seed = 0x97c444b6; digest = 14695981039346656037ull;

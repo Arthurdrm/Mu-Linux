@@ -62,7 +62,7 @@ void __cdecl Cloth_PinTopRow(void* widget, float (*Matrix)[4])
 
     OBJECT* v15 = ClothSystem(_this).Owner;        // entity
     BMD_TransformPosition(
-        static_cast<void*>(AsModel(DAT_05828d58) + v15->Type),
+        static_cast<void*>(AsModel(Models) + v15->Type),
         (float *)Matrix,
         Position,
         WorldPosition,

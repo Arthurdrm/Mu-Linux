@@ -353,7 +353,7 @@ void __stdcall MoveBugs(void) {
         float x2 = *(float*)(v2 + 16);         // owner posX
         float y2 = *(float*)(v2 + 20);         // owner posY
         int   v4 = AsObject(e)->Type;           // type
-        char* v40 = (char*)(DAT_05828d58 + BMD_STRIDE * v4);   // Models[v4]
+        char* v40 = (char*)(Models + BMD_STRIDE * v4);   // Models[v4]
         float v36 = 0.0f;                      // trackDist (solo usado por 816/817)
 
         if (v4 > 267) {
@@ -562,7 +562,6 @@ void EmitSceneFlames(char* object, const SceneFlamePreset& preset)
 
 // === FUN_004fdc00 / MoveObjects (0x004FDC00) ===
 // Alias locales para este port. #undef al final del bloque.
-#define Models      DAT_05828d58
 extern void __cdecl Effect_PhysicsTick(std::uintptr_t Object); // Efectos del mapa 4
 extern "C" void DbgLogPublic(const char*);        // [DIAG activación temporal]
 void __cdecl FUN_004fdc00(OBJECT* object)

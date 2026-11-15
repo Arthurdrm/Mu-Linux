@@ -78,7 +78,7 @@ struct Map {
 } gMapManager;
 float WorldTime;
 int HeroTile, SceneFlag, CameraWalkCut, CurrentCameraCount, EditFlag;
-DWORD DAT_05828d58;
+DWORD Models;
 alignas(16) char hero[0x1bc];
 char* Hero = hero;
 float terrain[3];
@@ -119,7 +119,6 @@ void* Reserve(std::uintptr_t address, std::size_t size) {
     return p == MAP_FAILED ? nullptr : p;
 #endif
 }
-#define Models DAT_05828d58
 #define LODWORD(x) (*reinterpret_cast<std::uint32_t*>(&(x)))
 '''
 
@@ -212,18 +211,18 @@ int main() {
 def harness(revision=None):
     header = read_source("src/globals.h", revision)
     globals_source = read_source("src/globals.cpp", revision)
-    declaration = re.search(r"extern [^;\n]*\bDAT_05828d58\s*;", header).group()
-    definition = re.search(r"^[^/\n]*\bDAT_05828d58\s*=\s*[^;]+;", globals_source, re.M).group()
+    declaration = re.search(r"extern [^;\n]*\bModels\s*;", header).group()
+    definition = re.search(r"^[^/\n]*\bModels\s*=\s*[^;]+;", globals_source, re.M).group()
     initializers = []
     for path in ("src/platform/ClientEntry.cpp", "src/assets/model/PlayerModels.cpp"):
-        initializers.append(re.search(r"^[ \t]*DAT_05828d58\s*=\s*[^;]+;",
+        initializers.append(re.search(r"^[ \t]*Models\s*=\s*[^;]+;",
                                       read_source(path, revision), re.M).group())
-    validate = ('if(DAT_05828d58 != reinterpret_cast<std::uintptr_t>(models)) '
+    validate = ('if(Models != reinterpret_cast<std::uintptr_t>(models)) '
                 '{ std::fputs("Base Models truncada\\n", stderr); std::exit(1); }')
     initialize = ('\nvoid* DAT_06f42a58;\nvoid InitializeModels(void* models) {'
                   'DAT_06f42a58 = models;' + initializers[0] + validate
-                  + 'DAT_05828d58 = 0;' + initializers[1] + validate + '}\n')
-    preamble = PREAMBLE.replace("DWORD DAT_05828d58;", declaration + definition)
+                  + 'Models = 0;' + initializers[1] + validate + '}\n')
+    preamble = PREAMBLE.replace("DWORD Models;", declaration + definition)
     scene = read_source("src/scenes/Scene_ObjectUpdate.cpp", revision)
     tick = function(scene, "FUN_004fdc00")
     alpha = function(read_source("src/render/Particle.cpp", revision), "Alpha")

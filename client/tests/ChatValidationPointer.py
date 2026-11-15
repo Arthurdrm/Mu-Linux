@@ -12,7 +12,7 @@ SERVICES=r'''
 #include <string>
 using uint=unsigned;using byte=BYTE;
 BYTE *inputMemory,*namesMemory,*wordsMemory;char *input,*names,*words;
-#define DAT_07db8710 (*reinterpret_cast<char(*)[10][256]>(input))
+#define InputText (*reinterpret_cast<char(*)[10][256]>(input))
 #define DAT_07d27610 (*reinterpret_cast<char(*)[20000]>(names))
 #define DAT_07d73104 (*reinterpret_cast<char(*)[20000]>(words))
 char GlobalText[459][300];

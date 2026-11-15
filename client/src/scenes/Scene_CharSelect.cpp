@@ -373,11 +373,11 @@ int Scene_CharSelect(void)
                     }
                     bVar2 = AsCharacter(CharactersClient + iVar9)->CtlCode;
                     // Color by class/flags
-                    if      (bVar2 & 1)    { SetBackgroundTextColor = 0x8000ffff; DAT_00559c78 = 0xff000000; }
-                    else if (bVar2 & 0x12) { SetBackgroundTextColor = 0x80ffff00; DAT_00559c78 = 0xff000000; }
-                    else if (bVar2 & 4)    { SetBackgroundTextColor = 0x80ffffff; DAT_00559c78 = 0xff000000; }
-                    else if (bVar2 & 8)    { SetBackgroundTextColor = 0x80ff0000; DAT_00559c78 = 0xff000000; }
-                    else                   { SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xffffc8b4; }
+                    if      (bVar2 & 1)    { SetBackgroundTextColor = 0x8000ffff; m_dwTextColor = 0xff000000; }
+                    else if (bVar2 & 0x12) { SetBackgroundTextColor = 0x80ffff00; m_dwTextColor = 0xff000000; }
+                    else if (bVar2 & 4)    { SetBackgroundTextColor = 0x80ffffff; m_dwTextColor = 0xff000000; }
+                    else if (bVar2 & 8)    { SetBackgroundTextColor = 0x80ff0000; m_dwTextColor = 0xff000000; }
+                    else                   { SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xffffc8b4; }
                     // Name (top, bold font) — IDA L194-198: sprintf(String, "%s", entity+449)
                     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_BOLD));
                     {
@@ -398,7 +398,7 @@ int Scene_CharSelect(void)
                     //           ClassNameTable + 300 * ((klass & 7) + 4 * (klass >> 3)),
                     //           level)
                     // klass byte at entity+0x1bc (444): DW=0, DK=1, ELF=2, MG=3, SM=8, BK=9, ME=10
-                    SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xffffffff;
+                    SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xffffffff;
                     gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
                     {
                         BYTE klass = ((BYTE*)CharactersClient)[FieldAddress(iVar9, &AsCharacter(iVar9)->Class)];
@@ -431,7 +431,7 @@ int Scene_CharSelect(void)
 
         // ── Warning text ──────────────────────────────────────────────────────
         if (m_bAccountBlockItem != '\0') {
-            SetBackgroundTextColor = 0x80ffff00; DAT_00559c78 = 0xff000000;
+            SetBackgroundTextColor = 0x80ffff00; m_dwTextColor = 0xff000000;
             gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
             iVar9 = Platform::TextLength((LPCSTR)lpString_07d49c14);
             gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)lpString_07d49c14, iVar9, &tStack_68);
@@ -444,7 +444,7 @@ int Scene_CharSelect(void)
         }
 
         // ── Server info text (bottom right, blue) ─────────────────────────────
-        SetBackgroundTextColor = 0x80000000; DAT_00559c78 = 0xff67bfdf;
+        SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xff67bfdf;
         gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
         iVar9 = Platform::TextLength((LPCSTR)&lpString_00561a3c);
         gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&lpString_00561a3c, iVar9, &tStack_68);

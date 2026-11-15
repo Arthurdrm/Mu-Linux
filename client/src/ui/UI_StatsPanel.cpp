@@ -48,7 +48,7 @@ int RenderErrorMessage(void)
   Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
   gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_NORMAL));
   SetBackgroundTextColor = 0;
-  DAT_00559c78 = 0xffffffff;
+  m_dwTextColor = 0xffffffff;
   if (ErrorMessage != 0) {
     if (ErrorMessage == 0x6e) {
       if (SceneFlag == 5) {
@@ -263,7 +263,7 @@ LAB_0051c13d:
 			Gfx::Color3f(*(float*)&uVar10, *(float*)&uVar15, *(float*)&uVar16);
         GL_DrawTexture(0xf0,245.0,*(float*)&local_dc,150.0,35.0,0.0,0.0,0.83203125,1.0,'\x01','\x01');
         gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_BOLD));
-        DAT_00559c78 = 0xfffff0c8;
+        m_dwTextColor = 0xfffff0c8;
         ptVar17 = &local_e4;
         // IDA RenderErrorMessage (0x51AF50) indexes the text table directly:
         // button 0 = GlobalText[735], button 1 = GlobalText[736].  These were
@@ -280,7 +280,7 @@ LAB_0051c13d:
                      ptVar12,cVar13,uVar10);
         { float _fdc = *(float*)&local_dc + _DAT_00552854; local_dc = *(unsigned int*)&_fdc; }
         gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_NORMAL));
-        DAT_00559c78 = 0xffffffff;
+        m_dwTextColor = 0xffffffff;
         if (iVar3 == 0) {
           // General: the two explanatory lines immediately above button 0.
           UI_RenderText(0xf8,0x96,GlobalText[872],(LPSIZE)0x0,'\0',0);
@@ -556,7 +556,7 @@ LAB_0051c13d:
     ppCVar11 = lpString_07d4743c;
     goto LAB_0051ca70;
   case 0x72:
-    DAT_00559c78 = 0xff0000ff;
+    m_dwTextColor = 0xff0000ff;
     // IDA 0x51C36C: sprintf(String, GlobalText[397], CharactersClient + 916*SelectedHero + 0x1C1).
     // GlobalText[397] es "Si deseas eliminar a %s," y el %s es el nombre del
     // personaje seleccionado.  Sin ese argumento printf tomaba un slot cualquiera
@@ -699,7 +699,7 @@ LAB_0051c13d:
     goto LAB_0051ca70;
   case 0x7e:
     ptVar17 = &local_e4;
-    DAT_00559c78 = 0xff0000ff;
+    m_dwTextColor = 0xff0000ff;
     iVar3 = Platform::TextLength((LPCSTR)lpString_07d49188);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d49188,iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
@@ -733,7 +733,7 @@ LAB_0051c13d:
     break;
   case 0x84:
     ptVar17 = &local_e4;
-    DAT_00559c78 = 0xff0000ff;
+    m_dwTextColor = 0xff0000ff;
     iVar3 = Platform::TextLength((LPCSTR)lpString_07d470b8);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d470b8,iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
@@ -840,7 +840,7 @@ LAB_0051c13d:
     iVar3 = RenderMatchScore();
     return iVar3;
   case 0x8f:
-    DAT_00559c78 = 0xff0080ff;
+    m_dwTextColor = 0xff0080ff;
     gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_BOLD));
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)lpString_07d5f94c);
@@ -931,7 +931,7 @@ LAB_0051d3cf:
     } while( true );
   case 0x98:
     ptVar17 = &local_e4;
-    DAT_00559c78 = 0xff0000ff;
+    m_dwTextColor = 0xff0000ff;
     iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a448);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a448,iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),

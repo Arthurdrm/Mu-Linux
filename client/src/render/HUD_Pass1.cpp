@@ -64,8 +64,6 @@ static bool HUD_IsGoldenArcherPanelRuntime(void)
 // OJO: 0x00561558..0x00561564 es otra cosa (la escribe `BeginOpengl`, 0x5119B0).
 #define ScreenCenterX        ViewportCenterX
 #define ScreenCenterY        ViewportCenterY
-#define PerspectiveX         _DAT_083a42a4
-#define PerspectiveY         _DAT_083a42a8
 
 #define byte_7E11D6E         DAT_07e11d6e
 #define dword_55C9BC8        MAIN_HASH_CLASS

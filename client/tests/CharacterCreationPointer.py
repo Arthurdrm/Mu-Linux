@@ -117,7 +117,7 @@ std::uint64_t RunPool(BYTE* pool, bool safe) {
     return digest;
 }
 std::uint64_t RunMonsters(BYTE* pool, BYTE* models, bool safe) {
-    CharactersClient = reinterpret_cast<std::uintptr_t>(pool); DAT_05828d58 = reinterpret_cast<std::uintptr_t>(models); safeMode = safe;
+    CharactersClient = reinterpret_cast<std::uintptr_t>(pool); Models = reinterpret_cast<std::uintptr_t>(models); safeMode = safe;
     std::vector<BYTE> canonical(1024*188, 0xa5);
     for(int i = 0; i < 1024; ++i) { const short limit = 256; std::memcpy(canonical.data() + i*188 + 38, &limit, 2); std::memset(canonical.data() + i*188 + 40, 0, 8); }
     std::uint64_t digest = 14695981039346656037ull; int cases = 0;
@@ -186,7 +186,7 @@ def harness(revision=None):
     constants = "\n".join(re.findall(r"^constexpr\s+(?:int|short)\s+\w+\s*=[^;]+;", read_source("src/game/item/ItemDefines.h", revision), re.M))
     header, globals_source = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     definitions = ""
-    for name in ("CharactersClient", "DAT_05828d58"):
+    for name in ("CharactersClient", "Models"):
         definitions += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
         definitions += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     catalog = re.search(r"struct CatalogMonster\s*\{.*?\};", read_source("src/assets/data/ContentCatalog.h", revision), re.S).group()

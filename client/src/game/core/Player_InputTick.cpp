@@ -574,7 +574,7 @@ static void HUD_HotkeyTick(void)
 //   9. Click sobre objeto especial (SelectedOperate): pathfind + lookup de entity_type
 //  10. Click en suelo (ray cast RenderTerrain + RenderTerrainTile): chequeo de terreno + pathfind
 //  11. Actualización de estado de entidad: Combat_DispatchHeroSkillAttack
-//  12. Atributo de terreno bajo el cursor → DAT_07e118e8
+//  12. Atributo de terreno bajo el cursor → HeroTile
 //
 // Los bloques de ofuscación por HashTable repartidos por la función (~70 % del código) se omiten
 // (ver docs/analisis/hashtable-anti-tamper.md del tag 0.97.21).
@@ -1630,7 +1630,7 @@ end_tick:
             int idx = gx + (gy << 8);
             if (idx < 0)       idx = 0;
             if (idx > 0xffff)  idx = 0xffff;
-            DAT_07e118e8 = ((unsigned char*)&TerrainMappingLayer1)[idx];
+            HeroTile = ((unsigned char*)&TerrainMappingLayer1)[idx];
         }
     }
 }

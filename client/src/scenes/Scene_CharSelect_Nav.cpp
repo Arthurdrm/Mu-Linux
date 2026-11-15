@@ -1143,7 +1143,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
         *puVar8++ = 0;
 
     int iVar3 = 0;
-    DAT_083a7c0c = 0;
+    g_iNumAnswer = 0;
 
     int charCount = dlg->m_iNumAnswer;
     if (charCount > 10) charCount = 10;   // la tabla tiene 10 slots de respuesta
@@ -1158,7 +1158,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
             if (iVar2 < 0) {
                 ((char *)g_lpszDialogAnswer)[(iVar2 + iVar7) * 0x26] = 0;
             }
-            DAT_083a7c0c = DAT_083a7c0c + 1;
+            g_iNumAnswer = g_iNumAnswer + 1;
             pbVar6 += 0x26;
             iVar7 = iVar3;
         } while (iVar3 < charCount);
@@ -1170,7 +1170,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
         Platform::TextFormat((LPSTR)local_48, s__d___s_005580b0, iVar3 + 1, GlobalText[609]);
         // Copy string to g_lpszDialogAnswer
         uint uVar4 = (uint)strlen(local_48) + 1;
-        DAT_083a7c0c = 1;
+        g_iNumAnswer = 1;
         char *pbVar6 = local_48;
         char *pbVar9 = (char *)g_lpszDialogAnswer;
         for (uint u5 = uVar4 >> 2; u5 != 0; u5--)
@@ -1247,12 +1247,12 @@ void __fastcall Quest_AnswerHitTest(void *param_1)
         *(char *)(quest + 0x1c87f) == '\x01') {
         yBase = 0xfa;
     } else {
-        yBase = ((7 - ((int)DAT_083a7c0c + (int)DAT_083a4324)) * 0x12) / 2
+        yBase = ((7 - ((int)g_iNumAnswer + (int)DAT_083a4324)) * 0x12) / 2
                 + 0x42 + (int)DAT_083a4324 * 0x12;
     }
 
     if ((int)MouseY < 0)  return;
-    if ((int)DAT_083a7c0c * 0x12 <= (int)MouseY - yBase)  return;
+    if ((int)g_iNumAnswer * 0x12 <= (int)MouseY - yBase)  return;
 
     int distS = Ui::QuestAnswerCenter(gWindow.GetRightShift()) - (int)MouseX;
     if (distS < 0) distS = -distS;

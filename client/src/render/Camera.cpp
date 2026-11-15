@@ -38,8 +38,8 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     // Step 1 — FOV half-extents ───────────────────────────────────────────────
     // near_w = tan(FOV * PI/180) * (near_clip * viewscale) * screen_ratio + tile_scale
     // near_h = near_w * aspect_ratio
-    long double fov_tan = tanl((long double)Ff(DAT_00561554) * (long double)_DAT_00552cc4);
-    long double near_w  = fov_tan * (long double)(Ff(DAT_00561550) * _DAT_005526e8) *
+    long double fov_tan = tanl((long double)Ff(CameraFOV) * (long double)_DAT_00552cc4);
+    long double near_w  = fov_tan * (long double)(Ff(CameraViewFar) * _DAT_005526e8) *
                           (long double)param_1 + (long double)_DAT_005524f0;
     long double near_h  = near_w * (long double)_DAT_00552adc;
     // DESVIACION (in-game): la pirámide del binario es más angosta que la
@@ -49,7 +49,7 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     // (gluPerspective: semialto tan(FOV/2), semiancho * W/H de la ventana,
     // que en pantallas anchas no es 4:3).
     if (SceneFlag == 5 || gWindow.IsWide()) {
-        const long double depth = (long double)(Ff(DAT_00561550) * _DAT_005526e8);
+        const long double depth = (long double)(Ff(CameraViewFar) * _DAT_005526e8);
         near_h = fov_tan * depth + (long double)_DAT_005524f0;
         const long double aspect = (gWindow.GetHeight() > 0)
             ? (long double)gWindow.GetRealWidth() / (long double)gWindow.GetHeight() : (4.0L / 3.0L);
@@ -57,7 +57,7 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
     }
     // En selección y login anchos se usa también el semialto de la proyección:
     // ensanchar sólo near_w conserva un frustum demasiado bajo y recorta terreno.
-    float near_dist     = -(Ff(DAT_00561550) * _DAT_005526e8);  // negative near depth
+    float near_dist     = -(Ff(CameraViewFar) * _DAT_005526e8);  // negative near depth
 
     // Step 2 — 5 view-space corners ───────────────────────────────────────────
     corners[0]  = 0.0f;           // apex (origin)
@@ -201,10 +201,10 @@ void __cdecl Camera_SetupFrustum(float param_1, float *param_2)
 void __cdecl Camera_MouseRay(int mouseX, int mouseY, float *out_ray)
 {
     float view_x = ((float)gWindow.PixelFromUiX(mouseX) - Ff(ViewportCenterX)) *
-                   Ff(PerspectiveX) * Ff(DAT_00561550);
+                   Ff(PerspectiveX) * Ff(CameraViewFar);
     float view_y = -((float)gWindow.GetHeight() * (float)mouseY / 0x1e0 - Ff(ViewportCenterY)) *
-                   Ff(PerspectiveY) * Ff(DAT_00561550);
-    float view_z = -Ff(DAT_00561550);
+                   Ff(PerspectiveY) * Ff(CameraViewFar);
+    float view_z = -Ff(CameraViewFar);
 
     // Camera forward (negated local-space)
     float cam_fwd_neg[3] = {
@@ -379,9 +379,8 @@ void __cdecl GL_BeginViewport(int param_1,int param_2,int param_3,int param_4)
   Gfx::PushMatrix();
   Gfx::LoadIdentity();
   GL_SetViewport(viewportX,uVar2 / 0x1e0,uVar3,uVar4);
-  // DAT_00561550 es DWORD (bit-pattern float): reinterpretar con Ff() antes de
-  // multiplicar. `DAT_00561550 * float` haría int→float (0x461c4000=10000.0f
-  // pasaría a 1.17e9) y daría un far plane astronómico.
+  // CameraFOV, CameraViewNear y CameraViewFar son float (antes eran DWORDs con
+  // los bits del float; Ff() sobre un float no cambia nada).
   //
   // FOV y Near pasan crudos como `int` — GL_SetPerspective (GL_LegacyState.cpp)
   // los recibe como `int fov, int near_clip` y hace `Ff()` internamente.
@@ -389,7 +388,7 @@ void __cdecl GL_BeginViewport(int param_1,int param_2,int param_3,int param_4)
   // 55.0f→int 55→Ff(55)=7.7e-44 → FOV≈0 → pantalla negra.
   // Solo el far necesita Ff() en el caller porque lo multiplicamos por _DAT_00552d34
   // (1.4f) ANTES de pasarlo — la multiplicación es en float-space aquí.
-  GL_SetPerspective(DAT_00561554,(float)uVar3 / (float)uVar4,DAT_0056154c,Ff(DAT_00561550) * _DAT_00552d34);
+  GL_SetPerspective(*(int*)&CameraFOV,(float)uVar3 / (float)uVar4,*(int*)&CameraViewNear,Ff(CameraViewFar) * _DAT_00552d34);
   Gfx::MatrixMode(Gfx::Matrix::ModelView);
   Gfx::PushMatrix();
   Gfx::LoadIdentity();
@@ -411,7 +410,7 @@ void __cdecl GL_BeginViewport(int param_1,int param_2,int param_3,int param_4)
   // si no las manda), calibradas para el alcance normal; se estiran con el
   // alcance de la cámara (cámara 3D y distancia de dibujado), si no con el
   // alcance ampliado tapa todo lo lejano.
-  const float fogScale = Ff(DAT_00561550) > 3000.0f ? Ff(DAT_00561550) / 3000.0f : 1.0f;
+  const float fogScale = Ff(CameraViewFar) > 3000.0f ? Ff(CameraViewFar) / 3000.0f : 1.0f;
   float fogStart, fogEnd;
   gContentCatalog.GetFogRange((int)gMapManager.GetCurrentMap(), fogStart, fogEnd);
   if(Materials::Enabled() && (FogEnable=='\0'||gContentCatalog.HasMapFog())){

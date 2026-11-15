@@ -26,7 +26,7 @@
 //   DAT_083a42ec  — screenshot mode toggle (Print Screen)
 //   DAT_083a7c48  — connection check enable
 //   DAT_083a7c58  — disconnect dialog shown flag
-//   DAT_07e118e8  — world/map type
+//   HeroTile  — world/map type
 //   RainCurrent  — BGM track 1 enable flag
 //   DAT_07abf5d8  — local player entity pointer
 //   ChatTime  — countdown counter A
@@ -474,7 +474,7 @@ static void Game_TickAmbientAudio()
     // ── Sonidos ambientales por mapa ───────────────────────────────────────
     switch (gMapManager.GetCurrentMap()) {
     case MAP_LORENCIA:  // Lorencia
-        if (gMapManager.Current().IsIndoor(DAT_07e118e8)) {
+        if (gMapManager.Current().IsIndoor(HeroTile)) {
             Sound_StopBuffer(0); Sound_StopBuffer(1);
         } else {
             PlayBuffer(0, 0, 1);
@@ -486,7 +486,7 @@ static void Game_TickAmbientAudio()
         PlayBuffer(3, 0, 1);
         break;
     case MAP_DEVIAS:  // Devias
-        if (gMapManager.Current().IsIndoor(DAT_07e118e8))
+        if (gMapManager.Current().IsIndoor(HeroTile))
             Sound_StopBuffer(0);
         else
             PlayBuffer(0, 0, 1);

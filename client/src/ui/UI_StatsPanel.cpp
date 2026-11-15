@@ -152,7 +152,7 @@ switchD_0051bea9_caseD_8b:
         iVar3 = 4;
         break;
       case 0x8e:
-        iVar3 = ((DAT_083a7c0c + DAT_083a4324) * 0x12 + 0x31) / 0x28;
+        iVar3 = ((g_iNumAnswer + DAT_083a4324) * 0x12 + 0x31) / 0x28;
         if (iVar3 < 9) {
           if (iVar3 < 4) goto switchD_0051bea9_caseD_8b;
           if (iVar3 < 9) break;
@@ -783,7 +783,7 @@ LAB_0051c13d:
   case 0x8b:
   case 0x8d:
   case 0x8e:
-    iVar3 = (((7 - DAT_083a7c0c) - DAT_083a4324) * 0x12) / 2 + 0x4c;
+    iVar3 = (((7 - g_iNumAnswer) - DAT_083a4324) * 0x12) / 2 + 0x4c;
     if ((ErrorMessage == 0x8e) && (iVar3 < 0x46)) {
       iVar3 = 0x46;
     }
@@ -805,7 +805,7 @@ LAB_0051c13d:
     if (MouseY - iVar3 < 0) {
       local_d4 = -NAN;
     }
-    if ((ErrorMessage == 0x8e) && (local_dc = 0, 0 < DAT_083a7c0c)) {
+    if ((ErrorMessage == 0x8e) && (local_dc = 0, 0 < g_iNumAnswer)) {
       const char* answer = (const char*)g_lpszDialogAnswer;
       do {
         if (((int)local_d4 == (int)local_dc) &&
@@ -832,7 +832,7 @@ LAB_0051c13d:
         } while (local_e4.cx < 1);
         local_dc = local_dc + 1;
         answer += 0x26;
-      } while ((int)local_dc < DAT_083a7c0c);
+      } while ((int)local_dc < g_iNumAnswer);
     }
     Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
     return 0;

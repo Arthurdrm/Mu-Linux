@@ -129,6 +129,9 @@ def harness(revision=None):
         if name == "DAT_07d78094" and not re.search(r"\bDAT_07d78094\s*;", header):
             name = "MouseOnWindow"
             prefix += "\n#define DAT_07d78094 MouseOnWindow\n"
+        if name == "DAT_083a7c0c" and not re.search(r"\bDAT_083a7c0c\s*;", header):
+            name = "g_iNumAnswer"
+            prefix += "\n#define DAT_083a7c0c g_iNumAnswer\n"
         prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
         prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
     prefix += re.search(r"^DWORD\s+DAT_07cf5608\[[^;]+;", definitions, re.M).group()

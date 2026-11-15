@@ -304,9 +304,9 @@ extern DWORD   DAT_0055a7c0;
 
 // ── Game loop / scene state (0x005615xx – 0x005617xx) ─────────────────────────
 // Nota: SceneFlag, g_hWnd y g_hDC se declaran en stdafx.h.
-extern DWORD   DAT_0056154c;
-extern DWORD   DAT_00561550;
-extern DWORD   DAT_00561554;
+extern float   CameraViewNear;   // IDA: CameraViewNear (0x0056154C)
+extern float   CameraViewFar;    // IDA: CameraViewFar (0x00561550)
+extern float   CameraFOV;        // IDA: CameraFOV (0x00561554)
 extern float   CameraDistanceTarget;   // DAT_005616B4: MoveMainCamera smoothing target
 extern float   CameraDistance;         // DAT_083A45D0: current MoveMainCamera distance
 extern DWORD   DAT_00561574;
@@ -675,7 +675,7 @@ extern char    DAT_07e113e4[5 * 256];   // historial de chat: 5 entradas x 256B
 
 // ── UI / HUD data (0x07e1xxxx – 0x07eaxxxx) ──────────────────────────────────
 extern DWORD  _DAT_07e118e4;   // player facing angle (float, sent in movement packets)
-extern DWORD   DAT_07e118e8;   // world/map type
+extern int     HeroTile;         // IDA: HeroTile (0x07E118E8)
 extern char    GuildInputEnable;   // char-select init flag  [IDA 0x07E11D70]
 extern char TabInputEnable;   // IDA: TabInputEnable (0x07E11D71)
 extern char    GoldInputEnable;   // char-select flag C  [IDA 0x07E11D72]
@@ -1068,10 +1068,9 @@ extern DWORD   MoveSceneFrame; // IDA: MoveSceneFrame (0x083A7C00)
 extern DWORD   DAT_083a7c04;   // in-game UI context A
 extern DWORD   DAT_083a7c08;   // in-game UI context B
 extern char    DAT_083a7c09;   // in-game UI flag byte
-// DAT_083a7c0c @ 0x083A7C0C ES `g_iNumAnswer`.  Disassembly 0x40182E:
+// g_iNumAnswer @ 0x083A7C0C ES `g_iNumAnswer`.  Disassembly 0x40182E:
 // `89 35 0c 7c 3a 08` = `mov [0x083A7C0C], esi`.
-extern DWORD   DAT_083a7c0c;
-#define g_iNumAnswer  (*(int*)&DAT_083a7c0c)
+extern int     g_iNumAnswer;     // IDA: g_iNumAnswer (0x083A7C0C)
 extern DWORD   EnableMainRender;  // IDA: EnableMainRender (0x083A7C10)
 extern int     LoginSubState; // IDA: DAT_083a7c14 (0x083A7C14)
 extern DWORD   DAT_083a7c18;
@@ -1629,7 +1628,7 @@ extern char    g_lpszDialogAnswer[10][1][38];  // IDA: g_lpszDialogAnswer (0x083
 // Guild message decode state
 // DAT_083a7c08 — declared above as DWORD
 extern char    DAT_083a7c09;   // guild dialog flag B
-// DAT_083a7c0c — declared above as DWORD
+// g_iNumAnswer — declared above as DWORD
 // Zona del cursor / hit-test (también se usa en otros paneles)
 // MouseLButtonPush — declared above as DWORD
 // Y del cursor de selección en la lista de servers (también se usa en el panel 0x96)
@@ -2383,8 +2382,7 @@ extern DWORD   DAT_00578200;    // name-filter BMD checksum seed
 extern char    lpText_07d2aa08[];  // fatal-error message string (shown by ExitProgram)
 
 // ── HeroTile — terrain tile type under the hero character ─────────────────────
-// DAT_07e118e8 ya declarado como DWORD cerca de la línea 546 (tipo de mundo/mapa)
-#define HeroTile ((int)DAT_07e118e8)
+// HeroTile ya declarado como DWORD cerca de la línea 546 (tipo de mundo/mapa)
 // World ya está declarado arriba.
 #ifndef World
 
@@ -2565,7 +2563,7 @@ extern DWORD   DAT_0055339c;       // JPEG natural order table
 // (HUD passes + ChatListBox) se perdían → texto blanco. DAT_00559c78/80 declarados arriba.
 #define m_dwTextColor  DAT_00559c78
 #define m_dwBackColor  SetBackgroundTextColor
-// g_iNumAnswer — alias de DAT_083a7c0c (ver arriba).
+// g_iNumAnswer — alias de g_iNumAnswer (ver arriba).
 // g_iNumLineMessageBoxCustom — alias de DAT_083a4324 (ver arriba).
 // g_lpszMessageBoxCustom — alias de DAT_083a44c4 (el buffer real de 7 lineas x
 // 0x26): los writers (ShowDialogText, CreateOkMessageBox) llenan DAT_083a44c4 y

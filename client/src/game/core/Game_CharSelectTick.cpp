@@ -200,7 +200,7 @@ void Game_CharSelectTick(void)
     //
     // O sea LABEL_108 es SALTEAR.
     // `weather` e `indoor_tiles` de Content/map/maps.toml.
-    const bool doLeaves = gMapManager.Current().weather && !gMapManager.Current().IsIndoor(DAT_07e118e8);
+    const bool doLeaves = gMapManager.Current().weather && !gMapManager.Current().IsIndoor(HeroTile);
     if (doLeaves) WeatherParticles_Update();
     Bisect_ChatMode("CST_post_skillFX");
     // Full world pipeline

@@ -66,7 +66,7 @@
 //
 //   Esta función se llama dos veces en Game_RenderTick:
 //   1. Siempre (línea 106) — para todas las escenas
-//   2. Solo si World == 2 && DAT_07e118e8 not in {3, >=10} (línea 121)
+//   2. Solo si World == 2 && HeroTile not in {3, >=10} (línea 121)
 //      → segunda pasada solo en modo in-world normal
 //
 // ── FUNCIÓN CROSS-REFERENCE ───────────────────────────────────────────────────

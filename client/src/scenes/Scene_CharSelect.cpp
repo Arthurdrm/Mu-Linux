@@ -104,7 +104,7 @@
 //
 //   (oscila fsin → _DAT_07abf138..140 = brillo)
 //   fStack_5c = -8.0; uStack_58 = 0xc4480000; fStack_54 = 79.0;
-//   DAT_00561554 = 0x41200000;
+//   CameraFOV = 0x41200000;
 //   Matrix_BuildFromEuler(&angles, mat);   → Matrix_FromEuler()
 //   Vector_InverseRotate(&pos, mat, &screenPt); → Transform + project
 //   _DAT_083a42d4 = screenPt.x + _DAT_07abf060;
@@ -153,7 +153,7 @@
 //   DAT_07abf20c   — char class byte (low byte = slot)
 //   DAT_0056156c   — screen_width
 //   DAT_005597c4   — render sub-mode flag
-//   DAT_00561554   — camera param
+//   CameraFOV   — camera param
 //   _DAT_07abf138..140 — RGB color del preview local
 //   _DAT_007abf060..068 — camera offset
 //   DAT_005616a8   — posición X botones left/right
@@ -558,7 +558,7 @@ int Scene_CharSelect(void)
             if (-1 < iVar9) {
                 DAT_005597c4 = 0;
                 fVar11 = (float10)sinl((long double)WorldTime * (long double)_DAT_005528e0);
-                DAT_00561554 = 0x41200000;   // CameraFOV = 10.0
+                CameraFOV = 10.0f;
                 DAT_083a42b8 = 0; DAT_083a42bc = 0; DAT_083a42c0 = 0;   // CameraAngle = {0,0,0}
                 fVar11 = fVar11 * (float10)_DAT_005526e4 + (float10)_DAT_0055256c;
                 _DAT_07abf138 = (float)fVar11;

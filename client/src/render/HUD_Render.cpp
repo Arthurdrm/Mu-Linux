@@ -424,7 +424,7 @@
 //     glPushMatrix();
 //     glLoadIdentity();
 //     GL_SetViewport(0, 0, DAT_0056156c, DAT_00561570);    // gluPerspective(fov, aspect, ...)
-//     GL_SetPerspective(1.0, DAT_0056156c/DAT_00561570, DAT_0056154c, DAT_00561550); // near/far
+//     GL_SetPerspective(1.0, DAT_0056156c/DAT_00561570, CameraViewNear, CameraViewFar); // near/far
 //     glMatrixMode(GL_MODELVIEW);
 //     glPushMatrix();
 //     glLoadIdentity();
@@ -464,8 +464,8 @@
 //   CameraMatrix   — camera matrix (4×4 floats)
 //   DAT_0056156c   — screen_width
 //   DAT_00561570   — screen_height
-//   DAT_0056154c   — near_clip
-//   DAT_00561550   — far_clip
+//   CameraViewNear   — near_clip
+//   CameraViewFar   — far_clip
 //   DAT_083a42d4/d8/dc — camera world position (X/Y/Z)
 //   GoldenArcherOpenType   — view mode (0=normal, 3=?, otras=PvP?)
 //   DAT_07e91388   — teleport effect active

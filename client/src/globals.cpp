@@ -312,9 +312,9 @@ DWORD    DAT_0055a7c0  = 0;
 //   CameraViewFar  = 2000.0f (0x00561550)
 //   CameraFOV      = 55.0f  (0x00561554)
 // These are DWORDs in the variable table but the binary reads them as floats.
-DWORD    DAT_0056154c  = 0x41A00000;  // 20.0f    CameraViewNear
-DWORD    DAT_00561550  = 0x44FA0000;  // 2000.0f  CameraViewFar
-DWORD    DAT_00561554  = 0x425C0000;  // 55.0f    CameraFOV (MoveMainCamera lo reescribe a 35.0)
+float    CameraViewNear = 20.0f;    // IDA: CameraViewNear (0x0056154C)
+float    CameraViewFar  = 2000.0f;  // IDA: CameraViewFar (0x00561550)
+float    CameraFOV      = 55.0f;    // IDA: CameraFOV (0x00561554); MoveMainCamera lo reescribe a 35.0
 float    CameraDistanceTarget  = 0.0f;  // DAT_005616B4: MoveMainCamera target
 float    CameraDistance  = 0.0f;        // DAT_083A45D0: current MoveMainCamera distance
 DWORD    DAT_00561574  = 0;
@@ -755,7 +755,7 @@ void    *DAT_07cf1ffc  = nullptr;  // g_CharData pointer (0x584-byte XOR-encoded
 
 // ── UI / HUD data ─────────────────────────────────────────────────────────────
 DWORD   _DAT_07e118e4  = 0;    // facing angle (float, movement packet)
-DWORD    DAT_07e118e8  = 0;    // world/map type
+int      HeroTile      = 0;    // IDA: HeroTile (0x07E118E8), tile de TerrainMappingLayer1 bajo el heroe
 DWORD    MacroTime  = 0;  // IDA: MacroTime (0x07E11D7C)
 DWORD    DAT_07e11d94  = 0;
 DWORD    DAT_07e11d98  = 0;
@@ -1382,7 +1382,7 @@ float   _DAT_00552914 = 0.02f;
 DWORD    DAT_083a7c04  = 0;
 DWORD    DAT_083a7c08  = 0;
 char     DAT_083a7c09  = 0;
-DWORD    DAT_083a7c0c  = 0;
+int      g_iNumAnswer  = 0;   // IDA: g_iNumAnswer (0x083A7C0C)
 DWORD    DAT_083a7c2c  = 0;
 // DAT_083a42fc — ahora macro dentro de DAT_083a42f8 (dialog button rects)
 DWORD    DAT_083a4324  = 0;
@@ -1635,7 +1635,7 @@ char     DAT_07d69c30  = 0;
 char     g_lpszDialogAnswer[10][1][38] = {};  // IDA: g_lpszDialogAnswer (0x083A4348) - 10 x 38 = 380
 // DAT_083a7c08 — defined above (DWORD)
 // DAT_083a7c09 — defined above (char)
-// DAT_083a7c0c — defined above (DWORD)
+// g_iNumAnswer — defined above (DWORD)
 // MouseLButtonPush — defined above (DWORD)
 // _DAT_00552cac — defined above (float)
 // Options submenu (0x96) toggle labels — rendered by UI_StatsPanel RenderErrorMessage
@@ -2480,7 +2480,7 @@ BYTE   DAT_0055a76c       = 1;    // unk_55A76C — gate de la 2da pasada del te
 BYTE   DAT_0055a770[3]    = { 0, 0, 0 };
 
 // ── SkillAttribute table ──────────────────────────────────────────────────────
-// DAT_07e118e8 (HeroTile) ya está definido como DWORD más arriba.
+// HeroTile (HeroTile) ya está definido como DWORD más arriba.
 _SkillAttrEntry SkillAttribute = {};   // skill attribute table base @ 0x07D29D20
 LPVOID DAT_07abf164       = nullptr;   // character extra BMD heap buffer
 // DAT_07c82cd0 es el inicio de g_PointerPool.

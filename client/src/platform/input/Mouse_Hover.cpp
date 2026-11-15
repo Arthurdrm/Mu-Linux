@@ -415,7 +415,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
                 if (ty < 0) ty = 0; if (ty > 255) ty = 255;
                 const unsigned char tile = TerrainMappingLayer1[tx + (ty << 8)];   // TerrainMappingLayer1
                 const unsigned char roof = (map == 0) ? 4 : 3;
-                if (tile == roof && (DWORD)tile != DAT_07e118e8)           // HeroTile
+                if (tile == roof && tile != HeroTile)
                     continue;
             }
             best_perp = d2;

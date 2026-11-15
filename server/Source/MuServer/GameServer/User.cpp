@@ -264,7 +264,7 @@ void gObjAllDisconnect()
 	}
 }
 
-void gObjSetExperienceTable()
+void gObjSetExperienceTable(double exponent)
 {
 	memset(gLevelExperience, 0, sizeof(gLevelExperience));
 
@@ -272,11 +272,11 @@ void gObjSetExperienceTable()
 	double maxExperience = DWORD_MAX * 0.95; // Aproximar al máximo seguro
 
 	// Ajustar el multiplicador dinámicamente
-	double scaleFactor = maxExperience / pow(gServerInfo.m_MaxCharacterLevel, 3);
+	double scaleFactor = maxExperience / pow(gServerInfo.m_MaxCharacterLevel, exponent);
 
 	for (int level = 1; level <= gServerInfo.m_MaxCharacterLevel; level++)
 	{
-		gLevelExperience[level] = (DWORD)(scaleFactor * pow(level, 3));
+		gLevelExperience[level] = (DWORD)(scaleFactor * pow(level, exponent));
 	}
 }
 

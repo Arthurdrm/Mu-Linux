@@ -29,163 +29,38 @@ DWORD    DAT_00000024  = 0;
 
 // ── Game math / render constants ─────────────────────────────────────────────
 float    _DAT_00552464 = 25.0f;
-float    _DAT_0055246c = 395.0f;
-float    _DAT_00552488 = 10.0f;
 float    _DAT_005524bc = 0.004f;
 float    _DAT_005524f0 = 100.0f;  // grid-to-world scale = TERRAIN_SCALE
-DWORD    DAT_005524f0  = 0;
 float    _DAT_005524f4 = 0.1f;
-DWORD    DAT_005524f4  = 0;
 float    _DAT_005524f8 = 0.01f;
-DWORD    DAT_005524f8  = 0;
-float    _DAT_005524fc = 20.0f;
-DWORD    DAT_005524fc  = 0;
 float    _DAT_00552500 = 0.001f;
-DWORD    DAT_00552500  = 0;
 float    _DAT_00552504 = 0.5f;
-DWORD    DAT_00552504  = 0;
 float    _DAT_00552530 = 0.8f;
-DWORD    DAT_00552530  = 0;
-float    _DAT_00552534 = 0.6f;
-DWORD    DAT_00552534  = 0;
-float    _DAT_00552538 = 0.399999976f;
-DWORD    DAT_00552538  = 0;
 float    _DAT_00552540 = 3.0f;
-float    _DAT_005527d4 = 19.0f;   // Party HP bar row height (SecondPassword_HoverCheck)
-DWORD    DAT_00552540  = 0;
-float    _DAT_00552560 = 0.0f;
-DWORD    DAT_00552560  = 0;
 float    _DAT_0055256c = 1.0f;
-DWORD    DAT_0055256c  = 0;
 DWORD    DAT_00552580  = 0;
-float    _DAT_00552594 = 0.01f;
-DWORD    DAT_00552594  = 0;
 float    _DAT_00552598 = 50.0f;
-DWORD    DAT_00552598  = 0;
 float    _DAT_00552660 = 5.0f;
-DWORD    DAT_00552660  = 0;
-float    _DAT_00552664 = 12.0f;
-DWORD    DAT_00552664  = 0;
-float    _DAT_005526dc = 0.0625f;
-DWORD    DAT_005526dc  = 0;
-float    _DAT_005526e0 = 16.0f;
-DWORD    DAT_005526e0  = 0;
 float    _DAT_005526e4 = 0.2f;
-DWORD    DAT_005526e4  = 0;
-float    _DAT_005526e8 = 0.9f;
-DWORD    DAT_005526e8  = 0;
 float    _DAT_00552834 = 15.0f;
-DWORD    DAT_00552834  = 0;
 // _DAT_00552838 = 1/480 (Y scale), _DAT_0055283c = 1/640 (X scale) — compile-time constants.
 // ConvertX(x) = WindowWidth * x * _DAT_0055283c ; ConvertY(y) = WindowHeight * y * _DAT_00552838
 // Used by GL_DrawTexture (RenderBitmap), Screen_ToGLX/80 (ConvertX/Y), Camera_SetupFrustum, etc.
 float    _DAT_00552838 = 1.0f / 480.0f;
-DWORD    DAT_00552838  = 0x3B088889;   // 1/480 as DWORD bits
 float    _DAT_0055283c = 1.0f / 640.0f;
-DWORD    DAT_0055283c  = 0x3ACCCCCD;   // 1/640 as DWORD bits (float bits)
-DWORD    DAT_00552844  = 0;
-DWORD    DAT_00552848  = 0x42B40000;  // 90.0f as DWORD bits
 float    _DAT_00552848 = 90.0f;
 float    _DAT_0055284c = 30.0f;
-DWORD    DAT_0055284c  = 0;
-DWORD    DAT_00552850  = 0;
 float    _DAT_00552868 = 0.0001f;  // epsilon for near-zero float checks
-DWORD    DAT_00552868  = 0x38D1B717;  // 0.0001f as DWORD bits
-DWORD    DAT_0055286c  = 0x43B40000;  // 360.0f as DWORD bits
-DWORD    DAT_00552874  = 0;
-float   _DAT_0055287c  = 0.5625f;
-DWORD    DAT_00552880  = 0;
-float   _DAT_00552884  = 0.8671875f;
-float   _DAT_00552888  = 0.0234375f;
-float   _DAT_0055288c  = 0.2265625f;
-float   _DAT_00552890  = 0.001f;
-float    _DAT_005528b0 = 0.0174532942f;
-DWORD    DAT_005528b0  = 0;
 float    _DAT_005528b4 = 0.4f;
-DWORD    DAT_005528b4  = 0;
 float    _DAT_005528b8 = 0.3f;
-DWORD    DAT_005528b8  = 0;
-DWORD    DAT_005528dc  = 0;
-float    _DAT_005528e0 = 0.002f;
-DWORD    DAT_005528e0  = 0;
-float    _DAT_005528f0 = 1.5f;
-DWORD    DAT_005528f0  = 0;
 float    _DAT_00552908 = 120.0f;
-float    _DAT_005528fc = 110.0f;  // MoveJoint Z-offset constant
-DWORD    DAT_00552908  = 0;
 float    _DAT_0055290c = 60.0f;
-DWORD    DAT_0055290c  = 0;
-float    _DAT_00552910 = 0.03f;
-DWORD    DAT_00552910  = 0;
-float    _DAT_0055291c = -0.0005f;
-DWORD    DAT_0055291c  = 0;
-float    _DAT_00552920 = -0.0001f;
-DWORD    DAT_00552920  = 0;
-float    _DAT_00552928 = 0.7f;
-DWORD    DAT_00552928  = 0;
-float    _DAT_0055293c = 135.0f;
-DWORD    DAT_0055293c  = 0;
 float    _DAT_00552934 = 0.15f;
-DWORD    DAT_00552934  = 0;
-float    _DAT_00552974 = 190.0f;
-DWORD    DAT_00552974  = 0;
-float    _DAT_0055297c = 150.0f;
-DWORD    DAT_0055297c  = 0;
-float    _DAT_005529bc = 128.0f;
-DWORD    DAT_005529bc  = 0;
 float    _DAT_005529c0 = -0.3f;
-DWORD    DAT_005529c0  = 0;
-float    _DAT_005529e0 = 260.0f;
-DWORD    DAT_005529e0  = 0;
 float    _DAT_00552a00 = 0.1f;
-DWORD    DAT_00552a00  = 0;
-float    _DAT_00552a10 = 0.05f;
-DWORD    DAT_00552a10  = 0;
-DWORD    DAT_00552a1c  = 0;
-float    _DAT_00552a48 = 0.0666666701f;
-DWORD    DAT_00552a48  = 0;
-float    _DAT_00552abc = 0.005f;
-DWORD    DAT_00552abc  = 0;
-float    _DAT_00552ac0 = 0.008f;
-DWORD    DAT_00552ac0  = 0;
-float    _DAT_00552adc = 0.75f;
-DWORD    DAT_00552adc  = 0;
-DWORD    DAT_00552b70  = 0;
-float   _DAT_00552b6c  = 3600.0f;
-float    _DAT_00552b7c = 0.00390625f;
-DWORD    DAT_00552b7c  = 0;
 float    _DAT_00552b88 = 0.0002f;
-DWORD    DAT_00552b88  = 0;
-float    _DAT_00552c00 = 0.45f;          // item spin speed
-float    _DAT_00552c14 = 115.0f;
-DWORD    DAT_00552c14  = 0;
-float    _DAT_00552c24 = 285.0f;
-DWORD    DAT_00552c24  = 0;
-float    _DAT_00552ca4 = 350.0f;
-DWORD    DAT_00552ca4  = 0;
-float    _DAT_00552ca8 = 175.0f;
-DWORD    DAT_00552ca8  = 0;
-float    _DAT_00552cac = 245.0f;
-DWORD    DAT_00552cac  = 0;
-DWORD    DAT_00552cb0  = 0;
-float    _DAT_00552cc4 = 0.0087266462f;  // 0.5*PI/180 — verificado bit-pattern 0x3C0EFA33 en binario original. Se usa para tan(FOV/2) en gluPerspective2 (GL_SetPerspective) y frustum (Camera_SetupFrustum).
-DWORD    DAT_00552cc4  = 0;
-float    _DAT_00552d08 = 0.32f;
-DWORD    DAT_00552d08  = 0;
-float    _DAT_00552d0c = 0.588235259f;
-DWORD    DAT_00552d0c  = 0;
 // World → object-bucket grid factor (1/1600; celda = 1600 unidades de mundo)
 float    _DAT_00552d20 = 6.25e-4f;   // 0.000625 = 1/1600
-DWORD    DAT_00552d20  = 0;
-float    _DAT_00552d38 = 97.5f;
-DWORD    DAT_00552d38  = 0;
-float    _DAT_00552d3c = 0.375f;
-DWORD    DAT_00552d3c  = 0;
-float    _DAT_00552d48 = 248.0f;
-DWORD    DAT_00552d48  = 0;
-float    _DAT_00552d4c = 14.0f;
-DWORD    DAT_00552d4c  = 0;
-DWORD    DAT_005538a0  = 0;
 
 // ── Entity / render constants ─────────────────────────────────────────────────
 // 16-byte XOR key table — usado por Crypto.cpp/CreateEffect.cpp/Net_PacketSession etc.
@@ -1238,7 +1113,6 @@ DWORD    DAT_07abf474[12] = {0};
 
 // Animation distance / frequency constants
 float   _DAT_00552650  = 4.0f;
-float   _DAT_00552954  = 0.0015f;
 
 // Teleport-anim pool — 100 slots × 0x70 bytes; see globals.h note (was 1 byte
 // causing heap corruption in Entity_TeleportAnim).
@@ -1254,11 +1128,8 @@ int&     DAT_07c85894 = Sprites[0].SubType;
 
 // Math / animation constants
 float   _DAT_00552958 = 140.0f;
-DWORD    DAT_00552958 = 0;
 // _DAT_0055283c — X-scale constant (1/640); definido arriba con valor correcto.
 // Esta definición fue 0.0f por error; reemplazada por la inicialización en la zona de video-scale.
-float   _DAT_00552cb8 = 540.0f;
-float   _DAT_00552cbc = 1190.0f;
 
 // Server select input
 DWORD    ServerLocalSelect = 0;
@@ -1314,12 +1185,7 @@ DWORD    DAT_07c74ae8  = 0;
 DWORD    RainPosition  = 0;  // IDA: RainPosition (0x07C74AEC)
 int     _DAT_00559b9c  = 0;
 float   _DAT_00552874  = 0.05f;
-float   _DAT_00552880  = 0.0703125f;
 float   _DAT_005529c8  = -0.1f;
-DWORD    DAT_005529c8  = 0;
-float   _DAT_00552a38  = 200000.0f;
-float   _DAT_00552a3c  = 3.2f;
-float   _DAT_00552a40  = 0.0005f;
 
 // Mouse hover tick (Mouse_UpdateHoverTargets)
 DWORD    SelectXF  = 0;  // IDA: SelectXF (0x080AB288)
@@ -1368,12 +1234,6 @@ DWORD    DAT_083a7c68 = 0;
 
 // Sprite entity pool (RenderParticles)
 DWORD    DAT_07abf634 = 0;
-float   _DAT_005528dc = 0.25f;
-float   _DAT_00552940 = 0.005f;
-float   _DAT_00552944 = 0.02f;   // Entity_UpdateRender sin period scale (case 0x15d)
-float   _DAT_00552948 = 0.65f;   // Entity_UpdateRender sin bias
-float   _DAT_0055294c = 0.35f;   // Entity_UpdateRender sin amplitude
-float   _DAT_00552acc = -0.02f;
 float   _DAT_00552914 = 0.02f;
 
 // UI_InGameMenu state machine (UI_InGameMenu)
@@ -1553,9 +1413,7 @@ char     param_2_07d68f4c  = 0;
 char     param_2_07d69078  = 0;
 
 // ── Pre-compile missing globals (found by diff scan) ─────────────────────────
-float    _DAT_0055264c = 2.0f;
 float    FloatZero = 0.0f;
-float    _DAT_005529fc = 18.0f;
 char     DAT_00558128[256]  = {};   // debug log format/data block
 char     DAT_0055a7c4  = 1;         // compressed-assets flag (alias: g_tex_ext_mode); 1=Data mode (plain Data\ folder, no pak)
 DWORD    _DAT_07e016f0 = 0;         // FPS tick timer (DWORD milliseconds)
@@ -1603,11 +1461,6 @@ int      DAT_07e91528[12 * 10] = {};
 int      DAT_00559fe0  = -1;
 
 // UI_StatsPanel (RenderErrorMessage) globals
-float   _DAT_00552854 = 85.0f;
-float   _DAT_00552a2c = 35.0f;
-float   _DAT_00552ae4 = 0.03125f;
-float   _DAT_00552d40 = 213.0f;
-float   _DAT_00552d44 = 0.0078125f;
 // DAT_00559c78 — defined above (DWORD); using 0xffffffff as initial value there
 // SetBackgroundTextColor — defined above (DWORD)
 // InputTextWidth — definido arriba (int)
@@ -1726,8 +1579,6 @@ int     DAT_083a42f4 = 0;
 int     DAT_083a42f0 = 0;
 // ── Float constants ───────────────────────────────────────────────────────────
 float   _DAT_00552580 = 0.0f;
-float   _DAT_00552850 = 400.0f;
-float   _DAT_00552878 = 80.0f;
 float   Math_DegreesToRadians = 0.017453292f;  // π/180
 float   _DAT_00552ce0 = 0.5f;          // half-angle factor for EulerToQuat (EulerToQuat).
                                        // IDA sub_4FA1D0 shows literal `a1[k] * 0.5` — quaternion
@@ -1735,9 +1586,7 @@ float   _DAT_00552ce0 = 0.5f;          // half-angle factor for EulerToQuat (Eul
                                        // (AngleMatrix path uses Math_DegreesToRadians=π/180, different const).
                                        // No usar π/180 acá: deja toda rotación de hueso ≈ 0.
 float   _DAT_00552cf0 = 1.0f;          // 1.0 (quaternion normalization)
-float   _DAT_00552cf8 = 1.5707963f;    // π/2 (SLERP degenerate)
 float   _DAT_00552d00 = 0.001f;        // SLERP near-parallel epsilon
-float   _DAT_00552a1c = 1.0f;
 // ── Effect pool ───────────────────────────────────────────────────────────────
 // Effect pool — Effect_TickAll itera 200 slots × 0x1bc bytes.
 OBJECT  Effects[kEffectPoolSize] = {};   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
@@ -1838,33 +1687,16 @@ char    s_Monster_iui03_tga_0055cdc8[] = "Monster/iui03.tga";
 
 // ── CreateEffect float constants ────────────────────────────────────────────
 float   _DAT_005524ec = 180.0f;
-float   _DAT_0055253c = 0.0174532924f;
-float   _DAT_00552828 = -5.0f;
-float   _DAT_00552830 = 9.0f;  // death particle anim frame upper bound
 float   _DAT_00552844 = 45.0f;
-float   _DAT_005528e8 = 500.0f;
-float   _DAT_0055295c = 0.04f;
-float   _DAT_00552960 = 2.0f;
-float   _DAT_00552968 = 2.0f;
-float   _DAT_00552970 = 280.0f;
-float   _DAT_00552978 = 330.0f;
-float   _DAT_00552980 = 130.0f;
-float   _DAT_00552984 = -30.0f;
-float   _DAT_00552988 = -15.0f;
-float   _DAT_0055298c = -50.0f;
 // ── Weather particle pool (40 × 0x1bc = 0x4560 bytes) ────────────────────────
 // Backing buffer único: Weather_Update recorre los slots 1..39 con stride 0x1bc.
 // Ver globals.h para los macros de field accessors.
 OBJECT   Boids[40] = {};   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
 // ── Weather float constants ───────────────────────────────────────────────────
-float   _DAT_0055285c = 200.0f;
 float   _DAT_0055286c = 360.0f;
 float   _DAT_005528e4 = 40.0f;
 float   _DAT_00552900 = 300.0f;
-float   _DAT_00552ab4 = 600.0f;
 float   _DAT_00552ab8 = 1000.0f;
-float   _DAT_00552d24 = 1500.0f;
-float   _DAT_00552d28 = 0.0003f;
 
 // ── Camera / viewport globals ─────────────────────────────────────────────────
 // SetActionObject (0x4FA5C0) / MoveObject_Special (0x4FA5F0): animacion de
@@ -1890,7 +1722,6 @@ float   DAT_00561558   = 0.0f;
 DWORD   FogColor   = 0;
 
 // ── Perspective constant ──────────────────────────────────────────────────────
-float   _DAT_00552d34  = 1.4f;
 
 // ── Joint pool ────────────────────────────────────────────────────────────────
 // Joint pool — Joint_TickAll itera 500 slots × 0x9d8 bytes (~1.2MB).
@@ -1898,18 +1729,12 @@ JOINT   Joints[kJointPoolSize] = {};   // IDA: 500 slots: (0x07C5AB30-0x07B27150
 
 // ── Joint_Create float constants ─────────────────────────────────────────────
 float   _DAT_00552a14  = -0.5f;
-float   _DAT_00552658  = 8.0f;
-float   _DAT_005526d8  = -1.0f;
-float   _DAT_00552a44  = -0.0174532924f;
-float   _DAT_00552a34  = -4.0f;
-float   _DAT_005529ac  = -2.0f;
 
 // ── Timer globals ─────────────────────────────────────────────────────────────
 DWORD   DAT_05826e14   = 0;
 // IDA: DAT_05826df0
 DWORD   FrameTimeCurrentMs   = 0;
 float   _DAT_005528a8  = 0.001f;  // 1/1000 ms-to-s
-float   _DAT_00552898  = 5.0f;    // 5.0 second FPS window
 // _DAT_00552890 — defined above (float)
 DWORD   DAT_05826e00   = 0;
 float   DeltaT  = 0.0f;    // delta time per frame
@@ -1967,7 +1792,6 @@ char    DAT_07e9136b   = 0;
 BYTE    DAT_07ea5240[0x44] = { 0 };
 
 // ── Effect_Tick globals ───────────────────────────────────────────────────────
-float   _DAT_00552aac  = 0.0833333358f;
 // Fade-effect pool — Effect_TickFade itera 40 slots × 0x1bc bytes.
 // DAT_07c74ec8 es el anclaje +0x60 de Planes, no otro pool.
 // Flare effect pool — Effect_TickFlare itera 63 slots × 0x70 bytes.
@@ -1977,7 +1801,6 @@ char    g_PointerPool[100 * 0x70] = {};
 
 // ── Terrain_Light globals ─────────────────────────────────────────────────────
 DWORD   DAT_0839bc84   = 0;
-float   _DAT_00552a08  = 0.003f;
 // cb60c/cb610 and 0828b60c/610 are NOT separate globals — in the
 // original binary they're the 2nd/3rd DWORDs of slot 0 of cb608/0828b608.
 // Code uses `(&DAT_081cb60c)[iVar2*3]` to access slot iVar2's 2nd field, and
@@ -2132,7 +1955,6 @@ int     DAT_07d78070    = 0;         // command table B count (word-filter)
 // Loaded at boot by OpenNameFilterFile("Data/Local/FilterName.bmd") — seed 0x578200,
 // magic 11201, same BuxConvert_0 XOR cipher.
 char    DAT_07d27610[20000] = {};
-float   _DAT_00552950   = 2.5f;     // lightning speed constant
 
 // ── GameGuard globals ─────────────────────────────────────────────────────────
 // Sin usos en el código compilado: los usaba el port de IDA de FUN_0053d890
@@ -2306,9 +2128,6 @@ char    DAT_07eaa0dc  = 0;   // SecondPassword selected grid index
 //   0x7EA51F5  GuildMark[64]  (1 byte por celda de la grilla 8x8)
 char    DAT_07ea51ec[33] = {0};   // GuildName (0.97.40: 32 bytes + NUL)
 char    DAT_07ea51f5[64] = {0};   // GuildMark (grilla 8x8)
-float  _DAT_00552c20  = 425.0f; // Screen5 button X upper bound
-float  _DAT_00552c1c  = 33.0f; // Screen5 button height
-float  _DAT_00552c28  = 210.0f; // Screen5 button Y base
 // DAT_07d6b724 ("no item in slot") y DAT_07d685ec ("invalid slot") son
 // GlobalText[896] / [854] (ver el bloque de alias al final de globals.h).
 short   DAT_00559f5a  = 0;   // second-password level check B
@@ -2341,21 +2160,8 @@ float  _DAT_005528c4  = 0.007f; // sin period scale for vertex deformation
 float  _DAT_00552644  = 28.0f; // sin amplitude for vertex deformation
 
 // ── MoveEffect constants ──────────────────────────────────────
-float  _DAT_005524a8  = 27.0f;
 float  _DAT_00552864  = 270.0f;
-float  _DAT_00552990  = -0.4f;
 float  _DAT_00552994  = 250.0f;
-float  _DAT_00552998  = 0.0031f;
-float  _DAT_0055299c  = 15.37f;
-float  _DAT_005529a0  = 2.0943952f;
-float  _DAT_005529a4  = 0.17f;
-float  _DAT_005529a8  = 24.0f;
-float  _DAT_005529b0  = -200.0f;
-float  _DAT_005529b4  = 1.1f;
-float  _DAT_005529b8  = 32.0f;
-float  _DAT_005529c4  = 700.0f;
-float  _DAT_005529cc  = 0.015f;
-float  _DAT_005529d0  = -0.01f;
 float  _DAT_005529d4  = 0.333333343f;
 // Los tres son DOUBLES de 8 bytes en el binario (no float).
 // Bytes reales (ida_get_bytes 0x5529D8, 32): la region intercala
@@ -2363,24 +2169,6 @@ float  _DAT_005529d4  = 0.333333343f;
 //   0x5529E8 double 1/180 | 0x5529F0 double PI
 // Los usa MoveEffect case 244 (Rageful Blow): PI*(1/180) para el seno del arco del
 // arma y el test `v356 != 12.5` para que el arma suba y baje.
-double _DAT_005529d8  = 12.5;
-double _DAT_005529e8  = 0.005555555555555556;
-double _DAT_005529f0  = 3.141592;
-float  _DAT_005529f8  = 72.0f;
-float  _DAT_00552a04  = 24.0f;
-float  _DAT_00552a0c  = 0.04f;
-float  _DAT_00552a18  = 1.8f;
-float  _DAT_00552a20  = 0.0333333351f;
-float  _DAT_00552938  = 70.0f;  // MoveJoint trig scale (mode 1)
-float  _DAT_00552a54  = 0.18f;  // MoveJoint particle angle scale
-float  _DAT_00552a8c  = 0.6666667f;  // MoveJoint color fade rate A
-float  _DAT_00552a90  = 0.7692308f;  // MoveJoint color fade rate B
-float  _DAT_00552a94  = 0.03065f;  // MoveJoint trig freq A
-float  _DAT_00552a98  = 0.024f;  // MoveJoint trig scale B
-float  _DAT_00552aa4  = 0.025f;  // MoveJoint HP-bar scale factor
-float  _DAT_00552a9c  = 0.0613f;  // Ring_ComputeOrbit ring trig scale X
-float  _DAT_00552aa0  = 0.048f;  // Ring_ComputeOrbit ring trig scale Y
-float  _DAT_00552aa8  = 0.1113f;  // Ring_ComputeOrbit ring trig scale Z
 // Tabla de HUESOS del aura de Swell Life: dato del binario que el port dejo
 // en ceros.  No son escalas -- MoveEffect los pasa como 'Scale' a
 // Particle_Spawn(0x47e, ..., sub 4, Scale, owner), que los guarda en el
@@ -2409,7 +2197,6 @@ int    DAT_00590c10       = 0;            // skinned vertex count
 float  DAT_055c4068       = 0.0f;         // bone world-vertex array base
 float  DAT_00593008       = 0.0f;         // source vertex position array base
 short  DAT_00590c32       = 0;            // parent-bone index array base
-float  _DAT_0055259c      = 1.0f;         // global mesh scale factor
 float  DAT_055c4038       = 0.0f;         // bone world-position matrix base
 float  DAT_055c4098       = 0.0f;         // bone world-pos X
 float  DAT_055c409c       = 0.0f;         // bone world-pos Y
@@ -2509,29 +2296,7 @@ int    PTR_FUN_0055389c   = 0;
 
 // IDA off_XXXX vtable/pointer-literal symbols, renamed by port.py to DAT_xxxxxxxx.
 // (parallel to PTR_LAB_/PTR_FUN_ above; port.py uses the DAT_ form)
-DWORD  DAT_00552460 = 0;
-DWORD  DAT_005524b4 = 0;
-DWORD  DAT_005524b8 = 0;
-DWORD  DAT_005524c0 = 0;
-DWORD  DAT_005524c4 = 0;
-DWORD  DAT_005524c8 = 0;
-DWORD  DAT_005524d8 = 0;
-DWORD  DAT_005524e8 = 0;
 DWORD  DAT_00552508 = 0;
-DWORD  DAT_00552514 = 0;
-DWORD  DAT_00552548 = 0;
-DWORD  DAT_00552568 = 0;
-DWORD  DAT_00552574 = 0;
-DWORD  DAT_00552588 = 0;
-DWORD  DAT_005525a0 = 0;
-DWORD  DAT_005525c8 = 0;
-DWORD  DAT_00552668 = 0;
-DWORD  DAT_00552760 = 0;
-DWORD  DAT_005527e0 = 0;
-DWORD  DAT_005527e4 = 0;
-DWORD  DAT_005527f8 = 0;
-DWORD  DAT_00552810 = 0;
-DWORD  DAT_0055389c = 0;
 
 // DAT_07e11e54 already defined above (line ~532)
 HANDLE hEvent             = NULL;
@@ -2584,7 +2349,6 @@ DWORD  DAT_00563e00       = 0;
 
 // Missing globals (compilation fixes)
 // DAT_07c82cf4 es el anclaje +0x24 de g_PointerPool.
-DWORD  DAT_0055339c       = 0;
 // m_dwTextColor / m_dwBackColor NO son globals separados: en IDA son EXACTAMENTE
 // 0x559c78 / 0x559c80 (= DAT_00559c78 / SetBackgroundTextColor). Verificado por disasm
 // (sub_40D610 @0x40D734: `mov [0x559c78], 0xffff9664`, y sub_480980 idéntico).
@@ -2623,15 +2387,7 @@ DWORD  DAT_05826d00       = 0;
 
 // Batch 20 — OpenNpc, MoveCamera, RenderEquipment3D, RenderItems3D, Send_ActionRequest, LookAtTarget
 // Only truly new globals:
-float  _DAT_005524a0      = 55.0f;  // equip pendant X offset
-float  _DAT_00552c18      = 46.0f;  // equip slot Y offset (helm row)
-float  _DAT_00552c10      = 75.0f;  // equip slot X offset (pants/gloves/boots col)
-float  _DAT_00552c0c      = 89.0f;  // equip slot Y offset (mid row)
-float  _DAT_00552c08      = 152.0f;  // equip slot Y offset (ring/boots row)
-float  _DAT_00552c04      = 134.0f;  // equip slot X offset (weapon_L/ring_R col)
-float  _DAT_005527dc      = 13.0f;  // arrow count X offset
 float  DAT_083a7adc[6]    = {0};   // CurrentCameraWalkDelta[6]
-float  _DAT_00552a30      = 0.166666672f;  // lerp speed (camera smoothing)
 void*  g_LoginSceneObjects[9] = {0}; // sky, ship1, wave1, ship2, wave2, ship3, wave3, banner, sun
 
 // Batch 22 — AttackStage, CreateArrow
@@ -2647,9 +2403,6 @@ int    g_iLimitAttackTime       = 15;    // g_iLimitAttackTime
 // IDA: CurrentSkill (0x05826D10)
 DWORD  CurrentSkill       = 0;
 DWORD  DAT_07e11d84       = 0;     // UseSkillWarrior 43 activation tick
-float  _DAT_00552904      = 1400.0f;  // sin/cos offset multiplier (sword trail radius)
-float  _DAT_005528f8      = 145.0f;  // sin/cos offset multiplier (slash projectile)
-float  _DAT_005528f4      = 0.54f;  // combo animation offset constant
 
 // Batch 21 — RenderSkillIcon, CheckMixRecipe, MoveObjects, CreateArrows, CollisionDetectLineToMesh
 DWORD  DAT_083a3fec       = 0;     // visible object counter (MoveObjects)
@@ -2659,7 +2412,6 @@ int    DAT_07eaa174       = 0;     // mix recipe: combined value score (capped a
 char   DAT_00559c6c       = 0;     // last rendered hotkey char
 float  _DAT_00552ab0      = 7.5f;  // arrow angle offset (5-way shot small)
 float  _DAT_00552584      = 22.5f;  // arrow angle offset (5-way shot large)
-float  _DAT_00552a4c      = 26.0f;  // RenderNumber2D Y offset
 
 // ── UseSkillWizard dependencies ──────────────────────────────────────────────
 DWORD  MovementSkillTarget       = 0;     // MovementSkillTarget (index into CharactersClient)
@@ -2680,49 +2432,12 @@ float g_ParticleDriftPosition[3] = {};
 float g_ParticleDriftVelocity[2] = {};
 
 // ── MoveParticles float constants ───────────────────────────────────────────
-float  _DAT_00552a60      = 0.0111111114f;
-float  _DAT_00552a7c      = 0.08f;
-float  _DAT_00552ac4      = 0.09f;
-float  _DAT_00552ac8      = 0.07f;
 // _DAT_00552acc — already defined above (line ~964)
-float  _DAT_00552ad0      = 0.87266463f;
-float  _DAT_00552ad4      = 0.222222224f;
-float  _DAT_00552ad8      = 0.0872664601f;
 // _DAT_00552adc — already defined above (line ~141)
-float  _DAT_00552ae0      = 0.17453292f;
-float  _DAT_00552ae8      = 0.9090909f;
-float  _DAT_00552aec      = 0.6145098f;
-float  _DAT_00552af0      = 0.980392158f;
-float  _DAT_00552af4      = 0.42f;
-float  _DAT_00552af8      = 0.0416666679f;
-float  _DAT_00552afc      = 0.333f;
-float  _DAT_00552b00      = 0.572f;
-float  _DAT_00552b04      = 0.725f;
-float  _DAT_00552b08      = 0.00174532924f;
-float  _DAT_00552b0c      = 0.0002f;
-float  _DAT_00552b10      = 0.3137255f;
-float  _DAT_00552b14      = 0.394901961f;
-float  _DAT_00552b18      = 0.470588237f;
-float  _DAT_00552b1c      = 0.125f;
-float  _DAT_00552b20      = 6.4f;
-float  _DAT_00552b24      = 1.05f;
 float  _DAT_00552b28      = 0.2f;
-float  _DAT_00552b2c      = 0.98f;
-float  _DAT_00552b30      = 0.000400000019f;
-float  _DAT_00552b34      = 0.7407407f;
-float  _DAT_00552b38      = 0.0001f;
-float  _DAT_00552b3c      = 0.095f;
-float  _DAT_00552b40      = 0.85f;
-float  _DAT_00552b44      = 0.95f;
-float  _DAT_00552b48      = -1.7f;
-float  _DAT_00552b4c      = 1.7f;
-float  _DAT_00552b50      = -0.6f;
-float  _DAT_00552b54      = 0.0006f;
 
 // Additional math/render constants
 float  _DAT_00552860      = 57.29578f;  // 180/pi (radians to degrees)
-float  _DAT_00552b9c      = 0.015625f;  // 1/64 (terrain UV step)
-float  _DAT_00552cb4      = 64.0f;      // terrain tile size
 
 // CheckArrow chat string globals (runtime-initialized by resource loader)
 char   DAT_07e11df4       = 0;

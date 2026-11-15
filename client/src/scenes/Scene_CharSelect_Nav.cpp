@@ -1133,7 +1133,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
     const DIALOG_SCRIPT *dlg = &g_DialogScript[param_1];
 
     g_iCurrentDialogScript = param_1;
-    DAT_083a4324 = SeparateTextIntoLines(
+    g_iNumLineMessageBoxCustom = SeparateTextIntoLines(
         dlg->m_lpszText,
         (char *)&DAT_083a44c4, 7, 0x26);
 
@@ -1247,8 +1247,8 @@ void __fastcall Quest_AnswerHitTest(void *param_1)
         *(char *)(quest + 0x1c87f) == '\x01') {
         yBase = 0xfa;
     } else {
-        yBase = ((7 - ((int)g_iNumAnswer + (int)DAT_083a4324)) * 0x12) / 2
-                + 0x42 + (int)DAT_083a4324 * 0x12;
+        yBase = ((7 - ((int)g_iNumAnswer + (int)g_iNumLineMessageBoxCustom)) * 0x12) / 2
+                + 0x42 + (int)g_iNumLineMessageBoxCustom * 0x12;
     }
 
     if ((int)MouseY < 0)  return;

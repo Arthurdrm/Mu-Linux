@@ -179,7 +179,7 @@ extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float
         int unequipTarget = -1;
         if (rightClick) {
             MouseRButtonPush = 0;
-            if (DAT_07eaa134) return;                       // modo reparar
+            if (RepairEnable_0) return;                       // modo reparar
             unequipTarget = RightClickMove_FindInventorySlot(type);
             if (unequipTarget < 0) return;
         }
@@ -192,7 +192,7 @@ extern "C" void __cdecl Equipment_SlotHitTest(float sx, float sy, float w, float
             return;
         }
         if (Teleport) return;                           // Teleport
-        if (DAT_07eaa134) {                                 // RepairEnable_0
+        if (RepairEnable_0) {                                 // RepairEnable_0
             const int kind = ItemBehaviorType(type);        // 0.97.20
             if ((kind >= 416 && kind <= 419) || kind == 426 || kind == 135 ||
                 kind == 143 || kind >= 448 || (kind >= 391 && kind <= 403) ||

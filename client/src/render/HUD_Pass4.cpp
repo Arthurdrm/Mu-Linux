@@ -109,7 +109,6 @@ extern "C" BYTE   Inventory[];
 extern "C" int*   g_pRenderText;
 extern "C" DWORD  SetTextColor_0;
 extern "C" int    InputTextWidth;
-extern "C" int    RepairEnable_0;
 
 
 static bool HUD_IsGuildCreationRuntime(void)

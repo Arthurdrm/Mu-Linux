@@ -671,7 +671,7 @@ DWORD    DAT_07e127f8  = 0;
 // model@ip+74, pos@ip+88 y el render (Entity_Render, en Render/Render_WorldHelpers.cpp)
 // los lee en los mismos offsets (active@slot+72). Ambos alineados sobre
 // DAT_07e12840.
-unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE] = {};
+unsigned char Items[1000 * GROUND_ITEM_STRIDE] = {};
 DWORD    DAT_07e12945  = 0;
 alignas(4) char pPickedItem[0x44] = {0};   // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
 DWORD    pPickedItemKey  = 0;   // IDA: pPickedItem.Key (0x07E91388); en el port es una variable aparte
@@ -1243,7 +1243,7 @@ char     DAT_083a7c09  = 0;
 int      g_iNumAnswer  = 0;   // IDA: g_iNumAnswer (0x083A7C0C)
 DWORD    DAT_083a7c2c  = 0;
 // DAT_083a42fc — ahora macro dentro de DAT_083a42f8 (dialog button rects)
-DWORD    DAT_083a4324  = 0;
+int      g_iNumLineMessageBoxCustom = 0;   // IDA: g_iNumLineMessageBoxCustom (0x083A4324)
 // see comment near DAT_083a44ea — sized as 7×0x26 message-box-custom buffer.
 char     DAT_083a44c4[7 * 0x26] = {0};
 // DAT_07d566d0 (fallback char name string) es GlobalText[609] (ver el bloque de
@@ -1301,7 +1301,7 @@ char     DAT_07eaa132  = 0;
 DWORD    lpDefault_00583d88 = 0;
 // DAT_07d55410 es GlobalText[593] (ver el bloque de alias al final de globals.h).
 DWORD    DAT_07ea9848  = 0;
-char     DAT_07eaa134  = 0;   // RepairEnable_0
+char     RepairEnable_0  = 0;   // RepairEnable_0
 
 // ── Chat / UI countdown timers ────────────────────────────────────────────────
 int      NoticeTime  = 300;  // IDA: NoticeTime (0x00559CDC)

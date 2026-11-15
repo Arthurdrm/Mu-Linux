@@ -1635,7 +1635,7 @@ void NetRecv_1C(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         // IDA hace un store de DWORD en 07EAA134. En este port de C++
         // sólo está representado su byte vivo RepairEnable_0; no
         // desbordar los globals host, que no son contiguos.
-        DAT_07eaa134 = 0;
+        RepairEnable_0 = 0;
         *(BYTE*)&RepairEnable = 0;         // RepairEnable
     } else {
         // El server usa gate=0 para el teleport de skill. IDA
@@ -1792,7 +1792,7 @@ void Recv_Reject(const unsigned char* msg, int size)
             CloseInventoryRelatedWindows();
             break;
         case REJECT_NPC_NO_REPAIR:
-            DAT_07eaa134 = 0;   // RepairEnable_0: sale del modo reparar
+            RepairEnable_0 = 0;   // RepairEnable_0: sale del modo reparar
             break;
         default:
             break;

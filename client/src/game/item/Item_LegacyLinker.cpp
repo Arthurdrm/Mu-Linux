@@ -47,7 +47,7 @@ void __cdecl CloseInventoryRelatedWindows(void) {
     if (ShopOpened) Net_SendNpcTalkClose();
     ShopOpened              = 0;   // 0x07EAA118
     DAT_07eaa132            = 0;   // byte_7EAA132
-    DAT_07eaa134            = 0;   // RepairEnable_0
+    RepairEnable_0            = 0;   // RepairEnable_0
     WarehouseOpened         = 0;   // 0x07EAA119
     DAT_00559f5f            = 0;   // byte_559F5F
     DAT_07eaa14c            = 0;   // dword_7EAA14C

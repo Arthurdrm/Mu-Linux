@@ -100,7 +100,7 @@ void __stdcall InitGame(void)
     // RenderIME_Status).  No confundir con DAT_07E11D1C, que es **LoadingWorld**
     // -- el contador que gatea el frame de render (`if (LoadingWorld > 30) return`).
     LockInputStatus = 0;     // LockInputStatus
-    DAT_07eaa134 = 0;     // RepairEnable_0 (IDA InitGame 0x4244FC)
+    RepairEnable_0 = 0;     // RepairEnable_0 (IDA InitGame 0x4244FC)
     RepairEnable = 0;     // RepairEnable   (IDA InitGame 0x424502)
     DAT_00559c6d = 0xff;
     DAT_0055a3e4 = 0xffffffff;

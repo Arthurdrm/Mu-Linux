@@ -103,10 +103,6 @@ extern "C" void   __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int gr
 #define ItemAttribute            ((ITEM_ATTRIBUTE*)DAT_07d78068)
 
 
-extern "C" {
-    int   RepairEnable_0         = 0;      // repair button enable
-}
-
 // Aliases for IDA float constants used by sub_5126E0.
 // ConvertX/Y map 640×480 game coords to actual screen pixels.
 static inline float ConvertX(float x) { return x * (float)((double)gWindow.GetWidth()  / 640.0); }
@@ -436,7 +432,7 @@ extern "C" void __cdecl RenderInventoryWindow(void)
     {
         float xb = (float)((double)InventoryStartX + 60.0);
         float yb = (float)((double)InventoryStartY + 395.0);
-        GL_DrawTexture(DAT_07eaa134 ? 287 : 286, xb, yb, 24.0f, 24.0f,
+        GL_DrawTexture(RepairEnable_0 ? 287 : 286, xb, yb, 24.0f, 24.0f,
                      0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
         if ((double)MouseX >= xb && (double)MouseX < xb + 24.0 &&
             (double)MouseY >= yb && (double)MouseY < yb + 24.0)

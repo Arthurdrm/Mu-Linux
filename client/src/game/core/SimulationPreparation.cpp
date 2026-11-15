@@ -92,7 +92,7 @@ void PrepareCamera() {
 
 void PrepareItems() {
     if (SceneFlag != 5 || CameraTopViewEnabled) return;
-    BYTE *items = (BYTE *)DAT_07e12840;
+    BYTE *items = (BYTE *)Items;
     for (int slot = 0; slot < 1000; ++slot) {
         BYTE *base = items + slot * GROUND_ITEM_STRIDE;
         if (!base[72]) continue;

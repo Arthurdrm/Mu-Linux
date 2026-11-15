@@ -152,7 +152,7 @@ switchD_0051bea9_caseD_8b:
         iVar3 = 4;
         break;
       case 0x8e:
-        iVar3 = ((g_iNumAnswer + DAT_083a4324) * 0x12 + 0x31) / 0x28;
+        iVar3 = ((g_iNumAnswer + g_iNumLineMessageBoxCustom) * 0x12 + 0x31) / 0x28;
         if (iVar3 < 9) {
           if (iVar3 < 4) goto switchD_0051bea9_caseD_8b;
           if (iVar3 < 9) break;
@@ -783,12 +783,12 @@ LAB_0051c13d:
   case 0x8b:
   case 0x8d:
   case 0x8e:
-    iVar3 = (((7 - g_iNumAnswer) - DAT_083a4324) * 0x12) / 2 + 0x4c;
+    iVar3 = (((7 - g_iNumAnswer) - g_iNumLineMessageBoxCustom) * 0x12) / 2 + 0x4c;
     if ((ErrorMessage == 0x8e) && (iVar3 < 0x46)) {
       iVar3 = 0x46;
     }
     local_dc = 0;
-    if (0 < DAT_083a4324) {
+    if (0 < g_iNumLineMessageBoxCustom) {
       pCVar6 = (LPCSTR)&DAT_083a44c4;
       do {
         ptVar17 = &local_e4;
@@ -799,7 +799,7 @@ LAB_0051c13d:
         iVar3 = iVar3 + 0x12;
         local_dc = local_dc + 1;
         pCVar6 = pCVar6 + 0x26;
-      } while ((int)local_dc < DAT_083a4324);
+      } while ((int)local_dc < g_iNumLineMessageBoxCustom);
     }
     local_d4 = (float)((MouseY - iVar3) / 0x12);
     if (MouseY - iVar3 < 0) {
@@ -896,8 +896,8 @@ LAB_0051d2dd:
     gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_NORMAL));
 LAB_0051d371:
     iVar3 = 0;
-    if (DAT_083a4324 < 1) {
-      return DAT_083a4324;
+    if (g_iNumLineMessageBoxCustom < 1) {
+      return g_iNumLineMessageBoxCustom;
     }
     do {
       Gfx::Color3f(1.0f, 0.7f, 0.0f);
@@ -925,8 +925,8 @@ LAB_0051d3cf:
                    ,(LPSIZE)0x0,'\0',0);
       local_dc = (unsigned int)(uintptr_t)(pCVar2 + 0x12);
       iVar3 = iVar3 + 1;
-      if (DAT_083a4324 <= iVar3) {
-        return DAT_083a4324;
+      if (g_iNumLineMessageBoxCustom <= iVar3) {
+        return g_iNumLineMessageBoxCustom;
       }
     } while( true );
   case 0x98:

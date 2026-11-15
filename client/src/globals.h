@@ -606,7 +606,7 @@ extern char    lpString_07d4b000[128];  // Exit/Cancel button text
 extern char    lpString_07d4c518[128];  // "Connecting..." string
 extern DWORD   DAT_07e127f8;
 constexpr int GROUND_ITEM_STRIDE = 0x48 + OBJECT_STRIDE;  // cabecera + OBJECT
-extern unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
+extern unsigned char Items[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
 extern DWORD   DAT_07e12945;   // sprite render loop base (stride 0x204)
 extern char    pPickedItem[0x44];       // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
 // IDA: pPickedItem.Key (0x07E91388), "hay un item en el cursor".  En el
@@ -895,8 +895,7 @@ extern DWORD   DAT_083a4320;
 // `a3 24 43 3a 08` = `mov [0x083A4324], eax` justo despues del
 // SeparateTextIntoLines.  La etiqueta vieja ("shop item list display count")
 // era una misidentificacion.
-extern DWORD   DAT_083a4324;
-#define g_iNumLineMessageBoxCustom  (*(int*)&DAT_083a4324)
+extern int     g_iNumLineMessageBoxCustom;   // IDA: g_iNumLineMessageBoxCustom (0x083A4324)
 extern DWORD   DAT_083a4328;
 // CurrentCameraPosition[3] contiguous (see globals.cpp).
 extern float   CurrentCameraPosition[3];
@@ -1238,7 +1237,7 @@ extern DWORD   m_bBlockWhisper_1;  // IDA: m_bBlockWhisper_1 (0x07E11DAC) - comm
 // 0x07EAA131 es g_bServerDivisionAccept, un int aparte en el port.
 #define ServerDivisionOpened   (*(char*)&g_bServerDivisionEnable)
 extern char    DAT_07eaa132;           // guard for B-key toggle enable
-extern char    DAT_07eaa134;           // RepairEnable_0
+extern char    RepairEnable_0;           // IDA: RepairEnable_0 (0x07EAA134)
 
 // Screenshot / error dialog context
 extern DWORD   lpDefault_00583d88;     // default context for UIChatLogWindow_AddText

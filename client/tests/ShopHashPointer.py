@@ -10,7 +10,7 @@ from SceneObjectPointer import build_and_run, function, read_source
 SERVICES=r'''
 using uint=unsigned;
 int MAIN_HASH_CLASS;BYTE *node;bool missing,pushed;unsigned factoryCalls;std::vector<unsigned> events;
-char ShopOpened,DAT_07eaa132,DAT_07eaa134,InventoryOpened;
+char ShopOpened,DAT_07eaa132,RepairEnable_0,InventoryOpened;
 DWORD DAT_07eaa150,DAT_07eaa0c8,DAT_07eaa0cc,MouseX,MouseY,MouseLButtonPush,InventoryStartX,InventoryStartY,MouseUpdateTime,MouseUpdateTimeMax;
 uint HashTable_GetIndex(void* context,void* key){Require(context==&MAIN_HASH_CLASS && key==&ShopOpened);events.push_back(1);return missing?0xffffffffu:3;}
 void* AntiTamper_HashNode(){++factoryCalls;events.push_back(2);return node;}
@@ -28,10 +28,10 @@ std::uint64_t Run(BYTE* memory){
  const unsigned ys[]={404,405,428,429,414,415,438,439};
  for(unsigned pattern=0;pattern<64;++pattern)for(unsigned absent=0;absent<2;++absent)for(unsigned click=0;click<2;++click)for(auto x:xs)for(auto y:ys){
   std::memset(memory,0xa5,1445);BYTE expectedMemory[1445];std::memcpy(expectedMemory,memory,1445);missing=absent!=0;pushed=click!=0;factoryCalls=0;
-  ShopOpened=static_cast<char>(flags[pattern%4]);DAT_07eaa132=static_cast<char>(flags[(pattern/4)%4]);DAT_07eaa134=static_cast<char>(flags[(pattern/8)%4]);
+  ShopOpened=static_cast<char>(flags[pattern%4]);DAT_07eaa132=static_cast<char>(flags[(pattern/4)%4]);RepairEnable_0=static_cast<char>(flags[(pattern/8)%4]);
   DAT_07eaa150=0x7e003456u|(DWORD(flags[pattern/16])<<16);MouseLButtonPush=0xabcdef98;InventoryOpened=static_cast<char>(0x80);MouseUpdateTime=0x12345678;MouseUpdateTimeMax=0x76543210;
   DAT_07eaa0c8=100;DAT_07eaa0cc=40;InventoryStartX=20;InventoryStartY=20;MouseX=x;MouseY=y;
-  DWORD expectedMode=DAT_07eaa150,expectedClick=MouseLButtonPush,expectedWindow=MouseUpdateTime,expectedState=MouseUpdateTimeMax;char expectedRepair=DAT_07eaa134,expectedOpen=InventoryOpened;
+  DWORD expectedMode=DAT_07eaa150,expectedClick=MouseLButtonPush,expectedWindow=MouseUpdateTime,expectedState=MouseUpdateTimeMax;char expectedRepair=RepairEnable_0,expectedOpen=InventoryOpened;
   std::vector<unsigned> expected={1};if(missing){expected.insert(expected.end(),{2,3});expectedMemory[17]=1;}
   if(ShopOpened){
    if(DAT_07eaa132){
@@ -50,10 +50,10 @@ std::uint64_t Run(BYTE* memory){
    if(cancel){expected.push_back(4);if(pushed){expectedClick=0;expectedOpen=0;expected.push_back(7);expectedWindow=0;expectedState=6;}}
   }
   events.clear();Shop_InputTick();
-  Require(events==expected && factoryCalls==absent && DAT_07eaa150==expectedMode && DAT_07eaa134==expectedRepair && MouseLButtonPush==expectedClick && InventoryOpened==expectedOpen && MouseUpdateTime==expectedWindow && MouseUpdateTimeMax==expectedState && std::memcmp(memory,expectedMemory,1445)==0);
+  Require(events==expected && factoryCalls==absent && DAT_07eaa150==expectedMode && RepairEnable_0==expectedRepair && MouseLButtonPush==expectedClick && InventoryOpened==expectedOpen && MouseUpdateTime==expectedWindow && MouseUpdateTimeMax==expectedState && std::memcmp(memory,expectedMemory,1445)==0);
   Require(ShopOpened==static_cast<char>(flags[pattern%4]) && DAT_07eaa132==static_cast<char>(flags[(pattern/4)%4]) && DAT_07eaa0c8==100 && DAT_07eaa0cc==40 && InventoryStartX==20 && InventoryStartY==20 && MouseX==x && MouseY==y);
   for(unsigned value:events){hash^=value;hash*=1099511628211ull;}
-  const DWORD states[]={DAT_07eaa150,MouseLButtonPush,MouseUpdateTime,MouseUpdateTimeMax,DWORD(static_cast<BYTE>(DAT_07eaa134)),DWORD(static_cast<BYTE>(InventoryOpened))};
+  const DWORD states[]={DAT_07eaa150,MouseLButtonPush,MouseUpdateTime,MouseUpdateTimeMax,DWORD(static_cast<BYTE>(RepairEnable_0)),DWORD(static_cast<BYTE>(InventoryOpened))};
   for(auto value:states){hash^=value;hash*=1099511628211ull;}
   ++queries;
  }

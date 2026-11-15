@@ -782,7 +782,7 @@ void NetRecv_20(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     NetLog("NET:  → 0x20 ViewportItem count=%d size=%d", count, Size);
     int cursor = 4 + hdrOff;
     // Cada entrada del pool es un ITEM_t (structs.h): Key, Item y Object.
-    BYTE* itemPool = (BYTE*)&DAT_07e12840[0];
+    BYTE* itemPool = (BYTE*)&Items[0];
     extern int  __cdecl ItemObjectAttribute(OBJECT*);   // ItemObjectAttribute
     extern void __cdecl ItemAngle(OBJECT*);   // ItemAngle
     // DESVIACION: el server manda PMSG_VIEWPORT_ITEM (Viewport.h) con
@@ -923,7 +923,7 @@ void NetRecv_21(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // Limpiar slots en DAT_07e12840 pool. Per-entry
     // 2 bytes (key WORD, big-endian).
     int entryStart = 4 + hdrOff;
-    BYTE* itemPool = (BYTE*)&DAT_07e12840;
+    BYTE* itemPool = (BYTE*)&Items;
     for (int i = 0; i < count && entryStart + i*2 + 1 < Size; ++i) {
         WORD raw = (Msg[entryStart + i*2] << 8) | Msg[entryStart + i*2 + 1];
         WORD key = raw & 0x7FFF;

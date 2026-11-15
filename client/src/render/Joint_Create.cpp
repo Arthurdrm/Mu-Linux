@@ -1473,16 +1473,16 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
         AsJoint(pcVar14)->StartPosition[0] = (*param_3 - *pfVar1) * _DAT_00552a00;
         local_90 = AsJoint(pcVar14)->StartPosition[0];
         AsJoint(pcVar14)->StartPosition[1] = (param_3[1] - AsJoint(pcVar14)->Position[1]) * _DAT_00552a00;
-        local_8c = *(byte **)&AsJoint(pcVar14)->StartPosition[1];
+        local_8cf = AsJoint(pcVar14)->StartPosition[1];
         local_88f = (param_3[2] - AsJoint(pcVar14)->Position[2]) * _DAT_00552a00;
-        *(byte **)&AsJoint(pcVar14)->StartPosition[2] = local_88;
+        AsJoint(pcVar14)->StartPosition[2] = local_88f;
         Matrix_BuildFromEuler(pfVar2,local_6c);
         iVar6 = 0;
         if (AsJoint(pcVar14)->MaxTails != 1 && -1 < AsJoint(pcVar14)->MaxTails + -1) {
           do {
             if ((intptr_t)AsJoint(pcVar14)->Target == 0) {
               local_90 = AsJoint(pcVar14)->StartPosition[0];
-              local_8c = *(byte **)&AsJoint(pcVar14)->StartPosition[1];
+              local_8cf = AsJoint(pcVar14)->StartPosition[1];
             }
             else {
               local_90 = AsJoint(pcVar14)->StartPosition[0];
@@ -1762,9 +1762,9 @@ LAB_0046e043:
       AsJoint(pcVar14)->StartPosition[0] = (*param_3 - *pfVar1) * _DAT_00552a00;
       AsJoint(pcVar14)->StartPosition[1] = (param_3[1] - AsJoint(pcVar14)->Position[1]) * _DAT_00552a00;
       local_90 = AsJoint(pcVar14)->StartPosition[0];
-      local_8c = *(byte **)&AsJoint(pcVar14)->StartPosition[1];
+      local_8cf = AsJoint(pcVar14)->StartPosition[1];
       local_88f = (param_3[2] - AsJoint(pcVar14)->Position[2]) * _DAT_00552a00;
-      *(byte **)&AsJoint(pcVar14)->StartPosition[2] = local_88;
+      AsJoint(pcVar14)->StartPosition[2] = local_88f;
       Matrix_BuildFromEuler(pfVar2,local_6c);
       iVar6 = 0;
       if (AsJoint(pcVar14)->MaxTails != 1 && -1 < AsJoint(pcVar14)->MaxTails + -1) {
@@ -1889,20 +1889,20 @@ LAB_0046e043:
       AsJoint(pcVar14)->StartPosition[0] = (*param_3 - *pfVar1) * _DAT_00552a00;
       local_90 = AsJoint(pcVar14)->StartPosition[0];
       AsJoint(pcVar14)->StartPosition[1] = (param_3[1] - AsJoint(pcVar14)->Position[1]) * _DAT_00552a00;
-      local_8c = *(byte **)&AsJoint(pcVar14)->StartPosition[1];
+      local_8cf = AsJoint(pcVar14)->StartPosition[1];
       local_88f = (param_3[2] - AsJoint(pcVar14)->Position[2]) * _DAT_00552a00;
-      *(byte **)&AsJoint(pcVar14)->StartPosition[2] = local_88;
+      AsJoint(pcVar14)->StartPosition[2] = local_88f;
       Matrix_BuildFromEuler(pfVar2,local_6c);
       iVar6 = 0;
       if (AsJoint(pcVar14)->MaxTails != 1 && -1 < AsJoint(pcVar14)->MaxTails + -1) {
         do {
           if ((intptr_t)AsJoint(pcVar14)->Target == 0) {
             local_90 = AsJoint(pcVar14)->StartPosition[0];
-            local_8c = *(byte **)&AsJoint(pcVar14)->StartPosition[1];
+            local_8cf = AsJoint(pcVar14)->StartPosition[1];
           }
           else {
             local_90 = AsJoint(pcVar14)->StartPosition[0];
-            local_8c = *(byte **)&AsJoint(pcVar14)->StartPosition[1];
+            local_8cf = AsJoint(pcVar14)->StartPosition[1];
           }
           *pfVar1 = local_90 + *pfVar1;
           AsJoint(pcVar14)->Position[1] = local_8cf + AsJoint(pcVar14)->Position[1];

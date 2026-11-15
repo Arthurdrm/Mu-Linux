@@ -64,6 +64,682 @@
 // Bitmaps height: g_BitmapsRaw + type * 0x38 + 0x24 = height field per bitmap slot
 #define BMP_HEIGHT(t)  (*(float*)(g_BitmapsRaw + (t) * TEXTURE_STRIDE + 0x24))
 
+// ── Handlers de MoveParticles (T9d) ───────────────────────────────────────────
+// Cada case vive en su propia función y devuelve cómo sigue el bucle del pool:
+// Break = después del switch, Continue = próxima partícula, Return = salir de
+// MoveParticles, Next = el case de abajo.
+
+enum class ParticleStep { Break, Continue, Return, Next };
+
+// IDA: MoveParticles (0x00477090): case BITMAP_SMOKE + 1:
+static ParticleStep MoveParticles_Type1221(float& fVar15, int& iVar9)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552ae4;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    P_SCALE(iVar9) += _DAT_00552a7c;
+    P_POSX(iVar9) += P_VELX(iVar9);
+    P_POSY(iVar9) += P_VELY(iVar9);
+    P_POSZ(iVar9) += P_VELZ(iVar9);
+    P_VELX(iVar9) *= _DAT_005526e8;
+    P_VELY(iVar9) *= _DAT_005526e8;
+    P_VELZ(iVar9) *= _DAT_005526e8;
+    fVar15 = RequestTerrainHeight(P_POSX(iVar9), P_POSY(iVar9));
+    P_POSZ(iVar9) = BMP_HEIGHT(P_TYPE(iVar9)) * P_SCALE(iVar9) * _DAT_00552504 + fVar15;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 0x4c6:
+static ParticleStep MoveParticles_Type1222(float& fVar15, int& iVar9)
+{
+    if (P_LIFE(iVar9) < 10) {
+        fVar15 = _DAT_0055256c - (float)(10 - P_LIFE(iVar9)) * _DAT_005524f4;
+    }
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    // AngleMatrix + VectorRotate to transform local offset by entity bone
+    // NOTE: Ghidra shows phantom register args (unaff_EBX/EBP/ESI/EDI).
+    // We use the particle's stored direction as angles and target as local offset.
+    {
+        float angles3[3], mat3x4[3][4];
+        // (audit #11) removed unused: float in1_3[3], in2_3[3][4], out3[3];
+        angles3[0] = P_DIRX(iVar9);
+        angles3[1] = 0.0f;
+        angles3[2] = 0.0f;
+        AngleMatrix(angles3, mat3x4);
+        // VectorRotate: transform stored offset by matrix
+        float localOff[3];
+        localOff[0] = P_TGX(iVar9);
+        localOff[1] = P_TGY(iVar9);
+        localOff[2] = P_TGZ(iVar9); // placeholder
+        float worldOff[3];
+        Vector_Rotate(localOff, (float*)mat3x4, worldOff);
+        // Add to entity position
+        intptr_t entPtr = P_ENT(iVar9);
+        P_POSX(iVar9) = worldOff[0] + *(float*)(entPtr + 0x10);
+        P_POSY(iVar9) = worldOff[1] + *(float*)(entPtr + 0x14);
+        P_POSZ(iVar9) = worldOff[2] + *(float*)(entPtr + 0x18);
+    }
+    P_ANGLE(iVar9) += _DAT_00552660;
+    P_SCALE(iVar9) -= _DAT_005524f8;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_SHINY:
+static ParticleStep MoveParticles_Shiny(float10& fVar11, int& iVar9)
+{
+    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
+    P_SCALE(iVar9) = (float)fVar11;
+    if (P_SUB(iVar9) == 1) {
+        P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552adc);
+        P_ROT(iVar9) -= _DAT_00552664;
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_SHINY + 1:
+static ParticleStep MoveParticles_Type1231(float10& fVar11, float10& fVar12, int& iVar9)
+{
+    if (P_SUB(iVar9) == 99) {
+        intptr_t entPtr = P_ENT(iVar9);
+        P_POSX(iVar9) = *(float*)(entPtr + 0x10);
+        P_POSY(iVar9) = *(float*)(entPtr + 0x14);
+        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + _DAT_00552598;
+        P_ROT(iVar9) -= _DAT_0055256c;
+    } else {
+        fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ad8);
+        fVar11 = (float10)_DAT_00552660;
+        P_SCALE(iVar9) = (float)(fVar12 * fVar11);
+        if (P_SUB(iVar9) < 2) {
+            ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
+        } else {
+            P_SCALE(iVar9) = (float)(fVar12 * fVar11 * (float10)_DAT_00552adc);
+            P_ROT(iVar9) -= _DAT_00552664;
+            ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
+        }
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_SHINY + 2:
+static ParticleStep MoveParticles_Type1232(float10& fVar11, int& iVar9)
+{
+    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
+    P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552540);
+    ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_SHINY + 4:
+static ParticleStep MoveParticles_Type1234(float10& fVar11, float& fVar15, int& iVar9)
+{
+    if (P_SUB(iVar9) == 0) {
+        fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
+        P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552540 + (float10)_DAT_0055264c);
+    }
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b28;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_BUBBLE:
+static ParticleStep MoveParticles_Bubble(int& iVar5, int& iVar9)
+{
+    P_FRAME(iVar9) += 1;
+    iVar5 = _rand();
+    P_POSX(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * _DAT_00552950;
+    iVar5 = _rand();
+    P_POSY(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * _DAT_00552950;
+    iVar5 = _rand();
+    P_POSZ(iVar9) += (float)(iVar5 % 0x14 + 10) * P_SCALE(iVar9) * _DAT_00552950;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_FLOWER01:, case BITMAP_FLOWER01 + 1:, case BITMAP_FLOWER01 + 2:
+static ParticleStep MoveParticles_Flower01(float& fVar15, int& iVar9, unsigned int& uVar7)
+{
+    if (P_FRAME(iVar9) == 0) {
+        uVar7 = _rand();
+        uVar7 = uVar7 & 0x8000001f;
+        if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
+        P_VELX(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
+
+        uVar7 = _rand();
+        uVar7 = uVar7 & 0x8000001f;
+        if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
+        P_VELY(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
+
+        uVar7 = _rand();
+        uVar7 = uVar7 & 0x8000001f;
+        if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
+        P_VELZ(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
+
+        P_POSX(iVar9) += P_VELX(iVar9);
+        P_POSY(iVar9) += P_VELY(iVar9);
+        P_POSZ(iVar9) += P_VELZ(iVar9);
+    }
+    fVar15 = RequestTerrainHeight(P_POSX(iVar9), P_POSY(iVar9));
+    if (P_POSZ(iVar9) < fVar15) {
+        P_POSZ(iVar9) = fVar15;
+        P_FRAME(iVar9) = 1;
+        P_VELX(iVar9) = 0.0f;
+        P_VELY(iVar9) = 0.0f;
+        P_VELZ(iVar9) = 0.0f;
+    }
+    uVar7 = _rand();
+    uVar7 = uVar7 & 0x8000000f;
+    if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffff0) + 1;
+    P_ROT(iVar9) += (float)(int)uVar7;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_FIRECRACKER:
+static ParticleStep MoveParticles_Firecracker(int& iVar9)
+{
+    P_VELZ(iVar9) -= _DAT_00552504;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_FLARE:
+static ParticleStep MoveParticles_Flare(float10& fVar11, float10& fVar12, float& fVar15, int& iVar5, int& iVar9)
+{
+    iVar5 = P_SUB(iVar9);
+    float lifeF = (float)P_LIFE(iVar9);
+    if (iVar5 == 0 || iVar5 == 3) {
+        fVar11 = ((float10)(int)P_LIFE(iVar9) + (float10)P_VELX(iVar9)) * (float10)_DAT_005524f4;
+        fVar12 = (float10)fsin((double)fVar11);
+        P_POSX(iVar9) = (float)(fVar12 * (float10)_DAT_005528e4 + (float10)P_TGX(iVar9));
+        fVar11 = (float10)fcos((double)fVar11);
+        P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)_DAT_005528e4);
+        fVar15 = P_GRAV(iVar9);
+        P_POSZ(iVar9) += fVar15;
+        P_SCALE(iVar9) -= _DAT_005528e0;
+    } else if (iVar5 == 2) {
+        P_POSX(iVar9) = P_TGX(iVar9);
+        P_POSY(iVar9) = P_TGY(iVar9);
+        float steps = (float)((0x3c - P_LIFE(iVar9)) / 10);
+        fVar15 = steps * P_GRAV(iVar9);
+        P_POSZ(iVar9) += fVar15;
+        P_SCALE(iVar9) -= _DAT_005528e0;
+    }
+
+    if (iVar5 == 4) {
+        fVar11 = ((float10)(int)lifeF + (float10)P_VELX(iVar9)) * (float10)_DAT_005524f4;
+        fVar12 = (float10)fsin((double)fVar11);
+        P_POSX(iVar9) = (float)(fVar12 * (float10)_DAT_005528e4 + (float10)P_TGX(iVar9));
+        fVar11 = (float10)fcos((double)fVar11);
+        P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)_DAT_005528e4);
+        P_POSZ(iVar9) += P_GRAV(iVar9);
+        P_SCALE(iVar9) -= _DAT_005524bc;
+        if ((int)lifeF < 0x1f) {
+            goto label_color_decay;
+        }
+    } else if ((int)lifeF < 0x15) {
+        label_color_decay:
+        P_LR(iVar9) *= _DAT_00552ae8;
+        P_LG(iVar9) *= _DAT_00552ae8;
+        P_LB(iVar9) *= _DAT_00552ae8;
+    }
+
+    if (iVar5 == 0) {
+        unsigned char animState = AsObject(P_ENT(iVar9))->CurrentAction;
+        if ((animState > 0xc && animState < 0x22) || (animState > 0x37 && animState < 0x3d)) {
+            P_SUB(iVar9) = 1;
+            if ((int)lifeF > 0x14) {
+                lifeF = 20.0f;
+            }
+            P_LIFE(iVar9) = (int)lifeF;
+            P_VELX(iVar9) = 0.0f;
+            P_VELY(iVar9) = 0.0f;
+            P_VELZ(iVar9) = 0.0f;
+            P_TGY(iVar9) = P_POSY(iVar9);
+            P_TGX(iVar9) = P_POSX(iVar9);
+            P_TGZ(iVar9) = P_POSZ(iVar9);
+        }
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_CLOUD:
+static ParticleStep MoveParticles_Cloud(float10& fVar11, float& fVar15, int& iVar9, unsigned int& uVar7)
+{
+    if (P_SUB(iVar9) == 6) {
+        P_POSX(iVar9) += P_VELX(iVar9);
+        P_POSY(iVar9) += P_VELY(iVar9);
+        P_POSZ(iVar9) += P_VELZ(iVar9);
+        P_VELX(iVar9) *= _DAT_00552b44;
+        P_VELY(iVar9) *= _DAT_00552b44;
+        P_VELZ(iVar9) += _DAT_00552534;
+
+        uVar7 = _rand(); uVar7 &= 0x80000003;
+        if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
+        P_POSX(iVar9) += (float)(int)(uVar7 - 2);
+
+        uVar7 = _rand(); uVar7 &= 0x80000003;
+        if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
+        P_POSY(iVar9) += (float)(int)(uVar7 - 2);
+
+        uVar7 = _rand(); uVar7 &= 0x80000003;
+        if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
+        P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * _DAT_00552530;
+
+        P_SCALE(iVar9) += _DAT_00552874;
+        fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+        P_LR(iVar9) = fVar15;
+        P_LG(iVar9) = fVar15;
+        P_LB(iVar9) = fVar15;
+
+        uVar7 = _rand(); uVar7 &= 0x80000001;
+        if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
+        P_ROT(iVar9) += (float)(int)uVar7 + _DAT_0055256c;
+    } else {
+        // Non-sub6: check entity death flag
+        if (*(char*)&AsObject(P_ENT(iVar9))->Visible == '\x01') {
+            P_LIFE(iVar9) = 0x32;
+        }
+        if (P_LIFE(iVar9) < 1) {
+            *(int*)(P_ENT(iVar9) + 0x58) = 0;
+            P_ACTIVE(iVar9) = '\0';
+        }
+        fVar11 = (float10)fsin(((float10)WorldTime + (float10)P_GRAV(iVar9)) * (float10)_DAT_00552b0c);
+        P_POSZ(iVar9) = (float)(fVar11 * (float10)_DAT_005524fc + (float10)P_TGZ(iVar9));
+    }
+    // Sub-type rotation
+    switch (P_SUB(iVar9)) {
+    case 1:
+    case 4:
+        P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * _DAT_00552914 + P_TGY(iVar9);
+        break;
+    case 2:
+    case 5:
+        P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * _DAT_00552acc + P_TGY(iVar9);
+        break;
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_ADV_SMOKE:
+static ParticleStep MoveParticles_AdvSmoke(float& fVar15, int& iVar9)
+{
+    P_POSX(iVar9) += P_VELX(iVar9);
+    P_POSY(iVar9) += P_VELY(iVar9);
+    P_POSZ(iVar9) += P_VELZ(iVar9);
+    P_VELX(iVar9) *= _DAT_00552b44;
+    P_VELY(iVar9) *= _DAT_00552b44;
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    P_VELZ(iVar9) += _DAT_005528b8;
+    if (P_SUB(iVar9) == 0) {
+        P_SCALE(iVar9) += _DAT_00552ac8;
+    } else {
+        P_SCALE(iVar9) += _DAT_00552ac4;
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_ADV_SMOKE + 1:
+static ParticleStep MoveParticles_Type1382(float& fVar15, int& iVar9, unsigned int& uVar7)
+{
+    P_POSX(iVar9) += P_VELX(iVar9);
+    P_POSY(iVar9) += P_VELY(iVar9);
+    P_POSZ(iVar9) += P_VELZ(iVar9);
+    P_VELX(iVar9) *= _DAT_00552b44;
+    P_VELY(iVar9) *= _DAT_00552b44;
+    P_VELZ(iVar9) += _DAT_00552534;
+
+    uVar7 = _rand(); uVar7 &= 0x80000003;
+    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
+    P_POSX(iVar9) += (float)(int)(uVar7 - 2);
+
+    uVar7 = _rand(); uVar7 &= 0x80000003;
+    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
+    P_POSY(iVar9) += (float)(int)(uVar7 - 2);
+
+    uVar7 = _rand(); uVar7 &= 0x80000003;
+    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
+    P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * _DAT_00552530;
+
+    P_SCALE(iVar9) += _DAT_00552874;
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_0055295c;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+
+    uVar7 = _rand(); uVar7 &= 0x80000001;
+    if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
+    P_ROT(iVar9) += (float)(int)uVar7 + _DAT_0055256c;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_POUNDING_BALL:
+static ParticleStep MoveParticles_PoundingBall(float& fVar15, int& iVar9)
+{
+    fVar15 = P_GRAV(iVar9) + _DAT_005524bc;
+    P_GRAV(iVar9) = fVar15;
+    P_SCALE(iVar9) -= _DAT_00552914;
+    fVar15 = fVar15 * _DAT_00552488;
+    P_FRAME(iVar9) = (0x17 - P_LIFE(iVar9)) / 6;
+    P_POSZ(iVar9) += fVar15;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 0x596:
+static ParticleStep MoveParticles_Type1430(int& iVar9)
+{
+    P_FRAME(iVar9) = P_SUB(iVar9);
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 0x598:
+static ParticleStep MoveParticles_Type1432(float& fVar15, int& iVar9)
+{
+    float lifeF2 = (float)P_LIFE(iVar9);
+    P_GRAV(iVar9) = (float)(5 - P_LIFE(iVar9)) * _DAT_00552ad4;
+    fVar15 = lifeF2 * _DAT_005528dc;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 0x599:
+static ParticleStep MoveParticles_Type1433(float10& fVar12, float& fVar15, int& iVar9)
+{
+    float grav = P_GRAV(iVar9);
+    P_GRAV(iVar9) = grav - _DAT_005526e4;
+    fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ad0);
+    P_SCALE(iVar9) = (float)(fVar12 + (float10)(grav - _DAT_005526e4) + (float10)_DAT_0055256c);
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a30;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_LIGHTNING + 1:
+static ParticleStep MoveParticles_Type1191(int& iVar9)
+{
+    // Terrain light + positioning
+    unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)_DAT_00552500);
+    P_ROT(iVar9) = (float)(int)((long long)(uv) % 1000) * _DAT_00552500;
+    float lightA = (float)P_LIFE(iVar9) * _DAT_00552a00;
+    float ltA0 = lightA * _DAT_00552504;
+    float ltA1 = lightA;
+    float ltA2 = lightA * _DAT_00552530;
+    {
+        float ltBuf[3] = { ltA0, ltA1, ltA2 };
+        AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)ltBuf, 3, (float*)&DAT_081cb608[0]);
+    }
+    if (P_SUB(iVar9) == 2) {
+        intptr_t entPtr = P_ENT(iVar9);
+        P_LR(iVar9) = ltA0;
+        P_LG(iVar9) = ltA1;
+        P_SCALE(iVar9) += _DAT_005524f4;
+        P_LB(iVar9) = ltA2;
+        P_POSX(iVar9) = *(float*)(entPtr + 0x10);
+        P_POSY(iVar9) = *(float*)(entPtr + 0x14);
+        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + _DAT_00552878;
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_FIRE:, case BITMAP_FIRE + 2:
+static ParticleStep MoveParticles_Fire(float& fVar15, int& iVar5, int& iVar9)
+{
+    float grav2 = P_GRAV(iVar9) + _DAT_005524bc;
+    P_GRAV(iVar9) = grav2;
+    switch (P_SUB(iVar9)) {
+    case 5:
+    case 6:
+        P_SCALE(iVar9) -= _DAT_00552a0c;
+        P_ROT(iVar9) += _DAT_00552660;
+        break;
+    case 7:
+        P_FRAME(iVar9) = (0xf - P_LIFE(iVar9)) / 6;
+        // fall through
+    case 0:
+        P_SCALE(iVar9) -= _DAT_00552a0c;
+        break;
+    case 8:
+        P_SCALE(iVar9) *= _DAT_00552b44;
+        P_ROT(iVar9) += _DAT_00552660;
+        break;
+    case 9: {
+        intptr_t entPtr = P_ENT(iVar9);
+        P_POSX(iVar9) = *(float*)(entPtr + 0x10) + P_TGX(iVar9);
+        P_POSY(iVar9) = *(float*)(entPtr + 0x14) + P_TGY(iVar9);
+        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + P_TGZ(iVar9);
+        iVar5 = _rand();
+        float rndG = (float)((iVar5 % 0x3c + 0x3c) / 100);
+        fVar15 = P_GRAV(iVar9);
+        P_GRAV(iVar9) = rndG + fVar15;
+        P_SCALE(iVar9) -= (rndG + fVar15) * _DAT_00552a60;
+        break;
+    }
+    case 10:
+        P_SCALE(iVar9) *= _DAT_00552b44;
+        break;
+    default:
+        P_SCALE(iVar9) = grav2 + P_SCALE(iVar9);
+        P_VELX(iVar9) *= _DAT_00552b2c;
+        P_VELY(iVar9) *= _DAT_00552b2c;
+        P_VELZ(iVar9) *= _DAT_00552b2c;
+        break;
+    }
+    P_POSZ(iVar9) += P_GRAV(iVar9) * _DAT_00552488;
+    P_FRAME(iVar9) = (0x17 - P_LIFE(iVar9)) / 6;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_FIRE + 1:
+static ParticleStep MoveParticles_Type1196(float& fVar15, int& iVar9)
+{
+    fVar15 = P_GRAV(iVar9) + _DAT_00552914;
+    P_GRAV(iVar9) = fVar15;
+    P_SCALE(iVar9) += fVar15;
+    P_VELX(iVar9) *= _DAT_00552b24;
+    P_VELY(iVar9) *= _DAT_00552b24;
+    P_VELZ(iVar9) *= _DAT_00552b24;
+    P_POSZ(iVar9) += fVar15 * _DAT_005524fc;
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_005526e4;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_EXPLOTION:
+static ParticleStep MoveParticles_Explotion(int& iVar9)
+{
+    P_FRAME(iVar9) = (0x14 - P_LIFE(iVar9)) / 2;
+    if (P_SUB(iVar9) != 1) {
+        float ltBF = (float)P_LIFE(iVar9) * _DAT_00552a10;
+        float lt4[3] = { ltBF * _DAT_00552504, ltBF * _DAT_005528b8, ltBF * _DAT_005524f4 };
+        AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)lt4, 4, (float*)&DAT_081cb608[0]);
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case BITMAP_EXPLOTION + 1:
+static ParticleStep MoveParticles_Type1216(int& iVar9)
+{
+    P_FRAME(iVar9) = (0xc - P_LIFE(iVar9)) / 3;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 1:
+static ParticleStep MoveParticles_FireSub1(float& fVar15, int& iVar9)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+    P_LR(iVar9) = fVar15 * _DAT_00552504;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15 * _DAT_00552530;
+    P_VELX(iVar9) *= _DAT_005528b4;
+    P_VELY(iVar9) *= _DAT_005528b4;
+    P_VELZ(iVar9) *= _DAT_005528b4;
+    P_SCALE(iVar9) += _DAT_00552874;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 2:
+static ParticleStep MoveParticles_FireSub2(float& fVar15, int& iVar9)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    fVar15 = P_GRAV(iVar9) - _DAT_005524f4;
+    P_GRAV(iVar9) = fVar15;
+    P_POSX(iVar9) -= fVar15 * _DAT_005526e4;
+    P_POSZ(iVar9) += fVar15;
+    P_SCALE(iVar9) -= _DAT_005524f8;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 3:
+static ParticleStep MoveParticles_FireSub3(float& fVar15, float& fVar3, int& iVar9)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
+    fVar3 = fVar15 * _DAT_00552530;
+    P_LR(iVar9) = fVar3;
+    P_LG(iVar9) = fVar3;
+    P_LB(iVar9) = fVar15;
+    P_VELX(iVar9) *= _DAT_005528b4;
+    P_VELY(iVar9) *= _DAT_005528b4;
+    P_VELZ(iVar9) *= _DAT_005528b4;
+    P_SCALE(iVar9) += _DAT_005524f4;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 5:
+static ParticleStep MoveParticles_FireSub5(float& fVar15, int& iVar9, unsigned int& uVar7)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
+    P_LR(iVar9) = fVar15;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    P_GRAV(iVar9) -= _DAT_005524f4;
+    uVar7 = _rand(); uVar7 &= 0x80000001;
+    if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
+    P_POSX(iVar9) -= (float)(int)(uVar7 + 1) * _DAT_005526e4 * P_GRAV(iVar9);
+    P_POSZ(iVar9) += P_GRAV(iVar9);
+    P_SCALE(iVar9) -= _DAT_005524f8;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 6:
+static ParticleStep MoveParticles_FireSub6(float10& fVar11, int& iVar9)
+{
+    fVar11 = (float10)WorldTime;
+    P_LIFE(iVar9) = 10;
+    fVar11 = (float10)fsin((double)((fVar11 + (float10)P_GRAV(iVar9)) * (float10)_DAT_00552b0c));
+    P_POSZ(iVar9) = (float)(fVar11 * (float10)_DAT_005524fc + (float10)P_ROT(iVar9));
+    {
+        unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)_DAT_00552500);
+        int modVal = (int)((long long)uv % 0x708);
+        P_LR(iVar9) = 0.36f;  // 0x3eb851ec
+        P_LG(iVar9) = 0.3f;   // 0x3e99999a
+        P_LB(iVar9) = 0.24f;  // 0x3e75c290
+        fVar11 = (float10)fsin((float10)modVal * (float10)_DAT_00552b08);
+        P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552504 + (float10)_DAT_00552a18);
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 7:
+static ParticleStep MoveParticles_FireSub7(float& fVar15, float& fVar3, int& iVar9)
+{
+    P_SCALE(iVar9) += _DAT_00552910;
+    float lifeF3 = (float)P_LIFE(iVar9);
+    fVar3 = P_GRAV(iVar9) + _DAT_0055256c;
+    P_GRAV(iVar9) = fVar3;
+    P_VELY(iVar9) -= _DAT_005524f4;
+    P_POSZ(iVar9) -= fVar3;
+    if (P_LIFE(iVar9) < 5) {
+        fVar15 = lifeF3 * _DAT_00552b1c;
+        P_SCALE(iVar9) -= _DAT_005524f4;
+    }
+    P_LR(iVar9) = fVar15 * _DAT_00552b04;
+    P_LG(iVar9) = fVar15 * _DAT_00552b00;
+    P_LB(iVar9) = fVar15 * _DAT_00552afc;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 8:
+static ParticleStep MoveParticles_FireSub8(float& fVar15, int& iVar9)
+{
+    fVar15 = P_GRAV(iVar9) + _DAT_00552914;
+    float lifeF4 = (float)P_LIFE(iVar9);
+    P_GRAV(iVar9) = fVar15;
+    if (P_LIFE(iVar9) < 6) {
+        fVar15 = P_LR(iVar9) * _DAT_00552504;
+        P_VELX(iVar9) = 0.0f;
+        P_VELY(iVar9) = 0.0f;
+        P_VELZ(iVar9) = 0.0f;
+        P_LR(iVar9) = fVar15;
+        P_LG(iVar9) *= _DAT_00552504;
+        P_LB(iVar9) *= _DAT_00552504;
+    } else {
+        P_SCALE(iVar9) += fVar15;
+        P_POSZ(iVar9) += fVar15 * _DAT_005524fc;
+        fVar15 = lifeF4 * _DAT_00552af8;
+        P_LR(iVar9) = fVar15;
+        P_LG(iVar9) = fVar15;
+        P_LB(iVar9) = fVar15;
+        P_VELX(iVar9) *= _DAT_00552af4;
+        P_VELY(iVar9) *= _DAT_00552af4;
+        P_VELZ(iVar9) *= _DAT_00552af4;
+    }
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 9:
+static ParticleStep MoveParticles_FireSub9(float& fVar15, int& iVar9)
+{
+    P_LB(iVar9) = 0.0f;
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
+    P_LR(iVar9) = fVar15 * _DAT_00552af0;
+    P_LG(iVar9) = fVar15 * _DAT_00552aec;
+    fVar15 = P_GRAV(iVar9) + _DAT_00552504;
+    P_GRAV(iVar9) = fVar15;
+    P_POSZ(iVar9) += fVar15;
+    P_SCALE(iVar9) += _DAT_005524f4;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 10:
+static ParticleStep MoveParticles_FireSub10(float& fVar15, int& iVar9)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_005526dc;
+    P_LR(iVar9) = fVar15;
+    fVar15 = fVar15 * _DAT_005524f4;
+    P_LG(iVar9) = fVar15;
+    P_LB(iVar9) = fVar15;
+    P_SCALE(iVar9) += _DAT_00552874;
+    return ParticleStep::Break;
+}
+
+// IDA: MoveParticles (0x00477090): case 0xb:
+static ParticleStep MoveParticles_FireSub11(float& fVar15, int& iVar9)
+{
+    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+    P_LR(iVar9) = fVar15 * P_EX0(iVar9);
+    P_LG(iVar9) = fVar15 * P_EX1(iVar9);
+    P_LB(iVar9) = fVar15 * P_EX2(iVar9);
+    P_VELX(iVar9) *= _DAT_005528b4;
+    P_VELY(iVar9) *= _DAT_005528b4;
+    P_VELZ(iVar9) *= _DAT_005528b4;
+    P_SCALE(iVar9) += _DAT_00552874;
+    P_POSZ(iVar9) -= _DAT_0055256c;
+    return ParticleStep::Break;
+}
+
 void __stdcall MoveParticles(void)
 {
     float fVar15, fVar19, fVar3;
@@ -152,365 +828,110 @@ void __stdcall MoveParticles(void)
             // High type range: 0x4c5..0x599
             switch (iVar5) {
 
-            case BITMAP_SMOKE + 1: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552ae4;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-                P_SCALE(iVar9) += _DAT_00552a7c;
-                P_POSX(iVar9) += P_VELX(iVar9);
-                P_POSY(iVar9) += P_VELY(iVar9);
-                P_POSZ(iVar9) += P_VELZ(iVar9);
-                P_VELX(iVar9) *= _DAT_005526e8;
-                P_VELY(iVar9) *= _DAT_005526e8;
-                P_VELZ(iVar9) *= _DAT_005526e8;
-                fVar15 = RequestTerrainHeight(P_POSX(iVar9), P_POSY(iVar9));
-                P_POSZ(iVar9) = BMP_HEIGHT(P_TYPE(iVar9)) * P_SCALE(iVar9) * _DAT_00552504 + fVar15;
-                break;
-            }
-
-            case 0x4c6: {
-                if (P_LIFE(iVar9) < 10) {
-                    fVar15 = _DAT_0055256c - (float)(10 - P_LIFE(iVar9)) * _DAT_005524f4;
-                }
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-                // AngleMatrix + VectorRotate to transform local offset by entity bone
-                // NOTE: Ghidra shows phantom register args (unaff_EBX/EBP/ESI/EDI).
-                // We use the particle's stored direction as angles and target as local offset.
+            case BITMAP_SMOKE + 1:
                 {
-                    float angles3[3], mat3x4[3][4];
-                    // (audit #11) removed unused: float in1_3[3], in2_3[3][4], out3[3];
-                    angles3[0] = P_DIRX(iVar9);
-                    angles3[1] = 0.0f;
-                    angles3[2] = 0.0f;
-                    AngleMatrix(angles3, mat3x4);
-                    // VectorRotate: transform stored offset by matrix
-                    float localOff[3];
-                    localOff[0] = P_TGX(iVar9);
-                    localOff[1] = P_TGY(iVar9);
-                    localOff[2] = P_TGZ(iVar9); // placeholder
-                    float worldOff[3];
-                    Vector_Rotate(localOff, (float*)mat3x4, worldOff);
-                    // Add to entity position
-                    intptr_t entPtr = P_ENT(iVar9);
-                    P_POSX(iVar9) = worldOff[0] + *(float*)(entPtr + 0x10);
-                    P_POSY(iVar9) = worldOff[1] + *(float*)(entPtr + 0x14);
-                    P_POSZ(iVar9) = worldOff[2] + *(float*)(entPtr + 0x18);
-                }
-                P_ANGLE(iVar9) += _DAT_00552660;
-                P_SCALE(iVar9) -= _DAT_005524f8;
-                break;
-            }
-
-            case BITMAP_SHINY: {
-                fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
-                P_SCALE(iVar9) = (float)fVar11;
-                if (P_SUB(iVar9) == 1) {
-                    P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552adc);
-                    P_ROT(iVar9) -= _DAT_00552664;
+                    const ParticleStep step = MoveParticles_Type1221(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-
-            case BITMAP_SHINY + 1: {
-                if (P_SUB(iVar9) == 99) {
-                    intptr_t entPtr = P_ENT(iVar9);
-                    P_POSX(iVar9) = *(float*)(entPtr + 0x10);
-                    P_POSY(iVar9) = *(float*)(entPtr + 0x14);
-                    P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + _DAT_00552598;
-                    P_ROT(iVar9) -= _DAT_0055256c;
-                } else {
-                    fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ad8);
-                    fVar11 = (float10)_DAT_00552660;
-                    P_SCALE(iVar9) = (float)(fVar12 * fVar11);
-                    if (P_SUB(iVar9) < 2) {
-                        ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
-                    } else {
-                        P_SCALE(iVar9) = (float)(fVar12 * fVar11 * (float10)_DAT_00552adc);
-                        P_ROT(iVar9) -= _DAT_00552664;
-                        ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
-                    }
+            case 0x4c6:
+                {
+                    const ParticleStep step = MoveParticles_Type1222(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-
-            case BITMAP_SHINY + 2: {
-                fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
-                P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552540);
-                ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
-                break;
-            }
-
-            case BITMAP_SHINY + 4: {
-                if (P_SUB(iVar9) == 0) {
-                    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
-                    P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552540 + (float10)_DAT_0055264c);
+            case BITMAP_SHINY:
+                {
+                    const ParticleStep step = MoveParticles_Shiny(fVar11, iVar9);
+                    if (step == ParticleStep::Break) break;
                 }
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b28;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
                 break;
-            }
-
-            case BITMAP_BUBBLE: {
-                P_FRAME(iVar9) += 1;
-                iVar5 = _rand();
-                P_POSX(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * _DAT_00552950;
-                iVar5 = _rand();
-                P_POSY(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * _DAT_00552950;
-                iVar5 = _rand();
-                P_POSZ(iVar9) += (float)(iVar5 % 0x14 + 10) * P_SCALE(iVar9) * _DAT_00552950;
+            case BITMAP_SHINY + 1:
+                {
+                    const ParticleStep step = MoveParticles_Type1231(fVar11, fVar12, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-
+            case BITMAP_SHINY + 2:
+                {
+                    const ParticleStep step = MoveParticles_Type1232(fVar11, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
+            case BITMAP_SHINY + 4:
+                {
+                    const ParticleStep step = MoveParticles_Type1234(fVar11, fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
+            case BITMAP_BUBBLE:
+                {
+                    const ParticleStep step = MoveParticles_Bubble(iVar5, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
             case BITMAP_FLOWER01:
             case BITMAP_FLOWER01 + 1:
-            case BITMAP_FLOWER01 + 2: {
-                if (P_FRAME(iVar9) == 0) {
-                    uVar7 = _rand();
-                    uVar7 = uVar7 & 0x8000001f;
-                    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
-                    P_VELX(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
-
-                    uVar7 = _rand();
-                    uVar7 = uVar7 & 0x8000001f;
-                    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
-                    P_VELY(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
-
-                    uVar7 = _rand();
-                    uVar7 = uVar7 & 0x8000001f;
-                    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
-                    P_VELZ(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
-
-                    P_POSX(iVar9) += P_VELX(iVar9);
-                    P_POSY(iVar9) += P_VELY(iVar9);
-                    P_POSZ(iVar9) += P_VELZ(iVar9);
-                }
-                fVar15 = RequestTerrainHeight(P_POSX(iVar9), P_POSY(iVar9));
-                if (P_POSZ(iVar9) < fVar15) {
-                    P_POSZ(iVar9) = fVar15;
-                    P_FRAME(iVar9) = 1;
-                    P_VELX(iVar9) = 0.0f;
-                    P_VELY(iVar9) = 0.0f;
-                    P_VELZ(iVar9) = 0.0f;
-                }
-                uVar7 = _rand();
-                uVar7 = uVar7 & 0x8000000f;
-                if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffff0) + 1;
-                P_ROT(iVar9) += (float)(int)uVar7;
-                break;
-            }
-
-            case BITMAP_FIRECRACKER: {
-                P_VELZ(iVar9) -= _DAT_00552504;
-                break;
-            }
-
-            case BITMAP_FLARE: {
-                iVar5 = P_SUB(iVar9);
-                float lifeF = (float)P_LIFE(iVar9);
-                if (iVar5 == 0 || iVar5 == 3) {
-                    fVar11 = ((float10)(int)P_LIFE(iVar9) + (float10)P_VELX(iVar9)) * (float10)_DAT_005524f4;
-                    fVar12 = (float10)fsin((double)fVar11);
-                    P_POSX(iVar9) = (float)(fVar12 * (float10)_DAT_005528e4 + (float10)P_TGX(iVar9));
-                    fVar11 = (float10)fcos((double)fVar11);
-                    P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)_DAT_005528e4);
-                    fVar15 = P_GRAV(iVar9);
-                    P_POSZ(iVar9) += fVar15;
-                    P_SCALE(iVar9) -= _DAT_005528e0;
-                } else if (iVar5 == 2) {
-                    P_POSX(iVar9) = P_TGX(iVar9);
-                    P_POSY(iVar9) = P_TGY(iVar9);
-                    float steps = (float)((0x3c - P_LIFE(iVar9)) / 10);
-                    fVar15 = steps * P_GRAV(iVar9);
-                    P_POSZ(iVar9) += fVar15;
-                    P_SCALE(iVar9) -= _DAT_005528e0;
-                }
-
-                if (iVar5 == 4) {
-                    fVar11 = ((float10)(int)lifeF + (float10)P_VELX(iVar9)) * (float10)_DAT_005524f4;
-                    fVar12 = (float10)fsin((double)fVar11);
-                    P_POSX(iVar9) = (float)(fVar12 * (float10)_DAT_005528e4 + (float10)P_TGX(iVar9));
-                    fVar11 = (float10)fcos((double)fVar11);
-                    P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)_DAT_005528e4);
-                    P_POSZ(iVar9) += P_GRAV(iVar9);
-                    P_SCALE(iVar9) -= _DAT_005524bc;
-                    if ((int)lifeF < 0x1f) {
-                        goto label_color_decay;
-                    }
-                } else if ((int)lifeF < 0x15) {
-                    label_color_decay:
-                    P_LR(iVar9) *= _DAT_00552ae8;
-                    P_LG(iVar9) *= _DAT_00552ae8;
-                    P_LB(iVar9) *= _DAT_00552ae8;
-                }
-
-                if (iVar5 == 0) {
-                    unsigned char animState = AsObject(P_ENT(iVar9))->CurrentAction;
-                    if ((animState > 0xc && animState < 0x22) || (animState > 0x37 && animState < 0x3d)) {
-                        P_SUB(iVar9) = 1;
-                        if ((int)lifeF > 0x14) {
-                            lifeF = 20.0f;
-                        }
-                        P_LIFE(iVar9) = (int)lifeF;
-                        P_VELX(iVar9) = 0.0f;
-                        P_VELY(iVar9) = 0.0f;
-                        P_VELZ(iVar9) = 0.0f;
-                        P_TGY(iVar9) = P_POSY(iVar9);
-                        P_TGX(iVar9) = P_POSX(iVar9);
-                        P_TGZ(iVar9) = P_POSZ(iVar9);
-                    }
+            case BITMAP_FLOWER01 + 2:
+                {
+                    const ParticleStep step = MoveParticles_Flower01(fVar15, iVar9, uVar7);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-
-            case BITMAP_CLOUD: {
-                if (P_SUB(iVar9) == 6) {
-                    P_POSX(iVar9) += P_VELX(iVar9);
-                    P_POSY(iVar9) += P_VELY(iVar9);
-                    P_POSZ(iVar9) += P_VELZ(iVar9);
-                    P_VELX(iVar9) *= _DAT_00552b44;
-                    P_VELY(iVar9) *= _DAT_00552b44;
-                    P_VELZ(iVar9) += _DAT_00552534;
-
-                    uVar7 = _rand(); uVar7 &= 0x80000003;
-                    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-                    P_POSX(iVar9) += (float)(int)(uVar7 - 2);
-
-                    uVar7 = _rand(); uVar7 &= 0x80000003;
-                    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-                    P_POSY(iVar9) += (float)(int)(uVar7 - 2);
-
-                    uVar7 = _rand(); uVar7 &= 0x80000003;
-                    if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-                    P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * _DAT_00552530;
-
-                    P_SCALE(iVar9) += _DAT_00552874;
-                    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
-                    P_LR(iVar9) = fVar15;
-                    P_LG(iVar9) = fVar15;
-                    P_LB(iVar9) = fVar15;
-
-                    uVar7 = _rand(); uVar7 &= 0x80000001;
-                    if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
-                    P_ROT(iVar9) += (float)(int)uVar7 + _DAT_0055256c;
-                } else {
-                    // Non-sub6: check entity death flag
-                    if (*(char*)&AsObject(P_ENT(iVar9))->Visible == '\x01') {
-                        P_LIFE(iVar9) = 0x32;
-                    }
-                    if (P_LIFE(iVar9) < 1) {
-                        *(int*)(P_ENT(iVar9) + 0x58) = 0;
-                        P_ACTIVE(iVar9) = '\0';
-                    }
-                    fVar11 = (float10)fsin(((float10)WorldTime + (float10)P_GRAV(iVar9)) * (float10)_DAT_00552b0c);
-                    P_POSZ(iVar9) = (float)(fVar11 * (float10)_DAT_005524fc + (float10)P_TGZ(iVar9));
-                }
-                // Sub-type rotation
-                switch (P_SUB(iVar9)) {
-                case 1:
-                case 4:
-                    P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * _DAT_00552914 + P_TGY(iVar9);
-                    break;
-                case 2:
-                case 5:
-                    P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * _DAT_00552acc + P_TGY(iVar9);
-                    break;
+            case BITMAP_FIRECRACKER:
+                {
+                    const ParticleStep step = MoveParticles_Firecracker(iVar9);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-
-            case BITMAP_ADV_SMOKE: {
-                P_POSX(iVar9) += P_VELX(iVar9);
-                P_POSY(iVar9) += P_VELY(iVar9);
-                P_POSZ(iVar9) += P_VELZ(iVar9);
-                P_VELX(iVar9) *= _DAT_00552b44;
-                P_VELY(iVar9) *= _DAT_00552b44;
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-                P_VELZ(iVar9) += _DAT_005528b8;
-                if (P_SUB(iVar9) == 0) {
-                    P_SCALE(iVar9) += _DAT_00552ac8;
-                } else {
-                    P_SCALE(iVar9) += _DAT_00552ac4;
+            case BITMAP_FLARE:
+                {
+                    const ParticleStep step = MoveParticles_Flare(fVar11, fVar12, fVar15, iVar5, iVar9);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-
-            case BITMAP_ADV_SMOKE + 1: {
-                P_POSX(iVar9) += P_VELX(iVar9);
-                P_POSY(iVar9) += P_VELY(iVar9);
-                P_POSZ(iVar9) += P_VELZ(iVar9);
-                P_VELX(iVar9) *= _DAT_00552b44;
-                P_VELY(iVar9) *= _DAT_00552b44;
-                P_VELZ(iVar9) += _DAT_00552534;
-
-                uVar7 = _rand(); uVar7 &= 0x80000003;
-                if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-                P_POSX(iVar9) += (float)(int)(uVar7 - 2);
-
-                uVar7 = _rand(); uVar7 &= 0x80000003;
-                if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-                P_POSY(iVar9) += (float)(int)(uVar7 - 2);
-
-                uVar7 = _rand(); uVar7 &= 0x80000003;
-                if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-                P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * _DAT_00552530;
-
-                P_SCALE(iVar9) += _DAT_00552874;
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_0055295c;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-
-                uVar7 = _rand(); uVar7 &= 0x80000001;
-                if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
-                P_ROT(iVar9) += (float)(int)uVar7 + _DAT_0055256c;
+            case BITMAP_CLOUD:
+                {
+                    const ParticleStep step = MoveParticles_Cloud(fVar11, fVar15, iVar9, uVar7);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-
-            case BITMAP_POUNDING_BALL: {
-                fVar15 = P_GRAV(iVar9) + _DAT_005524bc;
-                P_GRAV(iVar9) = fVar15;
-                P_SCALE(iVar9) -= _DAT_00552914;
-                fVar15 = fVar15 * _DAT_00552488;
-                P_FRAME(iVar9) = (0x17 - P_LIFE(iVar9)) / 6;
-                P_POSZ(iVar9) += fVar15;
+            case BITMAP_ADV_SMOKE:
+                {
+                    const ParticleStep step = MoveParticles_AdvSmoke(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-
-            case 0x596: {
-                P_FRAME(iVar9) = P_SUB(iVar9);
+            case BITMAP_ADV_SMOKE + 1:
+                {
+                    const ParticleStep step = MoveParticles_Type1382(fVar15, iVar9, uVar7);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-
-            case 0x598: {
-                float lifeF2 = (float)P_LIFE(iVar9);
-                P_GRAV(iVar9) = (float)(5 - P_LIFE(iVar9)) * _DAT_00552ad4;
-                fVar15 = lifeF2 * _DAT_005528dc;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
+            case BITMAP_POUNDING_BALL:
+                {
+                    const ParticleStep step = MoveParticles_PoundingBall(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-
-            case 0x599: {
-                float grav = P_GRAV(iVar9);
-                P_GRAV(iVar9) = grav - _DAT_005526e4;
-                fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ad0);
-                P_SCALE(iVar9) = (float)(fVar12 + (float10)(grav - _DAT_005526e4) + (float10)_DAT_0055256c);
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a30;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
+            case 0x596:
+                {
+                    const ParticleStep step = MoveParticles_Type1430(iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-
+            case 0x598:
+                {
+                    const ParticleStep step = MoveParticles_Type1432(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
+            case 0x599:
+                {
+                    const ParticleStep step = MoveParticles_Type1433(fVar12, fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
             default:
                 break;
             } // end high-type switch
@@ -526,41 +947,24 @@ void __stdcall MoveParticles(void)
                 P_LG(iVar9) = fVar15;
                 goto label_4c4_0_4_shared;
             }
-            case 1: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
-                P_LR(iVar9) = fVar15 * _DAT_00552504;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15 * _DAT_00552530;
-                P_VELX(iVar9) *= _DAT_005528b4;
-                P_VELY(iVar9) *= _DAT_005528b4;
-                P_VELZ(iVar9) *= _DAT_005528b4;
-                P_SCALE(iVar9) += _DAT_00552874;
+            case 1:
+                {
+                    const ParticleStep step = MoveParticles_FireSub1(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-            case 2: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-                fVar15 = P_GRAV(iVar9) - _DAT_005524f4;
-                P_GRAV(iVar9) = fVar15;
-                P_POSX(iVar9) -= fVar15 * _DAT_005526e4;
-                P_POSZ(iVar9) += fVar15;
-                P_SCALE(iVar9) -= _DAT_005524f8;
+            case 2:
+                {
+                    const ParticleStep step = MoveParticles_FireSub2(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-            case 3: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
-                fVar3 = fVar15 * _DAT_00552530;
-                P_LR(iVar9) = fVar3;
-                P_LG(iVar9) = fVar3;
-                P_LB(iVar9) = fVar15;
-                P_VELX(iVar9) *= _DAT_005528b4;
-                P_VELY(iVar9) *= _DAT_005528b4;
-                P_VELZ(iVar9) *= _DAT_005528b4;
-                P_SCALE(iVar9) += _DAT_005524f4;
+            case 3:
+                {
+                    const ParticleStep step = MoveParticles_FireSub3(fVar15, fVar3, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
             case 4: {
                 fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
                 P_LR(iVar9) = fVar15 * _DAT_00552b18;
@@ -574,108 +978,48 @@ void __stdcall MoveParticles(void)
                 P_SCALE(iVar9) += _DAT_00552874;
                 break;
             }
-            case 5: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
-                P_LR(iVar9) = fVar15;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-                P_GRAV(iVar9) -= _DAT_005524f4;
-                uVar7 = _rand(); uVar7 &= 0x80000001;
-                if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
-                P_POSX(iVar9) -= (float)(int)(uVar7 + 1) * _DAT_005526e4 * P_GRAV(iVar9);
-                P_POSZ(iVar9) += P_GRAV(iVar9);
-                P_SCALE(iVar9) -= _DAT_005524f8;
-                break;
-            }
-            case 6: {
-                fVar11 = (float10)WorldTime;
-                P_LIFE(iVar9) = 10;
-                fVar11 = (float10)fsin((double)((fVar11 + (float10)P_GRAV(iVar9)) * (float10)_DAT_00552b0c));
-                P_POSZ(iVar9) = (float)(fVar11 * (float10)_DAT_005524fc + (float10)P_ROT(iVar9));
+            case 5:
                 {
-                    unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)_DAT_00552500);
-                    int modVal = (int)((long long)uv % 0x708);
-                    P_LR(iVar9) = 0.36f;  // 0x3eb851ec
-                    P_LG(iVar9) = 0.3f;   // 0x3e99999a
-                    P_LB(iVar9) = 0.24f;  // 0x3e75c290
-                    fVar11 = (float10)fsin((float10)modVal * (float10)_DAT_00552b08);
-                    P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552504 + (float10)_DAT_00552a18);
+                    const ParticleStep step = MoveParticles_FireSub5(fVar15, iVar9, uVar7);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-            case 7: {
-                P_SCALE(iVar9) += _DAT_00552910;
-                float lifeF3 = (float)P_LIFE(iVar9);
-                fVar3 = P_GRAV(iVar9) + _DAT_0055256c;
-                P_GRAV(iVar9) = fVar3;
-                P_VELY(iVar9) -= _DAT_005524f4;
-                P_POSZ(iVar9) -= fVar3;
-                if (P_LIFE(iVar9) < 5) {
-                    fVar15 = lifeF3 * _DAT_00552b1c;
-                    P_SCALE(iVar9) -= _DAT_005524f4;
-                }
-                P_LR(iVar9) = fVar15 * _DAT_00552b04;
-                P_LG(iVar9) = fVar15 * _DAT_00552b00;
-                P_LB(iVar9) = fVar15 * _DAT_00552afc;
-                break;
-            }
-            case 8: {
-                fVar15 = P_GRAV(iVar9) + _DAT_00552914;
-                float lifeF4 = (float)P_LIFE(iVar9);
-                P_GRAV(iVar9) = fVar15;
-                if (P_LIFE(iVar9) < 6) {
-                    fVar15 = P_LR(iVar9) * _DAT_00552504;
-                    P_VELX(iVar9) = 0.0f;
-                    P_VELY(iVar9) = 0.0f;
-                    P_VELZ(iVar9) = 0.0f;
-                    P_LR(iVar9) = fVar15;
-                    P_LG(iVar9) *= _DAT_00552504;
-                    P_LB(iVar9) *= _DAT_00552504;
-                } else {
-                    P_SCALE(iVar9) += fVar15;
-                    P_POSZ(iVar9) += fVar15 * _DAT_005524fc;
-                    fVar15 = lifeF4 * _DAT_00552af8;
-                    P_LR(iVar9) = fVar15;
-                    P_LG(iVar9) = fVar15;
-                    P_LB(iVar9) = fVar15;
-                    P_VELX(iVar9) *= _DAT_00552af4;
-                    P_VELY(iVar9) *= _DAT_00552af4;
-                    P_VELZ(iVar9) *= _DAT_00552af4;
+            case 6:
+                {
+                    const ParticleStep step = MoveParticles_FireSub6(fVar11, iVar9);
+                    if (step == ParticleStep::Break) break;
                 }
                 break;
-            }
-            case 9: {
-                P_LB(iVar9) = 0.0f;
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
-                P_LR(iVar9) = fVar15 * _DAT_00552af0;
-                P_LG(iVar9) = fVar15 * _DAT_00552aec;
-                fVar15 = P_GRAV(iVar9) + _DAT_00552504;
-                P_GRAV(iVar9) = fVar15;
-                P_POSZ(iVar9) += fVar15;
-                P_SCALE(iVar9) += _DAT_005524f4;
+            case 7:
+                {
+                    const ParticleStep step = MoveParticles_FireSub7(fVar15, fVar3, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-            case 10: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_005526dc;
-                P_LR(iVar9) = fVar15;
-                fVar15 = fVar15 * _DAT_005524f4;
-                P_LG(iVar9) = fVar15;
-                P_LB(iVar9) = fVar15;
-                P_SCALE(iVar9) += _DAT_00552874;
+            case 8:
+                {
+                    const ParticleStep step = MoveParticles_FireSub8(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
-            case 0xb: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
-                P_LR(iVar9) = fVar15 * P_EX0(iVar9);
-                P_LG(iVar9) = fVar15 * P_EX1(iVar9);
-                P_LB(iVar9) = fVar15 * P_EX2(iVar9);
-                P_VELX(iVar9) *= _DAT_005528b4;
-                P_VELY(iVar9) *= _DAT_005528b4;
-                P_VELZ(iVar9) *= _DAT_005528b4;
-                P_SCALE(iVar9) += _DAT_00552874;
-                P_POSZ(iVar9) -= _DAT_0055256c;
+            case 9:
+                {
+                    const ParticleStep step = MoveParticles_FireSub9(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
                 break;
-            }
+            case 10:
+                {
+                    const ParticleStep step = MoveParticles_FireSub10(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
+            case 0xb:
+                {
+                    const ParticleStep step = MoveParticles_FireSub11(fVar15, iVar9);
+                    if (step == ParticleStep::Break) break;
+                }
+                break;
             } // end 0x4c4 sub switch
             continue;
         } // end iVar5 == 0x4c4
@@ -947,93 +1291,25 @@ void __stdcall MoveParticles(void)
         // ── Types 0x4a7..0x4c3 ───────────────────────────────────────────────
         switch (iVar5) {
 
-        case BITMAP_LIGHTNING + 1: {
-            // Terrain light + positioning
-            unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)_DAT_00552500);
-            P_ROT(iVar9) = (float)(int)((long long)(uv) % 1000) * _DAT_00552500;
-            float lightA = (float)P_LIFE(iVar9) * _DAT_00552a00;
-            float ltA0 = lightA * _DAT_00552504;
-            float ltA1 = lightA;
-            float ltA2 = lightA * _DAT_00552530;
+        case BITMAP_LIGHTNING + 1:
             {
-                float ltBuf[3] = { ltA0, ltA1, ltA2 };
-                AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)ltBuf, 3, (float*)&DAT_081cb608[0]);
-            }
-            if (P_SUB(iVar9) == 2) {
-                intptr_t entPtr = P_ENT(iVar9);
-                P_LR(iVar9) = ltA0;
-                P_LG(iVar9) = ltA1;
-                P_SCALE(iVar9) += _DAT_005524f4;
-                P_LB(iVar9) = ltA2;
-                P_POSX(iVar9) = *(float*)(entPtr + 0x10);
-                P_POSY(iVar9) = *(float*)(entPtr + 0x14);
-                P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + _DAT_00552878;
+                const ParticleStep step = MoveParticles_Type1191(iVar9);
+                if (step == ParticleStep::Break) break;
             }
             break;
-        }
-
         case BITMAP_FIRE:
-        case BITMAP_FIRE + 2: {
-            float grav2 = P_GRAV(iVar9) + _DAT_005524bc;
-            P_GRAV(iVar9) = grav2;
-            switch (P_SUB(iVar9)) {
-            case 5:
-            case 6:
-                P_SCALE(iVar9) -= _DAT_00552a0c;
-                P_ROT(iVar9) += _DAT_00552660;
-                break;
-            case 7:
-                P_FRAME(iVar9) = (0xf - P_LIFE(iVar9)) / 6;
-                // fall through
-            case 0:
-                P_SCALE(iVar9) -= _DAT_00552a0c;
-                break;
-            case 8:
-                P_SCALE(iVar9) *= _DAT_00552b44;
-                P_ROT(iVar9) += _DAT_00552660;
-                break;
-            case 9: {
-                intptr_t entPtr = P_ENT(iVar9);
-                P_POSX(iVar9) = *(float*)(entPtr + 0x10) + P_TGX(iVar9);
-                P_POSY(iVar9) = *(float*)(entPtr + 0x14) + P_TGY(iVar9);
-                P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + P_TGZ(iVar9);
-                iVar5 = _rand();
-                float rndG = (float)((iVar5 % 0x3c + 0x3c) / 100);
-                fVar15 = P_GRAV(iVar9);
-                P_GRAV(iVar9) = rndG + fVar15;
-                P_SCALE(iVar9) -= (rndG + fVar15) * _DAT_00552a60;
-                break;
+        case BITMAP_FIRE + 2:
+            {
+                const ParticleStep step = MoveParticles_Fire(fVar15, iVar5, iVar9);
+                if (step == ParticleStep::Break) break;
             }
-            case 10:
-                P_SCALE(iVar9) *= _DAT_00552b44;
-                break;
-            default:
-                P_SCALE(iVar9) = grav2 + P_SCALE(iVar9);
-                P_VELX(iVar9) *= _DAT_00552b2c;
-                P_VELY(iVar9) *= _DAT_00552b2c;
-                P_VELZ(iVar9) *= _DAT_00552b2c;
-                break;
+            break;
+        case BITMAP_FIRE + 1:
+            {
+                const ParticleStep step = MoveParticles_Type1196(fVar15, iVar9);
+                if (step == ParticleStep::Break) break;
             }
-            P_POSZ(iVar9) += P_GRAV(iVar9) * _DAT_00552488;
-            P_FRAME(iVar9) = (0x17 - P_LIFE(iVar9)) / 6;
             break;
-        }
-
-        case BITMAP_FIRE + 1: {
-            fVar15 = P_GRAV(iVar9) + _DAT_00552914;
-            P_GRAV(iVar9) = fVar15;
-            P_SCALE(iVar9) += fVar15;
-            P_VELX(iVar9) *= _DAT_00552b24;
-            P_VELY(iVar9) *= _DAT_00552b24;
-            P_VELZ(iVar9) *= _DAT_00552b24;
-            P_POSZ(iVar9) += fVar15 * _DAT_005524fc;
-            fVar15 = (float)P_LIFE(iVar9) * _DAT_005526e4;
-            P_LR(iVar9) = fVar15;
-            P_LG(iVar9) = fVar15;
-            P_LB(iVar9) = fVar15;
-            break;
-        }
-
         case BITMAP_FLAME: {
             if (P_LIFE(iVar9) < 1) P_ACTIVE(iVar9) = '\0';
             switch (P_SUB(iVar9)) {
@@ -1097,21 +1373,18 @@ void __stdcall MoveParticles(void)
             break;
         }
 
-        case BITMAP_EXPLOTION: {
-            P_FRAME(iVar9) = (0x14 - P_LIFE(iVar9)) / 2;
-            if (P_SUB(iVar9) != 1) {
-                float ltBF = (float)P_LIFE(iVar9) * _DAT_00552a10;
-                float lt4[3] = { ltBF * _DAT_00552504, ltBF * _DAT_005528b8, ltBF * _DAT_005524f4 };
-                AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)lt4, 4, (float*)&DAT_081cb608[0]);
+        case BITMAP_EXPLOTION:
+            {
+                const ParticleStep step = MoveParticles_Explotion(iVar9);
+                if (step == ParticleStep::Break) break;
             }
             break;
-        }
-
-        case BITMAP_EXPLOTION + 1: {
-            P_FRAME(iVar9) = (0xc - P_LIFE(iVar9)) / 3;
+        case BITMAP_EXPLOTION + 1:
+            {
+                const ParticleStep step = MoveParticles_Type1216(iVar9);
+                if (step == ParticleStep::Break) break;
+            }
             break;
-        }
-
         default:
             break;
         } // end types 0x4a7..0x4c3 switch

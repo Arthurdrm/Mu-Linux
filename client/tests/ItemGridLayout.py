@@ -30,6 +30,7 @@ struct ITEM_ATTRIBUTE { BYTE Width,Height; };
 ITEM_ATTRIBUTE attributes[512];uintptr_t DAT_07d78068;
 alignas(ITEM) char warehouse[240*68];
 #define DAT_07ea5b30 warehouse[0]
+#define OffsetWarehouseItems warehouse
 unsigned conversions; int lastLevel,lastOption;
 void ItemConvert(ITEM* p,int level,int option) {
     ++conversions;lastLevel=level;lastOption=option;

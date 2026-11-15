@@ -141,7 +141,7 @@ std::uint64_t Run(BYTE* memory){
         for(unsigned open=0;open<2;++open){
             Reset(memory);SocketClientSocket=open?0x1234:Platform::InvalidSocket;expectedSocket=SocketClientSocket;
             std::memcpy(expected,memory,sizeof(expected));Require(Disconnect(activeContext)==0);
-            Require(closeCalls==open && resetCalls==0 && SocketClientSocket==(open?static_cast<std::uintptr_t>(static_cast<DWORD>(Platform::InvalidSocket)):Platform::InvalidSocket));
+            Require(closeCalls==open && resetCalls==0 && SocketClientSocket==Platform::InvalidSocket);
             Require(std::memcmp(expected,memory,sizeof(expected))==0);Hash(digest,&closeCalls,4);
         }
     }return digest;

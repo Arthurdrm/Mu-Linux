@@ -2514,7 +2514,9 @@ void MoveEffect(float *param_1, int param_2)
                 AsObject(param_1)->Position[2] = AsObject(param_1)->Direction[2] + AsObject(param_1)->Position[2];
                 AsObject(param_1)->Direction[2] = AsObject(param_1)->Direction[2] - _DAT_005524f8;
                 Particle_Spawn(BITMAP_LIGHT,AsObject(param_1)->Position,AsObject(param_1)->Angle,AsObject(param_1)->Light,1,AsObject(param_1)->Scale,0);
-                if (AsObject(param_1)->Direction[2] < _DAT_005529ac) goto LAB_0046a366;
+                if (AsObject(param_1)->Direction[2] < _DAT_005529ac) {
+                  *(float *)&AsObject(param_1)->LifeTime = 0.0;
+                }
               }
               else if (AsObject(param_1)->SubType == 1) {
                 pcVar11 = (char *)(intptr_t)AsObject(param_1)->Owner;
@@ -2608,7 +2610,7 @@ void MoveEffect(float *param_1, int param_2)
             { const CaseExit exit = MoveEffect_Type1196(param_1, local_360, local_364, local_368, local_36c);
               if (exit == CaseExit::Return) return;
               if (exit == CaseExit::Break) break; }
-            [[fallthrough]];
+            break;
           }
         }
       }
@@ -2641,7 +2643,6 @@ void MoveEffect(float *param_1, int param_2)
           if (!validOwner(owner)) return;
           pcVar11 = (char *)(intptr_t)AsObject(param_1)->Owner;
           if ((*pcVar11 == '\0') || (((byte)*(undefined4 *)(pcVar11 + 0x78) & 2) != 2)) {
-LAB_0046a366:
             *(float *)&AsObject(param_1)->LifeTime = 0.0;
           }
           else if (__cnt < 0x14) {
@@ -2657,19 +2658,16 @@ LAB_0046a366:
           }
         }
       }
-      goto switchD_00466b93_caseD_c1;
     }
-    if (iVar9 == 0x1f0) {
+    else if (iVar9 == 0x1f0) {
       if (AsObject(param_1)->SubType == 1) {
         Joint_Create(0x4e1,AsObject(param_1)->Position,AsObject(param_1)->Position,AsObject(param_1)->Angle,0xc,(intptr_t)param_1,100.0,-1,0);
       }
       else if (*(float *)&AsObject(param_1)->SubType == 0.0) {
         Joint_Create(0x4e1,AsObject(param_1)->Position,AsObject(param_1)->Position,AsObject(param_1)->Angle,4,(intptr_t)param_1,50.0,-1,0);
       }
-      goto switchD_00466b93_caseD_c1;
     }
-// SECTION_3
-    switch(iVar9) {
+    else switch(iVar9) {
     case MODEL_TAMA:
       if (MoveEffect_Tama(param_1, __cnt)) return;
       break;
@@ -2819,10 +2817,9 @@ LAB_0046a366:
       { const CaseExit exit = MoveEffect_Type265(param_1, __cnt, bVar28, iVar12, iVar9, local_32c, local_330, local_334, local_34c, local_350, local_354, owner, pfVar10, pfVar14, pfVar15, pfVar21, pfVar22, pfVar23, pfVar25, uVar8, validOwner);
         if (exit == CaseExit::Return) return;
         if (exit == CaseExit::Break) break; }
-      [[fallthrough]];
+      break;
     } // end switch
 
-switchD_00466b93_caseD_c1:
     sVar3 = AsObject(param_1)->Type;
     if ((((sVar3 != 0xee) && (sVar3 != 0xef)) && (sVar3 != 0xf4)) &&
        (((sVar3 != 0xc5 && (sVar3 != 0xc6)) || (AsObject(param_1)->SubType != 5)))) {
@@ -2834,29 +2831,22 @@ switchD_00466b93_caseD_c1:
       }
       sVar3 = AsObject(param_1)->Type;
       if ((sVar3 < 0x4ba) || (0x4bc < sVar3)) {
-        if (sVar3 == 0xd1) {
-LAB_0046b3bf:
-          iVar9 = 0;
+        if (sVar3 == 0xf3) {
+          local_248 = AsObject(param_1)->Angle[0];
+          local_244 = AsObject(param_1)->Angle[1];
+          local_240 = AsObject(param_1)->Angle[2];
+          Matrix_BuildFromEuler(&local_248,local_9c);
+          Vector_Rotate(AsObject(param_1)->Direction,local_9c,&local_23c);
+          AsObject(param_1)->StartPosition[0] = local_23c + AsObject(param_1)->StartPosition[0];
+          AsObject(param_1)->StartPosition[1] = local_238 + AsObject(param_1)->StartPosition[1];
+          AsObject(param_1)->StartPosition[2] = local_234 + AsObject(param_1)->StartPosition[2];
         }
         else {
-          if (sVar3 == 0xf3) {
-            local_248 = AsObject(param_1)->Angle[0];
-            local_244 = AsObject(param_1)->Angle[1];
-            local_240 = AsObject(param_1)->Angle[2];
-            Matrix_BuildFromEuler(&local_248,local_9c);
-            Vector_Rotate(AsObject(param_1)->Direction,local_9c,&local_23c);
-            AsObject(param_1)->StartPosition[0] = local_23c + AsObject(param_1)->StartPosition[0];
-            AsObject(param_1)->StartPosition[1] = local_238 + AsObject(param_1)->StartPosition[1];
-            AsObject(param_1)->StartPosition[2] = local_234 + AsObject(param_1)->StartPosition[2];
-            goto LAB_0046b3ca;
-          }
-          if (sVar3 == 0x10a) goto LAB_0046b3bf;
-          iVar9 = 1;
+          iVar9 = (sVar3 == 0xd1 || sVar3 == 0x10a) ? 0 : 1;
+          Joint_BoneOffsetApply(reinterpret_cast<BYTE*>(param_1),iVar9);
         }
-        Joint_BoneOffsetApply(reinterpret_cast<BYTE*>(param_1),iVar9);
       }
     }
-LAB_0046b3ca:
     // IDA decrements the raw DWORD at o+0x60.  It is not an IEEE float:
     // the original tests the resulting signed integer and writes it back as
     // a DWORD, preserving the effect's full lifetime.

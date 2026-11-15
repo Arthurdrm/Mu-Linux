@@ -2,8 +2,8 @@
 """Repetición de efectos (T9a), partículas (T9d) y joints (T9e).
 
 Compila los .cpp reales de la suite (--suite effects: Effect_Create.cpp y
-MoveEffect.cpp con tests/EffectReplay.cpp; --suite particles: Particle_Spawn.cpp
-y Particle_Move.cpp con tests/ParticleReplay.cpp; --suite joints:
+MoveEffect.cpp con tests/EffectReplay.cpp; --suite particles: Particle_Spawn.cpp,
+Particle_Move.cpp e ItemDrop_Render2.cpp con tests/ParticleReplay.cpp; --suite joints:
 Joint_Create.cpp y MoveJoint.cpp con tests/JointReplay.cpp) y corre el
 recorrido de tipos x subtipos x owner.
 
@@ -29,7 +29,7 @@ SUITES = {
     "effects": ("EffectReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Effect_Create.cpp",
                                      "src/render/MoveEffect.cpp"]),
     "particles": ("ParticleReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Particle_Spawn.cpp",
-                                         "src/render/Particle_Move.cpp"]),
+                                         "src/render/Particle_Move.cpp", "src/render/ItemDrop_Render2.cpp"]),
     "joints": ("JointReplay.cpp", ["src/stdafx.cpp", "src/globals.cpp", "src/render/Joint_Create.cpp",
                                    "src/render/MoveJoint.cpp"]),
 }

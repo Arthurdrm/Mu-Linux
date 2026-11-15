@@ -200,7 +200,7 @@ void __cdecl MoveCharacterClient(float *param_1)
 
 
 // RenderBugs — RenderBugs (Entity_VisibilityCheckAll)
-// Itera el pool de butterflies/effect-entities (DAT_083a1218, 10 entries × 0x1BC).
+// Itera el pool de butterflies/effect-entities (Butterfles, 10 entries × 0x1BC).
 // Por cada entry activo: frustum test, si visible y (owner es player o type==0x330)
 // llama a Entity_PrepareRender (render). Type 0x330 además spawnea sparkle.
 //
@@ -219,7 +219,7 @@ uint RenderBugs(void)
 {
     // Port FIEL de IDA RenderBugs (0x00500970).
     //
-    // Pool: DAT_083a1218 (10 entries × 0x1BC = 4440 bytes).
+    // Pool: Butterfles (10 entries × 0x1BC = 4440 bytes).
     // Slot layout:
     //   +0     active flag (byte)
     //   +2     type code (WORD): 195=elf-bug, 267=MG fire, 816=butterfly, 0x330=special
@@ -237,7 +237,7 @@ uint RenderBugs(void)
     // Draw_RenderObject.
     if (!(SceneFlag == 5 || SceneFlag == 4 || SceneFlag == 2)) return 0;
 
-    char* base = (char*)&DAT_083a1218[0];
+    char* base = (char*)Butterfles;
     for (int i = 0; i < 10; ++i) {
         char* slot = base + i * OBJECT_STRIDE;
         if (slot[0] == 0) continue;            // not active

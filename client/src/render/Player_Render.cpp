@@ -68,8 +68,8 @@
 // renders each active player sprite with its stored color + transform.
 void Player_Render(void)
 {
-    // Pool g_PlayerRenderPool[100 × 0x1BC] (IDA bound 0xAD70 = 100 × 444), con
-    // DAT_07c74f54 apuntando a g_PlayerRenderPool + 0xEC (= v1 anchor del
+    // Pool Planes[100 × 0x1BC] (IDA bound 0xAD70 = 100 × 444), con
+    // DAT_07c74f54 apuntando a Planes + 0xEC (= v1 anchor del
     // slot 0). Los reads negativos (puVar1 - 0x3b = -0xEC bytes) caen dentro del
     // buffer.
     //

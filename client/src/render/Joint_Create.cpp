@@ -54,30 +54,16 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
   float *pfVar1;
   float *pfVar2;
   float *pfVar3;
-  char cVar4;
-  byte bVar5;
   intptr_t iVar6;
-  undefined4 *puVar7;
-  byte *pbVar8;
   intptr_t uVar9;
   byte *pbVar10;
-  int iVar11;
-  uint uVar12;
-  undefined4 *unaff_EBX;
-  undefined4 *puVar13;
   char *pcVar14;
-  byte **ppbVar15;
-  undefined4 *puVar16;
-  byte *pbVar17;
-  bool bVar18;
-  bool bVar19;
   float10 fVar20;
   float10 fVar21;
   float *pfVar22;
   undefined4 uVar23;
   float fVar24;
   undefined4 uVar25;
-  byte *pbVar26;
   // El frame original se reconstruye como UN bloque: el código depende de que
   // {local_90,local_8c,local_88} y {local_78,local_74,local_70} sean tríos
   // contiguos (vec3 de entrada y salida de Vector_Rotate):

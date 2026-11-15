@@ -2061,12 +2061,12 @@ void __cdecl WorldObject_EmitFireSmoke(int param_1, OBJECT* object, float param_
 }
 
 // CheckSprites @ 0x00479790 — Effect_UpdateAll
-// Marca todos los slots activos del pool de personajes/efectos (DAT_07c85890, stride 0x1BC)
+// Marca todos los slots activos del pool de personajes/efectos (Sprites, stride 0x1BC)
 // para el tick de render, poniendo el byte [+0x160] = 1 en cada entrada activa (flag de activo distinto de cero).
 // Se llama una vez por frame antes del loop de render, para que cada slot se procese exactamente una vez.
 void CheckSprites(void)
 {
-    char *pcVar1 = DAT_07c85890;
+    char *pcVar1 = reinterpret_cast<char*>(Sprites);
     for (int i = 0; i < kSpritePoolSize; ++i, pcVar1 += OBJECT_STRIDE) {
         if (*pcVar1 != '\0')
             FieldAs(pcVar1, AsObject(pcVar1)->Visible) = '\x01';

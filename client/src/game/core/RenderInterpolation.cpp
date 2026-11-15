@@ -55,9 +55,9 @@ void ApplyFx() {
     struct Source { void *base; int stride; };
     const Source sources[]={
         {(unsigned char *)Effects,OBJECT_STRIDE},{(unsigned char *)Joints,JOINT_STRIDE},{(unsigned char *)Particles,PARTICLE_STRIDE},
-        {DAT_07c5ab3c,0x70},{g_WeatherSlotPool,OBJECT_STRIDE},{DAT_083a1218,OBJECT_STRIDE},
-        {DAT_083a2e90,OBJECT_STRIDE},{g_RenderPool_07c608a8,0x2f0},
-        {g_PlayerRenderPool,OBJECT_STRIDE},{g_PointerPool,0x70}
+        {DAT_07c5ab3c,0x70},{(unsigned char *)Boids,OBJECT_STRIDE},{(unsigned char *)Butterfles,OBJECT_STRIDE},
+        {(unsigned char *)Fishs,OBJECT_STRIDE},{g_RenderPool_07c608a8,0x2f0},
+        {(unsigned char *)Planes,OBJECT_STRIDE},{g_PointerPool,0x70}
     };
     static_assert(sizeof(sources)/sizeof(sources[0])==(int)RenderFxPool::Count,"Pools interpolados");
     for (int domain=0;domain<(int)RenderFxPool::Count;++domain) {

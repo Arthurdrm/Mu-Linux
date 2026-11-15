@@ -241,7 +241,7 @@ void NetRecv_0B(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     //   event 1 -> EnableEvent = (state != 0)
     //   event 3 -> EnableEvent = state ? 3 : 0
     // y en todos los casos DeleteBoids() (0x500A80): apaga los 40
-    // slots de Boids (= g_WeatherSlotPool).  La cola DebugText que
+    // slots de Boids.  La cola DebugText que
     // IDA llena antes no tiene lectores en el binario; se omite.
     if (Size < 5) return;
     NetLog("NET:  → 0x0B EventState state=%d event=%d", Msg[3], Msg[4]);
@@ -257,5 +257,5 @@ void NetRecv_0B(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         else        Tamachan_Dismiss();
     }
     for (int i = 0; i < 40; ++i)
-        g_WeatherSlotPool[i * OBJECT_STRIDE] = 0;
+        Boids[i].Live = 0;
 }

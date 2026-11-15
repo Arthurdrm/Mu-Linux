@@ -308,12 +308,7 @@ static char* MoveJoint_Finish(undefined1 *param_1, uint param_2, float *local_30
 
 char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
 {
-    float   fVar2;
-    float   fVar3;
-    void   *pvVar5;
     uint    uVar7;
-    char   *pcVar11;
-    char   *pcVar12;
     int     iVar13;
     float  *pfVar14;
     float  *pfVar15;
@@ -323,9 +318,7 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
     double  fVar23;
     double  fVar24;
     // Ghidra "undefined4*" locals used as float storage via bit-casts
-    float   local_e8_f;   // maps to local_e8
     float   local_e4_f;   // maps to local_e4
-    float   local_e0_f;   // maps to local_e0
     float   local_dc_f;   // maps to local_dc (delta X, used as float seed)
     // Estos "locales" que produjo Ghidra son en realidad UN bloque contiguo del
     // frame original (ebp-0xD8 .. ebp), y el código de abajo depende de esa

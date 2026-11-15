@@ -118,7 +118,7 @@
 // `(&DAT_0839bcb4)[iVar14*(OBJECT_STRIDE / 4)]` (char) deja el paso en 0x6f y pisa los slots
 // vecinos (el campo +0x04 tambien es un DWORD: es un contador, `(int)... + 1`,
 // `if (1 < (int)...)`).
-#define WSLOT_DW(off) (*(unsigned int *)&g_WeatherSlotPool[EntityOffset(off) + iVar14 * OBJECT_STRIDE])
+#define WSLOT_DW(off) (*(unsigned int *)&reinterpret_cast<char*>(&Boids[iVar14])[EntityOffset(off)])
 uint __cdecl Weather_Update(void)
 {
     float  *pfVar1;
@@ -328,7 +328,7 @@ LAB_00501064:
                     OpenMonsterModel(0x1f);   // play thunder sound
                     (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0x12d;  // type = lightning
                     iVar12 = _rand();
-                    AsObject(&g_WeatherSlotPool[iVar14 * OBJECT_STRIDE])->Alpha = 1.0f;
+                    AsObject((char*)&Boids[iVar14])->Alpha = 1.0f;
                     (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                     (&DAT_0839bd7c)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f000000;
                     WSLOT_DW(0x0dc) = 1;
@@ -398,7 +398,7 @@ LAB_00501064:
                 *(unsigned int *)(&DAT_0839bd98 + iVar2) = 0x3f000000;
                 *(unsigned int *)(&DAT_0839bd9c + iVar2) = 0x3f000000;
                 *(unsigned int *)(&DAT_0839bda0 + iVar2) = 0x3f000000;
-                AsObject(&g_WeatherSlotPool[iVar14 * OBJECT_STRIDE])->Alpha = 0.0f;
+                AsObject((char*)&Boids[iVar14])->Alpha = 0.0f;
                 (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                 *(unsigned int *)(&DAT_0839bd88 + iVar2) = 0x41500000;
                 (&DAT_0839bdb4)[iVar2] = 0;
@@ -430,7 +430,7 @@ LAB_00501064:
                         OpenMonsterModel(0x1f);
                         (&DAT_0839bcb2)[iVar14 * (OBJECT_STRIDE / 2)] = 0x12d;
                         const int __rScale = _rand();
-                        AsObject(&g_WeatherSlotPool[iVar14 * OBJECT_STRIDE])->Alpha = 1.0f;
+                        AsObject((char*)&Boids[iVar14])->Alpha = 1.0f;
                         (&DAT_0839be14)[iVar14 * (OBJECT_STRIDE / 4)] = 0x3f800000;
                         WSF(DAT_0839bcbc, iVar14 * (OBJECT_STRIDE / 4)) = (float)(__rScale % 3 + 6) * 0.050000001f;
                         WSF(DAT_0839bd7c, iVar14 * (OBJECT_STRIDE / 4)) = (float)(_rand() % 10 + 10) * 0.02f;

@@ -19,6 +19,8 @@ SERVICES = r'''
 struct OBJECT;
 char* spritePool; char* g_BitmapsRaw; constexpr int kSpritePoolSize=1002;
 #define DAT_07c85890 (*reinterpret_cast<char(*)[1002*444]>(spritePool))
+// Nombre nuevo del pool (T9f) sobre el mismo buffer; el viejo queda para las revisiones anteriores.
+#define Sprites (reinterpret_cast<OBJECT*>(spritePool))
 bool blocked; int settingsCalls;
 struct Settings { bool GetAntilag(int id) { Require(id==ANTILAG_STATIC_EFFECTS); ++settingsCalls; return blocked; } } gUserSettings;
 struct Event { int kind,type; std::uint32_t width,height,rotation; std::vector<BYTE> data; };

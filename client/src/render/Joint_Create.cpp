@@ -115,10 +115,11 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
   // propio case.
   *(int *)&AsJoint(pcVar14)->Direction[1] = 0;
   *(int *)&AsJoint(pcVar14)->Direction[2] = 0;
-  pcVar14[0x40] = '\0';
-  pcVar14[0x41] = '\0';
-  pcVar14[0x42] = '\0';
-  pcVar14[0x43] = '\0';
+  // Target es un puntero: en x64 son 8 bytes, y poner en cero sólo los 4 de
+  // 0x40..0x43 (lo que hace el binario) dejaba la mitad alta del joint que
+  // usó el slot antes.  Con un joint sin target, MoveJoint lo tomaba como no
+  // nulo y lo deferenciaba.
+  AsJoint(pcVar14)->Target = nullptr;
   pfVar1 = AsJoint(pcVar14)->Position;
   pfVar2 = AsJoint(pcVar14)->Angle;
   *pfVar1 = *param_2;

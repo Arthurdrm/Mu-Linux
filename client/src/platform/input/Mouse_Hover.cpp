@@ -276,9 +276,9 @@ int __cdecl RenderTerrainTile(int iparam_1, int iparam_2, int param_3, int param
     }
     if (EditFlag == 3) {
         bool draw = false;
-        if (DAT_07e11d44 == 0) {
+        if (SelectWall == 0) {
             if (((unsigned char)DAT_0838bc70[TerrainIndex1] & 4) == 4) draw = true;
-        } else if (DAT_07e11d44 == 2) {
+        } else if (SelectWall == 2) {
             if (((unsigned char)DAT_0838bc70[TerrainIndex1] & 1) == 1) draw = true;
         }
         if (draw) {

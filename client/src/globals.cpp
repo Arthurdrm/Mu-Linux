@@ -130,7 +130,7 @@ DWORD    SetBackgroundTextColor  = 0;
 DWORD    InputEnable  = 0; // IDA: DAT_00559c84 (0x00559C84)
 DWORD    InputNumber  = 0;
 extern "C" int    InputTextWidth  = 0;   // IDA: InputTextWidth (0x00559C8C)
-DWORD    DAT_00559c90  = 0;
+DWORD    InputResidentNumber  = 0;   // IDA: InputResidentNumber (0x00559C90)
 // InputTextMax[] vive en 0x00559c94 en el binario original como UN array int
 // contiguo (stride 4): `(&InputTextMax)[1]` es el slot del password. Por eso todos
 // los alias apuntan dentro de este array y son `int&` (IDA: `int InputTextMax[8]`),
@@ -1025,7 +1025,7 @@ char     DAT_0055a640[] = "\n";  // 0x0055A640 — separador de media altura (Re
 // of DAT_07c5ab3c, declared in globals.h; it has no standalone storage.
 DWORD    RainAngle  = 0;   // IDA: RainAngle (0x07C74AE8)
 DWORD    RainPosition  = 0;  // IDA: RainPosition (0x07C74AEC)
-int     _DAT_00559b9c  = 0;
+int     RainSpeed  = 0;   // IDA: RainSpeed (0x00559B9C)
 float   _DAT_00552874  = 0.05f;
 float   _DAT_005529c8  = -0.1f;
 
@@ -1089,7 +1089,7 @@ int      g_iNumLineMessageBoxCustom = 0;   // IDA: g_iNumLineMessageBoxCustom (0
 char     g_lpszMessageBoxCustom[7][0x26] = {};
 // DAT_07d566d0 (fallback char name string) es GlobalText[609] (ver el bloque de
 // alias al final de globals.h).
-DWORD    DAT_005615dc  = 0;
+int      g_iCurrentDialogScript = 0;   // IDA: g_iCurrentDialogScript (0x005615DC)
 int      InputGold  = 0;
 DWORD    DAT_07ea9804  = 0;
 DWORD    DAT_07ea9808  = 0;
@@ -1661,7 +1661,7 @@ float   _DAT_00552b70 = 0.00392156886f; // height scale
 // que los 12 floats están contiguos (consumidos como vec3 corners por
 // glVertex3fv y por las cross-product helpers).
 DWORD   SelectFlag  = 0;  // IDA: SelectFlag (0x07EAB1FC) - tile pick result flag
-DWORD   DAT_07e11d44  = 0;   // combat target select sub-mode
+DWORD   SelectWall  = 0;   // IDA: SelectWall (0x07E11D44) — combat target select sub-mode
 
 // ── Model slot index globals ──────────────────────────────────────────────────
 DWORD   TextureBegin  = 0;

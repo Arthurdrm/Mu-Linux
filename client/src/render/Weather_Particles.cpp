@@ -34,7 +34,7 @@
 //   10 = rain (dense)   — limited active count = (RainCurrent * 200) / 100
 //
 // Wind/environment per frame:
-//   _DAT_00559b9c = (int)(fsin(tick * _DAT_00552500) + 3) * 10     — wind X speed
+//   RainSpeed = (int)(fsin(tick * _DAT_00552500) + 3) * 10     — wind X speed
 //   RainAngle  = (int)(fsin(tick * _DAT_00552a40 + offset) * 20) — rain Y offset
 //   RainPosition  = (RainPosition + 0x14) % 2000                   — rain Z counter
 //
@@ -67,8 +67,8 @@ void WeatherParticles_Update(void)
     // IDA MoveLeaves (0x46CC80):
     //   RainSpeed = 10 * ((std::int64_t)sin(WorldTime * 0.001) + 3);
     //   RainAngle = 20 * (std::int64_t)sin(WorldTime * 0.00050000002 + 50.0);
-    // (_DAT_00559b9c = RainSpeed, RainAngle = RainAngle.)
-    _DAT_00559b9c = (int)(10 * ((longlong)sin((double)WorldTime * 0.001) + 3));
+    // (RainSpeed = RainSpeed, RainAngle = RainAngle.)
+    RainSpeed = (int)(10 * ((longlong)sin((double)WorldTime * 0.001) + 3));
     RainAngle  = (int)(20 * (longlong)sin((double)WorldTime * 0.00050000002 + 50.0));
 
     int iVar1 = RainPosition + 0x14;
@@ -121,7 +121,7 @@ void WeatherParticles_Update(void)
                 pfVar10[-3] = 0.0f;
                 pfVar10[-2] = 0.0f;
 
-                float local_b4[3] = { 0.0f, 0.0f, -(float)(_rand() % 0x28 + _DAT_00559b9c) };
+                float local_b4[3] = { 0.0f, 0.0f, -(float)(_rand() % 0x28 + RainSpeed) };
                 float mat[12], out[3];
                 Matrix_BuildFromEuler(pfVar10 - 4, mat);
                 Vector_Rotate(local_b4, mat, pfVar10 + 8);

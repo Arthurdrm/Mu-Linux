@@ -298,7 +298,7 @@ void __cdecl ClearInput(int param_1)
   undefined4 *puVar3;
 
   InputIndex = 0;
-  DAT_00559c90 = 0xffffffff;
+  InputResidentNumber = 0xffffffff;
   iVar2 = 0;
   do {
     if ((iVar2 != 1) || (param_1 != 0)) {

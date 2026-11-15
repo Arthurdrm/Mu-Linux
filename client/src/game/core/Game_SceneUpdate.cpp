@@ -754,7 +754,7 @@ state_fail_common:
                 PlayBuffer(0x1b, 0, 0);
                 ClearInput(1);
                 InputNumber = 2;
-                DAT_00559c90 = 1;
+                InputResidentNumber = 1;
                 InputTextMax = 0x1e;
                 _DAT_00559c98 = 0xe;
                 InputTextHide[1] = 2;

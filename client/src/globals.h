@@ -81,7 +81,7 @@ extern char    DAT_005597a0;    // PathFinder debug string (first char; take &)
 extern DWORD   DAT_005597c4;
 extern float  _DAT_005597c8;   // LOD scale: 1.0/1.2/1.4
 extern DWORD m_bBlockWhisper;   // IDA: m_bBlockWhisper (0x00559BF0)
-extern int    _DAT_00559b9c;   // wind speed result (fsin * tick, *10)
+extern int    RainSpeed;   // IDA: RainSpeed (0x00559B9C) — wind speed result (fsin * tick, *10)
 extern DWORD   MouseUpdateTimeMax;  // IDA: MouseUpdateTimeMax (0x00559BEC) - movement cooldown threshold
 // Hover/selection state.  Names follow the 5.2 reference only where the
 // 0.97k behaviour and lifetime match; the DAT address is kept for IDA work.
@@ -108,7 +108,7 @@ extern DWORD   SetBackgroundTextColor;   // IDA: DAT_00559c80 (0x00559C80)
 extern DWORD   InputEnable; // IDA: DAT_00559c84 (0x00559C84)
 extern DWORD   InputNumber;   // IDA: DAT_00559c88 (0x00559C88)
 extern "C" int InputTextWidth;   // IDA: InputTextWidth (0x00559C8C)
-extern DWORD   DAT_00559c90;
+extern DWORD   InputResidentNumber;   // IDA: InputResidentNumber (0x00559C90)
 extern int     _InputTextMaxArr[8];
 // 0.97.40: tope en grapheme clusters por slot (0 = sólo el tope en bytes de
 // _InputTextMaxArr). ClearInput lo vuelve a 0 en los slots que limpia.
@@ -162,14 +162,9 @@ extern WORD    g_ServerPort; // IDA: g_ServerPort (0x005615BC)
 // ── ConnectServer flow ──────────────────────────────────────────
 // SceneFlag (in stdafx.h)
 // g_lpszMp3 (IDA 0x005615C4, rutas de los BGM): ver CMapManager (Game/MapManager.cpp).
-// DAT_005615dc @ 0x005615DC ES `g_iCurrentDialogScript` — el índice del diálogo
-// de quest activo.  Lo escriben CSQuest::ShowDialogText (0x4017E7) y sub_51D840,
-// y lo leen sub_401AF0 y UI_InGameMenu.  La etiqueta vieja ("login/scene misc
-// flag") era una misidentificación.
-// `g_iCurrentDialogScript` es un alias de este global: writer y reader tienen que
-// ver la misma memoria.
-extern DWORD   DAT_005615dc;
-#define g_iCurrentDialogScript  (*(int*)&DAT_005615dc)
+// Índice del diálogo de quest activo.  Lo escriben CSQuest::ShowDialogText
+// (0x4017E7) y sub_51D840, y lo leen sub_401AF0 y UI_InGameMenu.
+extern int     g_iCurrentDialogScript;   // IDA: g_iCurrentDialogScript (0x005615DC)
 extern DWORD   DAT_005615e0;
 extern DWORD   CurrentCameraCount;  // IDA: CurrentCameraCount (0x005615E8) - fade timer
 // CameraWalk[7][6] contiguous waypoint table (see globals.cpp for layout).
@@ -1519,7 +1514,7 @@ extern float   _DAT_00552b70;  // terrain height scale constant
 // ── Terrain tile pick / normal computation globals ────────────────────────────
 // (DAT_07feb25c..DAT_07feb284 são macros — ver g_TilePickBuf arriba)
 extern DWORD   SelectFlag;  // IDA: SelectFlag (0x07EAB1FC) - tile pick result flag
-extern DWORD   DAT_07e11d44;   // combat target select sub-mode
+extern DWORD   SelectWall;   // IDA: SelectWall (0x07E11D44) — combat target select sub-mode
 
 // ── Model slot index globals ──────────────────────────────────────────────────
 extern DWORD   TextureBegin;   // model slot active flag  [IDA 0x083A4104]
@@ -1856,8 +1851,6 @@ extern FILE   *SMDFile;             // DAT_0055c0a0
 // (HUD passes + ChatListBox) se perdían → texto blanco. DAT_00559c78/80 declarados arriba.
 #define m_dwBackColor  SetBackgroundTextColor
 // g_iNumAnswer — alias de g_iNumAnswer (ver arriba).
-// g_iNumLineMessageBoxCustom — alias de DAT_083a4324 (ver arriba).
-// g_iCurrentDialogScript — alias de DAT_005615dc (ver arriba).
 // g_lpszDialogAnswer — declarado arriba.
 // m_hFontDC (IDA 0x055C9FEC) y los bits del DIB del texto (0x055C9E4C) viven en
 // CFont: gFont.GetTextDC() / gFont.GetTextBits().

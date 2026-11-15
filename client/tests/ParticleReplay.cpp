@@ -14,6 +14,7 @@
 #include "game/core/MapManager.h"
 #include "game/core/RenderFxSnapshots.h"
 #include "render/ResourceTables.h"
+#include "app/config/UserSettings.h"
 #include "assets/model/ModelTypes.h"
 #include <cstdint>
 #include <cstdio>
@@ -105,6 +106,18 @@ void __cdecl BMD_TransformPosition(void* model, float* bone, float* in, float* o
     if (out) for (int i = 0; i < 3; ++i) out[i] = (in ? in[i] : 0.0f) + (float)(i + 1) * 3.0f;
 }
 void RenderFxSnapshots_New(const void* o) { Call("RenderFxSnapshots_New"); MixP(o); }
+// RenderParticles: cada sprite que emite y cada cambio de estado de blend.
+void __cdecl RenderSprite_0(int type, float* pos, float w, float h, float* light, float rot, float u, float v, float uw, float vh)
+{
+    Call("RenderSprite_0"); MixU((unsigned)type); MixV3(pos); MixF(w); MixF(h); MixV3(light);
+    MixF(rot); MixF(u); MixF(v); MixF(uw); MixF(vh);
+}
+void __cdecl GL_SetBlendSrcOver(char mode) { Call("GL_SetBlendSrcOver"); MixU((unsigned char)mode); }
+void __cdecl GL_SetBlendAdditive(void) { Call("GL_SetBlendAdditive"); }
+void __cdecl GL_SetBlendSrcAlpha(void) { Call("GL_SetBlendSrcAlpha"); }
+void __cdecl EnableAlphaBlend(void) { Call("EnableAlphaBlend"); }
+void __cdecl EnableAlphaTest(bool enable) { Call("EnableAlphaTest"); MixU(enable); }
+CUserSettings gUserSettings;
 void* __fastcall PhysicsManager_Construct(void* p) { return p; }
 extern "C" void DbgLogPublic(const char*) {}
 extern "C" { BYTE OffsetInventoryItems[64 * 68] = {}; }
@@ -178,6 +191,9 @@ void RunCase(const CaseArgs& a)
         MixU(0x7100u | (unsigned)t);
         ScrubStack();
         MoveParticles();
+        MixU(0x7200u | (unsigned)t);
+        ScrubStack();
+        RenderParticles();
     }
 }
 

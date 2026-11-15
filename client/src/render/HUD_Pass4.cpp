@@ -339,23 +339,6 @@ void Render_QuickButtons_(void)
         GL_DrawTexture(tex, btnX, btnY, 70.0f, 21.0f, 0.0f, 0.0f, 0.546875f, 0.65625f, 1, 1);
     }
 
-    if (HUD_IsGuildListRuntime()) {
-        float iconX = (float)DAT_07e91788 + _DAT_00552464;
-        float iconY = (float)DAT_07e91784 + _DAT_0055246c;
-        Gfx::Color3f(1.0f, 1.0f, 1.0f);
-        GL_DrawTexture(0x118, iconX, iconY, 24.0f, 24.0f, 0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
-        GL_DrawTexture(RepairEnable_0 ? 287 : 286,
-                     iconX, iconY, 24.0f, 24.0f,
-                     0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
-        if ((int)MouseX >= (int)iconX && (int)MouseX < (int)(iconX + 24.0f) &&
-            (int)MouseY >= (int)iconY && (int)MouseY < (int)(iconY + 24.0f)) {
-            gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_NORMAL));
-            m_dwTextColor = 0xFFFFFFFFu;
-            m_dwBackColor = 0xFF000000u;
-            RenderTipText((int)iconX, (int)iconY - 12, GlobalText[233]);
-        }
-    }
-
     // En el original (sub_4F5820) hay 3 `if` sites antes/alrededor de RenderParty
     // que llaman a RenderCharacterInfoWindow/RenderGuildList/RenderGuildCreation
     // cuando los flags correspondientes están seteados.
@@ -366,6 +349,27 @@ void Render_QuickButtons_(void)
     //     RenderParty(450, 0);
     //     if (CharacterOpened)    RenderCharacterInfoWindow(450, 0);
     if (HUD_IsGuildListRuntime())      RenderGuildList(gWindow.PanelOrigin(Ui::Guild), 0);
+
+    // Boton de cierre de la lista de guild.  IDA sub_4F5820 lo dibuja DESPUES de
+    // RenderGuildList (bitmap 280, texto byte_7D39EF4 = GlobalText[220],
+    // "Cerrar Guild (G)").  El port dibujaba aca, ANTES del panel, una copia del
+    // boton de reparar del inventario (286/287, GlobalText[233]) que el panel
+    // tapaba; el hit-test de cierre (sub_4E4760) seguia vivo en
+    // [panelX+25,+49) x [panelY+395,+419).
+    if (HUD_IsGuildListRuntime()) {
+        float iconX = (float)DAT_07e91788 + _DAT_00552464;
+        float iconY = (float)DAT_07e91784 + _DAT_0055246c;
+        Gfx::Color3f(1.0f, 1.0f, 1.0f);
+        GL_DrawTexture(280, iconX, iconY, 24.0f, 24.0f,
+                     0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
+        if ((int)MouseX >= (int)iconX && (int)MouseX < (int)(iconX + 24.0f) &&
+            (int)MouseY >= (int)iconY && (int)MouseY < (int)(iconY + 24.0f)) {
+            gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_NORMAL));
+            m_dwTextColor = 0xFFFFFFFFu;
+            m_dwBackColor = 0xFF000000u;
+            RenderTipText((int)iconX, (int)iconY - 13, GlobalText[220]);
+        }
+    }
 
     RenderParty(gWindow.PanelOrigin(Ui::Party), 0);
 

@@ -222,6 +222,14 @@ ShopItemBlockExc=0
 ; Maximum Character Level (MAX: 1000)
 MaxCharacterLevel=400
 
+; Experience table curve exponent (range: 1.0 - 3.0, decimals allowed)
+;   exp(level) = ((DWORD_MAX * 0.95) / MaxCharacterLevel^N) * level^N
+; N=3 is the original curve. The curve is pinned at MaxCharacterLevel, so a
+; lower N does NOT make leveling easier: it makes the first levels much slower
+; (N=1.5 needs ~700 times more experience at level 5). Raise the experience
+; rates if you lower it.
+ExperienceExponent=3
+
 ; Maximum simultaneous levels increase per experience gained
 MaxLevelUp=1
 

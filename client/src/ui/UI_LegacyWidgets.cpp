@@ -172,7 +172,7 @@ void __cdecl Font_ParseColorMarkup(LONG _this, char *Source)
       memset(Destination, 0, sizeof(Destination));
       v19 = 0;
       v20 = 0;
-      strncpy(Destination, Source, 0x100u);
+      strncpy(Destination, Source, sizeof(Destination) - 1);
       v8 = v17;
       memset(Source, 0, 0x100u);
       v9 = 0;

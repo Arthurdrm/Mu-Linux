@@ -414,14 +414,9 @@ void __cdecl AttackEffect(intptr_t Owner)
               break;
             }
             v175 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v175 == -1 )
-            {
-              v176 = 0;
-            }
-            else
-            {
-              v176 = *(char **)(DAT_055c9bcc + 4 * v175);
-            }
+            if ( v175 == -1 ) return;
+            v176 = *(char **)(DAT_055c9bcc + 4 * v175);
+            if ( v176 == 0 ) return;
             v177 = v176[1] + 1;
             v176[1] = v177;
             if ( v177 < 2u )
@@ -468,7 +463,9 @@ LABEL_265:
             if ( v242 != -1 )
             {
               v181 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v182 = v181 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v181);
+              if ( v181 == -1 ) return;
+              v182 = *(BYTE **)(DAT_055c9bcc + 4 * v181);
+              if ( v182 == 0 ) return;
               v183 = v182[1] - 1;
               v182[1] = v183;
               if ( !v183 )
@@ -531,14 +528,9 @@ LABEL_269:
             }
             v189 = (char*)&AsCharacter(Owner)->Skill;
             v192 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v192 == -1 )
-            {
-              v193 = 0;
-            }
-            else
-            {
-              v193 = *(char **)(DAT_055c9bcc + 4 * v192);
-            }
+            if ( v192 == -1 ) return;
+            v193 = *(char **)(DAT_055c9bcc + 4 * v192);
+            if ( v193 == 0 ) return;
             v194 = v193[1] + 1;
             v193[1] = v194;
             if ( v194 < 2u )
@@ -614,14 +606,9 @@ LABEL_293:
               break;
             }
             v156 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v156 == -1 )
-            {
-              v157 = 0;
-            }
-            else
-            {
-              v157 = *(char **)(DAT_055c9bcc + 4 * v156);
-            }
+            if ( v156 == -1 ) return;
+            v157 = *(char **)(DAT_055c9bcc + 4 * v156);
+            if ( v157 == 0 ) return;
             v158 = v157[1] + 1;
             v157[1] = v158;
             if ( v158 < 2u )
@@ -668,7 +655,9 @@ LABEL_238:
             if ( v241 != -1 )
             {
               v162 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v163 = v162 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v162);
+              if ( v162 == -1 ) return;
+              v163 = *(BYTE **)(DAT_055c9bcc + 4 * v162);
+              if ( v163 == 0 ) return;
               v164 = v163[1] - 1;
               v163[1] = v164;
               if ( !v164 )
@@ -769,14 +758,9 @@ LABEL_242:
               break;
             }
             v135 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v135 == -1 )
-            {
-              v136 = 0;
-            }
-            else
-            {
-              v136 = *(char **)(DAT_055c9bcc + 4 * v135);
-            }
+            if ( v135 == -1 ) return;
+            v136 = *(char **)(DAT_055c9bcc + 4 * v135);
+            if ( v136 == 0 ) return;
             v137 = v136[1] + 1;
             v136[1] = v137;
             if ( v137 < 2u )
@@ -823,7 +807,9 @@ LABEL_210:
             if ( v240 != -1 )
             {
               v141 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v142 = v141 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v141);
+              if ( v141 == -1 ) return;
+              v142 = *(BYTE **)(DAT_055c9bcc + 4 * v141);
+              if ( v142 == 0 ) return;
               v143 = v142[1] - 1;
               v142[1] = v143;
               if ( !v143 )
@@ -903,14 +889,9 @@ LABEL_214:
                 break;
               }
               v119 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              if ( v119 == -1 )
-              {
-                v120 = 0;
-              }
-              else
-              {
-                v120 = *(char **)(DAT_055c9bcc + 4 * v119);
-              }
+              if ( v119 == -1 ) return;
+              v120 = *(char **)(DAT_055c9bcc + 4 * v119);
+              if ( v120 == 0 ) return;
               v121 = v120[1] + 1;
               v120[1] = v121;
               if ( v121 < 2u )
@@ -958,7 +939,9 @@ LABEL_181:
               if ( v239 != -1 )
               {
                 v125 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-                v126 = v125 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v125);
+                if ( v125 == -1 ) return;
+                v126 = *(BYTE **)(DAT_055c9bcc + 4 * v125);
+                if ( v126 == 0 ) return;
                 v127 = v126[1] - 1;
                 v126[1] = v127;
                 if ( !v127 )
@@ -1057,14 +1040,9 @@ LABEL_185:
                 break;
               }
               v84 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              if ( v84 == -1 )
-              {
-                v85 = 0;
-              }
-              else
-              {
-                v85 = *(char **)(DAT_055c9bcc + 4 * v84);
-              }
+              if ( v84 == -1 ) return;
+              v85 = *(char **)(DAT_055c9bcc + 4 * v84);
+              if ( v85 == 0 ) return;
               v86 = v85[1] + 1;
               v85[1] = v86;
               if ( v86 < 2u )
@@ -1111,7 +1089,9 @@ LABEL_116:
               if ( v237 != -1 )
               {
                 v90 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-                v91 = v90 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v90);
+                if ( v90 == -1 ) return;
+                v91 = *(BYTE **)(DAT_055c9bcc + 4 * v90);
+                if ( v91 == 0 ) return;
                 v92 = v91[1] - 1;
                 v91[1] = v92;
                 if ( !v92 )
@@ -1196,14 +1176,9 @@ LABEL_120:
               break;
             }
             v102 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v102 == -1 )
-            {
-              v103 = 0;
-            }
-            else
-            {
-              v103 = *(char **)(DAT_055c9bcc + 4 * v102);
-            }
+            if ( v102 == -1 ) return;
+            v103 = *(char **)(DAT_055c9bcc + 4 * v102);
+            if ( v103 == 0 ) return;
             v104 = v103[1] + 1;
             v103[1] = v104;
             if ( v104 < 2u )
@@ -1250,7 +1225,9 @@ LABEL_148:
             if ( v238 != -1 )
             {
               v108 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v109 = v108 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v108);
+              if ( v108 == -1 ) return;
+              v109 = *(BYTE **)(DAT_055c9bcc + 4 * v108);
+              if ( v109 == 0 ) return;
               v110 = v109[1] - 1;
               v109[1] = v110;
               if ( !v110 )
@@ -1331,14 +1308,9 @@ LABEL_152:
               break;
             }
             v31 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v31 == -1 )
-            {
-              v32 = 0;
-            }
-            else
-            {
-              v32 = *(char **)(DAT_055c9bcc + 4 * v31);
-            }
+            if ( v31 == -1 ) return;
+            v32 = *(char **)(DAT_055c9bcc + 4 * v31);
+            if ( v32 == 0 ) return;
             v33 = v32[1] + 1;
             v32[1] = v33;
             if ( v33 < 2u )
@@ -1385,7 +1357,9 @@ LABEL_46:
             if ( v235 != -1 )
             {
               v37 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v38 = v37 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v37);
+              if ( v37 == -1 ) return;
+              v38 = *(BYTE **)(DAT_055c9bcc + 4 * v37);
+              if ( v38 == 0 ) return;
               v39 = v38[1] - 1;
               v38[1] = v39;
               if ( !v39 )
@@ -1537,14 +1511,9 @@ LABEL_50:
               break;
             }
             v65 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v65 == -1 )
-            {
-              v66 = 0;
-            }
-            else
-            {
-              v66 = *(char **)(DAT_055c9bcc + 4 * v65);
-            }
+            if ( v65 == -1 ) return;
+            v66 = *(char **)(DAT_055c9bcc + 4 * v65);
+            if ( v66 == 0 ) return;
             v67 = v66[1] + 1;
             v66[1] = v67;
             if ( v67 < 2u )
@@ -1591,7 +1560,9 @@ LABEL_84:
             if ( v236 != -1 )
             {
               v71 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v72 = v71 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v71);
+              if ( v71 == -1 ) return;
+              v72 = *(BYTE **)(DAT_055c9bcc + 4 * v71);
+              if ( v72 == 0 ) return;
               v73 = v72[1] - 1;
               v72[1] = v73;
               if ( !v73 )
@@ -1666,14 +1637,9 @@ LABEL_88:
               break;
             }
             v8 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-            if ( v8 == -1 )
-            {
-              v9 = 0;
-            }
-            else
-            {
-              v9 = *(char **)(DAT_055c9bcc + 4 * v8);
-            }
+            if ( v8 == -1 ) return;
+            v9 = *(char **)(DAT_055c9bcc + 4 * v8);
+            if ( v9 == 0 ) return;
             v10 = v9[1] + 1;
             v9[1] = v10;
             if ( v10 < 2u )
@@ -1721,7 +1687,9 @@ LABEL_8:
             if ( v234 != -1 )
             {
               v14 = FUN_004041e0(&MAIN_HASH_CLASS, Owner + EntityOffset(770));
-              v15 = v14 == -1 ? 0 : *(BYTE **)(DAT_055c9bcc + 4 * v14);
+              if ( v14 == -1 ) return;
+              v15 = *(BYTE **)(DAT_055c9bcc + 4 * v14);
+              if ( v15 == 0 ) return;
               v16 = v15[1] - 1;
               v15[1] = v16;
               if ( !v16 )

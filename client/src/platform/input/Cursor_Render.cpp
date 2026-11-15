@@ -98,7 +98,7 @@ void __cdecl Cursor_Render(void) {
         *(char*)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->SafeZone == '\0' &&
         SelectedCharacter != -1)
     {
-        if ((char)CheckAttack() != '\0' && DAT_07d78094 == '\0') {
+        if ((char)CheckAttack() != '\0' && MouseOnWindow == '\0') {
             GL_DrawTexture(4, cx, cy, 24.0f, 24.0f, 0.0f, 0.0f, 1.0f, 1.0f, '\x01', '\x01');
         } else {
             draw_arrow();

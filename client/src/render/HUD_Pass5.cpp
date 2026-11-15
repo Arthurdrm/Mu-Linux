@@ -353,7 +353,7 @@ void __cdecl Render_HudPass_4BD650_(void)
             DAT_0055a3e4 = (DWORD)mainSlot;
             DAT_07ea840c = 320;
             DAT_07ea8408 = 444;
-            DAT_07d78094 = 1;
+            MouseOnWindow = 1;
             hoveredSkill = true;
         }
 
@@ -375,7 +375,7 @@ void __cdecl Render_HudPass_4BD650_(void)
                         DAT_0055a3e4 = (DWORD)slotIdx;
                         DAT_07ea840c = (DWORD)((int)xCenter + 16);
                         DAT_07ea8408 = 370;
-                        DAT_07d78094 = 1;
+                        MouseOnWindow = 1;
                         hoveredSkill = true;
                     }
                     ++v92;

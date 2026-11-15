@@ -288,7 +288,7 @@ void PacketHandler_0x5d(BYTE* pkt)
     // Símbolos del linker para 0x07eaa114 y 0x07eaa0d0 (no las direcciones
     // literales del binario).
     GuildOpened = 0;
-    DAT_07eaa0d0 = 0xFFFFFFFF;
+    g_nGuildMemberCount = -1;
 }
 
 

@@ -508,7 +508,7 @@ void __cdecl Chat_InputTick(void)
                     DAT_0055a3e4 = (DWORD)*(BYTE *)&((CHARACTER*)(uintptr_t)(DAT_07abf5d8))->CurrentSkill;
                     DAT_07ea840c = 0x140;
                     DAT_07ea8408 = 0x1bc;
-                    DAT_07d78094 = 1;
+                    MouseOnWindow = 1;
                     MouseUpdateTime = 0;
                     if (IsClickPushed()) {
                         DAT_07db870c = (DAT_07db870c == '\0') ? '\x01' : '\0';
@@ -533,7 +533,7 @@ void __cdecl Chat_InputTick(void)
                             {
                                 DAT_07ea840c = cellX0 + 0x150;
                                 DAT_07ea8408 = 0x172;
-                                DAT_07d78094 = 1;
+                                MouseOnWindow = 1;
                                 DAT_0055a3e4 = uVar14;
                                 if (IsClickPushed()) {
                                     MouseLButtonPush = '\0';

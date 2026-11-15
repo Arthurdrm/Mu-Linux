@@ -178,7 +178,7 @@ void Game_EnterWorldTick(void)
         DAT_005616ac  = -1;
         DAT_005616b0  = -1;
         DAT_005615e0  = -1;
-        DAT_07d78094  = 0;
+        MouseOnWindow  = 0;
         DAT_083a7c18  = 0;
         DAT_005616a4  = -100;
 

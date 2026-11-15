@@ -1193,7 +1193,7 @@ void __fastcall Cloth_Integrate(int*, float);
 // El tipo de retorno es undefined4, según la declaración de functions.h.
 unsigned int __cdecl Packet_ParseType2(void *param_1) {
     if (Ui::QuestBounds(gWindow.GetRightShift()).Contains((int)MouseX, (int)MouseY))
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     Quest_AnswerHitTest(param_1);
     if (Ui::QuestClose(gWindow.GetRightShift()).Contains((int)MouseX, (int)MouseY) &&
         (IsClickPushed())) {

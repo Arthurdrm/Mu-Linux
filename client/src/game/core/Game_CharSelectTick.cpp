@@ -115,12 +115,12 @@ void Game_CharSelectTick(void)
     Bisect_ChatMode("CST_post_4f95e0");
     CheckInventory  = 0;
     DAT_0055a3e4  = 0xffffffff;
-    DAT_07d78094  = 0;
+    MouseOnWindow  = 0;
 
     // DESVIACION (DLL Antilag, 0x00525483): sin interfaz se saltea como en la vista cenital.
     if (CameraTopViewEnabled == '\0' && !gUserSettings.GetAntilag(ANTILAG_INTERFACE)) {
         // Standard viewport mode
-        DAT_07d78094 = (MouseY > 0x1af) ? 1 : 0;
+        MouseOnWindow = (MouseY > 0x1af) ? 1 : 0;
         DAT_055c9b80 = 0;
         if (DAT_055c9ff0 && ChatWidget_GetVTable(DAT_055c9ff0)) {
             // vtable[+0x14] = slot 5 = ChatLB_tick (__fastcall, takes this+arg).
@@ -184,7 +184,7 @@ void Game_CharSelectTick(void)
     }
 
     if (ErrorMessage != 0)
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
 
     if (CameraTopViewEnabled == '\0')
         MoveItems();

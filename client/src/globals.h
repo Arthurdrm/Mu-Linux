@@ -691,8 +691,6 @@ extern float  _DAT_07e11d4c;   // facing tick reference (last frame time)
 extern float  _DAT_07e11d50;   // facing dt (delta * speed scale)
 extern BYTE    DAT_07e113d8[40];   // world-enter counter (memset writes 40 bytes)
 extern char&   DAT_07e113d9;   // alias de DAT_07e113d8[1] (password-mask flag)
-extern DWORD   DAT_07e11d8c;
-extern DWORD   DAT_07e11d90;
 extern DWORD   DAT_07e11d94;
 extern DWORD   DAT_07e11d98;
 extern DWORD   DAT_07e11da0;
@@ -714,7 +712,7 @@ extern DWORD   DAT_07e11e98;   // party HP bars (stride 0x24)
 #define DAT_07e11e9c (*(char*)(Party + 0x1C))
 extern char    DAT_07e11d6e;            // flag reset each login frame
 extern DWORD   DAT_07d552e4;            // UI inventory/item selection state
-extern DWORD   DAT_07d78094;            // UI click/selection flag
+extern int     MouseOnWindow;           // IDA: MouseOnWindow (0x07D78094) — cursor sobre una ventana de UI
 extern BYTE    DAT_07d780a8[40];         // username field length (memset writes 40 bytes)
 // InputLength[1] — el largo del campo 1 (destino del susurro).
 //
@@ -800,7 +798,7 @@ extern DWORD   DAT_07ea982c;   // Screen3 panel origin X
 extern DWORD   DAT_07ea9830;   // Screen3 panel origin Y
 extern char    DAT_07ea9834[41];    // IDA: nombre remoto de Trade (0.97.40: 40 bytes del paquete + NUL)
 extern char    DAT_07ea983e;
-extern DWORD   DAT_07eaa0d0;
+extern "C" int g_nGuildMemberCount;     // IDA: g_nGuildMemberCount (0x07EAA0D0)
 extern DWORD   GuildPlayerKey;  // IDA: GuildPlayerKey (0x07EAA0D8)
 // 0x07EAA0E0 = PartyNumber. Era una copia que nadie escribia.
 #define DAT_07eaa0e0 (*(DWORD*)&PartyNumber)
@@ -1385,7 +1383,7 @@ extern DWORD   m_bBlockWhisper_1;  // IDA: m_bBlockWhisper_1 (0x07E11DAC) - comm
 // ReceiveTalk, SendMove, sub_492F10, Chat_InputTick, GetScreenWidth,
 // RenderServerDivision).  ServerDivisionOpened es un alias: el writer
 // (Net_Process, ReceiveTalk sub 5) y los readers tienen que ver el mismo byte.
-// El byte 1 de ese int es 0x07EAA131 (en el port, DAT_07eaa131 es un global aparte).
+// 0x07EAA131 es g_bServerDivisionAccept, un int aparte en el port.
 #define ServerDivisionOpened   (*(char*)&g_bServerDivisionEnable)
 extern char    DAT_07eaa132;           // guard for B-key toggle enable
 extern char    DAT_07eaa134;           // RepairEnable_0
@@ -2227,7 +2225,6 @@ extern DWORD   MixState;  // IDA: MixState (0x07EAA140) - La etiqueta
                                // vieja ("SecondPassword timeout") era falsa: IDA lo
                                // llama MixState y sus writers son ReceiveMix (0x4366C0),
                                // el envio del mix y ReceiveTalk.
-extern "C" DWORD   DAT_07eaa131;   // SecondPassword checkbox/toggle state
 extern DWORD   RepairEnable; // IDA: DAT_07eaa138 (0x07EAA138)
 extern DWORD   TradeInventoryStartX;  // IDA: TradeInventoryStartX (0x07EA5290) - SecondPassword alt-panel origin X
 extern DWORD   TradeInventoryStartY;  // IDA: TradeInventoryStartY (0x07EA528C) - SecondPassword alt-panel origin Y

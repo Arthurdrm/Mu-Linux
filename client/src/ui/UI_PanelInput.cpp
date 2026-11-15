@@ -77,7 +77,7 @@ void __cdecl GuildCreator_HitTest(void) {
         (int)MouseX <  originX + 0xbe &&
         (int)MouseY >= originY &&
         (int)MouseY <  originY + 0x1b1) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
 
     if (g_iKeyPadEnable == 1) {
@@ -282,7 +282,7 @@ void __cdecl Party_MemberClickHandler(void) {
         (int)MouseX <  (int)(DAT_07ea5b24 + 0xbe) &&
         (int)MouseY >= (int)DAT_07ea5b28 &&
         (int)MouseY <  (int)(DAT_07ea5b28 + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
 
     const char* const heroName = DAT_07abf5d8 ? EntityName::Get(DAT_07abf5d8) : "";
@@ -342,7 +342,7 @@ void __cdecl CharacterInfo_HitTest(void) {
         (int)MouseX <  (int)(DAT_07ea982c + 0xbe) &&
         (int)MouseY >= (int)DAT_07ea9830 &&
         (int)MouseY <  (int)(DAT_07ea9830 + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
 
     // Clave XOR (32 bytes, la misma que se usa en todo el archivo)
@@ -411,7 +411,7 @@ void __cdecl Inventory_HitTest(void) {
     InventoryStartY = 0;
 
     // Hit-test de la ventana de inventario.
-    // Setea DAT_07d78094=1 si el mouse está sobre el panel principal, resetea los arrays de visibilidad por personaje,
+    // Setea MouseOnWindow=1 si el mouse está sobre el panel principal, resetea los arrays de visibilidad por personaje,
     // y llama a Equipment_HitTestAll o InventoryGrid_Tick para renderizar la grilla.
     // __ftol() Y-boundary → approximated as (int)InventoryStartY (screen origin Y).
 
@@ -419,7 +419,7 @@ void __cdecl Inventory_HitTest(void) {
         (int)MouseX < (int)(InventoryStartX + 0xbe) &&
         (int)InventoryStartY <= (int)MouseY &&
         (int)MouseY < (int)(InventoryStartY + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
 
     char sv1 = ShopOpened;
@@ -428,21 +428,21 @@ void __cdecl Inventory_HitTest(void) {
         (int)MouseX < (int)(DAT_07eaa0c8 + 0xbe) &&
         (int)DAT_07eaa0cc <= (int)MouseY &&
         (int)MouseY < (int)(DAT_07eaa0cc + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
     if (WarehouseOpened != '\0' &&
         (int)DAT_07eaa0c8 <= (int)MouseX &&
         (int)MouseX < (int)(DAT_07eaa0c8 + 0xbe) &&
         (int)DAT_07eaa0cc <= (int)MouseY &&
         (int)MouseY < (int)(DAT_07eaa0cc + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
     if (ChaosMixOpened != '\0' &&
         (int)DAT_07eaa0c8 <= (int)MouseX &&
         (int)MouseX < (int)(DAT_07eaa0c8 + 0xbe) &&
         (int)DAT_07eaa0cc <= (int)MouseY &&
         (int)MouseY < (int)(DAT_07eaa0cc + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
 
     char sv2 = TradeOpened;
@@ -451,14 +451,14 @@ void __cdecl Inventory_HitTest(void) {
         (int)MouseX < (int)(TradeInventoryStartX + 0xbe) &&
         (int)TradeInventoryStartY <= (int)MouseY &&
         (int)MouseY < (int)(TradeInventoryStartY + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
     if (EventWindowOpened != '\0' &&
         (int)DAT_07eaa0c8 <= (int)MouseX &&
         (int)MouseX < (int)(DAT_07eaa0c8 + 0xbe) &&
         (int)DAT_07eaa0cc <= (int)MouseY &&
         (int)MouseY < (int)(DAT_07eaa0cc + 0x1b1)) {
-        DAT_07d78094 = 1;
+        MouseOnWindow = 1;
     }
 
     // Refresh char-list visibility arrays for all CharData slots (stride 0x44, 12 slots)
@@ -702,7 +702,7 @@ void __cdecl ServerTransfer_HitTest(void) {
     int mx = (int)MouseX;   // MouseX
     int my = (int)MouseY;   // MouseY
     if (mx >= gWindow.PanelOrigin(Ui::RightPanel) && mx < gWindow.PanelOrigin(Ui::WindowRight) && my >= 0 && my < 433)
-        DAT_07d78094 = 1;         // MouseOnWindow
+        MouseOnWindow = 1;         // MouseOnWindow
 
     const int startX = (int)InventoryStartX;   // InventoryStartX
     const int startY = (int)InventoryStartY;   // InventoryStartY

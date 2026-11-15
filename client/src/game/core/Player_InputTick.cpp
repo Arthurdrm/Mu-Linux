@@ -45,12 +45,11 @@ static bool HUD_IsCharacterInfoRuntime(void);
 // sub_004B82xx; acá lo reimplementamos limpio.
 //
 // `MouseOnWindow` (IDA Player_InputTick:416,566 + sub_402F40:9) es un solo
-// global del binario, 0x07D78094 (= DAT_07d78094): se setea cada frame si el
+// global del binario, 0x07D78094 (= MouseOnWindow): se setea cada frame si el
 // mouse está sobre algún panel de UI abierto y gatea el GroundClick, para que
 // clickear adentro de un panel no haga caminar al jugador. Lo escribe
-// CheckInventory (sub_4E6550) con los seis rects de panel; g_MouseOnWindow es
+// CheckInventory (sub_4E6550) con los seis rects de panel; MouseOnWindow es
 // un alias.
-#define g_MouseOnWindow DAT_07d78094
 
 // IDA `Attacking` — estado del auto-ataque: -1 = ninguno, 1 = ataque iniciado
 // desde Player_InputTick (L942), 2 = desde Attack (0x49CBF0 L1323).
@@ -80,14 +79,14 @@ static void MouseOnWindow_Update(void)
     int mx = (int)MouseX;
     int my = (int)MouseY;
 
-    if (g_ChatLB_MouseOnWindow) { g_MouseOnWindow = 1; return; }
+    if (g_ChatLB_MouseOnWindow) { MouseOnWindow = 1; return; }
 
     // El selector local de Chaos (ErrorMessage 143) es un modal de 213x210;
     // el original bloquea el click de mundo mientras está presente.  Sin este
     // gate, sus botones pueden atravesar hacia los paneles o el mapa.
     if (ErrorMessage == 143 &&
         mx >= 213 && mx < 426 && my >= 120 && my < 330) {
-        g_MouseOnWindow = 1;
+        MouseOnWindow = 1;
         return;
     }
 
@@ -96,16 +95,16 @@ static void MouseOnWindow_Update(void)
     // Ese diálogo es modal: su click no puede seguir al recorrido de mundo.
     if ((ErrorMessage == 126 || ErrorMessage == 152) &&
         mx >= 213 && mx < 426 && my >= 60 && my < 124) {
-        g_MouseOnWindow = 1;
+        MouseOnWindow = 1;
         return;
     }
 
     // Selector de emojis del chat (su grilla se abre sobre el mundo).
-    if (EmojiPicker::Contains(mx, my)) { g_MouseOnWindow = 1; return; }
-    if (EmoteMenu::Contains(mx, my)) { g_MouseOnWindow = 1; return; }
+    if (EmojiPicker::Contains(mx, my)) { MouseOnWindow = 1; return; }
+    if (EmoteMenu::Contains(mx, my)) { MouseOnWindow = 1; return; }
 
     // Bottom HUD (y >= 432) — per IDA Game_CharSelectTick:298.
-    if (my >= 432) { g_MouseOnWindow = 1; return; }
+    if (my >= 432) { MouseOnWindow = 1; return; }
 
     // Top quick buttons / small HUD icons rendered by Render_QuickButtons.
     if (HUD_IsGuildCreationRuntime()) {
@@ -115,13 +114,13 @@ static void MouseOnWindow_Update(void)
         int btnX = (int)((float)g_GuildCreatorScratchX + _DAT_005524fc);
         int btnY = (int)((float)g_GuildCreatorScratchY + _DAT_00552ca4);
         if (mx >= btnX && mx < btnX + 70 && my >= btnY && my < btnY + 21) {
-            g_MouseOnWindow = 1; return;
+            MouseOnWindow = 1; return;
         }
         // IDA `sub_4E4760` L446 (igual que el render): el segundo botón va en
         // [origin+100, origin+170).
         btnX = (int)((float)g_GuildCreatorScratchX + 100.0f);
         if (mx >= btnX && mx < btnX + 70 && my >= btnY && my < btnY + 21) {
-            g_MouseOnWindow = 1; return;
+            MouseOnWindow = 1; return;
         }
     }
 
@@ -129,7 +128,7 @@ static void MouseOnWindow_Update(void)
         int iconX = (int)((float)DAT_07e91788 + _DAT_00552464);
         int iconY = (int)((float)DAT_07e91784 + _DAT_0055246c);
         if (mx >= iconX && mx < iconX + 24 && my >= iconY && my < iconY + 24) {
-            g_MouseOnWindow = 1; return;
+            MouseOnWindow = 1; return;
         }
     }
 
@@ -137,7 +136,7 @@ static void MouseOnWindow_Update(void)
         int iconX = (int)DAT_07ea982c + 25;
         int iconY = (int)DAT_07ea9830 + 395;
         if (mx >= iconX && mx < iconX + 24 && my >= iconY && my < iconY + 24) {
-            g_MouseOnWindow = 1; return;
+            MouseOnWindow = 1; return;
         }
     }
 
@@ -155,7 +154,7 @@ static void MouseOnWindow_Update(void)
         // skill list expandido vive entre x=180..460 (centrado en 320 con ~10
         // slots × 32 px).
         if (mx >= 180 && mx < 460) {
-            g_MouseOnWindow = 1;
+            MouseOnWindow = 1;
             s_lastMenuOpen = menuOpen;
             return;
         }
@@ -174,7 +173,7 @@ static void MouseOnWindow_Update(void)
         const int rightEdge = gWindow.PanelOrigin(Ui::WindowRight);
         if (panelStartX < rightEdge) {
             if (mx >= panelStartX && mx < rightEdge && my >= 0 && my < 433) {
-                g_MouseOnWindow = 1; return;
+                MouseOnWindow = 1; return;
             }
         }
     }
@@ -616,7 +615,7 @@ void __cdecl Player_ProcessInput(void)
     // Poblar el flag MouseOnWindow (per IDA) ANTES de la lógica de GroundClick,
     // así clickear adentro de un panel no hace caminar al jugador.
     MouseOnWindow_Update();
-    // DAT_07d78094 y g_MouseOnWindow son la misma memoria (la escribe
+    // MouseOnWindow y MouseOnWindow son la misma memoria (la escribe
     // CheckInventory por los paneles): no copiar uno en el otro acá.
     // Los botones de la barra inferior se atienden desde `Chat_InputTick`
     // (0x4B14F0), que es donde los tiene el binario.
@@ -715,7 +714,7 @@ void __cdecl Player_ProcessInput(void)
 
     // ── WALKER (corre cada tick, INDEPENDIENTE de gates) ─────────────────────
     // Va fuera del gate de debounce `bec <= d28` (que se setea a `wpCount*3+4` en
-    // cada envío de camino) y ARRIBA del gate `DAT_07d78094` (hover sobre la skill
+    // cada envío de camino) y ARRIBA del gate `MouseOnWindow` (hover sobre la skill
     // bar): el walker se ejecuta SIEMPRE; solo el envío de packets y el
     // procesamiento de clicks nuevos van gateados.
     {
@@ -775,7 +774,7 @@ void __cdecl Player_ProcessInput(void)
                 // facing actual contra el del mouse, y sólo si cambió se rota.
                 // Además espera 40 ticks (~1.6 s a 25 fps) entre rotaciones.
                 ++DAT_07e11db8;
-                if (DAT_07e11db8 >= 40 && !g_MouseOnWindow && !AsCharacter(ent)->Dead)
+                if (DAT_07e11db8 >= 40 && !MouseOnWindow && !AsCharacter(ent)->Dead)
                 {
                     const BYTE act = AsCharacter(ent)->Object.CurrentAction;
                     // 139/140/133/135 = animaciones de gate/teleport: no rotar.
@@ -820,8 +819,8 @@ void __cdecl Player_ProcessInput(void)
 
     // ── Salida temprana si el movimiento está bloqueado o la UI activa (post-walker) ──
     // El gate va DESPUÉS del walker, así el walker siempre avanza incluso con
-    // DAT_07d78094 seteado (mouse sobre la barra de skills).
-    if (EditFlag != 0 || g_MouseOnWindow != 0)
+    // MouseOnWindow seteado (mouse sobre la barra de skills).
+    if (EditFlag != 0 || MouseOnWindow != 0)
         goto end_tick;
 
     // ── Movement debounce gate (controla envío de packets/clicks, NO walker) ─
@@ -927,7 +926,7 @@ void __cdecl Player_ProcessInput(void)
 
         // Capture: si el click recién empezó (DOWN edge) y mouse está sobre
         // window, marcar para todo el ciclo.
-        if (bClickHeld && !s_clickCycleConsumed && g_MouseOnWindow) {
+        if (bClickHeld && !s_clickCycleConsumed && MouseOnWindow) {
             s_clickStartedOnWindow = true;
         }
 
@@ -968,15 +967,15 @@ void __cdecl Player_ProcessInput(void)
         // Solo consumir el push pulse si el click NO está sobre una ventana de UI: el
         // click handler de ESA ventana (InventoryGrid_Tick, llamado más tarde desde
         // RenderInventoryWindow / RenderShopInterface / etc.) necesita ver
-        // `MouseLButtonPush == 1`. `g_MouseOnWindow` lo setea HUD_HitTest_AllWindows según
+        // `MouseLButtonPush == 1`. `MouseOnWindow` lo setea HUD_HitTest_AllWindows según
         // las flags de panel abierto + bounding box.
-        if (bMousePush && !g_MouseOnWindow) {
+        if (bMousePush && !MouseOnWindow) {
             MouseLButtonPush = 0;
         }
 
         // Hard-consume del latch POP también, por si quedó stale.
         // Mismo razonamiento: solo consumir si NO estamos sobre UI.
-        if (bClickLatched && !g_MouseOnWindow) {
+        if (bClickLatched && !MouseOnWindow) {
             MouseLButtonPop = 0;
         }
 
@@ -1012,7 +1011,7 @@ void __cdecl Player_ProcessInput(void)
             // necesita ese flag para detectar clicks en sus botones (X close,
             // [+] stat add, etc.).  Solo consumir cuando el click ES para el ground
             // (mouse fuera de panels).
-            if (!g_MouseOnWindow) {
+            if (!MouseOnWindow) {
                 MouseLButtonPush = '\0';
                 MouseLButtonPop = '\0';   // consume ambos flags
             }
@@ -1022,7 +1021,7 @@ void __cdecl Player_ProcessInput(void)
         // click, tertiary) NO procesen el click como movement. También se consume
         // MouseLButton y se resetean SelectedCharacter/4c/48 (hover targets), para que
         // un hover target stale no dispare pathfind.
-        if (g_MouseOnWindow || s_clickStartedOnWindow) {
+        if (MouseOnWindow || s_clickStartedOnWindow) {
             bHoverActive = false;
             // Consume los flags de click para que no se propaguen al tick
             // alt-target processing. Panel handlers se registraron via
@@ -1471,7 +1470,7 @@ void __cdecl Player_ProcessInput(void)
             if (MouseLButton == 0 && !bClickEdge) goto end_tick_inc;
             // Per IDA Player_InputTick:416,566: bloquear el ground click cuando el mouse
             // está sobre cualquier panel abierto (MouseOnWindow=1).
-            if (g_MouseOnWindow) goto end_tick_inc;
+            if (MouseOnWindow) goto end_tick_inc;
             // IDA: el click al mundo NO cierra ventanas de NPC acá. Lo hace
             // SendMove (0x491C40) al mandar el movimiento: el personaje camina
             // y la ventana se cierra con su paquete (Combat.cpp,

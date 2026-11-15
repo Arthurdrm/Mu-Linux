@@ -51,8 +51,8 @@ extern "C" {
     // 0x07E11D8C / 0x07E11D90.  Los escribe StartMatchCountDown (0x47EC00),
     // que atiende el opcode 0x92; declarados en globals.h para que el handler
     // los vea.
-    int   m_iMatchCountDownType   = 0;
-    DWORD m_dwMatchCountDownStart = 0;
+    int   m_iMatchCountDownType   = 0;   // IDA: m_iMatchCountDownType (0x07E11D8C)
+    DWORD m_dwMatchCountDownStart = 0;   // IDA: m_dwMatchCountDownStart (0x07E11D90)
     // m_iMatchTime vive en globals.cpp (0x00559CCC): lo escribe SetMatchInfo
     // desde el handler 0x9B.
     // MixState vive en globals.h (0x07EAA140): lo

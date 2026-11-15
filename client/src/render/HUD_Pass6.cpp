@@ -102,7 +102,6 @@ extern "C" int    dword_7EAA0CC, dword_7EAA0C8;
 extern "C" BYTE   Inventory[], OffsetInventoryItems[], OffsetTradeItems[], OffsetMixItems[], OffsetWarehouseItems[];
 extern "C" BYTE   ShopItems[];   // pool dedicado de la tienda
 extern "C" void   __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int gridW);
-extern "C" DWORD  DAT_07eaa131;
 
 #define g_bEventChipDialogEnable _g_bEventChipDialogEnable
 #define ItemAttribute            ((ITEM_ATTRIBUTE*)DAT_07d78068)
@@ -347,7 +346,7 @@ extern "C" void __cdecl RenderServerDivision(void)
 
     gFont.SelectFont(gFont.GetTextDC(), gFont.GetFont(FONT_BOLD));
     float xa = (float)((double)InventoryStartX + 25.0);
-    if (DAT_07eaa131 != 0) {
+    if (g_bServerDivisionAccept != 0) {
         m_dwTextColor = 0xFFFF55FFu;   // -16738604
         GL_DrawTexture(291, xa, 240.0f, 16.0f, 16.0f, 0.0f, 0.0f, 0.75f, 0.75f, 1, 1);
     } else {
@@ -363,7 +362,7 @@ extern "C" void __cdecl RenderServerDivision(void)
     RenderCenteredText((int)(xc + 60.0f), 355, GlobalText[229]);
 
     float xb = (float)((double)InventoryStartX + 35.0);
-    if (DAT_07eaa131 != 0) BufferedDraw::Color3f(1.0f, 1.0f, 1.0f);
+    if (g_bServerDivisionAccept != 0) BufferedDraw::Color3f(1.0f, 1.0f, 1.0f);
     else                          BufferedDraw::Color3f(0.5f, 0.5f, 0.5f);
     GL_DrawTexture(240, xb, 320.0f, 120.0f, 24.0f, 0.0f, 0.0f, 0.83203125f, 1.0f, 1, 1);
     RenderCenteredText((int)(xb + 60.0f), 325, GlobalText[228]);

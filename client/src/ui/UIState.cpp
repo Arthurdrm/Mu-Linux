@@ -51,6 +51,6 @@ bool CanQueryChaosRate()
     return ChaosMixOpened && !IsItemMovePending() && !IsMixBusy();
 }
 
-void CaptureMouseForUI() { DAT_07d78094 = 1; } // MouseOnWindow
+void CaptureMouseForUI() { MouseOnWindow = 1; } // MouseOnWindow
 
 } // namespace UIState

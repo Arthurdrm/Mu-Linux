@@ -111,7 +111,7 @@ void Mouse_UpdateHoverTargets(void)
 
     // ── 3. Hover target detection ─────────────────────────────────────────────
 
-    if (DAT_07d78094 != '\0') goto process_click;
+    if (MouseOnWindow != '\0') goto process_click;
 
     {
         SHORT altState = Platform::GetInput().KeyState(0x12);  // VK_MENU = Alt

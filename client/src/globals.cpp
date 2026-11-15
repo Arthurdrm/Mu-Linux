@@ -292,7 +292,7 @@ char     DAT_00559f5f  = 0;
 DWORD    DAT_0055a3e4  = 0xffffffff;  // hovered-skill index (-1 = none); IDA inits to -1
 DWORD    DAT_0055a3e8[4] = {0};       // chaos-mix info (ReceiveTalk sub 3 copia 4 bytes acá; 0x55A3E8..0x55A3F4)
 int      EventType     = 0;           // 0/1 tipo de EventWindow (ReceiveTalk sub 4/6)
-extern "C" { int g_bServerDivisionEnable = 0; int g_bServerDivisionAccept = 0; }  // ReceiveTalk sub 5
+extern "C" { int g_bServerDivisionEnable = 0; int g_bServerDivisionAccept = 0; }  // ReceiveTalk sub 5; IDA: 0x07EAA130 / 0x07EAA131
 DWORD    FrustrumBoundMaxX_1  = 0;
 DWORD    FrustrumBoundMaxY_1  = 0;
 DWORD    FrustrumBoundMaxX_2  = 0;
@@ -757,8 +757,6 @@ void    *DAT_07cf1ffc  = nullptr;  // g_CharData pointer (0x584-byte XOR-encoded
 DWORD   _DAT_07e118e4  = 0;    // facing angle (float, movement packet)
 DWORD    DAT_07e118e8  = 0;    // world/map type
 DWORD    MacroTime  = 0;  // IDA: MacroTime (0x07E11D7C)
-DWORD    DAT_07e11d8c  = 0;
-DWORD    DAT_07e11d90  = 0;
 DWORD    DAT_07e11d94  = 0;
 DWORD    DAT_07e11d98  = 0;
 DWORD    DAT_07e11da0  = 0;
@@ -853,7 +851,6 @@ DWORD    DAT_07ea982c  = 0;   // Screen3 panel origin X
 DWORD    DAT_07ea9830  = 0;   // Screen3 panel origin Y
 char     DAT_07ea9834[41] = {};   // 0.97.40: nombre de 40 bytes + NUL
 char     DAT_07ea983e  = 0;
-DWORD    DAT_07eaa0d0  = 0;
 DWORD    GuildPlayerKey  = 0;  // IDA: GuildPlayerKey (0x07EAA0D8)
 // DAT_07eaa0e0: alias de PartyNumber (globals.h)
 DWORD    DAT_07eaa0e4  = 0;
@@ -1189,7 +1186,7 @@ DWORD    DAT_07e109c8  = 0;
 char     DAT_07e113e4[5 * 256] = {};
 // _DAT_07e118e4 already defined at line ~470
 
-DWORD    DAT_07d78094  = 0;
+int      MouseOnWindow  = 0;   // IDA: MouseOnWindow (0x07D78094)
 BYTE     DAT_07d780a8[40]  = {0};
 // DAT_07d780ac no es una variable aparte: es `InputLength[1]` (bytes +4..+7 de
 // DAT_07d780a8), un macro en globals.h que proyecta dentro del array.
@@ -2284,7 +2281,6 @@ DWORD   DAT_07ea5b28  = 0;   // Screen2 panel origin Y
 DWORD   DAT_07eaa0c8  = 0;   // SecondPassword dialog origin X (pixel)
 DWORD   DAT_07eaa0cc  = 0;   // SecondPassword dialog origin Y (pixel)
 DWORD   MixState  = 0;  // IDA: MixState (0x07EAA140)
-DWORD   DAT_07eaa131  = 0;   // SecondPassword checkbox/toggle state
 DWORD   RepairEnable  = 0; // IDA: DAT_07eaa138 (0x07EAA138)
 DWORD   TradeInventoryStartX  = 0;  // IDA: TradeInventoryStartX (0x07EA5290) - SecondPassword alt-panel origin X
 DWORD   TradeInventoryStartY  = 0;  // IDA: TradeInventoryStartY (0x07EA528C) - SecondPassword alt-panel origin Y

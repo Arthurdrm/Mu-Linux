@@ -717,7 +717,7 @@ DWORD    DAT_07abf5e8  = 0;
 // Particle pool — 3000 slots × 0x70 (112) bytes = 336000 bytes total.
 // Binario original: 0x07abf5f0..0x07b11670 = 0x52080 bytes = 3000 slots exactos,
 // los que itera MoveParticles.
-char     DAT_07abf5f0[kParticlePoolSize * 0x70] = {0};   // particle pool base
+PARTICLE Particles[kParticlePoolSize] = {};   // IDA: unk_7ABF5F0 (0x07ABF5F0), 3000 slots; nombre de MU 5.2
 char     DAT_007abf06  = 0;
 float    _DAT_007abf06 = 0.0f;
 

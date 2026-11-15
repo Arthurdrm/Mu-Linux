@@ -46,7 +46,7 @@ std::uint64_t Region(const void* p)
         return (v >= b && v < b + size) ? (tag << 32) | (v - b) : 0;
     };
     if (!v) return 0;
-    if (auto r = in(DAT_07abf5f0, sizeof(DAT_07abf5f0), 1)) return r;
+    if (auto r = in(Particles, sizeof(Particles), 1)) return r;
     if (auto r = in(g_owners, sizeof(g_owners), 2)) return r;
     if (auto r = in(g_bones, sizeof(g_bones), 4)) return r;
     if (auto r = in(g_textures, sizeof(g_textures), 5)) return r;
@@ -125,12 +125,12 @@ namespace {
 
 constexpr int kStride = 0x70;
 
-bool Active(int i) { return DAT_07abf5f0[(std::size_t)i * kStride] != 0; }
+bool Active(int i) { return Particles[i].Live != 0; }
 
 void HashSlot(int i)
 {
     MixU((unsigned)i);
-    const unsigned char* slot = reinterpret_cast<const unsigned char*>(DAT_07abf5f0) + (std::size_t)i * kStride;
+    const unsigned char* slot = reinterpret_cast<const unsigned char*>(&Particles[i]);
     Mix(slot, 0x3C);                    // +0x3C: los 32 bits bajos del owner, cambian entre builds
     Mix(slot + 0x40, kStride - 0x40);
     MixP(reinterpret_cast<const void*>(g_ParticleOwner[i]));
@@ -139,7 +139,7 @@ void HashSlot(int i)
 void ClearPool()
 {
     for (int i = 0; i < kParticlePoolSize; ++i)
-        if (Active(i)) { std::memset(DAT_07abf5f0 + (std::size_t)i * kStride, 0, kStride); g_ParticleOwner[i] = 0; }
+        if (Active(i)) { std::memset(&Particles[i], 0, kStride); g_ParticleOwner[i] = 0; }
 }
 
 void FillOwner(unsigned char* c, unsigned seed)

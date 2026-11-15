@@ -4,6 +4,7 @@
 #include "game/item/ItemDefines.h"
 #include "scenes/SceneObjectCell.h"
 #include "render/EffectPools.h"
+#include "render/ParticleTypes.h"
 struct GATE_ATTRIBUTE;
 struct OBJECT;
 // globals.h — extern declarations for all Ghidra DAT_ globals.
@@ -614,7 +615,7 @@ extern DWORD   DAT_07abf5dc;
 extern DWORD   DAT_07abf5e0;
 extern float  _DAT_07abf5e8;   // extra flag (reset 0 each frame)
 extern DWORD   DAT_07abf5e8;
-extern char    DAT_07abf5f0[kParticlePoolSize * 0x70];   // particle pool — 3000 slots × 112B
+extern PARTICLE Particles[kParticlePoolSize];   // IDA: unk_7ABF5F0 (0x07ABF5F0), 3000 slots; nombre de MU 5.2
 extern char    DAT_007abf06;   // (low byte flag)
 extern float  _DAT_007abf06;
 

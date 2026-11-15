@@ -30,7 +30,7 @@ void __cdecl OpenWorld(void) {
     RenderFxSnapshots_Reset();
     // Limpiar TODOS los pools de char-select que sobreviven al world load (si no,
     // los tick-functions iteran slots con punteros basura).
-    memset(DAT_07abf5f0, 0, sizeof(DAT_07abf5f0));   // particle pool (3000×0x70)
+    memset(Particles, 0, sizeof(Particles));   // particle pool (3000×0x70)
     memset(DAT_07c5ab3c, 0, sizeof(DAT_07c5ab3c));   // skill effect pool (200×0x70)
     memset(Effects, 0, sizeof(Effects));   // effect pool (124×0x1bc)
     memset(DAT_07b27150, 0, sizeof(DAT_07b27150));   // joint pool (200×0x9d8)

@@ -271,7 +271,7 @@ void Game_EnterWorldTick(void)
     { extern void __stdcall MoveBugs(void); MoveBugs(); }
     CLK_WATCH("after-MoveBugs");
     Object_MoveUpdate();         CLK_WATCH("after-Object_MoveUpdate");
-    // MoveParticles decrementa el lifetime de cada particle del pool DAT_07abf5f0.
+    // MoveParticles decrementa el lifetime de cada particle del pool Particles.
     // MEJORA DEL DLL (no esta en IDA): el binario solo llama MoveParticles en
     // 0x005223EE; el DLL (Patchs.cpp MoveParticles_MoveCharacterScene) agrega
     // MoveEffects + MoveJoints para que el efecto de las alas se vea en

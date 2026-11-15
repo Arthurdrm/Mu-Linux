@@ -11,7 +11,7 @@
 // 2. Per active particle: decrement lifetime, MovePosition,
 //    switch on type for gravity/terrain snap/fade/scale/color
 //
-// Particle slot layout (stride 0x70, base DAT_07abf5f0):
+// Particle slot layout (stride 0x70, base Particles):
 //   +0x00 active  +0x04 type  +0x08 sub  +0x0C scale
 //   +0x10 posX    +0x14 posY  +0x18 posZ
 //   +0x1C dirX    +0x20 angle
@@ -32,35 +32,35 @@
 // WorldTime = WorldTime (global animation tick).
 
 // Helper macros for particle field access
-// DAT_07abf5f0 es un array `char[N]`: usarlo directo (decae a char*). Con
-// `&DAT_07abf5f0` sería pointer-to-array (aritmética × sizeof[N]).
-#define P_BASE      (DAT_07abf5f0)
-#define P_ACTIVE(o) (*(char*)(P_BASE + (o)))
-#define P_TYPE(o)   (*(int*)(P_BASE + (o) + 0x04))
-#define P_SUB(o)    (*(int*)(P_BASE + (o) + 0x08))
-#define P_SCALE(o)  (*(float*)(P_BASE + (o) + 0x0C))
-#define P_POSX(o)   (*(float*)(P_BASE + (o) + 0x10))
-#define P_POSY(o)   (*(float*)(P_BASE + (o) + 0x14))
-#define P_POSZ(o)   (*(float*)(P_BASE + (o) + 0x18))
-#define P_DIRX(o)   (*(float*)(P_BASE + (o) + 0x1C))
-#define P_ANGLE(o)  (*(float*)(P_BASE + (o) + 0x20))
-#define P_LR(o)     (*(float*)(P_BASE + (o) + 0x28))
-#define P_LG(o)     (*(float*)(P_BASE + (o) + 0x2C))
-#define P_LB(o)     (*(float*)(P_BASE + (o) + 0x30))
-#define P_LIFE(o)   (*(int*)(P_BASE + (o) + 0x38))
-#define P_ENT(o)    (g_ParticleOwner[(o) / 0x70])
-#define P_ROT(o)    (*(float*)(P_BASE + (o) + 0x40))
-#define P_FRAME(o)  (*(int*)(P_BASE + (o) + 0x44))
-#define P_GRAV(o)   (*(float*)(P_BASE + (o) + 0x48))
-#define P_VELX(o)   (*(float*)(P_BASE + (o) + 0x4C))
-#define P_VELY(o)   (*(float*)(P_BASE + (o) + 0x50))
-#define P_VELZ(o)   (*(float*)(P_BASE + (o) + 0x54))
-#define P_EX0(o)    (*(float*)(P_BASE + (o) + 0x58))
-#define P_EX1(o)    (*(float*)(P_BASE + (o) + 0x5C))
-#define P_EX2(o)    (*(float*)(P_BASE + (o) + 0x60))
-#define P_TGX(o)    (*(float*)(P_BASE + (o) + 0x64))
-#define P_TGY(o)    (*(float*)(P_BASE + (o) + 0x68))
-#define P_TGZ(o)    (*(float*)(P_BASE + (o) + 0x6C))
+// Campos del slot cuyo offset en bytes es o (el recorrido avanza de a 0x70).
+#define P_(o)       (Particles[(o) / PARTICLE_STRIDE])
+#define P_BASE      (reinterpret_cast<char*>(Particles))
+#define P_ACTIVE(o)  (P_(o).Live)
+#define P_TYPE(o)    (P_(o).Type)
+#define P_SUB(o)     (P_(o).SubType)
+#define P_SCALE(o)   (P_(o).Scale)
+#define P_POSX(o)    (P_(o).Position[0])
+#define P_POSY(o)    (P_(o).Position[1])
+#define P_POSZ(o)    (P_(o).Position[2])
+#define P_DIRX(o)    (P_(o).Angle[0])
+#define P_ANGLE(o)   (P_(o).Angle[1])
+#define P_LR(o)      (P_(o).Light[0])
+#define P_LG(o)      (P_(o).Light[1])
+#define P_LB(o)      (P_(o).Light[2])
+#define P_LIFE(o)    (P_(o).LifeTime)
+#define P_ENT(o)    (g_ParticleOwner[(o) / PARTICLE_STRIDE])
+#define P_ROT(o)     (P_(o).Rotation)
+#define P_FRAME(o)   (P_(o).Frame)
+#define P_GRAV(o)    (P_(o).Gravity)
+#define P_VELX(o)    (P_(o).Velocity[0])
+#define P_VELY(o)    (P_(o).Velocity[1])
+#define P_VELZ(o)    (P_(o).Velocity[2])
+#define P_EX0(o)     (P_(o).Extra[0])
+#define P_EX1(o)     (P_(o).Extra[1])
+#define P_EX2(o)     (P_(o).Extra[2])
+#define P_TGX(o)     (P_(o).StartPosition[0])
+#define P_TGY(o)     (P_(o).StartPosition[1])
+#define P_TGZ(o)     (P_(o).StartPosition[2])
 // Bitmaps height: g_BitmapsRaw + type * 0x38 + 0x24 = height field per bitmap slot
 #define BMP_HEIGHT(t)  (*(float*)(g_BitmapsRaw + (t) * TEXTURE_STRIDE + 0x24))
 
@@ -1121,6 +1121,7 @@ void __stdcall MoveParticles(void)
 
 // Undefine particle helper macros to avoid polluting other translation units
 #undef P_BASE
+#undef P_
 #undef P_ACTIVE
 #undef P_TYPE
 #undef P_SUB

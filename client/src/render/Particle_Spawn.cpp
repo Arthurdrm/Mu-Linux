@@ -1,7 +1,7 @@
 #include <cstdint>
 // Particle_Spawn.cpp — IDA: FUN_00475220 @ 0x00475220
 // Allocates a free slot in the particle pool and initialises it.
-// The pool starts at DAT_07abf5f0; each slot is 0x70 bytes.
+// The pool starts at Particles; each slot is 0x70 bytes.
 // Overflow guard: if the slot pointer exceeds 0x7b1166f, returns 0.
 //
 // Slot layout (offsets within each 0x70 block):
@@ -309,7 +309,7 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
     // Pool de kParticlePoolSize slots: se itera por índice, no por el end-bound absoluto
     // 0x7b1166f del binario.
     iVar6 = 0;
-    pcVar11 = DAT_07abf5f0;
+    pcVar11 = reinterpret_cast<char*>(Particles);
     while (*pcVar11 != '\0') {
         pcVar11 = pcVar11 + 0x70;
         iVar6 = iVar6 + 1;

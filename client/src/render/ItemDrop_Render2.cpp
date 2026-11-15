@@ -42,8 +42,8 @@ void RenderParticles(void)
 {
     // DESVIACION (DLL Antilag, ret en 0x00478C00): sin efectos dinámicos.
     if (gUserSettings.GetAntilag(ANTILAG_DYNAMIC_EFFECTS)) return;
-    // Itera el pool DAT_07abf5f0 por índice, acotado a kParticlePoolSize slots.
-    uint  *puVar8  = (uint*)((char*)DAT_07abf5f0 + 0x44);  // +0x44 from slot 0 base
+    // Itera el pool Particles por índice, acotado a kParticlePoolSize slots.
+    uint  *puVar8  = (uint*)((char*)Particles + 0x44);  // +0x44 from slot 0 base
     uint   local_2c = 0;             // entry index / loop counter
 
     do {

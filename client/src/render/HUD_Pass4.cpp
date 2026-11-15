@@ -376,7 +376,7 @@ void Render_QuickButtons_(void)
 
     // Boton de cierre del panel de personaje.  IDA sub_4F5820 lo dibuja DESPUES
     // de RenderCharacterInfoWindow: antes del panel la textura (alcanza y=433)
-    // lo tapaba y quedaba un hitbox sin boton.  El origen CharacterInfoStartX/30 lo
+    // lo tapaba y quedaba un hitbox sin boton.  El origen CharacterInfoStartX/Y lo
     // escribe el propio panel este mismo frame; el click lo atiende
     // CharacterInfo_HitTest en [panelX+25,+49) x [panelY+395,+419).  El texto
     // es byte_7D3A14C = GlobalText[222] ("Cerrar Info de Personaje (C)").

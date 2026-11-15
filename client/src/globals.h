@@ -658,7 +658,6 @@ extern float   DAT_0838b7f8;  // frustum plane 4 (near) normal Y
 extern float   DAT_0838b7fc;  // frustum plane 4 (near) normal Z
 extern unsigned char DAT_0838b800[1080];   // BMPHeader (BITMAPFILEHEADER + DIB + palette)
 extern DWORD   TerrainFlag;  // IDA: TerrainFlag (0x0838BC44) - (RenderTerrain pass selector: 0=base, 2=alpha overlay)
-extern char    DAT_0838bc70[];  // char array (monster name/flag table)
 extern DWORD   DAT_0839bc88;    // terrain-light double-buffer toggle (RenderTerrain ^=1 cada frame)
 extern DWORD   DAT_0839bc86;
 extern DWORD   WaterTextureNumber;  // IDA: WaterTextureNumber (0x0839BC8C)
@@ -1436,9 +1435,6 @@ extern char    s_fairy_bmd[];
 
 // ── Scene_Resources strings ───────────────────────────────────────────────────
 
-// ── Entity_Spawn ──────────────────────────────────────────────────────────────
-// DAT_0838bc70 redeclarado como array de char (no DWORD)
-// (definido en globals.cpp como char DAT_0838bc70[])
 
 // ── Additional misc globals ───────────────────────────────────────────────────
 // DAT_07e016f0 — misma dirección que _DAT_07e016f0 (ya declarado arriba)
@@ -1712,9 +1708,8 @@ extern "C" BYTE  OffsetInventoryItems[];
 extern "C" BYTE  OffsetTradeItems[];
 extern "C" BYTE  OffsetWarehouseItems[];
 extern "C" BYTE  OffsetMixItems[];
-// TerrainWall = &DAT_0838bc70 (256x256 flags de tile: bit0 safezone, bit1
-// ocupado por entidad, bit3 no-caminable).
-extern unsigned char* TerrainWall;
+// 256x256 flags de tile: bit0 safezone, bit1 ocupado por entidad, bit3 no-caminable.
+extern unsigned char TerrainWall[0x10000];   // IDA: TerrainWall (0x0838BC70) — atributos por casilla (TW_*)
 
 #endif
 

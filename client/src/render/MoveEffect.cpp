@@ -409,7 +409,7 @@ static bool MoveEffect_Arrow(float *& param_1, float& fVar13, float10& fVar17, f
     lVar19 = (longlong)(AsObject(param_1)->Position[0] * 0.0099999998f);   // IDA Terrain_Load((std::int64_t)(x*0.01),...)
     lVar20 = (longlong)(AsObject(param_1)->Position[1] * 0.0099999998f);   // IDA Terrain_Load(...,(std::int64_t)(y*0.01))
     iVar9 = Terrain_GetTileIndex((uint)lVar19,(uint)lVar20);
-    if ((((DAT_0838bc70)[iVar9] & 8) != 8) &&
+    if ((((TerrainWall)[iVar9] & 8) != 8) &&
        (fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]), (float10)AsObject(param_1)->Position[2] < fVar17)) {
       fVar18 = (float10)10.0f;
       AsObject(param_1)->Direction[0] = 0.0;
@@ -553,7 +553,7 @@ static bool MoveEffect_Type228(float *& param_1, byte& bVar28, float10& fVar17, 
   uVar8 = (int)lVar19 / 100;
   lVar19 = (longlong)AsObject(param_1)->Position[0];   // IDA Terrain_Load(x/100, y/100): este es x
   iVar9 = Terrain_GetTileIndex((int)lVar19 / 100,uVar8);
-  if ((((DAT_0838bc70)[iVar9] & 8) != 8) &&
+  if ((((TerrainWall)[iVar9] & 8) != 8) &&
      (fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]), (float10)AsObject(param_1)->Position[2] < fVar17)) {
     AsObject(param_1)->Position[2] = (float)fVar17;
     *(undefined1 *)param_1 = 0;
@@ -896,7 +896,7 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
       lVar19 = (longlong)(local_328 * 0.0099999998f);   // IDA TERRAIN_INDEX((std::int64_t)(TargetPosition[0]*0.01),...)
       lVar20 = (longlong)(local_324 * 0.0099999998f);   // IDA TERRAIN_INDEX(...,(std::int64_t)(TargetPosition[1]*0.01))
       iVar9 = TERRAIN_INDEX((int)lVar19,(int)lVar20);
-      bVar28 = (DAT_0838bc70)[iVar9];
+      bVar28 = (TerrainWall)[iVar9];
       if ((((bVar28 & 4) != 4) || ((bVar28 & 8) != 8)) || ((bVar28 & 0x10) != 0x10)) {
         fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
         local_320 = (float)(fVar17 + (float10)3.0f);
@@ -963,7 +963,7 @@ static bool MoveEffect_Type244(float *& param_1, const intptr_t& __cnt, bool& bV
         lVar19 = (longlong)(pfVar15[-1] * 0.0099999998f);   // IDA TERRAIN_INDEX((std::int64_t)(*(v74-1)*0.01),...)
         lVar20 = (longlong)(pfVar15[0] * 0.0099999998f);   // IDA TERRAIN_INDEX(...,(std::int64_t)(*v74*0.01))
         iVar9 = TERRAIN_INDEX((int)lVar19,(int)lVar20);
-        bVar28 = (DAT_0838bc70)[iVar9];
+        bVar28 = (TerrainWall)[iVar9];
         if ((((bVar28 & 4) != 4) || ((bVar28 & 8) != 8)) || ((bVar28 & 0x10) != 0x10)) {
           fVar17 = RequestTerrainHeight(AsObject(param_1)->Position[0], AsObject(param_1)->Position[1]);
           pfVar15[1] = (float)(fVar17 + (float10)3.0f);
@@ -1278,7 +1278,7 @@ static bool MoveEffect_Fire(float *& param_1, int& param_2, byte& bVar28, float&
       lVar19 = (longlong)(AsObject(param_1)->Position[0] * 0.0099999998f);   // IDA Terrain_Load((std::int64_t)(x*0.01),...)
       lVar20 = (longlong)(AsObject(param_1)->Position[1] * 0.0099999998f);   // IDA Terrain_Load(...,(std::int64_t)(y*0.01))
       iVar9 = Terrain_GetTileIndex((uint)lVar19,(uint)lVar20);
-      if ((AsObject(param_1)->LifeTime == 1) || (((DAT_0838bc70)[iVar9] & 8) == 8)) {
+      if ((AsObject(param_1)->LifeTime == 1) || (((TerrainWall)[iVar9] & 8) == 8)) {
         local_224 = AsObject(param_1)->Position[0];
         local_21c = local_348 + 80.0f;
         AsObject(param_1)->Position[2] = local_348;
@@ -1312,7 +1312,7 @@ LAB_00469772:
     lVar19 = (longlong)(AsObject(param_1)->Position[0] * 0.0099999998f);   // IDA Terrain_Load((std::int64_t)(x*0.01),...)
     lVar20 = (longlong)(AsObject(param_1)->Position[1] * 0.0099999998f);   // IDA Terrain_Load(...,(std::int64_t)(y*0.01))
     iVar9 = Terrain_GetTileIndex((uint)lVar19,(uint)lVar20);
-    if (((DAT_0838bc70)[iVar9] & 8) == 8) {
+    if (((TerrainWall)[iVar9] & 8) == 8) {
       if (AsObject(param_1)->Position[2] < (-200.0f)) {
         fVar17 = (float10)AsObject(param_1)->Position[2];
         goto LAB_004698ca;

@@ -58,7 +58,7 @@ extern void MapFileDecrypt(BYTE* buf, int size);
 static int PF_AStar(int sx, int sy, int tx, int ty, int iWall, bool bErrorCheck,
                     unsigned char* path, float fDistance)
 {
-    const unsigned char* attr = (const unsigned char*)&DAT_0838bc70;
+    const unsigned char* attr = TerrainWall;
 
     if (sx < 0 || sx >= 256 || sy < 0 || sy >= 256 ||
         tx < 0 || tx >= 256 || ty < 0 || ty >= 256) return 0;
@@ -319,7 +319,7 @@ unsigned int __cdecl Path_FindRoute(int sx, int sy, int tx, int ty,
 
         if (PF_AStar(sx, sy, tx, ty, 2, true, path, radius)) return 1;
 
-        const unsigned char* tw = (const unsigned char*)&DAT_0838bc70;
+        const unsigned char* tw = TerrainWall;
         int iWall2 = 2;
         if (sx >= 0 && sx < 256 && sy >= 0 && sy < 256 &&
             tx >= 0 && tx < 256 && ty >= 0 && ty < 256) {
@@ -345,10 +345,10 @@ unsigned int __cdecl Path_FindRoute(int sx, int sy, int tx, int ty,
         // bit 0, y vuelve a 2 sólo si el destino tiene además el bit 1:
         //     iVar3 = 4;  if ((TerrainWall[dst] & 2) == 2) iVar3 = local_4 /*2*/;
         // Camino muerto hoy (pfReady siempre false).
-        if ((DAT_0838bc70[srcAttr] & 1) == 1 || (DAT_0838bc70[dstAttr] & 1) == 1) {
+        if ((TerrainWall[srcAttr] & 1) == 1 || (TerrainWall[dstAttr] & 1) == 1) {
             int dstAttr2 = Terrain_GetTileIndex((unsigned int)tx, (unsigned int)ty);
             filterMode = 4;
-            if ((DAT_0838bc70[dstAttr2] & 2) == 2) {
+            if ((TerrainWall[dstAttr2] & 2) == 2) {
                 filterMode = 2;
             }
         }
@@ -481,7 +481,7 @@ unsigned int __cdecl Entity_AdvancePath(void *entity, char flag)
 }
 
 // IDA: CheckWall @ 0x004830B0 — bool __cdecl CheckWall(int sx1, int sy1, int sx2, int sy2)
-// Bresenham desde (sx1,sy1) hasta (sx2,sy2) sobre TerrainWall (DAT_0838bc70);
+// Bresenham desde (sx1,sy1) hasta (sx2,sy2) sobre TerrainWall;
 // devuelve 1 si la linea esta despejada, 0 si topa con un tile bloqueante.
 // Nombres: tile = v4 · err = v5 · dx = v6 · dy = v7 · xStep = v8 · yStep = v9
 //          major = v10 · minorDelta = y · minorInc = v11 · steps = x
@@ -514,7 +514,7 @@ char __cdecl Path_IsLineClear(int sx1, int sy1, int sx2, int sy2) {
 
     int steps = 0;                                                   // IDA: x
     do {
-        const byte attr = ((byte*)&DAT_0838bc70)[tile];              // IDA: v12
+        const byte attr = (TerrainWall)[tile];              // IDA: v12
         if (attr >= 4 && (attr & 0x20) != 0x20) return 0;            // IDA L58
         err += minorDelta;
         if (err > major / 2) { tile += minorInc; err -= major; }

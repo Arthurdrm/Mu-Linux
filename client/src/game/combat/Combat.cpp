@@ -192,7 +192,7 @@
 //
 //     // F??sica ragdoll solo en sub-estado 0x0B..0x10:
 //     if (World >= 0x0B && World <= 0x10):
-//       tile_flags = DAT_0838bc70[Terrain_GetTileIndex(grid_x, grid_y)]
+//       tile_flags = TerrainWall[Terrain_GetTileIndex(grid_x, grid_y)]
 //       if (tile_flags & 0x20):    // tile flag = "ragdoll zone"
 //         entity[+0x304] = 0
 //         entity[+0x195] = 1       // ragdoll_active = true
@@ -214,7 +214,7 @@
 //       clearMatchInfo()    // PlayerDeath_Handler
 //
 //   Terrain_GetTileIndex @ 0x004f6c40 = Terrain_GetTileIndex(grid_x, grid_y)
-//   DAT_0838bc70 = terrain tile flags array (per-tile bytes)
+//   TerrainWall = terrain tile flags array (per-tile bytes)
 //   clearMatchInfo @ 0x0047eb80 = PlayerDeath_Handler
 //
 // ─── OPCODE 0x18 — ENTITY SKILL ANIMATION ──────────────────────────────────────────────────────────────────────────
@@ -1327,7 +1327,6 @@ static void Attack_Label1585_97k(char* entity, int iType, bool hasTarget)
         const BYTE fadeState = (BYTE)*(char *)&AsObject(entity)->Teleport;             // IDA: v947
         if (fadeState == 1 || fadeState == 2 || AsObject(entity)->Alpha < 0.69999999f)
             return;                                           // IDA L9285
-        extern unsigned char* TerrainWall;
         BYTE terrainAttr = TerrainWall[(((unsigned)TargetY & 0xFF) << 8)
                                        | ((unsigned)TargetX & 0xFF)];   // IDA: TerrainWall[Terrain_Load(TargetX, TargetY)]
         if ((terrainAttr & 0x20) == 0x20)
@@ -1387,7 +1386,6 @@ static void Attack_Label1585_97k(char* entity, int iType, bool hasTarget)
         if (targetFade == 1 || targetFade == 2 || *(float*)&((OBJECT*)(uintptr_t)(target))->Alpha < 0.7f) {
             return;
             }
-        extern unsigned char* TerrainWall;
         const int heroGX = (int)(AsObject(entity)->Position[0] * 0.01f);
         const int heroGY = (int)(AsObject(entity)->Position[1] * 0.01f);
         for (int attempt = 0; attempt <= 10; ++attempt) {       // IDA L9781-9795

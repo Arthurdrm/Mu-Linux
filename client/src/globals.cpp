@@ -727,7 +727,7 @@ float    DAT_0838b7fc  = 0.0f;  // plane 4 (near) normal Z
 // escribe 1080 bytes acá.
 unsigned char DAT_0838b800[1080] = {};
 DWORD    TerrainFlag  = 0;  // IDA: TerrainFlag (0x0838BC44)
-char     DAT_0838bc70[0x10000] = {};  // terrain walk flags (per-tile byte array, 256x256 grid)
+unsigned char TerrainWall[0x10000] = {};   // IDA: TerrainWall (0x0838BC70) — atributos por casilla
 DWORD    DAT_0839bc88  = 0;            // terrain-light double-buffer toggle (RenderTerrain)
 DWORD    DAT_0839bc86  = 0;
 DWORD    WaterTextureNumber  = 0;  // IDA: WaterTextureNumber (0x0839BC8C)

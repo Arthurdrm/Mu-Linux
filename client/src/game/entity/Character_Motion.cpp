@@ -126,7 +126,7 @@ void __cdecl SetPlayerStop(CHARACTER* c) {
             int gx = (int)(AsCharacter(c)->Object.Position[0] * 0.0099999998f);
             int gy = (int)(AsCharacter(c)->Object.Position[1] * 0.0099999998f);
             int v3 = Terrain_GetTileIndex((unsigned int)gx, (unsigned int)gy);
-            if ((DAT_0838bc70[v3] & 1) != 1) gateA = true;
+            if ((TerrainWall[v3] & 1) != 1) gateA = true;
         }
         if (gateA || Fly) {
             short v4 = AsCharacter(c)->Weapon[0].Type;  // Helm
@@ -192,7 +192,7 @@ void __cdecl SetPlayerStop(CHARACTER* c) {
         int gx = (int)(AsCharacter(c)->Object.Position[0] * 0.0099999998f);
         int gy = (int)(AsCharacter(c)->Object.Position[1] * 0.0099999998f);
         int v50 = Terrain_GetTileIndex((unsigned int)gx, (unsigned int)gy);
-        if (AsCharacter(c)->Object.Type == 302 && (DAT_0838bc70[v50] & 1) == 1) {
+        if (AsCharacter(c)->Object.Type == 302 && (TerrainWall[v50] & 1) == 1) {
             SetAction_local(7);
         } else {
             SetAction_local(0);
@@ -1993,7 +1993,7 @@ void __cdecl MoveCharacterVisual(intptr_t entity_ptr)
         if (gx >= 0 && gx < 256 && gy >= 0 && gy < 256) {
             int attrIdx = Terrain_GetTileIndex(gx, gy);
             AsCharacter(entity_ptr)->SafeZone =
-                (unsigned char)((((unsigned char *)DAT_0838bc70)[attrIdx] & 1) == 1);
+                (unsigned char)(((TerrainWall)[attrIdx] & 1) == 1);
         }
     }
 

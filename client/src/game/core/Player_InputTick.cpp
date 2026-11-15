@@ -1357,7 +1357,7 @@ void __cdecl Player_ProcessInput(void)
                 TargetY = (DWORD)(int)(*(float*)(tgtEntityPtr + 0x14) * 0.01f);
 
                 const int attrIdx = TERRAIN_INDEX((int)TargetX, (int)TargetY);
-                if (((unsigned char*)&DAT_0838bc70)[attrIdx] < 2
+                if ((TerrainWall)[attrIdx] < 2
                     && *(char *)&AsCharacter(ent)->Movement == 0)
                 {
                     AsCharacter(ent)->MovementType = 4;   // MOVEMENT_OPERATE
@@ -1533,7 +1533,7 @@ void __cdecl Player_ProcessInput(void)
                         // que es exactamente lo que hace la forma de abajo. Es fiel;
                         // el nombre "walkability" del comentario viejo confundía.
                         int terrIdx = TargetX + TargetY * 0x100;
-                        unsigned char terrAttr = ((unsigned char*)&DAT_0838bc70)[terrIdx];
+                        unsigned char terrAttr = (TerrainWall)[terrIdx];
                         if (terrAttr < 8 || (terrAttr & 0x20) == 0x20)
                             DontMove = 0;   // DontMove = false
                         else

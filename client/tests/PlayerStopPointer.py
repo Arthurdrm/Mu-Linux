@@ -57,6 +57,7 @@ using uint = unsigned int;
 SERVICES = r'''
 int SceneFlag;
 BYTE DAT_0838bc70[0x10000];
+#define TerrainWall DAT_0838bc70
 MAP_INFO_STUB
 struct Map {
     int world; bool swimming;

@@ -314,7 +314,7 @@ void PacketHandler_0x0D(int packet);
 //
 //   0x004f6c40  GetTileType(uint x, uint y) → int
 //     Devuelve tipo de tile del mapa en posición grid (x, y).
-//     DAT_0838bc70 = tabla de atributos de tile del mapa cargado.
+//     TerrainWall = tabla de atributos de tile del mapa cargado.
 //     Bit 0 = walkable, bit otros = agua, obstáculo, etc.
 //
 //   0x0045ac80  Entity_FindByNetId(uint netId) → int

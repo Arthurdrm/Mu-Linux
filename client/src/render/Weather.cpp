@@ -71,7 +71,7 @@
 //   DAT_05828d58   — particle model table base (stride 0xbc, indexed by type)
 //   DAT_07abf5d8   — local player entity ptr
 //   EnableEvent   — weather mode (0=sun/clear, 1=rain, 2=snow, 3=storm)
-//   DAT_0838bc70   — per-tile terrain attribute array
+//   TerrainWall   — per-tile terrain attribute array
 //   World   — World
 //   MAIN_HASH_CLASS   — HashTable context (anti-tamper)
 //   MoveSceneFrame   — anti-tamper key
@@ -374,7 +374,7 @@ LAB_00501064:
             bool __spawn = (iVar12 == 0) || (iVar12 == 1) || (iVar12 == 3) ||
                            (iVar12 == 4) || (iVar12 == 10);
             if (!__spawn && iVar12 == 7) {
-                const unsigned char __attr = (unsigned char)DAT_0838bc70[uStack_48];
+                const unsigned char __attr = (unsigned char)TerrainWall[uStack_48];
                 __spawn = (__attr == 0) || (__attr == 2);
             } else if (!__spawn && iVar12 >= 11 && iVar12 <= 16) {
                 __spawn = true;
@@ -751,7 +751,7 @@ LAB_00501cb5:
 
                 // Loop-kill conditions (state 7, terrain type = grass)
                 if ((((int)(&DAT_0839bd10)[iVar14*(OBJECT_STRIDE / 4)] < 1) && (gMapManager.GetCurrentMap() == MAP_ATLANS)) &&
-                    ((unsigned char)DAT_0838bc70[uStack_48] == 0x01)) {
+                    ((unsigned char)TerrainWall[uStack_48] == 0x01)) {
                     fVar25 = WSF(DAT_0839bcd4, iVar14*(OBJECT_STRIDE / 4)) + 180.0f;
                     bVar20 = (360.0f <= fVar25);
                     (&DAT_0839bcd4)[iVar14*(OBJECT_STRIDE / 4)] = (unsigned int)(*(int *)&fVar25);
@@ -782,7 +782,7 @@ LAB_00501cb5:
                         bVar20 = (uVar8 == 0);
                         if ((int)uVar8 < 0) bVar20 = ((uVar8-1|0xffffff00)==0xffffffff);
                         if (bVar20) PlayBuffer(0xe, AsObject(pcVar19), 0);
-                    } else if ((sVar5 == 0xb8) && ((unsigned char)DAT_0838bc70[uStack_48] == 0x01)) {
+                    } else if ((sVar5 == 0xb8) && ((unsigned char)TerrainWall[uStack_48] == 0x01)) {
                         uVar8 = _rand(); uVar8 &= 0x8000007f;
                         bVar20 = (uVar8 == 0);
                         if ((int)uVar8 < 0) bVar20 = ((uVar8-1|0xffffff80)==0xffffffff);

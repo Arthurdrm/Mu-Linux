@@ -329,7 +329,6 @@ static void CustomPet_Move(char* e, const BYTE* owner, const Proto::CATALOG_PET&
 }
 
 void __stdcall MoveBugs(void) {
-    extern unsigned char* TerrainWall;
 
     char*  base = (char*)reinterpret_cast<char*>(Butterfles);
     DWORD* v0   = (DWORD*)(base + 0xFC);      // = &unk_83A1314 (owner field de entry 0)

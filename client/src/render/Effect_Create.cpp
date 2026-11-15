@@ -1196,9 +1196,9 @@ LAB_00463e3d:
       return (float*)(uintptr_t)(intptr_t)AsObject(pfVar17)->Owner;
     }
     pfVar12 = (float*)DAT_07cf1ffc;
-    cVar5 = *(char *)((char*)DAT_07cf1ffc + 0x160);
+    cVar5 = *(char *)((char*)DAT_07cf1ffc + 1408);
     *(char *)(pfVar17 + 0x22) = cVar5;
-    *((char *)pfVar12 + 0x160) = cVar5 + '\x01';
+    *((char *)pfVar12 + 1408) = cVar5 + '\x01';
     sVar28 = AsObject(pfVar17)->PKKey;
     bVar6 = *(byte *)(pfVar17 + 0x22);
     fVar27 = 300.0;
@@ -1622,10 +1622,14 @@ LAB_004625aa:
     if (CreateEffect_Earthquake(param_7, pfVar17, pfVar8, result)) return result;
     break;
   }
+  // Serial de proyectiles: CharacterMachine+1408 (IDA: i[136] = *(BYTE*)(CharacterMachine
+  // + 1408)), el mismo que leen Joint_Create y UseSkillWarrior.  Ghidra lo da como
+  // pfVar12[0x160] sobre un float*, o sea 0x160 * 4; el port lo había pasado a bytes
+  // sin escalar y leía e incrementaba CharacterMachine+0x160, que es otro campo.
   pfVar12 = (float*)DAT_07cf1ffc;
-  cVar5 = *(char *)((char*)DAT_07cf1ffc + 0x160);
+  cVar5 = *(char *)((char*)DAT_07cf1ffc + 1408);
   *(char *)(pfVar17 + 0x22) = cVar5;
-  *((char *)pfVar12 + 0x160) = cVar5 + '\x01';
+  *((char *)pfVar12 + 1408) = cVar5 + '\x01';
   pfVar12 = (float *)STRUCT_ENCRYPT(&MAIN_HASH_CLASS,pfVar12);
   return pfVar12;
 switchD_00460f25_caseD_100:
@@ -1760,7 +1764,7 @@ LAB_004652b0:
 LAB_004652dd:
   pfVar12 = (float*)DAT_07cf1ffc;
   iVar9 = MAIN_HASH_CLASS;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   param_5 = pfVar12;
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_6 = (float *)0x0;
@@ -2106,7 +2110,7 @@ LAB_00462736:
 LAB_004625ca:
   pfVar12 = (float*)DAT_07cf1ffc;
   iVar9 = MAIN_HASH_CLASS;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   param_6 = pfVar12;
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_6 = (float *)0x0;
@@ -2324,7 +2328,7 @@ LAB_0046218d:
 LAB_004621ba:
   pfVar12 = (float*)DAT_07cf1ffc;
   iVar9 = MAIN_HASH_CLASS;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   param_5 = pfVar12;
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_6 = (float *)0x0;
@@ -2867,7 +2871,7 @@ LAB_004613f9:
   CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______Insert_005580e8);
 LAB_00461426:
   pfVar12 = (float*)DAT_07cf1ffc;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   param_5 = pfVar12;
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_6 = (float *)0x0;
@@ -3263,7 +3267,7 @@ LAB_004638bc:
 LAB_00463750:
   pfVar12 = (float*)DAT_07cf1ffc;
   iVar9 = MAIN_HASH_CLASS;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   param_6 = pfVar12;
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_6 = (float *)0x0;
@@ -3525,7 +3529,7 @@ LAB_00463451:
   pfVar12 = (float*)DAT_07cf1ffc;
   param_6 = (float*)DAT_07cf1ffc;
   param_5 = (float*)DAT_07cf1ffc;
-  *(char *)((char*)DAT_07cf1ffc + 0x160) = *(char *)((char*)DAT_07cf1ffc + 0x160) + '\x01';
+  *(char *)((char*)DAT_07cf1ffc + 1408) = *(char *)((char*)DAT_07cf1ffc + 1408) + '\x01';
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   pfVar12 = (float *)0x0;
   param_6 = (float *)0x0;
@@ -4168,7 +4172,7 @@ LAB_00461a9e:
   iVar9 = MAIN_HASH_CLASS;
   param_6 = (float*)DAT_07cf1ffc;
   param_3 = (float*)DAT_07cf1ffc;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_7 = (float *)0x0;
   _param_9 = (float *)0x0;
@@ -4341,7 +4345,7 @@ LAB_00462e29:
 LAB_00462e56:
   pfVar12 = (float*)DAT_07cf1ffc;
   iVar9 = MAIN_HASH_CLASS;
-  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 0x160);
+  *(undefined1 *)(pfVar17 + 0x22) = *(undefined1 *)((char*)DAT_07cf1ffc + 1408);
   param_5 = pfVar12;
   uVar10 = (**(code **)(MAIN_HASH_CLASS + 3 * sizeof(void*)))(pfVar12);
   param_6 = (float *)0x0;

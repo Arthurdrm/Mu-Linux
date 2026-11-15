@@ -61,8 +61,8 @@ extern "C" void Net_SendNpcTalkClose(void);
 
 // Origen (esquina superior izquierda) de los paneles Character / Guild.
 //
-// Son los globals reales (CharacterInfoStartX/Y = CharacterInfoStartX/30,
-// GuildListStartX/Y = GuildListStartX/84), no copias locales: los hit-tests de
+// Son los globals reales (CharacterInfoStartX/Y en 0x07EA982C/30,
+// GuildListStartX/Y en 0x07E91788/84), no copias locales: los hit-tests de
 // cierre (GuildCreator_HitTest / CharacterInfo_HitTest en Net/SecondPassword,
 // port de sub_4E4760 L617-629 y sub_4E5DE0 L336-357) los leen, y
 // CharacterInfo_HitTest/Party_MemberClickHandler hacen early-return cuando el

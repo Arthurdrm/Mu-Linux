@@ -751,7 +751,7 @@ OBJECT   Planes[100] = {};   // IDA: unk_7C74E68 (0x07C74E68); nombre de MU 5.2
 DWORD*   DAT_07c74f54 = (DWORD*)(reinterpret_cast<char*>(Planes) + 0xEC);
 
 // ── g_CharData XOR block ───────────────────────────────────────────────────────
-void    *DAT_07cf1ffc  = nullptr;  // g_CharData pointer (0x584-byte XOR-encoded)
+void    *CharacterMachine  = nullptr;  // IDA: CharacterMachine (0x07CF1FFC), buffer de 0x584 bytes
 
 // ── UI / HUD data ─────────────────────────────────────────────────────────────
 DWORD   _DAT_07e118e4  = 0;    // facing angle (float, movement packet)
@@ -2772,7 +2772,6 @@ SIZE   TextSize              = {0, 0};
 // dword_55C9BC8 hash-table state lives in g_HashTableCtx[4] (line ~438);
 // macros MAIN_HASH_CLASS/cc/d0/d4 alias it.  Do NOT re-define here.
 
-void  *CharacterMachine      = nullptr;
 // CharacterAttribute se declara en globals.h (IDA: 0x07CF1FF4).
 
 // DAT_07e11d6e is already defined at line ~676 as char (matches header).

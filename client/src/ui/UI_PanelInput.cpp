@@ -463,18 +463,18 @@ void __cdecl Inventory_HitTest(void) {
 
     // Refresh char-list visibility arrays for all CharData slots (stride 0x44, 12 slots)
     for (int i = 0; i < 0x330; i += 0x44) {
-        void* puVar8 = DAT_07cf1ffc;
-        uint uVar4 = HashTable_GetIndex(&MAIN_HASH_CLASS, (void*)DAT_07cf1ffc);
+        void* puVar8 = CharacterMachine;
+        uint uVar4 = HashTable_GetIndex(&MAIN_HASH_CLASS, (void*)CharacterMachine);
         if (uVar4 == 0xffffffff) {
             void* pvVar10 = AntiTamper_HashNode();
             *(static_cast<BYTE*>(pvVar10) + 0x584) = 1;
             HashTable_Insert(&MAIN_HASH_CLASS, pvVar10, puVar8);
         }
         // Update slot visibility based on item type == -1
-        if (*(short*)(static_cast<BYTE*>(DAT_07cf1ffc) + 0x218 + i) == -1)
-            *(static_cast<BYTE*>(DAT_07cf1ffc) + 0x258 + i) = 0;
+        if (*(short*)(static_cast<BYTE*>(CharacterMachine) + 0x218 + i) == -1)
+            *(static_cast<BYTE*>(CharacterMachine) + 0x258 + i) = 0;
         else
-            *(static_cast<BYTE*>(DAT_07cf1ffc) + 0x258 + i) = 1;
+            *(static_cast<BYTE*>(CharacterMachine) + 0x258 + i) = 1;
     }
 
     // IDA sub_4E6550 L160-231: reset por frame del byte ITEM.Color (+0x40) de

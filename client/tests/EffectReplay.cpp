@@ -328,7 +328,7 @@ int main()
         Hero = reinterpret_cast<char*>(g_owners[0]);
         std::memset(g_charMachine, 0, sizeof(g_charMachine));
         g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
-        DAT_07cf1ffc = g_charMachine;
+        CharacterMachine = g_charMachine;
         ClearPool();
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];

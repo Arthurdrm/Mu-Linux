@@ -17,7 +17,7 @@ SERVICES=r'''
 using WORD=std::uint16_t;
 #endif
 using byte=BYTE;
-void* DAT_07cf1ffc;BYTE* Hero;DWORD CurrentSkill;
+void* CharacterMachine;BYTE* Hero;DWORD CurrentSkill;
 CONSTANTS
 struct OBJECT{};
 struct CharacterView{struct Part{short Type;}Weapon[2];}character;
@@ -27,7 +27,7 @@ std::uint32_t Bits(float v){std::uint32_t x;std::memcpy(&x,&v,4);return x;}
 CharacterView* AsCharacter(DWORD address){Require(address==characterAddress);return &character;}
 OBJECT* AsObject(DWORD address){Require(address==objectAddress);return reinterpret_cast<OBJECT*>(static_cast<std::uintptr_t>(address));}
 int Behavior(int type){return aliases && type==999?136:aliases && type==888?128:type;}
-void CheckSerial(){Require(static_cast<BYTE*>(DAT_07cf1ffc)[1408]==serialBefore);}
+void CheckSerial(){Require(static_cast<BYTE*>(CharacterMachine)[1408]==serialBefore);}
 struct Catalog{int GetItemBehavior(int type){CheckSerial();events.insert(events.end(),{0,static_cast<std::uint32_t>(type)});return Behavior(type);}}gContentCatalog;
 void PlayBuffer(int sound,OBJECT* object,int mode){CheckSerial();Require(object==AsObject(objectAddress) && !mode);events.insert(events.end(),{1,static_cast<std::uint32_t>(sound)});}
 float* CreateEffect(int type,float* pos,float* angle,float* light,float* flags,float* owner,float* pk,float* index,BYTE skill){
@@ -46,7 +46,7 @@ int Secondary(int type){
 }
 std::uint64_t Run(BYTE* memory,BYTE* object,BYTE* identity,unsigned heroMode=0){
  Require(heroMode<=2);
- DAT_07cf1ffc=memory+16;objectAddress=static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(object+16));characterAddress=static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(identity+16));
+ CharacterMachine=memory+16;objectAddress=static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(object+16));characterAddress=static_cast<DWORD>(reinterpret_cast<std::uintptr_t>(identity+16));
  const short types[]={-1,128,129,130,131,132,133,134,136,137,138,139,140,141,142,144,145,146,888,999};
  const BYTE serials[]={0,1,126,127,128,253,254,255};
  const WORD skills[]={0,1,2,3,0x101,0x102,0xffff};
@@ -54,7 +54,7 @@ std::uint64_t Run(BYTE* memory,BYTE* object,BYTE* identity,unsigned heroMode=0){
  std::uint64_t hash=14695981039346656037ull;unsigned queries=0;
  for(unsigned t=0;t<20;++t)for(unsigned p=0;p<8;++p)for(WORD skill:skills)for(WORD key:keys)for(unsigned hero=0;hero<2;++hero){
   std::memset(memory,0xa5,1444);std::memset(object,0x6b,512);std::memset(identity,0x7c,128);
-  BYTE* cm=static_cast<BYTE*>(DAT_07cf1ffc);const short a=types[t],b=types[(t*3+p)%20];std::memcpy(cm+536,&a,2);std::memcpy(cm+604,&b,2);serialBefore=serials[p];cm[1408]=serialBefore;
+  BYTE* cm=static_cast<BYTE*>(CharacterMachine);const short a=types[t],b=types[(t*3+p)%20];std::memcpy(cm+536,&a,2);std::memcpy(cm+604,&b,2);serialBefore=serials[p];cm[1408]=serialBefore;
   character.Weapon[0].Type=Model(types[(t+3)%20]);character.Weapon[1].Type=Model(types[(t*7+2)%20]);const auto beforeCharacter=character;
   const auto heroAddress=heroMode==2?std::uint64_t(characterAddress)+0x100000000ull:std::uint64_t(characterAddress+(heroMode==1||!hero?1:0));
   Hero=reinterpret_cast<BYTE*>(static_cast<std::uintptr_t>(heroAddress));

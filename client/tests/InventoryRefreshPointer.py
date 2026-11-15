@@ -16,7 +16,7 @@ using uint=unsigned int;using ushort=unsigned short;using std::uintptr_t;
 DWORD MouseUpdateTimeMax,DAT_07d78094,MouseUpdateTime,InventoryStartY,InventoryStartX,TradeInventoryStartY,TradeInventoryStartX,DAT_07eaa0c8,DAT_07eaa0cc,RepairEnable,MixState,DAT_07eaa164,MouseLButtonPush,MouseY,MouseX,GoldenArcherOpenType;
 #define MouseOnWindow DAT_07d78094
 char InventoryOpened,ShopOpened,WarehouseOpened,ChaosMixOpened,TradeOpened,EventWindowOpened,DAT_07eaa134,CharacterOpened,PartyOpened;
-void *DAT_07cf1ffc,*CharacterAttribute;int MAIN_HASH_CLASS;
+void *CharacterMachine,*CharacterAttribute;int MAIN_HASH_CLASS;
 BYTE *OffsetInventoryItems,*OffsetTradeItems,*OffsetWarehouseItems,*OffsetMixItems,*ShopItems,*Inventory,*node;
 BYTE *machine,*attributes,*grids;BYTE expectedMachine[1536],expectedNode[1536],expectedAttributes[64],expectedGrids[28672];
 unsigned profile,hashSlot,panelCalls;bool click;std::vector<int> events;
@@ -43,7 +43,7 @@ void CloseInventoryRelatedWindows(){events.push_back(600);}
 MAIN=r'''
 bool Inside(int x,int y,int left,int top,int width,int height){return x>=left && x<left+width && y>=top && y<top+height;}
 std::uint64_t Run(BYTE* m,BYTE* a,BYTE* n,BYTE* g){
- machine=m;attributes=a;node=n;grids=g;DAT_07cf1ffc=m;CharacterAttribute=a;
+ machine=m;attributes=a;node=n;grids=g;CharacterMachine=m;CharacterAttribute=a;
  OffsetInventoryItems=g+offsets[0];OffsetTradeItems=g+offsets[1];OffsetWarehouseItems=g+offsets[2];OffsetMixItems=g+offsets[3];ShopItems=g+offsets[4];Inventory=g+offsets[5];
  const ushort levels[]={0,49,50,51,255,32768,65535,100};const short types[]={-1,0,32767,short(-32768)};const BYTE colors[]={0,1,2,99,255};
  std::uint64_t hash=14695981039346656037ull;unsigned cases=0,coverage=0;

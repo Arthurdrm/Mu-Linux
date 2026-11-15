@@ -535,7 +535,7 @@ extern "C" void __cdecl UI_Main(int slot_idx, short* inv_base, unsigned int grid
         536, 604, 672, 740, 808, 876, 944, 1012, 1080, 1148, 1216, 1284
     };
 
-    BYTE* CM = (BYTE*)DAT_07cf1ffc;
+    BYTE* CM = (BYTE*)CharacterMachine;
     if (CM == nullptr) return;
     BYTE* wearSlot = CM + 68 * slot_idx + 536;
     if (*(WORD*)wearSlot != 0xFFFF) {

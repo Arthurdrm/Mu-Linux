@@ -645,18 +645,11 @@ int main(int, char**)
     {
         void* ht = malloc(0x584);
         memset(ht, 0, 0x161 * 4);
-        DAT_07cf1ffc = ht;
+        CharacterMachine = ht;
     }
 
     // 20-21: CharacterAttribute = CharacterMachine; Hero = entity array slot 0
-    CharacterAttribute = DAT_07cf1ffc;
-    // También hay que setear el global C++ `CharacterMachine` (definido en
-    // globals.cpp, separado de DAT_07cf1ffc): HUD_Pass5 (Render_HudPass_4BD650_)
-    // chequea `if (!CharacterMachine || !CharacterAttribute) return;` y sin esto el
-    // HUD no dibuja HP/MP/skills.
-    extern void* CharacterMachine;
-    CharacterMachine = DAT_07cf1ffc;
-    // CHARACTER_MACHINE_Init(DAT_07cf1ffc);   // HashTable_Init — TODO: implement
+    CharacterAttribute = CharacterMachine;
     Hero = (char*)CharactersClient;  // player ptr = entity array slot 0
 
     // Contexto del pathfinder (DAT_05826df4).

@@ -24,7 +24,7 @@ int __stdcall Item_FindElfWeaponInventorySlot(void) {
     //   CharacterMachine + 604 (slot 1) -> ARCO     (128-134, 145)
     // y la municion va al slot que queda libre: Arrows (143) con arco, Bolts
     // (135) con ballesta.
-    const char* const cmBytes = (const char*)(uintptr_t)DAT_07cf1ffc;
+    const char* const cmBytes = (const char*)(uintptr_t)CharacterMachine;
     const char* const caBytes = (const char*)(uintptr_t)CharacterAttribute;
     if (!cmBytes || !caBytes)
         return -1;

@@ -47,8 +47,8 @@ extern "C" void __cdecl InsertInventoryItem(BYTE* Inv, int Width, int Height,
             static const int kEquipOffsets[12] = {
                 536, 604, 672, 740, 808, 876, 944, 1012, 1080, 1148, 1216, 1284
             };
-            if (DAT_07cf1ffc) {
-                BYTE* wear = (BYTE*)(uintptr_t)DAT_07cf1ffc + kEquipOffsets[slotIndex];
+            if (CharacterMachine) {
+                BYTE* wear = (BYTE*)(uintptr_t)CharacterMachine + kEquipOffsets[slotIndex];
                 memset(wear, 0, 0x44);
                 *(short*)wear = (short)0xFFFF;
                 *(int*)(wear + 56) = -1;      // Key: mismo estado que deja el F3/10

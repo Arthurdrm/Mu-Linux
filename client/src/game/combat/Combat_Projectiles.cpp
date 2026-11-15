@@ -23,7 +23,7 @@ void __cdecl CreateArrow(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, W
     if (isHero) {
         // anti-tamper hash table — skipped (CharacterMachine encrypt/decrypt/lookup)
         // Read weapon types from CharacterMachine instead
-        const BYTE* cm = static_cast<const BYTE*>(DAT_07cf1ffc);
+        const BYTE* cm = static_cast<const BYTE*>(CharacterMachine);
         // The projectile switch uses CharacterMachine+536; its companion
         // trail switch uses +604.
         weaponType0 = (int)*(short*)(cm + 0x218);
@@ -194,7 +194,7 @@ void __cdecl CreateArrows(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, 
         // anti-tamper hash table — skipped (encrypt CharacterMachine)
         // Increment the native projectile serial at CharacterMachine +1408.
         // CharacterMachine = DAT_07cf1ffc
-        char* cm = static_cast<char*>(DAT_07cf1ffc);
+        char* cm = static_cast<char*>(CharacterMachine);
         cm[1408] = cm[1408] + 1;
         // anti-tamper hash table — skipped (decrypt CharacterMachine)
     }
@@ -211,7 +211,7 @@ void __cdecl CreateArrows(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, 
             *pAngleZ += _DAT_00552834;  // restore to original angle
 
             // anti-tamper hash table — skipped (encrypt CharacterMachine)
-            char* cm = static_cast<char*>(DAT_07cf1ffc);
+            char* cm = static_cast<char*>(CharacterMachine);
             cm[1408] = cm[1408] + 1;
             // anti-tamper hash table — skipped (decrypt CharacterMachine)
         }
@@ -228,7 +228,7 @@ void __cdecl CreateArrows(intptr_t c, intptr_t o, intptr_t to, WORD SkillIndex, 
             *pAngleZ += _DAT_00552834;   // restore to original angle
 
             // anti-tamper hash table — skipped (encrypt CharacterMachine)
-            char* cm = static_cast<char*>(DAT_07cf1ffc);
+            char* cm = static_cast<char*>(CharacterMachine);
             cm[1408] = cm[1408] + 1;
             // anti-tamper hash table — skipped (decrypt CharacterMachine)
         }

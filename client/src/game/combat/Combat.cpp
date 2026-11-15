@@ -1626,16 +1626,16 @@ void __cdecl Combat_DispatchHeroSkillAttack(void *entity_v /* IDA: c */)
                         DAT_07d78098 = 1;                       // IDA L1422
                         MovementSkillTarget = (DWORD)SelectedCharacter;// IDA L1424
                         DAT_07d7809c = Hero ? *(BYTE*)&((CHARACTER*)(uintptr_t)(Hero))->CurrentSkill : 0; // IDA L1423/1425
-                        if (DAT_07cf1ffc != 0 &&
+                        if (CharacterMachine != 0 &&
                             Item_Equip((intptr_t)entity,
-                                       (intptr_t)((uintptr_t)DAT_07cf1ffc + 536 + i)))
+                                       (intptr_t)((uintptr_t)CharacterMachine + 536 + i)))
                             return;                             // IDA L1431: LABEL_146
                     }
                 }
                 if ((*(char *)&AsCharacter(entity)->Class & 7) == 2) {                   // IDA L1445
-                    if (DAT_07cf1ffc != 0 &&
+                    if (CharacterMachine != 0 &&
                         Combat_UseElfSkillItem((intptr_t)entity,
-                                               (intptr_t)((uintptr_t)DAT_07cf1ffc + 536 + i)))
+                                               (intptr_t)((uintptr_t)CharacterMachine + 536 + i)))
                         return;                                 // IDA L1469: LABEL_146
                 }
             }
@@ -1673,7 +1673,7 @@ void __cdecl Combat_DispatchHeroSkillAttack(void *entity_v /* IDA: c */)
 char __cdecl Combat_CheckArrowRequirement(void)
 {
     // anti-tamper hash table — skipped
-    BYTE* pMachine = (BYTE*)DAT_07cf1ffc;
+    BYTE* pMachine = (BYTE*)CharacterMachine;
     if (!pMachine) return 0;
 
     const short leftType = *(short*)(pMachine + 536);
@@ -2119,7 +2119,7 @@ void __cdecl Action(intptr_t c, intptr_t o)
         // OJO: el original lee el global CharacterMachine, NO `c` (en la entidad,
         // stride 916, esos offsets son otros campos).  Los ids son TIPOS de item (sin
         // el +400 del modelo): 136-142 arcos, 128-134 ballestas, 145 el par arco/ballesta.
-        const char* const CM = (const char*)(uintptr_t)DAT_07cf1ffc;
+        const char* const CM = (const char*)(uintptr_t)CharacterMachine;
         const int leftHandType  = CM ? ItemBehaviorType(*(const short*)(CM + 536)) : -1;   // IDA: v11
         const int rightHandType = CM ? ItemBehaviorType(*(const short*)(CM + 604)) : -1;   // IDA: v12
 

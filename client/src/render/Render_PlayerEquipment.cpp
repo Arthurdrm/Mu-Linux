@@ -70,7 +70,7 @@ extern "C" void EquipWipe_Tick(int op, int sub)
     static int s_prevOccupied = -1;
     static int s_prevOp = -1, s_prevSub = -1;
 
-    const BYTE* cm = static_cast<const BYTE*>(DAT_07cf1ffc);
+    const BYTE* cm = static_cast<const BYTE*>(CharacterMachine);
     if (cm) {
         int occupied = 0;
         for (int i = 0; i < 12; ++i) {
@@ -130,7 +130,7 @@ static bool CheckFullSet_Tail(uintptr_t c, bool v26) {
         // 536 + 68*3 = 740. Sólo los armors 271 y 276 conservan el bonus.
         const uintptr_t cm = (uintptr_t)CharacterAttribute;
         // La ficha pertenece al bloque de 0x584 bytes creado para CharacterMachine.
-        if (cm && CharacterAttribute == DAT_07cf1ffc) {
+        if (cm && CharacterAttribute == CharacterMachine) {
             unsigned short armor = *(unsigned short*)((char*)(uintptr_t)cm + 740);
             if (armor != 271 && armor != 276) {
                 g_bAddDefense = 0;
@@ -491,7 +491,7 @@ extern "C" void HeroEquipWatchdog(CHARACTER* c)
     if (!Hero || c != AsCharacter(Hero)) return;
     unsigned char* be = (unsigned char*)c;
     static const int kBodyOff[6] = { 0x1e0, 0x1f8, 0x210, 0x228, 0x240, 0x258 };
-    BYTE* cm = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+    BYTE* cm = (BYTE*)(uintptr_t)CharacterMachine;
 
     if (cm) {
         // En el binario NADA re-siembra CharacterMachine por frame: el equipo lo

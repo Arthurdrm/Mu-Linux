@@ -1215,7 +1215,7 @@ static bool CreateJoint_JointSpirit(float *& param_3, float& param_7, intptr_t& 
     // IDA (0x46D840): el case descifra CharacterMachine, copia el serial de
     // proyectiles a Weapon (v11[2515] = CharacterMachine[1408]) y lo vuelve
     // a cifrar.  Este port no cifra CharacterMachine: queda la copia.
-    *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
+    *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)CharacterMachine)[0x580];
     pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x74;
@@ -1363,7 +1363,7 @@ static bool CreateJoint_JointSpirit(float *& param_3, float& param_7, intptr_t& 
     // IDA (0x46D840): el case descifra CharacterMachine, copia el serial de
     // proyectiles a Weapon (v11[2515] = CharacterMachine[1408]) y lo vuelve
     // a cifrar.  Este port no cifra CharacterMachine: queda la copia.
-    *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)DAT_07cf1ffc)[0x580];
+    *(char *)&AsJoint(pcVar14)->Weapon = ((byte*)CharacterMachine)[0x580];
     pcVar14[0x9c0 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x9c1 + JOINT_FIELD_SHIFT] = '\0';
     pcVar14[0x9c2 + JOINT_FIELD_SHIFT] = -0x10;
@@ -1541,7 +1541,7 @@ Joint_Create(int param_1,float *param_2,float *param_3,float *param_4,undefined4
   AsJoint(pcVar14)->Tails[0][3][0] = local_78 + *pfVar1;
   AsJoint(pcVar14)->Tails[0][3][1] = local_74 + AsJoint(pcVar14)->Position[1];
   AsJoint(pcVar14)->Tails[0][3][2] = local_70 + AsJoint(pcVar14)->Position[2];
-  pbVar10 = (byte*)DAT_07cf1ffc;
+  pbVar10 = (byte*)CharacterMachine;
   // 0046D840, Type 1253 / SubType 0 (Evil Spirit): this is the joint
   // initialisation that feeds the per-frame 00470030 branch.  Without these
   // exact counters the slot is allocated but expires as an unconfigured beam.

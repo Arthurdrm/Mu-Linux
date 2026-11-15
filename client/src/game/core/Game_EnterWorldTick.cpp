@@ -193,11 +193,11 @@ void Game_EnterWorldTick(void)
 
         // Anti-tamper: register DAT_07cf1ffc in hash table
         {
-            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, DAT_07cf1ffc);
+            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, CharacterMachine);
             if (idx == 0xffffffff) {
                 void* node = AntiTamper_HashNode();
                 *((BYTE*)node + 0x584) = 1;
-                HashTable_Insert(&MAIN_HASH_CLASS, node, DAT_07cf1ffc);
+                HashTable_Insert(&MAIN_HASH_CLASS, node, CharacterMachine);
             }
         }
 
@@ -205,17 +205,17 @@ void Game_EnterWorldTick(void)
         {
             char* p = (char*)CharacterAttribute;
             for (int i = 0x56; i <= 0x6a; i++) p[i] = '\0';
-            int* q = (int*)((char*)DAT_07cf1ffc + 0x87 * 4);
+            int* q = (int*)((char*)CharacterMachine + 0x87 * 4);
             for (int i = 7; i >= 0; i--, q += 0x11) *q = 0;
         }
 
         // Re-register new entry
         {
-            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, DAT_07cf1ffc);
+            unsigned idx = HashTable_GetIndex(&MAIN_HASH_CLASS, CharacterMachine);
             if (idx == 0xffffffff) {
                 void* node = AntiTamper_HashNode();
                 *((BYTE*)node + 0x584) = 1;
-                HashTable_Insert(&MAIN_HASH_CLASS, node, DAT_07cf1ffc);
+                HashTable_Insert(&MAIN_HASH_CLASS, node, CharacterMachine);
             }
         }
 

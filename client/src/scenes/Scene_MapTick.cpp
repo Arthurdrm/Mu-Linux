@@ -24,7 +24,7 @@ void Scene_MapTick(void)
   undefined4 *puVar5;
 
   GL_ResetState();
-  puVar5 = (undefined4*)DAT_07cf1ffc;
+  puVar5 = (undefined4*)CharacterMachine;
   DAT_07e11d6e = 0;
   // IDA Scene_MapTick L32-38: RepairEnable_0 sólo se NORMALIZA a 1; nunca se
   // apaga acá (RepairEnable, 0x07EAA138, vale 0 siempre que la tienda está
@@ -36,37 +36,37 @@ void Scene_MapTick(void)
     if ((((DAT_07eaa13c == 1) && (_DAT_00552cac <= (float)MouseX)) &&
         ((float)MouseX < _DAT_00552c24)) &&
        ((_DAT_00552c14 <= (float)MouseY && ((float)MouseY < _DAT_00552ca8)))) {
-      uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,DAT_07cf1ffc);
+      uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,CharacterMachine);
       if (uVar2 == 0xffffffff) {
         pvVar3 = AntiTamper_HashNode();
         static_cast<BYTE*>(pvVar3)[0x584] = 1;
         HashTable_Insert(&MAIN_HASH_CLASS,pvVar3,puVar5);
       }
       RenderItemInfo((void*)0x109,(void*)0x78,pPickedItem,'\0');
-      puVar5 = (undefined4*)DAT_07cf1ffc;
+      puVar5 = (undefined4*)CharacterMachine;
     }
     goto LAB_004f6824;
   }
   if ((((int)MouseX < (int)InventoryStartX) || ((int)MouseX >= gWindow.PanelOrigin(Ui::WindowRight))) ||
      ((MouseY < InventoryStartY || ((0x1df < MouseY || (DAT_07eaa134 == 0)))))) {
-    uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,DAT_07cf1ffc);
+    uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,CharacterMachine);
     if (uVar2 == 0xffffffff) {
       pvVar3 = AntiTamper_HashNode();
       static_cast<BYTE*>(pvVar3)[0x584] = 1;
       HashTable_Insert(&MAIN_HASH_CLASS,pvVar3,puVar5);
     }
     RenderItemInfo((void*)(uintptr_t)DAT_07ea840c,(void*)(uintptr_t)DAT_07ea8408,(void*)(uintptr_t)CheckInventory,(int)DAT_07ea9844);
-    puVar5 = (undefined4*)DAT_07cf1ffc;
+    puVar5 = (undefined4*)CharacterMachine;
   }
   else {
-    uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,DAT_07cf1ffc);
+    uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,CharacterMachine);
     if (uVar2 == 0xffffffff) {
       pvVar3 = AntiTamper_HashNode();
       static_cast<BYTE*>(pvVar3)[0x584] = 1;
       HashTable_Insert(&MAIN_HASH_CLASS,pvVar3,puVar5);
     }
     RenderRepairInfo((void*)(uintptr_t)DAT_07ea840c,(int)DAT_07ea8408,(void*)(uintptr_t)CheckInventory);
-    puVar5 = (undefined4*)DAT_07cf1ffc;
+    puVar5 = (undefined4*)CharacterMachine;
   }
 LAB_004f6824:
   // Clamp de DAT_0055a3e4 al rango de slots de skill (0..19) antes de llamar al

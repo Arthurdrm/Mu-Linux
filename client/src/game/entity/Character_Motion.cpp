@@ -503,8 +503,8 @@ void __cdecl MoveCharacterPosition(CHARACTER* character) {
 void Hero_ApplyCatalogEquipment(CHARACTER* character)
 {
     BYTE* c = reinterpret_cast<BYTE*>(character);
-    if (!DAT_07cf1ffc || *(short*)(c + 2) != 390) return;
-    const BYTE* v7 = static_cast<const BYTE*>(DAT_07cf1ffc) + 536;
+    if (!CharacterMachine || *(short*)(c + 2) != 390) return;
+    const BYTE* v7 = static_cast<const BYTE*>(CharacterMachine) + 536;
     static const int kWearOff[9] = { 136, 204, 272, 340, 408, 0, 68, 476, 544 };
     for (int part = 0; part < 9; ++part)
         gContentCatalog.SetEntityPart(c, part, *(short*)(v7 + kWearOff[part]));
@@ -536,7 +536,7 @@ void __cdecl SetCharacterClass(CHARACTER* character) {
     BYTE* c = reinterpret_cast<BYTE*>(character);
     if (AsCharacter(c)->Object.Type != 390) return;   // 390 = 0x186 = local player
 
-    char* cd = (char*)DAT_07cf1ffc;
+    char* cd = (char*)CharacterMachine;
     BYTE* v7 = reinterpret_cast<BYTE*>(cd) + 536;   // matches IDA: CharacterMachine + 536
 
     // ── Primary cluster (4 equipment slots → entity offsets 624/648/672/696) ──

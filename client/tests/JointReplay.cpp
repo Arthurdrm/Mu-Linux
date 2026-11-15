@@ -263,7 +263,7 @@ int main()
         ClearPool();
         std::memset(g_charMachine, 0, sizeof(g_charMachine));
         g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
-        DAT_07cf1ffc = g_charMachine;
+        CharacterMachine = g_charMachine;
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];
         const std::uint64_t total = g_hash;

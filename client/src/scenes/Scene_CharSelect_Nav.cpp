@@ -178,7 +178,7 @@ uint __fastcall CSQuest_CheckRequestCondition(void *pThis, short *param_1, char 
                                 if (param_2 == '\0') {
                                     *(int *)(quest + 0x1c884) = *(int *)(puVar12 + 2);
                                 } else {
-                                    int iVar5 = ((int *)DAT_07cf1ffc)[0x152];
+                                    int iVar5 = ((int *)CharacterMachine)[0x152];
                                     int iVar6 = *(int *)(puVar12 + 2);
                                     *(int *)(quest + 0x1c884) = iVar6;
                                     if (iVar5 < iVar6) {

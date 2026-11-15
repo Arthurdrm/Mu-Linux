@@ -31,7 +31,7 @@ void __cdecl Item_AutoEquipAmmo(int /*unused*/) {
     if (inventorySlot < 0 || inventorySlot >= 64)
         return;
 
-    BYTE* const characterMachine = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+    BYTE* const characterMachine = (BYTE*)(uintptr_t)CharacterMachine;
     BYTE* const characterAttribute = (BYTE*)(uintptr_t)CharacterAttribute;
     if (!characterMachine || !characterAttribute)
         return;

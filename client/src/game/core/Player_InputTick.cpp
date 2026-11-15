@@ -1145,8 +1145,8 @@ void __cdecl Player_ProcessInput(void)
                     && *(char *)&AsCharacter(ent)->MovementType == '\0'
                     && (AsCharacter(ent)->Class & 7) == 2)
                 {
-                    short animA = *(short*)((unsigned char*)DAT_07cf1ffc + 0x86);
-                    short animB = *(short*)((unsigned char*)DAT_07cf1ffc + 0x97);
+                    short animA = *(short*)((unsigned char*)CharacterMachine + 0x86);
+                    short animB = *(short*)((unsigned char*)CharacterMachine + 0x97);
 
                     // Anim ranges for movement packet [0xC1][0x11]
                     bool sendMovePkt =
@@ -1279,7 +1279,7 @@ void __cdecl Player_ProcessInput(void)
                         goto end_tick_inc;
                     }
                     {
-                        const char* const CM = (const char*)(uintptr_t)DAT_07cf1ffc;
+                        const char* const CM = (const char*)(uintptr_t)CharacterMachine;
                         const int lh = CM ? ItemBehaviorType(*(const short*)(CM + 536)) : -1;  // IDA: v265
                         const int rh = CM ? ItemBehaviorType(*(const short*)(CM + 604)) : -1;  // IDA: v264
                         const bool bRanged = (lh >= 136 && lh < 143)

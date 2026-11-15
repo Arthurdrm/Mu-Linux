@@ -77,10 +77,10 @@ BYTE* ItemMove_GetEquipSlotPtr(int slot)
         536, 604, 672, 740, 808, 876, 944, 1012, 1080, 1148, 1216, 1284
     };
 
-    if (slot < 0 || slot >= 12 || DAT_07cf1ffc == 0) {
+    if (slot < 0 || slot >= 12 || CharacterMachine == 0) {
         return nullptr;
     }
-    return (BYTE*)(uintptr_t)DAT_07cf1ffc + kEquipOffsets[slot];
+    return (BYTE*)(uintptr_t)CharacterMachine + kEquipOffsets[slot];
 }
 
 bool ItemMove_IsInventoryEquipSlot(BYTE* pool, int slot)
@@ -659,8 +659,8 @@ void NetRecv_33(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         } else {
             ItemMove_ClearPickedState();
             EnableUse = 0;
-            if (Size >= 8 && DAT_07cf1ffc != 0) {
-                *(DWORD*)((BYTE*)DAT_07cf1ffc + 1352) = *(DWORD*)(Msg + 4);
+            if (Size >= 8 && CharacterMachine != 0) {
+                *(DWORD*)((BYTE*)CharacterMachine + 1352) = *(DWORD*)(Msg + 4);
             }
             PlayBuffer(29, 0, 0);
         }
@@ -694,11 +694,11 @@ void NetRecv_34(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // PMSG_ITEM_REPAIR_SEND es PBMSG_HEAD (3 bytes) + DWORD money
     // alineado a 4, o sea el zen esta en +4.  Leerlo en +3 metia el
     // byte de padding y el zen quedaba en basura (ej. -835).
-    if (Size >= 8 && DAT_07cf1ffc != 0) {
+    if (Size >= 8 && CharacterMachine != 0) {
         DWORD gold = *(DWORD*)(Msg + 4);
         if (gold != 0) {
-            *(DWORD*)((BYTE*)DAT_07cf1ffc + 1352) = gold;
-            CalculateAll(static_cast<BYTE*>(DAT_07cf1ffc), 0, 0);   // sub_47E3C0
+            *(DWORD*)((BYTE*)CharacterMachine + 1352) = gold;
+            CalculateAll(static_cast<BYTE*>(CharacterMachine), 0, 0);   // sub_47E3C0
             PlayBuffer(37, 0, 0);
         }
     }
@@ -709,12 +709,12 @@ void NetRecv_34(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
 void NetRecv_81(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
 {
     NetLog("NET:  -> 0x81 StorageGold size=%d", Size);
-    if (Size >= 12 && DAT_07cf1ffc != 0) {
+    if (Size >= 12 && CharacterMachine != 0) {
         BYTE result = Msg[3];
         if (result != 0) {
             DWORD storageGold = *(DWORD*)(Msg + 4);
             DWORD gold = *(DWORD*)(Msg + 8);
-            BYTE* charMachine = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+            BYTE* charMachine = (BYTE*)(uintptr_t)CharacterMachine;
             *(DWORD*)(charMachine + 1356) = storageGold;
             *(DWORD*)(charMachine + 1352) = gold;
         }
@@ -890,10 +890,10 @@ void NetRecv_22(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     if (slot == 0xFF) {
         // Pickup failed
     } else if (slot == 0xFE) {
-        if (Size >= 8 && DAT_07cf1ffc != 0) {
+        if (Size >= 8 && CharacterMachine != 0) {
             DWORD gold = ((DWORD)Msg[4] << 24) | ((DWORD)Msg[5] << 16)
                        | ((DWORD)Msg[6] << 8)  |  (DWORD)Msg[7];
-            BYTE* charMachine = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+            BYTE* charMachine = (BYTE*)(uintptr_t)CharacterMachine;
             const int before = *(int*)(charMachine + 0x548);
             *(DWORD*)(charMachine + 0x548) = gold;
             // DESVIACION (DLL CProtocol::CGItemGetRecv): aviso en el chat con
@@ -912,7 +912,7 @@ void NetRecv_22(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         // ConvertItemType de abajo termina leyendo los primeros bytes
         // de la struct del personaje, casi nunca da un tipo de joya y
         // por eso el zen suena con pGetItem.wav (29).
-        Item = (const BYTE*)(uintptr_t)DAT_07cf1ffc;
+        Item = (const BYTE*)(uintptr_t)CharacterMachine;
     } else {
         // PMSG_ITEM_GET_SEND es [C3][08][22][result][i0..i3] = Size 8
         // (ItemInfo son 4 bytes, MAX_ITEM_INFO): no exigir el formato de 12
@@ -1048,8 +1048,8 @@ void NetRecv_2F(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     BYTE durVal = Msg[4];
     BYTE consumed = Msg[5];
     NetLog("NET:  → 0x2F Durability slot=%d dur=%d consumed=%d", slot, durVal, consumed);
-    if (DAT_07cf1ffc != 0 && slot < 12) {
-        BYTE* charMachine = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+    if (CharacterMachine != 0 && slot < 12) {
+        BYTE* charMachine = (BYTE*)(uintptr_t)CharacterMachine;
         *(charMachine + 68 * slot + 562) = durVal;
     }
     if (consumed) {

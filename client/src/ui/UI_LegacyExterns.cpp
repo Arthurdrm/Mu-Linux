@@ -148,7 +148,7 @@ void __cdecl RenderSkillTooltip(float a1, int a2, int a3)
     int skillTipX = *(int*)&a1;
     // Skill[60] comienza en +87 dentro de la reserva de 0x584 bytes.
     if (a3 < 0 || a3 >= 60 || !CharacterAttribute || !Hero ||
-        CharacterAttribute != DAT_07cf1ffc) return;
+        CharacterAttribute != CharacterMachine) return;
 
     unsigned char skillType = *(unsigned char*)((char*)CharacterAttribute + a3 + 87);
     if (skillType == 0 || skillType >= 64) return;
@@ -188,7 +188,7 @@ void __cdecl RenderSkillTooltip(float a1, int a2, int a3)
 
     // La fila ya esta acotada a 64 * 0x28; Damage ocupa +0x24..25.
     // Los bonus +70/+72 pertenecen al CharacterMachine reservado en WinMain.
-    if (CharacterMachine && CharacterMachine == DAT_07cf1ffc && skillStatRec) {
+    if (CharacterMachine && skillStatRec) {
         if (!Platform::RunValidatedOperation([&]() {
             int baseDamage = (int)*(WORD*)(skillStatRec + 0x24);
             if (baseDamage > 0 && baseDamage < 5000) {

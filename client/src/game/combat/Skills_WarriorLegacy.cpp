@@ -234,7 +234,7 @@ void __cdecl Combat_UseWarriorSkill(intptr_t c /* IDA: c */, intptr_t o /* IDA: 
             Warrior_CollectMultiTargets(centre, 100.0f, *(WORD*)(o + 134), keys, &count, 6);
             // IDA 0x485780 L1097-1100: el serial vive en CharacterMachine+1408,
             // no en la entidad (CHARACTER mide 0x394: 1408 caía en el slot siguiente).
-            BYTE* machine = static_cast<BYTE*>(DAT_07cf1ffc);
+            BYTE* machine = static_cast<BYTE*>(CharacterMachine);
             const BYTE serial = machine ? machine[1408] : 0;
             if (machine) machine[1408] = serial + 1;
             *(BYTE*)(o + 136) = serial;

@@ -91,7 +91,7 @@ static void Terrain_ProcessObjects(bool simulation)
                                 {
                                     void *pvSlot = AntiTamper_HashNode();
                                     *(unsigned char*)((char*)pvSlot + 0x584) = 1;
-                                    HashTable_Insert(&MAIN_HASH_CLASS, pvSlot, DAT_07cf1ffc);
+                                    HashTable_Insert(&MAIN_HASH_CLASS, pvSlot, CharacterMachine);
                                 }
 
                                 WorldEffects_Tick((intptr_t)entity);

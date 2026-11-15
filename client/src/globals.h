@@ -651,7 +651,7 @@ extern DWORD*  DAT_07c74f54;   // = Planes + 0xEC (v1 anchor)
 
 // ── g_CharData XOR-encoded block (0x07cfxxxx) ─────────────────────────────────
 extern void   *CharacterAttribute;  // IDA: CharacterAttribute (0x07CF1FF4) - g_CharData sub-pointer (XOR-encoded)
-extern void   *DAT_07cf1ffc;   // g_CharData pointer (XOR-encoded, 0x584 bytes)
+extern void   *CharacterMachine;   // IDA: CharacterMachine (0x07CF1FFC), buffer de 0x584 bytes
 
 // ── Player input / targeting state (0x07e01xxx – 0x07e11xxx) ─────────────────
 extern DWORD   TargetX;   // target grid X (from ray cast or hover click)  [IDA 0x07E016C0]
@@ -2772,9 +2772,6 @@ extern SIZE    TextSize;             // shared scratch SIZE for text extent
 // Anti-tamper hash-table state — already declared above as g_HashTableCtx[4]
 // con las macros MAIN_HASH_CLASS/cc/d0/d4. Sólo referenciarlos; NO volver a hacerles extern.
 
-// CharacterMachine — the encrypted player attribute buffer (size 0x584).
-// Los desencripta in situ el bloque anti-tamper interno de RenderMainFrameWindow.
-extern void   *CharacterMachine;     // pointer to encrypted CHARACTER struct
 // CharacterAttribute se declara mas arriba.
 
 // DAT_07e11d6e (flag de UI sucia) ya está declarado en la línea 620 como `char`.

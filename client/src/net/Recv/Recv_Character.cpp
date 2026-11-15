@@ -430,9 +430,9 @@ void Recv_JoinMapServer(const BYTE* Msg, int bEncrypted)
         // struct NO es pack(1): tras MaxBP (WORD@36) hay 2 bytes de padding porque
         // Money (DWORD) se alinea a 4 → offset 40. El zen se muestra desde
         // CharacterMachine+1352 (= DAT_07cf1ffc+1352).
-        if (DAT_07cf1ffc != 0) {
+        if (CharacterMachine != 0) {
             DWORD money = *(const DWORD*)(RB + 40);
-            *(DWORD*)((BYTE*)(uintptr_t)DAT_07cf1ffc + 1352) = money;
+            *(DWORD*)((BYTE*)(uintptr_t)CharacterMachine + 1352) = money;
             NetLog("NET:    F3/03 Money=%u -> CharacterMachine+1352", money);
         }
 
@@ -682,9 +682,9 @@ void Recv_Revival(const BYTE* Msg, int Size)
             gHeroVitals.SetCurrent(VITAL_AG, *(const DWORD*)(Msg + 32));
         }
     }
-    if (DAT_07cf1ffc) {
+    if (CharacterMachine) {
         // Money → CharacterMachine + 1352 (mismo campo que puebla el F3/03).
-        *(DWORD*)((BYTE*)(uintptr_t)DAT_07cf1ffc + 1352) = *(const DWORD*)(Msg + 20);
+        *(DWORD*)((BYTE*)(uintptr_t)CharacterMachine + 1352) = *(const DWORD*)(Msg + 20);
     }
 
     if (!CharactersClient) return;
@@ -1448,7 +1448,7 @@ void NetRecv_2C(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // +26 Energia (mismos offsets que el F3/03 y el F3/06).
     static const int kStatOff[4]  = { 26, 24, 22, 20 };
 
-    BYTE* CA = (BYTE*)(uintptr_t)DAT_07cf1ffc;
+    BYTE* CA = (BYTE*)(uintptr_t)CharacterMachine;
     NetLog("NET:  -> 0x2C Fruit result=%02X outcome=%d stat=%d amount=%d size=%d",
            Msg[3], outcome, statIdx, amount, Size);
 

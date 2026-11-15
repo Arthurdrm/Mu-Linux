@@ -449,7 +449,9 @@ bool CMap::CheckItemGive(int aIndex, int index)
 
 	int y = this->m_Item[index].m_Y - lpObj->Y;
 
-	if (x > 2 || x < -2 || y > 2 || y < -2)
+	int maxDist = (lpObj->AutoPickEnable != 0) ? 4 : 2;
+
+	if (x > maxDist || x < -maxDist || y > maxDist || y < -maxDist)
 	{
 		return false;
 	}

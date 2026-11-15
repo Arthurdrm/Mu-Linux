@@ -62,7 +62,14 @@ bool CNpcTalk::NpcTalk(LPOBJ lpNpc, LPOBJ lpObj)
 
 		case 233:
 		{
-			this->NpcAngelMessenger(lpNpc, lpObj);
+			if (lpNpc->Map == 2 && (lpNpc->X == 209 || lpNpc->X == 219))
+			{
+				this->NpcAngelMessenger(lpNpc, lpObj);
+			}
+			else
+			{
+				this->NpcBuffElf(lpNpc, lpObj);
+			}
 
 			break;
 		}
@@ -259,7 +266,7 @@ void CNpcTalk::NpcBuffElf(LPOBJ lpNpc, LPOBJ lpObj)
 	char speech[] = "Receba a bênção de força e proteção, guerreiro!";
 	GCChatTargetSend(lpObj, lpNpc->Index, speech);
 
-	gNotice.GCNoticeSend(lpObj->Index, 1, "[Elfa de Buff] Bênção ativada! (+50 Dano e Defesa por 30m)");
+	gNotice.GCNoticeSend(lpObj->Index, 1, "[Anjo] Bênção Celestial ativada! (+50 Dano e Defesa por 30m)");
 }
 
 

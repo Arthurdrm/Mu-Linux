@@ -507,6 +507,14 @@ void gObjCharZeroSet(int aIndex)
 	lpObj->AutoAddPointCount = 0;
 
 	lpObj->AutoResetEnable = 0;
+	lpObj->AutoAttackEnable = 0;
+	lpObj->AutoAttackTime = 0;
+	lpObj->AutoAttackSkill = -1;
+	lpObj->AutoAttackX = 0;
+	lpObj->AutoAttackY = 0;
+	lpObj->AutoPickEnable = 0;
+	lpObj->AutoPickTime = 0;
+	lpObj->AutoPickMode = 0;
 
 	memset(lpObj->AutoPartyPassword, 0, sizeof(lpObj->AutoPartyPassword));
 

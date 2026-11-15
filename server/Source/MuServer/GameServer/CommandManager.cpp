@@ -23,6 +23,11 @@
 #include "BloodCastle.h"
 #include "DevilSquare.h"
 #include "GoldenArcherBingo.h"
+#include "Viewport.h"
+#include "SkillManager.h"
+#include "Attack.h"
+#include "Map.h"
+#include <cmath>
 #include <cerrno>
 #include <cstdlib>
 #include <cctype>
@@ -163,6 +168,16 @@ void CCommandManager::MainProc()
 		{
 			this->CommandResetAutoProc(&gObj[n]);
 		}
+
+		if (gObj[n].AutoAttackEnable != 0)
+		{
+			this->CommandAttackAutoProc(&gObj[n]);
+		}
+
+		if (gObj[n].AutoPickEnable != 0)
+		{
+			this->CommandPickAutoProc(&gObj[n]);
+		}
 	}
 }
 
@@ -245,6 +260,14 @@ bool CCommandManager::ManagementCore(LPOBJ lpObj, char* message)
 	if (_stricmp(command, "/gpost") == 0 || _stricmp(command, "/anuncio") == 0)
 	{
 		strcpy_s(command, "/global");
+	}
+	else if (_stricmp(command, "/auto") == 0 || _stricmp(command, "/ataque") == 0)
+	{
+		strcpy_s(command, "/attack");
+	}
+	else if (_stricmp(command, "/autopick") == 0 || _stricmp(command, "/catar") == 0 || _stricmp(command, "/pegar") == 0)
+	{
+		strcpy_s(command, "/pick");
 	}
 
 	COMMAND_LIST CommandData;
@@ -551,6 +574,20 @@ bool CCommandManager::ManagementCore(LPOBJ lpObj, char* message)
 		case COMMAND_GM_TAMASTART:
 		{
 			this->CommandGMTamaStart(lpObj, argument);
+
+			break;
+		}
+
+		case COMMAND_ATTACK:
+		{
+			this->CommandAttack(lpObj, argument);
+
+			break;
+		}
+
+		case COMMAND_PICK:
+		{
+			this->CommandPick(lpObj, argument);
 
 			break;
 		}
@@ -2194,4 +2231,335 @@ void CCommandManager::CommandGMEventStart(LPOBJ lpObj, char* arg, int command)
 		? "%s programado por unica vez. Inicio en aproximadamente 2 minutos."
 		: "%s deshabilitado, abierto o activo; no se modifico.", name);
 	gLog.Output(LOG_COMMAND, "[CommandEventStart][%s][%s] Command:%d Invasion:%d Accepted:%d", lpObj->Account, lpObj->Name, command, invasion, started ? 1 : 0);
+}
+
+
+void CCommandManager::CommandAttack(LPOBJ lpObj, char* arg)
+{
+	char skillStr[32] = { 0 };
+	this->GetString(arg, skillStr, sizeof(skillStr), 0);
+
+	if (lpObj->AutoAttackEnable != 0 && strlen(skillStr) == 0)
+	{
+		lpObj->AutoAttackEnable = 0;
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Desativado com sucesso.");
+		return;
+	}
+
+	int skillNumber = -1;
+	if (strlen(skillStr) > 0)
+	{
+		skillNumber = atoi(skillStr);
+	}
+
+	if (skillNumber > 0)
+	{
+		CSkill* lpSkill = gSkillManager.GetSkill(lpObj, skillNumber);
+		if (lpSkill == 0)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Habilidade %d nao encontrada no seu personagem.", skillNumber);
+			return;
+		}
+
+		lpObj->AutoAttackSkill = skillNumber;
+		lpObj->AutoAttackEnable = 1;
+		lpObj->AutoAttackTime = GetTickCount();
+		lpObj->AutoAttackX = lpObj->X;
+		lpObj->AutoAttackY = lpObj->Y;
+
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado com Skill ID %d! Digite /attack para desligar.", skillNumber);
+	}
+	else
+	{
+		lpObj->AutoAttackSkill = -1;
+
+		for (int n = 0; n < MAX_SKILL_LIST; n++)
+		{
+			if (lpObj->Skill[n].IsSkill() != 0)
+			{
+				int s = lpObj->Skill[n].m_skill;
+				if (s == SKILL_TWISTING_SLASH || s == SKILL_EVIL_SPIRIT || s == SKILL_ENERGY_BALL || 
+				    s == SKILL_TRIPLE_SHOT || s == SKILL_FIRE_SLASH || s == SKILL_POWER_SLASH ||
+				    s == SKILL_FALLING_SLASH || s == SKILL_CYCLONE || s == SKILL_SLASH)
+				{
+					lpObj->AutoAttackSkill = s;
+					break;
+				}
+			}
+		}
+
+		lpObj->AutoAttackEnable = 1;
+		lpObj->AutoAttackTime = GetTickCount();
+		lpObj->AutoAttackX = lpObj->X;
+		lpObj->AutoAttackY = lpObj->Y;
+
+		if (lpObj->AutoAttackSkill > 0)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado (Skill %d)! Digite /attack para desligar.", lpObj->AutoAttackSkill);
+		}
+		else
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado (Ataque Fisico)! Digite /attack para desligar.");
+		}
+	}
+}
+
+void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
+{
+	if (lpObj->AutoAttackEnable == 0)
+	{
+		return;
+	}
+
+	if (lpObj->Live == 0 || lpObj->State != OBJECT_PLAYING || lpObj->Teleport != 0)
+	{
+		lpObj->AutoAttackEnable = 0;
+		return;
+	}
+
+	if (lpObj->Interface.use != 0)
+	{
+		return;
+	}
+
+	if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 1) != 0)
+	{
+		return;
+	}
+
+	DWORD speed = (lpObj->PhysiSpeed > 0) ? lpObj->PhysiSpeed : 0;
+	DWORD minDelay = 400;
+	if (speed > 0)
+	{
+		minDelay = (DWORD)(10000 / (speed + 25));
+		if (minDelay < 250) minDelay = 250;
+		if (minDelay > 600) minDelay = 600;
+	}
+
+	DWORD currentTick = GetTickCount();
+	if ((currentTick - lpObj->AutoAttackTime) < minDelay)
+	{
+		return;
+	}
+
+	lpObj->AutoAttackTime = currentTick;
+
+	int targetIndex = -1;
+	int minDistance = 999;
+	int maxRadius = 6;
+
+	for (int n = 0; n < lpObj->VPCount2; n++)
+	{
+		if (lpObj->VpPlayer2[n].state == VIEWPORT_NONE)
+		{
+			continue;
+		}
+
+		int bIndex = lpObj->VpPlayer2[n].index;
+		if (OBJECT_RANGE(bIndex) == false)
+		{
+			continue;
+		}
+
+		LPOBJ lpTarget = &gObj[bIndex];
+		if (lpTarget->Type != OBJECT_MONSTER || lpTarget->Live == 0 || lpTarget->Teleport != 0)
+		{
+			continue;
+		}
+
+		if (lpTarget->Class == 200)
+		{
+			continue;
+		}
+
+		if (gMap[lpTarget->Map].CheckAttr(lpTarget->X, lpTarget->Y, 1) != 0)
+		{
+			continue;
+		}
+
+		int distance = (int)sqrt(pow(((float)lpObj->X - (float)lpTarget->X), 2) + pow(((float)lpObj->Y - (float)lpTarget->Y), 2));
+		if (distance <= maxRadius && distance < minDistance)
+		{
+			minDistance = distance;
+			targetIndex = bIndex;
+		}
+	}
+
+	if (targetIndex == -1)
+	{
+		return;
+	}
+
+	LPOBJ lpTarget = &gObj[targetIndex];
+
+	BYTE dir = GetPathPacketDirPos(lpTarget->X - lpObj->X, lpTarget->Y - lpObj->Y);
+	lpObj->Dir = dir;
+
+	CSkill* lpSkill = 0;
+	if (lpObj->AutoAttackSkill > 0)
+	{
+		lpSkill = gSkillManager.GetSkill(lpObj, lpObj->AutoAttackSkill);
+	}
+
+	if (lpSkill != 0 && gSkillManager.CheckSkillMana(lpObj, lpSkill->m_index) && gSkillManager.CheckSkillBP(lpObj, lpSkill->m_index))
+	{
+		if (lpSkill->m_skill == SKILL_TWISTING_SLASH || lpSkill->m_skill == SKILL_EVIL_SPIRIT || lpSkill->m_skill == SKILL_HELL_FIRE)
+		{
+			gSkillManager.UseDurationSkillAttack(lpObj->Index, targetIndex, lpSkill, lpObj->X, lpObj->Y, dir, 0);
+		}
+		else
+		{
+			gSkillManager.UseAttackSkill(lpObj->Index, targetIndex, lpSkill);
+		}
+	}
+	else
+	{
+		GCActionSend(lpObj, 0x01, lpObj->Index, targetIndex);
+		gAttack.Attack(lpObj, lpTarget, 0, 0, 0, 0);
+	}
+}
+
+void CCommandManager::CommandPick(LPOBJ lpObj, char* arg)
+{
+	char modeStr[32] = { 0 };
+	this->GetString(arg, modeStr, sizeof(modeStr), 0);
+
+	if (lpObj->AutoPickEnable != 0 && strlen(modeStr) == 0)
+	{
+		lpObj->AutoPickEnable = 0;
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Pick] Desativado com sucesso.");
+		return;
+	}
+
+	int mode = 0;
+
+	if (_stricmp(modeStr, "zen") == 0 || _stricmp(modeStr, "gold") == 0)
+	{
+		mode = 1;
+	}
+	else if (_stricmp(modeStr, "jewel") == 0 || _stricmp(modeStr, "joia") == 0 || _stricmp(modeStr, "joias") == 0)
+	{
+		mode = 2;
+	}
+	else if (_stricmp(modeStr, "all") == 0 || _stricmp(modeStr, "tudo") == 0)
+	{
+		mode = 3;
+	}
+
+	lpObj->AutoPickEnable = 1;
+	lpObj->AutoPickMode = mode;
+	lpObj->AutoPickTime = GetTickCount();
+
+	if (mode == 1)
+	{
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Pick] Ativado: Apenas Zen. Digite /pick para desligar.");
+	}
+	else if (mode == 2)
+	{
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Pick] Ativado: Apenas Joias. Digite /pick para desligar.");
+	}
+	else if (mode == 3)
+	{
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Pick] Ativado: Zen, Joias, Excelentes e Itens. Digite /pick para desligar.");
+	}
+	else
+	{
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Pick] Ativado: Zen e Joias. (Outros: /pick zen, /pick jewel, /pick all)");
+	}
+}
+
+void CCommandManager::CommandPickAutoProc(LPOBJ lpObj)
+{
+	if (lpObj->AutoPickEnable == 0)
+	{
+		return;
+	}
+
+	if (lpObj->Live == 0 || lpObj->State != OBJECT_PLAYING || lpObj->Teleport != 0)
+	{
+		return;
+	}
+
+	if (lpObj->Interface.use != 0 && lpObj->Interface.type != INTERFACE_SHOP)
+	{
+		return;
+	}
+
+	DWORD currentTick = GetTickCount();
+	if ((currentTick - lpObj->AutoPickTime) < 300)
+	{
+		return;
+	}
+
+	lpObj->AutoPickTime = currentTick;
+
+	if (MAP_RANGE(lpObj->Map) == 0)
+	{
+		return;
+	}
+
+	CMap* lpMap = &gMap[lpObj->Map];
+
+	for (int n = 0; n < MAX_MAP_ITEM; n++)
+	{
+		if (lpMap->m_Item[n].IsItem() == false || lpMap->m_Item[n].m_Live == 0 || lpMap->m_Item[n].m_Give != 0)
+		{
+			continue;
+		}
+
+		CMapItem* lpItem = &lpMap->m_Item[n];
+
+		int dx = abs((int)lpItem->m_X - (int)lpObj->X);
+		int dy = abs((int)lpItem->m_Y - (int)lpObj->Y);
+
+		if (dx > 4 || dy > 4)
+		{
+			continue;
+		}
+
+		if (lpMap->CheckItemGive(lpObj->Index, n) == false)
+		{
+			continue;
+		}
+
+		bool shouldPick = false;
+		int itemKind = lpItem->GetKind();
+
+		if (itemKind == GET_ITEM(14, 15))
+		{
+			if (lpObj->AutoPickMode == 0 || lpObj->AutoPickMode == 1 || lpObj->AutoPickMode == 3)
+			{
+				shouldPick = true;
+			}
+		}
+		else if (itemKind == GET_ITEM(14, 13) || itemKind == GET_ITEM(14, 14) || itemKind == GET_ITEM(12, 15) || itemKind == GET_ITEM(14, 16) || itemKind == GET_ITEM(14, 22))
+		{
+			if (lpObj->AutoPickMode == 0 || lpObj->AutoPickMode == 2 || lpObj->AutoPickMode == 3)
+			{
+				shouldPick = true;
+			}
+		}
+		else if (lpItem->m_ExceOption != 0 || itemKind == GET_ITEM(13, 14) || (itemKind >= GET_ITEM(14, 8) && itemKind <= GET_ITEM(14, 12)))
+		{
+			if (lpObj->AutoPickMode == 3)
+			{
+				shouldPick = true;
+			}
+		}
+		else if (lpObj->AutoPickMode == 3)
+		{
+			shouldPick = true;
+		}
+
+		if (shouldPick)
+		{
+			PMSG_ITEM_GET_RECV msg;
+			msg.header.set(0x22, sizeof(msg));
+			msg.index[0] = SET_NUMBERHB(n);
+			msg.index[1] = SET_NUMBERLB(n);
+
+			gItemManager.CGItemGetRecv(&msg, lpObj->Index);
+			break;
+		}
+	}
 }

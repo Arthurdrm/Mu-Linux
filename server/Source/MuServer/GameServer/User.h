@@ -552,6 +552,14 @@ struct OBJECTSTRUCT
 	int AutoAddPointStats[5];
 	int AutoResetEnable;
 	int AutoResetStats[5];
+	int AutoAttackEnable;
+	DWORD AutoAttackTime;
+	int AutoAttackSkill;
+	int AutoAttackX;
+	int AutoAttackY;
+	int AutoPickEnable;
+	DWORD AutoPickTime;
+	int AutoPickMode;
 	int CommandManagerTransaction;
 	DWORD CommandLastTick[100];
 	DWORD PotionTime;

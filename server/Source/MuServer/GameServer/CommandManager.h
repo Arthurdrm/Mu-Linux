@@ -40,6 +40,8 @@ enum eCommandNumber
 	COMMAND_GM_DSSTART = 32,
 	COMMAND_GM_BINGOSTART = 33,
 	COMMAND_GM_INVASIONSTART = 34,
+	COMMAND_ATTACK = 35,
+	COMMAND_PICK = 36,
 };
 
 //**********************************************//
@@ -228,6 +230,10 @@ public:
 
 	void CommandGMTamaStart(LPOBJ lpObj, char* arg);
 	void CommandGMEventStart(LPOBJ lpObj, char* arg, int command);
+	void CommandAttack(LPOBJ lpObj, char* arg);
+	void CommandAttackAutoProc(LPOBJ lpObj);
+	void CommandPick(LPOBJ lpObj, char* arg);
+	void CommandPickAutoProc(LPOBJ lpObj);
 
 private:
 

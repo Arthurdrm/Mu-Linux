@@ -330,6 +330,9 @@
     </ClCompile>
     <ClCompile Include="src\rhi\GL\Skinning.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!-- Comparte nombre con src\render\Skinning.cpp: sin un .obj propio, MSBuild
+           escribe los dos en $(IntDir)Skinning.obj y el segundo pisa al primero. -->
+      <ObjectFileName>$(IntDir)rhi_GL_%(Filename).obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="src\rhi\GL\MeshDraw.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -349,6 +352,9 @@
     </ClCompile>
     <ClCompile Include="src\rhi\GL\BufferedDraw.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <!-- Comparte nombre con src\render\BufferedDraw.cpp: sin un .obj propio, MSBuild
+           escribe los dos en $(IntDir)BufferedDraw.obj y el segundo pisa al primero. -->
+      <ObjectFileName>$(IntDir)rhi_GL_%(Filename).obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="src\render\WorldEffects.cpp" />
     <ClCompile Include="src\render\MaterialVisuals.cpp" />

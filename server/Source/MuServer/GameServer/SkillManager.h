@@ -196,6 +196,16 @@ struct SKILL_INFO
 	int RequireClass[MAX_CLASS];
 };
 
+// Skills que resuelven sus blancos dentro del 0x1E (Triple Shot con el cono
+// del angulo; Twisting Slash, Rageful Blow y Death Stab con el radio).  El
+// 0x1D que manda el cliente por cada impacto de esos skills sobra: el server
+// lo descarta (CGMultiSkillAttackRecv) y tampoco lo cuenta para el limite de
+// paquetes por segundo (CHackPacketCheck::CheckPacketRate).
+inline bool SkillResolvesTargetsInDurationAttack(int skill)
+{
+	return skill == SKILL_TRIPLE_SHOT || skill == SKILL_TWISTING_SLASH || skill == SKILL_RAGEFUL_BLOW || skill == SKILL_DEATH_STAB;
+}
+
 class CSkillManager
 {
 public:

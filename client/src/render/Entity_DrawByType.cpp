@@ -174,7 +174,7 @@ void MoltSilhouette_Invalidate(const void *entity) { moltSamples.erase(entity); 
 // No se consume azar ni se modifican marcas de triángulos en los draws extra.
 void MoltSilhouette_Tick(OBJECT* entity, void *model, float *bones, char translate) {
     OBJECT &o=*AsObject(entity);
-    if (!o.Live || o.Type!=319 || o.Alpha<_DAT_005524f8 || o.RenderType==0x80 ||
+    if (!o.Live || o.Type!=319 || o.Alpha<0.01f || o.RenderType==0x80 ||
         (EditFlag==0 && o.HiddenMesh==-2)) return;
     float bounds[15];
     const float lod=_DAT_005597c8;
@@ -457,7 +457,7 @@ LAB_substate4_done:
         } else if (flashCtr != 0) {
             // Fading flash
             *(float *)&((BMD*)(uintptr_t)(model))->BodyLight[0] = 1.0f;
-            float fade = (float)(10 - (int)flashCtr) * _DAT_00552a10 + _DAT_005528b8;
+            float fade = (float)(10 - (int)flashCtr) * 0.05f + 0.3f;
             *(float *)&((BMD*)(uintptr_t)(model))->BodyLight[1] = fade;
             *(float *)&((BMD*)(uintptr_t)(model))->BodyLight[2] = fade;
             param_1[0x8b] = flashCtr - 1;
@@ -477,8 +477,8 @@ LAB_substate4_done:
     if (sType == 0x138 && AsObject(param_1)->SubType == 1) {
         // Wave-bobbing object (water lily etc.)
         BMD__BeginRender();
-        float wave = (float)(fsin((long double)WorldTime * (long double)_DAT_005528e0)
-                     * (long double)_DAT_005524f8 + (long double)_DAT_0055256c);
+        float wave = (float)(fsin((long double)WorldTime * (long double)0.002f)
+                     * (long double)0.01f + (long double)1.0f);
         BMD__RenderMesh(model, 0.0f,        0x42,
                      AsObject(param_1)->Alpha, 0, wave,
                      AsObject(param_1)->BlendMeshTexCoordU,  AsObject(param_1)->BlendMeshTexCoordV, 0x56c);
@@ -741,8 +741,8 @@ LAB_postprocess:
     // ── Type 0x133: wave-bobbing shadow ───────────────────────────────────────
     if (AsObject(param_1)->Type == 0x133) {
         BMD__BeginRender();
-        float wave2 = (float)(fsin((long double)WorldTime * (long double)_DAT_005528e0)
-                      * (long double)_DAT_005528b8 + (long double)_DAT_00552504);
+        float wave2 = (float)(fsin((long double)WorldTime * (long double)0.002f)
+                      * (long double)0.3f + (long double)0.5f);
         int texFrame = *(short *)((intptr_t)((BMD*)(uintptr_t)(model))->IndexTexture + 0xc);   // IDA: (std::int16_t) de la malla 0
         BMD__RenderMesh(model, 0.0f, 2,
                      AsObject(param_1)->Alpha, 0, wave2,
@@ -750,7 +750,7 @@ LAB_postprocess:
                      texFrame);
         // Modulo-100 periodic shadow offset (based on frame counter)
         int framemod = (int)((long long)WorldTime % 100);
-        float modFrac = -(float)(framemod * _DAT_005524f8);
+        float modFrac = -(float)(framemod * 0.01f);
         BMD__RenderMesh(model, 4.2039e-45f, 0x44,
                      AsObject(param_1)->Alpha, 3, wave2,
                      AsObject(param_1)->BlendMeshTexCoordU, modFrac, 0xffffffff);

@@ -58,20 +58,20 @@ void Timer_UpdateFrameTiming(void)
   local_8 = (double)(ulonglong)(DWORD)(DVar2 - WorldTimeEpochMs);
   WorldTime = (float)(longlong)local_8;
   FrameTimeCurrentMs = Platform::GetTimer().MultimediaTicks();
-  dVar1 = (double)(int)(FrameTimeCurrentMs - FpsWindowStartTimeMs) * _DAT_005528a8;
+  dVar1 = (double)(int)(FrameTimeCurrentMs - FpsWindowStartTimeMs) * 0.001f;
   if (dVar1 == FloatZero) {
     local_8 = -1.0;
   }
   else {
     local_8 = (double)DAT_05826e10 / dVar1;
   }
-  if ((_DAT_00552898 < dVar1) && (10 < DAT_05826e10)) {
+  if ((5.0f < dVar1) && (10 < DAT_05826e10)) {
     FpsWindowStartTimeMs = DAT_05826e00;
     DAT_05826e10 = DAT_05826e14;
     DAT_05826e00 = Platform::GetTimer().MultimediaTicks();
     DAT_05826e14 = 0;
   }
-  DeltaT = (float)(int)(FrameTimeCurrentMs - FrameTimePreviousMs) * _DAT_00552890;
+  DeltaT = (float)(int)(FrameTimeCurrentMs - FrameTimePreviousMs) * 0.001f;
   if (FrameTimeCurrentMs == FrameTimePreviousMs) {
     DeltaT = 0.000100000005;
   }

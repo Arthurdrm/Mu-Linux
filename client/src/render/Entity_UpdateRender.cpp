@@ -596,7 +596,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
     BYTE bVar7 = AsCharacter(entity)->MonsterIndex;
     bool bDeferWing = false;
     void *local_74 = nullptr;
-    float fVar32 = (float)highlighted * _DAT_005524f8;
+    float fVar32 = (float)highlighted * 0.01f;
     float savedLight[3];
     memcpy(savedLight, AsCharacter(param_1)->Light, sizeof(savedLight));
     Equipment_BeginCharacter(AsCharacter(static_cast<intptr_t>(entity)));
@@ -680,7 +680,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
                 (0x72 < bv2 && bv2 < 0x77) || (0x78 < bv2 && bv2 < 0x7d) ||
                 (0x7e < bv2 && bv2 < 0x83) || (0x84 < bv2 && bv2 < 0x89);
             if ((0 < iSub) && (iSub < 8) && bInRange && ((iSub / 3) != 0)) {
-                *(float *)((int*)&AsCharacter((char *)param_1)->Light[0]) = (float)(iSub / 3) * _DAT_00552504;
+                *(float *)((int*)&AsCharacter((char *)param_1)->Light[0]) = (float)(iSub / 3) * 0.5f;
                 bTint = true;
             }
         } else {
@@ -758,7 +758,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
             BMD_TransformPosition((void *)(Models + (int)*(short *)((intptr_t)puVar13 + 2) * BMD_STRIDE),
                          (float *)((intptr_t)AsCharacter(puVar13)->Helper.LinkBone * 0x30 + (intptr_t)AsObject(puVar13)->BoneMatrices),
                          fOff, fWorldPos, '\x01');
-            float fColor2[3] = { fVar32 * _DAT_00552504, 0.0f, 0.0f };
+            float fColor2[3] = { fVar32 * 0.5f, 0.0f, 0.0f };
             Equipment_AddSprite(0x47e, fWorldPos, 1.5f, fColor2, (intptr_t)puVar13, 0, 0);
         }
 

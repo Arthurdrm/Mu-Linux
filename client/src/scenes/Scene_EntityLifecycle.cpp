@@ -51,8 +51,8 @@ static void SceneObject_StoreFloatBits(float& value, std::uint32_t bits)
 void* __cdecl CreateObject(int param_1, float* param_2, float* param_3, float param_4) {
     // __ftol implementa truncate-toward-zero (semántica de cast C de float→int),
     // no nearest-even: no usar lrintf (diverge en negativos).
-    int igx = (int)(param_2[0] * _DAT_00552d20);
-    int igy = (int)(param_2[1] * _DAT_00552d20);
+    int igx = (int)(param_2[0] * 0.000625f);
+    int igy = (int)(param_2[1] * 0.000625f);
     if (igx < 0 || igy < 0 || igx > 15 || igy > 15) return nullptr;
     BYTE  bVar4 = (BYTE)((char)igx * 0x10 + (char)igy);
     UINT  uVar2 = (UINT)bVar4;

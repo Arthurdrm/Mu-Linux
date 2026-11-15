@@ -44,8 +44,8 @@ void MaterialVisuals_Prepare(MaterialVisualSample &sample, int model, bool attri
     }
     // IDA: BMD_SetupRenderByType (0x00504130), UV V antes que U.
     if (draw && (model==607 || model==608)) {
-        sample.v=(float)(rand()%10)*_DAT_005524f4;
-        sample.u=(float)(rand()%10)*_DAT_005524f4;
+        sample.v=(float)(rand()%10)*0.1f;
+        sample.u=(float)(rand()%10)*0.1f;
     }
 }
 void MaterialVisuals_PrepareObject(const void *owner, int model, bool attributes, bool draw) {
@@ -57,7 +57,7 @@ void MaterialVisuals_PrepareWeaponObject(OBJECT* entity, int model) {
     auto &sample=objects[entity].sample;
     const float alpha=o.Alpha;
     const BYTE action=o.CurrentAction;
-    MaterialVisuals_Prepare(sample,model,true,alpha>_DAT_005524f8);
+    MaterialVisuals_Prepare(sample,model,true,alpha>0.01f);
     sample.alpha=alpha; sample.action=action;
     // IDA: 239/244 usaban el slot como arma y dejaban estos resets publicados.
     // DESVIACION: publicar una vez por paso, conservando alpha/acción del draw.
@@ -71,7 +71,7 @@ void MaterialVisuals_PrepareWeaponObject(OBJECT* entity, int model) {
 }
 void MaterialVisuals_TickObjectDraw(const OBJECT* entity) {
     const OBJECT &o=*entity;
-    if (gMapManager.GetCurrentMap()!=MAP_LOST_TOWER || o.Alpha<_DAT_005524f8 ||
+    if (gMapManager.GetCurrentMap()!=MAP_LOST_TOWER || o.Alpha<0.01f ||
         o.RenderType==0x80 || (EditFlag==0 && o.HiddenMesh==-2)) return;
     if (o.Type==23 || o.Type==19 || o.Type==20 || o.Type==3 || o.Type==4)
         rand(); // IDA: Draw_RenderObject (0x004FAE00), muestra descartada.

@@ -412,7 +412,7 @@ void __cdecl Terrain_Clear(void) {
         TerrainMappingLayer2[i] = 0xff;
         TerrainMappingAlpha[i] = 0.0f;
         unsigned int uVar1 = (unsigned int)rand() & 3u;     // 0..3
-        DAT_0810b2cc[i]   = (float)(int)uVar1 * _DAT_005528dc;
+        DAT_0810b2cc[i]   = (float)(int)uVar1 * 0.25f;
     }
 }
 
@@ -429,13 +429,13 @@ void __cdecl CreateTerrainNormal(void) {
     float *pfVar5 = DAT_07feb288;
     for (unsigned int yRow = 0; yRow < 256; ++yRow) {
         unsigned int yNext = yRow + 1;
-        float fVar3 = (float)(int)yRow  * _DAT_005524f0;
-        float fVar4 = (float)(int)yNext * _DAT_005524f0;
+        float fVar3 = (float)(int)yRow  * 100.0f;
+        float fVar4 = (float)(int)yNext * 100.0f;
         int iVar6 = (int)(yNext & 0xffu) * 0x100;
         for (unsigned int xCol = 1; xCol <= 256; ++xCol) {
             float p1[3], p2[3], p3[3];
             // p2 = (x_curr, y_curr, height@(x_curr, y_curr))
-            p2[0] = (float)(int)xCol * _DAT_005524f0;
+            p2[0] = (float)(int)xCol * 100.0f;
             p2[1] = fVar4;
             p2[2] = BackTerrainHeight[(xCol & 0xffu) + iVar6];
             // p1 = (x_curr, y_prev, height@(x_curr, y_prev))
@@ -443,7 +443,7 @@ void __cdecl CreateTerrainNormal(void) {
             p1[1] = fVar3;
             p1[2] = BackTerrainHeight[(xCol & 0xffu) + (yRow & 0xffu) * 0x100];
             // p3 = (x_prev, y_curr, height@(x_prev, y_curr))
-            p3[0] = (float)(int)(xCol - 1) * _DAT_005524f0;
+            p3[0] = (float)(int)(xCol - 1) * 100.0f;
             p3[1] = fVar4;
             p3[2] = BackTerrainHeight[((xCol - 1) & 0xffu) + iVar6];
             Triangle_ComputeNormal(p1, p2, p3, pfVar5);
@@ -463,11 +463,11 @@ void __cdecl CreateTerrainLight(void) {
             // DAT_07feb288 is float[3*n]: [0]=x,[4]=y(+4),[8]=z(+8) per vertex
             // Ghidra offsets: +0=x, +4=y (DAT_07feb28c), +8=z (DAT_07feb290)
             float fVar1 = ((*(float*)((char*)&DAT_07feb288 + iVar4) + *(float*)((char*)&DAT_07feb288 + iVar4 + 8)) *
-                           _DAT_00552504 - *(float*)((char*)&DAT_07feb288 + iVar4 + 4) * _DAT_00552504) + _DAT_00552504;
-            float fVar2 = _DAT_00552580;
-            if (_DAT_00552580 <= fVar1) {
+                           0.5f - *(float*)((char*)&DAT_07feb288 + iVar4 + 4) * 0.5f) + 0.5f;
+            float fVar2 = 0.0f;
+            if (0.0f <= fVar1) {
                 fVar2 = fVar1;
-                if (_DAT_0055256c < fVar1) fVar2 = _DAT_0055256c;
+                if (1.0f < fVar1) fVar2 = 1.0f;
             }
             int iVar5 = 3;
             int iVar3 = iVar4;
@@ -614,7 +614,7 @@ void __cdecl OpenJpegBuffer(char *path, float* dst)
     for (int y = image.height - 1; y >= 0; --y) {
         const unsigned char* row = image.pixels + y * image.width * 3;
         for (int x = 0; x < image.width * 3; ++x)
-            *outFloat++ = (float)row[x] * _DAT_00552b70;
+            *outFloat++ = (float)row[x] * 0.003921569f;
     }
 
 }

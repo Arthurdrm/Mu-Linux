@@ -314,8 +314,8 @@ void Render_QuickButtons_(void)
         // que usa el hit-test GuildCreator_HitTest (no `DAT_07ea5b1c/20` =
         // Inventory[32].Level/Part, que es el slot 0 del pool de la tienda).
         // Los tres offsets coinciden con esos hit-tests: +20/+350 y +100 el segundo.
-        float btnX = (float)g_GuildCreatorScratchX + _DAT_005524fc;
-        float btnY = (float)g_GuildCreatorScratchY + _DAT_00552ca4;
+        float btnX = (float)g_GuildCreatorScratchX + 20.0f;
+        float btnY = (float)g_GuildCreatorScratchY + 350.0f;
         Gfx::Color3f(1.0f, 1.0f, 1.0f);
         GL_DrawTexture(0x118, btnX, btnY, 70.0f, 21.0f, 0.0f, 0.0f, 2.1875f, 0.65625f, 1, 1);
         int tex = ((int)MouseX >= (int)btnX && (int)MouseX < (int)(btnX + 70.0f) &&
@@ -352,8 +352,8 @@ void Render_QuickButtons_(void)
     // tapaba; el hit-test de cierre (sub_4E4760) seguia vivo en
     // [panelX+25,+49) x [panelY+395,+419).
     if (HUD_IsGuildListRuntime()) {
-        float iconX = (float)GuildListStartX + _DAT_00552464;
-        float iconY = (float)GuildListStartY + _DAT_0055246c;
+        float iconX = (float)GuildListStartX + 25.0f;
+        float iconY = (float)GuildListStartY + 395.0f;
         Gfx::Color3f(1.0f, 1.0f, 1.0f);
         GL_DrawTexture(280, iconX, iconY, 24.0f, 24.0f,
                      0.0f, 0.0f, 0.75f, 0.75f, 1, 1);

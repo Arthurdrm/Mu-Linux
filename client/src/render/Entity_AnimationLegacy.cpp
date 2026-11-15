@@ -27,7 +27,7 @@ extern void __cdecl operator_delete(void* ptr);
 int __cdecl Calc_RenderObject(OBJECT* object, char param_2, int param_3) {
     BYTE* param_1 = reinterpret_cast<BYTE*>(object);
     float fVar2 = AsObject(param_1)->Alpha;
-    if (fVar2 < _DAT_005524f8)
+    if (fVar2 < 0.01f)
         return 0;
     BMD* this_ = AsModel(Models) + object->Type;
     this_->BodyHeight = 0.0f;
@@ -173,7 +173,7 @@ void __cdecl Skeleton_Transform(void* this_, float* boneMatrices, float* param_2
         transformCount+=vc+nc;
     }
     // No despertar trabajadores para las numerosas mallas pequeñas del juego.
-    const float transformCoefficients[3]={_DAT_00552530,_DAT_005528b4,_DAT_005526e4};
+    const float transformCoefficients[3]={0.8f,0.4f,0.2f};
     bool transformed = parallelSafe && ObjectPose_RestoreGeometry(this_,(const float*)(uintptr_t)param_1,
         _DAT_005597c8,param_5,local_54+6,transformCoefficients,(float*)&DAT_0584621c,
         (float*)&DAT_06f433bc,(float*)&DAT_077e298c);
@@ -208,8 +208,8 @@ void __cdecl Skeleton_Transform(void* this_, float* boneMatrices, float* param_2
                 (const float*)(uintptr_t)param_1,_DAT_005597c8,*(float*)&((BMD*)(uintptr_t)(this_))->BodyScale,
                 {*(float*)&((BMD*)(uintptr_t)(this_))->BodyOrigin[0],*(float*)&((BMD*)(uintptr_t)(this_))->BodyOrigin[1],*(float*)&((BMD*)(uintptr_t)(this_))->BodyOrigin[2]},
                 {local_54[6],local_54[7],local_54[8]},
-                {_DAT_00552530,_DAT_005528b4,_DAT_005526e4},
-                _DAT_005597c8==_DAT_0055256c,param_5!='\0',*(char*)&((BMD*)(uintptr_t)(this_))->LightEnable!='\0'};
+                {0.8f,0.4f,0.2f},
+                _DAT_005597c8==1.0f,param_5!='\0',*(char*)&((BMD*)(uintptr_t)(this_))->LightEnable!='\0'};
             auto& workers=TransformWorkers::SharedTeam();
             workers.Run(transformCount,&batch,TransformMath::Run);
             transformed=true;
@@ -278,7 +278,7 @@ void __cdecl Skeleton_Transform(void* this_, float* boneMatrices, float* param_2
                 continue;
             }
             float* pfDst = pfOut - 2;
-            if (_DAT_005597c8 == _DAT_0055256c) {
+            if (_DAT_005597c8 == 1.0f) {
                 Vector_Transform((float*)(vs + 2), (float*)(*vs * 0x30 + param_1), pfDst);
                 if (param_5 != '\0') {
                     float sc = *(float*)&((BMD*)(uintptr_t)(this_))->BodyScale;
@@ -329,8 +329,8 @@ void __cdecl Skeleton_Transform(void* this_, float* boneMatrices, float* param_2
                 // dot(transformed_light_dir, transformed_normal):
                 // Ghidra local_38 == local_54[7] (Y), local_34 == local_54[8] (Z).
                 float lit = (local_54[7] * pfNrmBase[1] + local_54[6] * pfNrmBase[0] + local_54[8] * pfNrmBase[2])
-                            * _DAT_00552530 + _DAT_005528b4;
-                if (lit < _DAT_005526e4) lit = _DAT_005526e4;
+                            * 0.8f + 0.4f;
+                if (lit < 0.2f) lit = 0.2f;
                 *local_68 = lit;
             }
             local_68++;       // light buffer += 1 float
@@ -359,7 +359,7 @@ void __cdecl Skeleton_Transform(void* this_, float* boneMatrices, float* param_2
         skinSources.push_back({mesh,vp,np,(const float*)((const char*)&DAT_0584621c+i*180000),
             (const float*)&DAT_077e298c+i*15000,vc,nc});
     }
-    const float zero[3]{},coefficients[3]{_DAT_00552530,_DAT_005528b4,_DAT_005526e4};
+    const float zero[3]{},coefficients[3]{0.8f,0.4f,0.2f};
     Skinning::Capture(this_,(const float*)(uintptr_t)param_1,(std::min)(200,int(*(short*)((char*)this_+0x22))),
         _DAT_005597c8,param_5?*(float*)&((BMD*)(uintptr_t)(this_))->BodyScale:1.f,
         param_5?(float*)((char*)this_+0x6c + BMD_FIELD_SHIFT):zero,local_54+6,coefficients,skinSources.data(),skinSources.size());

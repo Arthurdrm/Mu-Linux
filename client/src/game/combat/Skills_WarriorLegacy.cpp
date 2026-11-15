@@ -422,7 +422,7 @@ void __cdecl Entity_TeleportAnim(float* world_pos, float entity_id, float* dst_p
         std::memcpy(&point.Value, &entity_id, sizeof(point.Value));
         point.Position[0] = world_pos[0];
         point.Position[1] = world_pos[1];
-        point.Position[2] = world_pos[2] + _DAT_00552958;
+        point.Position[2] = world_pos[2] + 140.0f;
         std::memcpy(point.Color, dst_pos, sizeof(point.Color));
         point.Scale = param_4;
         point.Delay = 0;

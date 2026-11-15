@@ -189,7 +189,7 @@ static void CreateFrustrum2D_Footprint()
     const float ax = FrustrumVertex, ay = DAT_07eab1b4;
     const float cx[4] = { DAT_07eab1bc, DAT_07eab1c8, DAT_07eab1d4, DAT_07eab1e0 };
     const float cy[4] = { DAT_07eab1c0, DAT_07eab1cc, DAT_07eab1d8, DAT_07eab1e4 };
-    const float k = _DAT_00552d34 / _DAT_005526e8;
+    const float k = 1.4f / 0.9f;
     float minX = ax, maxX = ax, minY = ay, maxY = ay;
     for (int i = 0; i < 4; ++i) {
         const float x = ax + (cx[i] - ax) * k, y = ay + (cy[i] - ay) * k;
@@ -198,8 +198,8 @@ static void CreateFrustrum2D_Footprint()
         if (y < minY) minY = y;
         if (y > maxY) maxY = y;
     }
-    minX = (minX - 800.0f) * _DAT_005524f8; maxX = (maxX + 800.0f) * _DAT_005524f8;
-    minY = (minY - 800.0f) * _DAT_005524f8; maxY = (maxY + 800.0f) * _DAT_005524f8;
+    minX = (minX - 800.0f) * 0.01f; maxX = (maxX + 800.0f) * 0.01f;
+    minY = (minY - 800.0f) * 0.01f; maxY = (maxY + 800.0f) * 0.01f;
     // Sentido horario: TestFrustrum2D exige producto cruz positivo en cada lado.
     FrustrumX[0] = minX; FrustrumY[0] = maxY;
     FrustrumX[1] = maxX; FrustrumY[1] = maxY;
@@ -250,8 +250,8 @@ static bool CreateFrustrum2D_FromFrustum(const float *ground)
         float dx = p[i][0] - cx, dy = p[i][1] - cy;
         const float len = sqrtf(dx * dx + dy * dy);
         if (len > 0.001f) { dx = dx / len * 800.0f; dy = dy / len * 800.0f; }
-        FrustrumX[i] = (p[i][0] + dx) * _DAT_005524f8;
-        FrustrumY[i] = (p[i][1] + dy) * _DAT_005524f8;
+        FrustrumX[i] = (p[i][0] + dx) * 0.01f;
+        FrustrumY[i] = (p[i][1] + dy) * 0.01f;
     }
     return true;
 }
@@ -270,8 +270,8 @@ void __cdecl CreateFrustrum2D(float *param_1)
     float widthScale = (float)iVar2 * _DAT_0055283c;
     if (gWindow.IsWide() && gWindow.GetHeight() > 0)
         widthScale = ((float)gWindow.GetRealWidth() / (float)gWindow.GetHeight()) / (4.0f / 3.0f);
-    float angle_cbc = widthScale * _DAT_00552cbc;  // sw/640 * 1190 = far half-width
-    float angle_cb8 = widthScale * _DAT_00552cb8;  // sw/640 * 540  = near half-width
+    float angle_cbc = widthScale * 1190.0f;  // sw/640 * 1190 = far half-width
+    float angle_cb8 = widthScale * 540.0f;  // sw/640 * 540  = near half-width
 
     // Euler angles for AngleMatrix (X=0, Y=0, Z=45°) — top-down orientation
     pts[0] = 0.0f; pts[1] = 0.0f; pts[2] = 45.0f;
@@ -290,8 +290,8 @@ void __cdecl CreateFrustrum2D(float *param_1)
         pfVar1[0] += param_1[0];
         pfVar1[1] += param_1[1];
         pfVar1[2] += param_1[2];
-        *(float*)((char*)&FrustrumX + j) = pfVar1[0] * _DAT_005524f8;  // X (tile coords)
-        *(float*)((char*)&FrustrumY + j) = pfVar1[1] * _DAT_005524f8;  // Y
+        *(float*)((char*)&FrustrumX + j) = pfVar1[0] * 0.01f;  // X (tile coords)
+        *(float*)((char*)&FrustrumY + j) = pfVar1[1] * 0.01f;  // Y
     }
 }
 

@@ -43,8 +43,8 @@ void __cdecl Cursor_Render(void) {
     if (frame == 1 || frame == 3 || frame == 5) u_bits = 0x3F000000;  // 0.5f
     if (frame == 2 || frame == 3 || frame == 4) v_bits = 0x3F000000;  // 0.5f
 
-    float cx = (float)(int)MouseX - _DAT_0055264c;  // MouseX - 2
-    float cy = (float)(int)MouseY - _DAT_0055264c;  // MouseY - 2
+    float cx = (float)(int)MouseX - 2.0f;  // MouseX - 2
+    float cy = (float)(int)MouseY - 2.0f;  // MouseY - 2
 
     // ── LABEL_43: default arrow cursor ───────────────────────────────────────
     auto draw_arrow = [&](){
@@ -112,14 +112,14 @@ void __cdecl Cursor_Render(void) {
         return;
     }
     if (DAT_07eaa134 == 2) {
-        float10 fv = fsin((float10)(long long)WorldTime * (float10)_DAT_00552914);
+        float10 fv = fsin((float10)(long long)WorldTime * (float10)0.02f);
         if (fv <= (float10)FloatZero) {
-            GL_DrawRotatedRect(7, (float)(int)MouseX + _DAT_00552660,
-                            (float)(int)MouseY + _DAT_005529fc,
+            GL_DrawRotatedRect(7, (float)(int)MouseX + 5.0f,
+                            (float)(int)MouseY + 18.0f,
                          24.0f, 24.0f, 0x42340000);
         } else {
-            GL_DrawRotatedRect(7, (float)(int)MouseX + _DAT_00552488,
-                            (float)(int)MouseY + _DAT_00552488,
+            GL_DrawRotatedRect(7, (float)(int)MouseX + 10.0f,
+                            (float)(int)MouseY + 10.0f,
                          24.0f, 24.0f, 0);
         }
         return;

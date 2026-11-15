@@ -119,7 +119,7 @@ static void ReplayTerrain(const TerrainDraw::Tile& tile,const TerrainDraw::Frame
 }
 void Terrain_BeginBufferedPass() {
     TerrainDraw::FrameData f;
-    f.map=gMapManager.GetCurrentMap();f.scale=_DAT_005524f0;
+    f.map=gMapManager.GetCurrentMap();f.scale=100.0f;
     f.heights=(const float*)&BackTerrainHeight[0];f.light=(const float*)&DAT_081cb608[0];
     f.alpha=TerrainMappingAlpha;f.fogPolicy=FogEnable!=0;
     TerrainDraw::Begin(f,ReplayTerrain);
@@ -230,7 +230,7 @@ void __cdecl RenderTerrainFace(float xf, float yf, int xi, int yi, float lodf)
             int slot = (int)(unsigned char)TER_L1[TER_IDX1] + 50;
             BITMAP_t* bmp = &Bitmaps[slot];
             // DESVIACION: distancia de dibujado; lejos no va el pasto.
-            if (bmp->Buffer && DrawDistance::Detailed((xi + 0.5f) * _DAT_005524f0, (yi + 0.5f) * _DAT_005524f0)) {
+            if (bmp->Buffer && DrawDistance::Detailed((xi + 0.5f) * 100.0f, (yi + 0.5f) * 100.0f)) {
                 if(!batch.active)GL_BindTextureSlot(slot);     // BindTexture
                 float yfa = bmp->Height + bmp->Height;
                 float u = xf * 0.25f + DAT_0810b2cc[(unsigned char)yi]; // TerrainGrassTexture[(yi&0xFF)+1]

@@ -91,7 +91,7 @@ void __cdecl BMD__RenderMeshTranslate(void *model, char a, int b, float frame, i
         lightEnable = 0;
     } else if ((fl & 2) == 2) {
         mode = 2;
-        BMDDevice::Select({BMDDevice::Pass::Surface,static_cast<unsigned>(fl),tex,f3 < _DAT_00552544});
+        BMDDevice::Select({BMDDevice::Pass::Surface,static_cast<unsigned>(fl),tex,f3 < 0.99f});
     } else if ((fl & 0x40) == 0x40) {
         if ((&DAT_083a7cc8)[tex * TEXTURE_STRIDE] == '\x04') return;    // Bitmaps[tex].Components == 4
         mode = 64;
@@ -121,7 +121,7 @@ void __cdecl BMD__RenderMeshTranslate(void *model, char a, int b, float frame, i
                 else        BufferedDraw::TexCoord2f(uv[0], uv[1]);
                 if (lightEnable) {
                     const float *c = (const float *)(&DAT_060db65c + ((int)idx[0] + meshIdx * 15000) * 12);
-                    if (f3 < _DAT_00552544) BufferedDraw::Color4f(c[0], c[1], c[2], f3);
+                    if (f3 < 0.99f) BufferedDraw::Color4f(c[0], c[1], c[2], f3);
                     else                    BufferedDraw::Color3fv(c);
                 }
             }
@@ -132,10 +132,10 @@ void __cdecl BMD__RenderMeshTranslate(void *model, char a, int b, float frame, i
                 // IDA: v56 = (std::int64_t)WorldTime + 931 * vtx;
                 //      pos + sin(v56 * 0.007) * normal * 28
                 const int phase = (int)(long long)WorldTime + 0x3a3 * vtx;
-                const float sn = (float)sin((double)phase * (double)_DAT_005528c4);
+                const float sn = (float)sin((double)phase * (double)0.007f);
                 const float *nrm = (const float *)(&DAT_06f433bc + ((int)idx[0] + meshIdx * 15000) * 12);
                 for (int k = 0; k < 3; ++k)
-                    moved[k] = sn * nrm[k] * _DAT_00552644 + pos[k];
+                    moved[k] = sn * nrm[k] * 28.0f + pos[k];
                 pos = moved;
             }
             BufferedDraw::Vertex3fv(pos);

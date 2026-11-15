@@ -977,8 +977,8 @@ void __cdecl UI_InGameMenu(void)
                 const int* desc = (const int*)&DAT_083a42f8[0];
                 for (int b = 0; b < 2 && !okClick; ++b, desc += 5) {
                     if (desc[0] <= 0) continue;          // entrada vacia
-                    const int bx = desc[1] + (int)_DAT_00552d40;
-                    const int by = desc[2] + (int)_DAT_0055290c;
+                    const int bx = desc[1] + (int)213.0f;
+                    const int by = desc[2] + (int)60.0f;
                     if (mouseX >= bx && mouseX < bx + desc[3] &&
                         mouseY >= by && mouseY < by + desc[4])
                         okClick = true;

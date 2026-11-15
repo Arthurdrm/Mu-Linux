@@ -51,20 +51,20 @@ void __cdecl Alpha(OBJECT* object)
 
   if (*(char *)&((OBJECT*)(uintptr_t)(param_1))->AlphaEnable == '\0') {
     *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha =
-         (*(float *)&((OBJECT*)(uintptr_t)(param_1))->AlphaTarget - *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha) * _DAT_005524f4 +
+         (*(float *)&((OBJECT*)(uintptr_t)(param_1))->AlphaTarget - *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha) * 0.1f +
          *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha;
   }
   else if (*(float *)&((OBJECT*)(uintptr_t)(param_1))->AlphaTarget <= *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha) {
     if ((*(float *)&((OBJECT*)(uintptr_t)(param_1))->AlphaTarget < *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha) &&
-       (fVar1 = *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha - _DAT_00552874, *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha = fVar1,
-       fVar1 < _DAT_00552580)) {
+       (fVar1 = *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha - 0.05f, *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha = fVar1,
+       fVar1 < 0.0f)) {
       *(undefined4 *)&((OBJECT*)(uintptr_t)(param_1))->Alpha = 0;
     }
   }
   else {
-    fVar1 = *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha + _DAT_00552874;
+    fVar1 = *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha + 0.05f;
     *(float *)&((OBJECT*)(uintptr_t)(param_1))->Alpha = fVar1;
-    if (_DAT_0055256c < fVar1) {
+    if (1.0f < fVar1) {
       ((OBJECT*)(uintptr_t)(param_1))->Alpha = 1.0f;
     }
   }
@@ -96,15 +96,15 @@ void __cdecl Particle_PathUpdate(OBJECT* object, int param_2, const void* table,
   iVar7 = 0;
   if (0 < param_4) {
     pfVar6 = reinterpret_cast<const float*>(param_3 + 0x14);
-    fVar3 = _DAT_00552580;
-    fVar5 = _DAT_00552580;
+    fVar3 = 0.0f;
+    fVar5 = 0.0f;
     do {
       if (((*reinterpret_cast<const char*>(pfVar6 + -5) != '\0') && (iVar7 != param_2)) &&
          (fVar1 = *(float *)(param_1 + 0x10) - pfVar6[-1],
          fVar2 = *(float *)(param_1 + 0x14) - *pfVar6, fVar1 = SQRT(fVar1 * fVar1 + fVar2 * fVar2),
-         fVar1 < _DAT_00552850)) {
+         fVar1 < 400.0f)) {
         fVar2 = pfVar6[0x2b] - *(float *)(param_1 + 0x10);
-        if (_DAT_00552878 <= fVar1) {
+        if (80.0f <= fVar1) {
           fVar2 = fVar2 + (pfVar6[0x2b] - pfVar6[-1]);
           fVar1 = (pfVar6[0x2c] - *(float *)(param_1 + 0x14)) + (pfVar6[0x2c] - *pfVar6);
         }

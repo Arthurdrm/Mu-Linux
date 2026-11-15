@@ -74,8 +74,8 @@ static void Terrain_ProcessObjects(bool simulation)
                             continue;
                         }
 
-                        float ex = *(float*)(entity + 0x10) * _DAT_005524f8;
-                        float ey = *(float*)(entity + 0x14) * _DAT_005524f8;
+                        float ex = *(float*)(entity + 0x10) * 0.01f;
+                        float ey = *(float*)(entity + 0x14) * 0.01f;
                         // Range = z_offset + CollisionRange(obj[+0xD0]) - margen ampliado
                         // (mejora intencional, ver OBJECT_CULL_EXTRA_MARGIN arriba).
                         float ez = z_offset + *(float*)(entity + 0xd0) - OBJECT_CULL_EXTRA_MARGIN;
@@ -124,8 +124,8 @@ static void Terrain_ProcessObjects(bool simulation)
         do {
             char *entity = (char*)(CharactersClient + iVar);
             if (*entity != '\0') {
-                float ex = *(float*)(entity + 0x10) * _DAT_005524f8;
-                float ey = *(float*)(entity + 0x14) * _DAT_005524f8;
+                float ex = *(float*)(entity + 0x10) * 0.01f;
+                float ey = *(float*)(entity + 0x14) * 0.01f;
                 float ez = z_offset + *(float*)(entity + 0xd0);
                 unsigned short vis = TestFrustrum2D(ex, ey, ez);
                 FieldAs(entity, AsObject(entity)->Visible) = (char)vis;

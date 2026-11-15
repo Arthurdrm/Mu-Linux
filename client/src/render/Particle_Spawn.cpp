@@ -95,12 +95,12 @@ void ApplyParticleDispersion(char* particle, int type)
     color[0] = 1.0f;
     color[1] = 1.0f;
     color[2] = 1.0f;
-    *(float*)(particle + ParticleScaleOffset) = (float)(scaleStep + 4) * _DAT_00552910;
+    *(float*)(particle + ParticleScaleOffset) = (float)(scaleStep + 4) * 0.03f;
     if (definition.HasVelocity) {
         float* drift = (float*)(particle + ParticleDriftOffset);
-        drift[0] = (float)(_rand() % 32 - 16) * _DAT_005524f4;
-        drift[1] = (float)(_rand() % 32 - 16) * _DAT_005524f4;
-        drift[2] = (float)(_rand() % 32 - 32) * _DAT_005524f4;
+        drift[0] = (float)(_rand() % 32 - 16) * 0.1f;
+        drift[1] = (float)(_rand() % 32 - 16) * 0.1f;
+        drift[2] = (float)(_rand() % 32 - 32) * 0.1f;
     }
 }
 // IDA: Particle_Spawn (0x00475220), tipos 1221/1222. Cada trayectoria
@@ -112,7 +112,7 @@ void InitializeDirectedParticle(char* particle, int subtype, float* sourceAngle)
 {
     float* position = (float*)(particle + ParticlePositionOffset);
     float* angle = (float*)(particle + ParticleAngleOffset);
-    *(float*)(particle + ParticleScaleOffset) = (float)(_rand() % 32 + 32) * _DAT_005524f8;
+    *(float*)(particle + ParticleScaleOffset) = (float)(_rand() % 32 + 32) * 0.01f;
     position[0] = (float)(_rand() % 16 - 8) + position[0];
     position[1] = (float)(_rand() % 16 - 8) + position[1];
     float matrix[12];
@@ -134,7 +134,7 @@ void InitializeRadialParticle(char* particle, int, float*)
     const int scaleStep = _rand() % 32;
     angle[0] = 0.0f;
     angle[1] = 0.0f;
-    *(float*)(particle + ParticleScaleOffset) = (float)(scaleStep + 64) * _DAT_005524f8;
+    *(float*)(particle + ParticleScaleOffset) = (float)(scaleStep + 64) * 0.01f;
     angle[2] = (float)(_rand() % 360);
     float matrix[12];
     Matrix_BuildFromEuler(angle, matrix);
@@ -181,7 +181,7 @@ void ApplyParticleLinearMotion(char* particle, const ParticleLinearMotion& defin
         *(float*)(particle + ParticleScaleOffset) = 0.8f;
     drift[1] = (float)(speedStep + 32) * *definition.SpeedFactor;
     if (definition.RandomScaleAndGray)
-        *(float*)(particle + ParticleScaleOffset) = (float)(_rand() % 128 + 128) * _DAT_005524f8;
+        *(float*)(particle + ParticleScaleOffset) = (float)(_rand() % 128 + 128) * 0.01f;
     const int rotation = _rand() % 360;
     if (definition.RandomScaleAndGray) {
         float* color = (float*)(particle + ParticleColorOffset);
@@ -201,8 +201,8 @@ void InitializeRotatingImpulse(char* particle, float scale)
     const int speedStep = _rand() % 10;
     float* drift = (float*)(particle + ParticleDriftOffset);
     drift[1] = 0.0f;
-    drift[0] = (float)(speedStep + 5) * _DAT_005528b4;
-    drift[2] = (float)(_rand() % 10 + 5) * _DAT_005526e4;
+    drift[0] = (float)(speedStep + 5) * 0.4f;
+    drift[2] = (float)(_rand() % 10 + 5) * 0.2f;
 }
 
 // IDA: Particle_Spawn (0x00475220), tipo 1381: cero y no cero son variantes distintas.
@@ -252,7 +252,7 @@ void InitializeFireParticle(char* particle, const ParticleFirePreset& preset)
 {
     *(int*)(particle + ParticleLifetimeOffset) = preset.Lifetime;
     if (preset.RandomScale)
-        *(float*)(particle + ParticleScaleOffset) = (float)(_rand() % 32 + 80) * _DAT_005524f8;
+        *(float*)(particle + ParticleScaleOffset) = (float)(_rand() % 32 + 80) * 0.01f;
     if (preset.OffsetPosition) {
         float* position = (float*)(particle + ParticlePositionOffset);
         position[0] = (float)(_rand() % 64 - 32) + position[0];
@@ -288,12 +288,12 @@ static void ParticleSpawn_Lightning(char*& pcVar11, float*& pfVar2, unsigned int
     *(float*)(pcVar11 + ParticleScaleOffset) = 1.8f;
     *pfVar2 = 30.0f;
     uVar8 = _rand() % 4;
-    *(float *)(pcVar11 + 0x28) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
+    *(float *)(pcVar11 + 0x28) = (float)(int)(uVar8 + 6) * 0.1f;
     uVar8 = _rand() % 4;
-    *(float *)(pcVar11 + 0x2c) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
+    *(float *)(pcVar11 + 0x2c) = (float)(int)(uVar8 + 6) * 0.1f;
     uVar8 = _rand() % 4;
-    *(float *)(pcVar11 + 0x30) = (float)(int)(uVar8 + 6) * _DAT_005524f4;
-    *(float *)(pcVar11 + 0x18) = *(float *)(pcVar11 + 0x18) + _DAT_005529e0;
+    *(float *)(pcVar11 + 0x30) = (float)(int)(uVar8 + 6) * 0.1f;
+    *(float *)(pcVar11 + 0x18) = *(float *)(pcVar11 + 0x18) + 260.0f;
 }
 
 // IDA: Particle_Spawn (0x00475220), case BITMAP_SPARK.
@@ -302,7 +302,7 @@ static void ParticleSpawn_Spark(int& iVar6, int& iVar7, float (&local_30)[12], f
     // 0x497 — matrix-transformed directional burst
     uVar8 = _rand() % 4;
     iVar7 = *(int *)(pcVar11 + 8);
-    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 4) * _DAT_005524f4;
+    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 4) * 0.1f;
     if (((iVar7 != 0) && (iVar7 != 2)) && (iVar7 != 3)) {
         uVar8 = _rand() % 8;
         *(unsigned int *)(pcVar11 + 0x38) = uVar8 + 8;
@@ -317,11 +317,11 @@ static void ParticleSpawn_Spark(int& iVar6, int& iVar7, float (&local_30)[12], f
     local_3c = 0.0f;
     *(float *)(pcVar11 + 0x48) = (float)(int)(uVar8 + 6);
     iVar7 = _rand();
-    local_38 = (float)(iVar7 % 0x14 + 0x14) * _DAT_005524f4;
+    local_38 = (float)(iVar7 % 0x14 + 0x14) * 0.1f;
     if (*(int *)(pcVar11 + 8) == 2) {
         *(float *)(pcVar11 + 0x0c) = *(float *)(pcVar11 + 0x0c) + *(float *)(pcVar11 + 0x0c);
-        local_3c = local_3c * _DAT_00552540;
-        local_38 = local_38 * _DAT_00552540;
+        local_3c = local_3c * 3.0f;
+        local_38 = local_38 * 3.0f;
     }
     local_34 = 0.0f;
     Vector_Rotate(&local_3c, local_30, pfVar3);
@@ -331,7 +331,7 @@ static void ParticleSpawn_Spark(int& iVar6, int& iVar7, float (&local_30)[12], f
 static void ParticleSpawn_Type1168(float& fVar4, char*& pcVar11)
 {
     // 0x490 — glow with RGBA
-    fVar4 = *(float *)(pcVar11 + 0x24) + _DAT_0055293c;
+    fVar4 = *(float *)(pcVar11 + 0x24) + 135.0f;
     *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
     *(float*)(pcVar11 + 0x48) = 0.1f;
     *(float *)(pcVar11 + 0x40) = fVar4;
@@ -342,7 +342,7 @@ static void ParticleSpawn_Type103(float& param_6, int& iVar6, int& iVar7, char*&
 {
     *(int*)(pcVar11 + ParticleLifetimeOffset) = 20;
     iVar7 = _rand();
-    *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6 + 8) * _DAT_005524f4;
+    *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6 + 8) * 0.1f;
     if ((*(int *)(pcVar11 + 4) != 0x68) && (*(int *)(pcVar11 + 8) != 1))
         return;
     iVar7 = _rand(); *pfVar1 = (float)(iVar7 % 10 + -5) + *pfVar1;
@@ -352,7 +352,7 @@ static void ParticleSpawn_Type103(float& param_6, int& iVar6, int& iVar7, char*&
     *(float *)(pcVar11 + 0x0c) = param_6;
     iVar7 = _rand();
     *(float*)(pcVar11 + ParticleDriftOffset + 4) = 1.0f;
-    *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 100) * _DAT_00552890;
+    *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 100) * 0.001f;
 }
 
 // IDA: Particle_Spawn (0x00475220), case BITMAP_LIGHT.
@@ -361,7 +361,7 @@ static void ParticleSpawn_Light(int& param_5, float& param_6, int& iVar6, int& i
     // 0x47e — misc bubble/spark
     if (param_5 == 0 || param_5 == 2) {
         iVar7 = _rand(); *(int *)(pcVar11 + 0x38) = iVar7 % 10 + 10;
-        iVar7 = _rand(); *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 10) + _DAT_00552488;
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 10) + 10.0f;
         iVar7 = _rand();
     } else if (param_5 == 1) {
         *(int*)(pcVar11 + ParticleLifetimeOffset) = 50;
@@ -382,7 +382,7 @@ static void ParticleSpawn_Light(int& param_5, float& param_6, int& iVar6, int& i
         return;
     }
     *(float *)(pcVar11 + 0x0c) =
-        ((float)(iVar7 % 0x32) + _DAT_00552598) * param_6 * _DAT_00552594;
+        ((float)(iVar7 % 0x32) + 50.0f) * param_6 * 0.01f;
 }
 
 // IDA: Particle_Spawn (0x00475220), case BITMAP_SPARK + 1.
@@ -410,11 +410,11 @@ static void ParticleSpawn_Type1176(int& param_5, intptr_t& param_7, int& iVar6, 
         *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(pcVar11 + 0x14);
         *(float *)(pcVar11 + 100) = *pfVar1;
         *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
-        *pfVar3 = (*(float *)(param_7 + 0x10) - *pfVar1) * _DAT_00552a00;
+        *pfVar3 = (*(float *)(param_7 + 0x10) - *pfVar1) * 0.1f;
         *(float *)(pcVar11 + 0x50) =
-            (*(float *)(param_7 + 0x14) - *(float *)(pcVar11 + 0x14)) * _DAT_00552a00;
+            (*(float *)(param_7 + 0x14) - *(float *)(pcVar11 + 0x14)) * 0.1f;
         *(float *)(pcVar11 + 0x54) =
-            (*(float *)(param_7 + 0x18) - *(float *)(pcVar11 + 0x18)) * _DAT_00552a00;
+            (*(float *)(param_7 + 0x18) - *(float *)(pcVar11 + 0x18)) * 0.1f;
         return;
     }
 }
@@ -424,7 +424,7 @@ static void ParticleSpawn_Type1177(float *& param_3, int& iVar7, float (&local_3
 {
     *(int*)(pcVar11 + ParticleLifetimeOffset) = 12;
     uVar8 = _rand() % 4;
-    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 8) * _DAT_00552874;
+    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 8) * 0.05f;
     iVar7 = _rand(); *pfVar2 = (float)(iVar7 % 0x168);
     Matrix_BuildFromEuler(param_3, local_30);
     local_3c = 0.0f;
@@ -443,7 +443,7 @@ static void ParticleSpawn_Type1177(float *& param_3, int& iVar7, float (&local_3
 static void ParticleSpawn_Energy(float& param_6, int& iVar7, char*& pcVar11, unsigned int& uVar8)
 {
     uVar8 = _rand() % 8;
-    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 6) * param_6 * _DAT_005524f4;
+    *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 6) * param_6 * 0.1f;
     iVar7 = _rand();
     *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
 }
@@ -457,9 +457,9 @@ static void ParticleSpawn_Type1191(float *& param_4, int& param_5, float& param_
             *(int*)(pcVar11 + ParticleLifetimeOffset) = preset.Lifetime;
         *(float*)(pcVar11 + ParticleScaleOffset) = param_5 == 3 ? param_6 : preset.Scale;
     }
-    *(float *)(pcVar11 + 0x28) = *param_4    + _DAT_00552504;
-    *(float *)(pcVar11 + 0x2c) = param_4[1]  + _DAT_00552504;
-    *(float *)(pcVar11 + 0x30) = param_4[2]  + _DAT_00552504;
+    *(float *)(pcVar11 + 0x28) = *param_4    + 0.5f;
+    *(float *)(pcVar11 + 0x2c) = param_4[1]  + 0.5f;
+    *(float *)(pcVar11 + 0x30) = param_4[2]  + 0.5f;
 }
 
 // IDA: Particle_Spawn (0x00475220), case BITMAP_FIRE, BITMAP_FIRE + 2.
@@ -471,25 +471,25 @@ static void ParticleSpawn_Fire(float& fVar4, int& iVar7, char*& pcVar11, float*&
     uVar8 = _rand() % 16;
     *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
     iVar7 = *(int *)(pcVar11 + 8);
-    *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 0x20) * _DAT_005529c8;
+    *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 0x20) * (-0.1f);
     if ((iVar7 == 0) || (iVar7 == 5)) {
         uVar8 = _rand() % 64;
-        fVar4 = (float)(int)(uVar8 + 0x80) * _DAT_005524f8;
+        fVar4 = (float)(int)(uVar8 + 0x80) * 0.01f;
     } else if (iVar7 == 7) {
         *pfVar3 = 0.0f;
         uVar8 = _rand() % 32;
         *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-        *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 - 0x10) * _DAT_005529c8;
+        *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 - 0x10) * (-0.1f);
         uVar8 = _rand() % 64;
-        fVar4 = (float)(int)(uVar8 + 0x80) * _DAT_00552ac0;
+        fVar4 = (float)(int)(uVar8 + 0x80) * 0.008f;
     } else if (iVar7 == 9) {
         iVar7 = _rand();
         int s = iVar7 % 0x3c - 0x1e;
         *(float *)(pcVar11 + 100) = (float)(int)s;
         *(float *)(pcVar11 + 0x68) = (float)(int)s;
         *(float *)(pcVar11 + 0x6c) =
-            _DAT_00552974 -
-            (float)(int)((s ^ (s >> 0x1f)) - (s >> 0x1f)) * _DAT_005528f0;
+            190.0f -
+            (float)(int)((s ^ (s >> 0x1f)) - (s >> 0x1f)) * 1.5f;
         goto lab_4ab_setscale;
     } else {
         goto lab_4ab_setscale;
@@ -498,7 +498,7 @@ static void ParticleSpawn_Fire(float& fVar4, int& iVar7, char*& pcVar11, float*&
 lab_4ab_setscale:
     if (*(int *)(pcVar11 + 8) == 1) {
         uVar8 = _rand() % 4;
-        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 10) * _DAT_005524f8;
+        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 10) * 0.01f;
     }
     iVar7 = _rand();
     *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
@@ -520,37 +520,37 @@ static void ParticleSpawn_Flame(float *& param_4, int& param_5, intptr_t& param_
         *pfVar3 = 0.0f;
         *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
         uVar8 = _rand() % 128;
-        *(float *)(pcVar11 + 0x54) = (float)(int)(uVar8 + 0x80) * _DAT_00552934;
+        *(float *)(pcVar11 + 0x54) = (float)(int)(uVar8 + 0x80) * 0.15f;
         uVar8 = _rand() % 64;
-        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 0x40) * _DAT_005524f8;
+        *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 0x40) * 0.01f;
         return;
     case 1:
         *(int*)(pcVar11 + ParticleLifetimeOffset) = 15;
         uVar8 = _rand() % 32;
         *pfVar3 = 0.0f;
         *(float *)(pcVar11 + 0x0c) =
-            (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
+            (float)(int)(uVar8 + 0x20) * 0.01f + *(float *)(pcVar11 + 0x0c);
         uVar8 = _rand() % 4;
         break;
     case 2:
         *(int*)(pcVar11 + ParticleLifetimeOffset) = 10;
         uVar8 = _rand() % 32;
         *(float *)(pcVar11 + 0x0c) =
-            (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
+            (float)(int)(uVar8 + 0x20) * 0.01f + *(float *)(pcVar11 + 0x0c);
         iVar7 = _rand();
         fVar4 = *param_4; *pfVar3 = 0.0f;
         *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-        fVar5 = (float)(iVar7 % 0x50) * fVar4 * _DAT_00552594;
+        fVar5 = (float)(iVar7 % 0x50) * fVar4 * 0.01f;
         *(float *)(pcVar11 + 0x50) = fVar5;
         Vector_AddRotated(pfVar1, pfVar2, pfVar3);
         fVar4 = *param_4; *pfVar3 = 0.0f;
-        fVar4 = (fVar4 - fVar5) * _DAT_00552a48;
+        fVar4 = (fVar4 - fVar5) * 0.06666667f;
         *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
         *(float *)(pcVar11 + 0x50) = fVar4;
-        fVar13 = (long double)fsin((long double)WorldTime * (long double)_DAT_005528e0);
-        fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
+        fVar13 = (long double)fsin((long double)WorldTime * (long double)0.002f);
+        fVar13 = fVar13 * (long double)0.3f + (long double)0.7f;
         *(float *)(pcVar11 + 0x28) = (float)fVar13;
-        fVar13 = fVar13 * (long double)_DAT_00552504;
+        fVar13 = fVar13 * (long double)0.5f;
         *(float *)(pcVar11 + 0x2c) = (float)fVar13;
         *(float *)(pcVar11 + 0x30) = (float)fVar13;
         return;
@@ -559,13 +559,13 @@ static void ParticleSpawn_Flame(float *& param_4, int& param_5, intptr_t& param_
         uVar8 = _rand() % 32;
         *pfVar3 = 0.0f;
         *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
-        fVar4 = (float)(int)(uVar8 + 0x20) * _DAT_005524f8;
+        fVar4 = (float)(int)(uVar8 + 0x20) * 0.01f;
         *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
         *(float *)(pcVar11 + 0x0c) = fVar4 + *(float *)(pcVar11 + 0x0c);
-        fVar13 = (long double)fsin((long double)WorldTime * (long double)_DAT_005528e0);
-        fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
+        fVar13 = (long double)fsin((long double)WorldTime * (long double)0.002f);
+        fVar13 = fVar13 * (long double)0.3f + (long double)0.7f;
         *(float *)(pcVar11 + 0x28) = (float)fVar13;
-        fVar13 = fVar13 * (long double)_DAT_00552504;
+        fVar13 = fVar13 * (long double)0.5f;
         *(float *)(pcVar11 + 0x2c) = (float)fVar13;
         *(float *)(pcVar11 + 0x30) = (float)fVar13;
         return;
@@ -574,16 +574,16 @@ static void ParticleSpawn_Flame(float *& param_4, int& param_5, intptr_t& param_
         uVar8 = _rand() % 32;
         *(float*)(pcVar11 + 0x48) = 10.0f;
         *(float *)(pcVar11 + 0x0c) =
-            (float)(int)(uVar8 + 0x20) * _DAT_005524f8 + *(float *)(pcVar11 + 0x0c);
+            (float)(int)(uVar8 + 0x20) * 0.01f + *(float *)(pcVar11 + 0x0c);
         fVar12 = (long double)WorldTime;
-        fVar13 = (long double)_DAT_005528e0;
+        fVar13 = (long double)0.002f;
         *(unsigned int *)(pcVar11 + 100) = *(unsigned int *)(param_7 + 0x10);
         fVar13 = (long double)fsin(fVar12 * fVar13);
         *(unsigned int *)(pcVar11 + 0x68) = *(unsigned int *)(param_7 + 0x14);
         *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(param_7 + 0x18);
-        fVar13 = fVar13 * (long double)_DAT_005528b8 + (long double)_DAT_00552928;
+        fVar13 = fVar13 * (long double)0.3f + (long double)0.7f;
         *(float *)(pcVar11 + 0x28) = (float)fVar13;
-        fVar13 = fVar13 * (long double)_DAT_00552504;
+        fVar13 = fVar13 * (long double)0.5f;
         *(float *)(pcVar11 + 0x2c) = (float)fVar13;
         *(float *)(pcVar11 + 0x30) = (float)fVar13;
         return;
@@ -595,7 +595,7 @@ static void ParticleSpawn_Flame(float *& param_4, int& param_5, intptr_t& param_
     default:
         return;
     }
-    fVar4 = (float)(int)(uVar8 + 4) * _DAT_00552934;
+    fVar4 = (float)(int)(uVar8 + 4) * 0.15f;
     *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
     *(float *)(pcVar11 + 0x50) = fVar4;
 }
@@ -632,12 +632,12 @@ static void ParticleSpawn_Firecracker(int& param_5, int& iVar10, int& iVar6, int
     if (param_5 != -1) {
         iVar7 = param_5 + 0xf;
         iVar10 = iVar7 / 2;
-        iVar9 = _rand(); *pfVar3                  = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934;
-        iVar9 = _rand(); *(float *)(pcVar11 + 0x50) = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934;
+        iVar9 = _rand(); *pfVar3                  = (float)(iVar9 % iVar7 - iVar10) * 0.15f;
+        iVar9 = _rand(); *(float *)(pcVar11 + 0x50) = (float)(iVar9 % iVar7 - iVar10) * 0.15f;
         iVar9 = _rand();
         *(int*)(pcVar11 + ParticleLifetimeOffset) = 50;
         *(float*)(pcVar11 + ParticleScaleOffset) = 0.1f;
-        *(float *)(pcVar11 + 0x54) = (float)(iVar9 % iVar7 - iVar10) * _DAT_00552934 + _DAT_00552488;
+        *(float *)(pcVar11 + 0x54) = (float)(iVar9 % iVar7 - iVar10) * 0.15f + 10.0f;
         return;
     }
     *(int*)(pcVar11 + ParticleLifetimeOffset) = 2;
@@ -651,23 +651,23 @@ static void ParticleSpawn_Flare(int& param_5, float& param_6, float& fVar4, int&
     *(int*)(pcVar11 + ParticleLifetimeOffset) = 60;
     if ((param_5 == 0) || (param_5 == 3)) {
         iVar7 = _rand();
-        fVar4 = (float)(iVar7 % 100) * _DAT_00552594 * _DAT_00552650;
-        fVar4 = fVar4 + _DAT_0055256c;
+        fVar4 = (float)(iVar7 % 100) * 0.01f * 4.0f;
+        fVar4 = fVar4 + 1.0f;
     } else if (param_5 == 4) {
         *(int*)(pcVar11 + ParticleLifetimeOffset) = 40;
         iVar7 = _rand();
-        fVar4 = (float)(iVar7 % 100) * _DAT_00552594 * _DAT_00552660;
-        fVar4 = fVar4 + _DAT_0055256c;
+        fVar4 = (float)(iVar7 % 100) * 0.01f * 5.0f;
+        fVar4 = fVar4 + 1.0f;
     } else if (param_5 == 2) {
         iVar7 = _rand();
-        fVar4 = ((float)(iVar7 % 100) * _DAT_00552594 + _DAT_0055256c) * _DAT_00552660;
+        fVar4 = ((float)(iVar7 % 100) * 0.01f + 1.0f) * 5.0f;
     } else {
         goto lab_4e1_skip_size;
     }
     *(float *)(pcVar11 + 0x48) = fVar4;
 lab_4e1_skip_size:
     iVar7 = _rand(); *pfVar3 = (float)(iVar7 % 300 + -0x96);
-    iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6) * _DAT_005524f8 + param_6;
+    iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 6) * 0.01f + param_6;
     iVar7 = _rand();
     *pfVar2 = 0.0f;
     *(float*)(pcVar11 + ParticleAngleOffset + 4) = 0.0f;
@@ -689,13 +689,13 @@ static void ParticleSpawn_Cloud(int& param_5, float& param_6, int& iVar6, int& i
         iVar7 = _rand(); *(float *)(pcVar11 + 0x18) = (float)(iVar7 % 0x14 + 0x14) + *(float *)(pcVar11 + 0x18);
         iVar7 = _rand();
         *(unsigned int *)(pcVar11 + 0x6c) = *(unsigned int *)(pcVar11 + 0x18);
-        *(float *)(pcVar11 + 0x68) = (float)(iVar7 % 100) * _DAT_00552594;
-        iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 0x14 + 0xb4) * _DAT_005524f8;
+        *(float *)(pcVar11 + 0x68) = (float)(iVar7 % 100) * 0.01f;
+        iVar7 = _rand(); *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 0x14 + 0xb4) * 0.01f;
         iVar7 = _rand();
         *pfVar3 = 0.0f;
         *(float*)(pcVar11 + ParticleDriftOffset + 4) = 0.0f;
         *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-        *(float *)(pcVar11 + 0x58) = (float)(iVar7 % 0x1e) * _DAT_00552594 + param_6;
+        *(float *)(pcVar11 + 0x58) = (float)(iVar7 % 0x1e) * 0.01f + param_6;
         return;
     }
     InitializeRotatingImpulse(pcVar11, 0.2f);
@@ -733,7 +733,7 @@ static void ParticleSpawn_Type1433(int& iVar7, char*& pcVar11)
     *(int*)(pcVar11 + ParticleLifetimeOffset) = 7;
     iVar7 = _rand();
     *(float*)(pcVar11 + ParticleScaleOffset) = 1.2f;
-    *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 0x32 + 0x96) * _DAT_00552594;
+    *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 0x32 + 0x96) * 0.01f;
     iVar7 = _rand();
     *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
 
@@ -828,7 +828,7 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
         case 0: case 4: case 9:
             *(int*)(pcVar11 + ParticleLifetimeOffset) = 16;
             uVar8 = _rand() % 32;
-            *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 0x30) * _DAT_005524f8;
+            *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + 0x30) * 0.01f;
             iVar7 = _rand();
             *pfVar2 = (float)(iVar7 % 0x168);
             // IDA: `*((float *)v8 + 16) = (float)((std::int64_t)WorldTime % 360);`
@@ -840,18 +840,18 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
         case 2: case 5:
             *(int*)(pcVar11 + ParticleLifetimeOffset) = param_5 == 2 ? 50 : 20;
             uVar8 = _rand() % 64;
-            *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + (param_5 == 2 ? 0x40 : 0x62)) * _DAT_005524f8;
+            *(float *)(pcVar11 + 0x0c) = (float)(int)(uVar8 + (param_5 == 2 ? 0x40 : 0x62)) * 0.01f;
             iVar7 = _rand();
             *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
             uVar8 = _rand() % 32;
-            *(float *)(pcVar11 + 0x48) = (float)(int)(uVar8 + 0x3c) * _DAT_005524f4;
+            *(float *)(pcVar11 + 0x48) = (float)(int)(uVar8 + 0x3c) * 0.1f;
             return iVar6;
         case 6:
             *(int*)(pcVar11 + ParticleLifetimeOffset) = 30;
             iVar7 = _rand();
             *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 1000);
             iVar7 = _rand();
-            *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 0x14 + 0xb4) * _DAT_005524f8;
+            *(float *)(pcVar11 + 0x0c) = (float)(iVar7 % 0x14 + 0xb4) * 0.01f;
             iVar7 = _rand();
             *pfVar1 = (float)(iVar7 % 200 + -100) * param_6 + *pfVar1;
             iVar7 = _rand();
@@ -871,10 +871,10 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
             *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
             *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 6) * *(float *)(pcVar11 + 0x0c);
             iVar7 = _rand();
-            *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 200) * _DAT_00552abc;
+            *(float *)(pcVar11 + 0x48) = (float)(iVar7 % 200) * 0.005f;
             iVar7 = _rand();
             *(float *)(pcVar11 + 0x0c) =
-                (float)(iVar7 % 0x14 + 0x78) * *(float *)(pcVar11 + 0x0c) * _DAT_005524f8;
+                (float)(iVar7 % 0x14 + 0x78) * *(float *)(pcVar11 + 0x0c) * 0.01f;
             iVar7 = _rand();
             *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
             return iVar6;
@@ -883,8 +883,8 @@ int __cdecl Particle_Spawn(int param_1, float *param_2, float *param_3, float *p
             *pfVar3 = 0.0f;
             uVar8 = _rand() % 8;
             *(float*)(pcVar11 + ParticleDriftOffset + 8) = 0.0f;
-            *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 0x20) * _DAT_005529c0;
-            *(float *)(pcVar11 + 0x0c) = *(float *)(pcVar11 + 0x0c) * _DAT_00552530;
+            *(float *)(pcVar11 + 0x50) = (float)(int)(uVar8 + 0x20) * (-0.3f);
+            *(float *)(pcVar11 + 0x0c) = *(float *)(pcVar11 + 0x0c) * 0.8f;
             iVar7 = _rand();
             *(float *)(pcVar11 + 0x40) = (float)(iVar7 % 0x168);
             return iVar6;

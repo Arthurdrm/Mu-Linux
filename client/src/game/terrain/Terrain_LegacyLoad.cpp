@@ -59,7 +59,7 @@ void __cdecl OpenTerrainMapping(const char *path) {
     // alpha bytes → float (per IDA 0.85: alpha[i] = byte * (1/255.0f))
     float *fDst = TerrainMappingAlpha;
     unsigned char *hSrc = (unsigned char*)p;
-    for (int i = 0; i < 0x10000; i++) *fDst++ = (float)*hSrc++ * _DAT_00552b70;
+    for (int i = 0; i < 0x10000; i++) *fDst++ = (float)*hSrc++ * 0.003921569f;
     operator_delete(buf);
 }
 

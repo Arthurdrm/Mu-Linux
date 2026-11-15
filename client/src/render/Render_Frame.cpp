@@ -343,8 +343,8 @@ void Render_GameFrame(void)
         GL_SetBlendAdditive();                        // EnableAlphaBlend (aditivo)
         BufferedDraw::Color3f(0.3f, 0.3f, 0.25f);
 
-        const float scrollA = (float)((long long)WorldTime % 100000) * _DAT_00552b88; // 0.0002
-        const float scrollB = (float)((long long)WorldTime % 100000) * _DAT_00552500; // 0.001
+        const float scrollA = (float)((long long)WorldTime % 100000) * 0.0002f; // 0.0002
+        const float scrollB = (float)((long long)WorldTime % 100000) * 0.001f; // 0.001
 
         // El original usa `RenderBitmapUV` (0x5128C0), que mapea un cuadrilatero
         // SESGADO en V (el arrastre de la arena), no `RenderBitmap` (0x5125A0).

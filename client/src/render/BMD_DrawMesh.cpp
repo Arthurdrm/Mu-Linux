@@ -184,7 +184,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
     // scroll de texcoords del glow +N (chrome, textura 1170) sale sólido y
     // desincronizado entre partes.
     long long worldTime = (long long)WorldTime;
-    float fVar16 = (float)(int)(worldTime % 10000) * _DAT_00552868;
+    float fVar16 = (float)(int)(worldTime % 10000) * 0.0001f;
 
     // Texture lookup: local_10 = IndexTexture[Mesh.Texture]
     local_10 = (unsigned int)bmd->IndexTexture[mesh->TextureIndex];
@@ -216,7 +216,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
 
     // Enable blend wave if both conditions
     if (((meshIndex == blendMeshIndex) || (meshIndex == waveMeshIndex)) &&
-        ((uvU != _DAT_00552580 || (uvV != _DAT_00552580))))
+        ((uvU != 0.0f || (uvV != 0.0f))))
         bVar5 = true;
 
     // Lighting setup
@@ -259,7 +259,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
     if ((bVar4 & 1) == 1) {
         // RENDER_COLOR: flat color, disable texture
         renderMode = MODE_COLOR;
-        const bool colorAlpha=alpha < _DAT_00552544;
+        const bool colorAlpha=alpha < 0.99f;
         BMDDevice::Select({BMDDevice::Pass::Color,uVar6,0,colorAlpha});
         if (colorAlpha) {
             BufferedDraw::Color4f(bmd->BodyLight[0],
@@ -284,22 +284,22 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
             // Recompute WorldTime-based phase for OIL (misma corrección: usar
             // WorldTime explícito, no ST0 basura). IDA: `(std::int64_t)WorldTime % 5000`.
             iVar12 = 0;
-            fVar11 = (float)(int)(worldTime % 5000) * _DAT_005528c0 - _DAT_005528b4;
+            fVar11 = (float)(int)(worldTime % 5000) * 0.00024f - 0.4f;
 
             // DESVIACION: las mismas fórmulas del bucle de abajo como filas
             // lineales en la normal rotada (x, y, z, constante) para que la
             // malla residente calcule la UV en la GPU.
             if ((uVar6 & 0x200) == 0x200) {
-                const float m[8] = {_DAT_00552530, 0.0f, _DAT_00552530, fVar11 + fVar11,
-                                    1.0f, 1.0f, 0.0f, fVar11 * _DAT_00552540};
+                const float m[8] = {0.8f, 0.0f, 0.8f, fVar11 + fVar11,
+                                    1.0f, 1.0f, 0.0f, fVar11 * 3.0f};
                 std::memcpy(chromeMap, m, sizeof(chromeMap));
             } else if (uVar7 == 4) {
-                const float m[8] = {0.0f, 0.0f, _DAT_00552504, fVar16,
-                                    0.0f, _DAT_00552504, 0.0f, fVar16 + fVar16};
+                const float m[8] = {0.0f, 0.0f, 0.5f, fVar16,
+                                    0.0f, 0.5f, 0.0f, fVar16 + fVar16};
                 std::memcpy(chromeMap, m, sizeof(chromeMap));
             } else {
-                const float m[8] = {0.0f, 0.0f, _DAT_00552504, _DAT_005526e4,
-                                    0.0f, _DAT_00552504, 0.0f, _DAT_0055256c * _DAT_00552504};
+                const float m[8] = {0.0f, 0.0f, 0.5f, 0.2f,
+                                    0.0f, 0.5f, 0.0f, 1.0f * 0.5f};
                 std::memcpy(chromeMap, m, sizeof(chromeMap));
             }
             hasChromeMap = true;
@@ -319,16 +319,16 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
                 do {
                     if ((uVar6 & 0x200) == 0x200) {
                         // OIL mode
-                        pfVar10[-1] = fVar11 + fVar11 + (pfVar8[1] + pfVar8[-1]) * _DAT_00552530;
-                        fVar9 = fVar11 * _DAT_00552540 + *pfVar8 + pfVar8[-1];
+                        pfVar10[-1] = fVar11 + fVar11 + (pfVar8[1] + pfVar8[-1]) * 0.8f;
+                        fVar9 = fVar11 * 3.0f + *pfVar8 + pfVar8[-1];
                     } else if (uVar7 == 4) {
                         // CHROME mode
-                        pfVar10[-1] = pfVar8[1] * _DAT_00552504 + fVar16;
-                        fVar9 = *pfVar8 * _DAT_00552504 + fVar16 + fVar16;
+                        pfVar10[-1] = pfVar8[1] * 0.5f + fVar16;
+                        fVar9 = *pfVar8 * 0.5f + fVar16 + fVar16;
                     } else {
                         // OBJ mode
-                        pfVar10[-1] = pfVar8[1] * _DAT_00552504 + _DAT_005526e4;
-                        fVar9 = (*pfVar8 + _DAT_0055256c) * _DAT_00552504;
+                        pfVar10[-1] = pfVar8[1] * 0.5f + 0.2f;
+                        fVar9 = (*pfVar8 + 1.0f) * 0.5f;
                     }
                     iVar12++;
                     *pfVar10 = fVar9;
@@ -338,7 +338,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
             }
 
             if ((bVar4 & 0x40) == 0x40) {
-                if (alpha < _DAT_00552544) {
+                if (alpha < 0.99f) {
                     bmd->BodyLight[0] = alpha * bmd->BodyLight[0];
                     bmd->BodyLight[1] = alpha * bmd->BodyLight[1];
                     bmd->BodyLight[2] = alpha * bmd->BodyLight[2];
@@ -352,7 +352,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
                 local_10 = 0x492;
             else if (((bVar4 & 8) == 8) && (texOverride == 0xffffffff))
                 local_10 = 0x4ce;
-            BMDDevice::Select({BMDDevice::Pass::Chrome,uVar6,static_cast<int>(local_10),alpha < _DAT_00552544});
+            BMDDevice::Select({BMDDevice::Pass::Chrome,uVar6,static_cast<int>(local_10),alpha < 0.99f});
 
         } else if (
             // El binario original compara como INT, no float. IDA sub_440D50:
@@ -388,7 +388,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
         } else if ((bVar4 & 2) == 2) {
             // RENDER_TEXTURE: explicit bind with blend
             renderMode = MODE_TEXTURE;
-            BMDDevice::Select({BMDDevice::Pass::Surface,uVar6,static_cast<int>(local_10),alpha < _DAT_00552544});
+            BMDDevice::Select({BMDDevice::Pass::Surface,uVar6,static_cast<int>(local_10),alpha < 0.99f});
 
         } else if ((bVar4 & 0x40) == 0x40) {
             // Bright-only chrome: skip if texture type is 4
@@ -509,7 +509,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
                         }
                         if (param_2_b0 != '\0') {
                             iVar2 = meshIndex * 15000 + (int)*psVar14;
-                            if (alpha < _DAT_00552544) {
+                            if (alpha < 0.99f) {
                                 BufferedDraw::Color4f(*(float *)(&DAT_060db65c + iVar2 * 12),
                                           *(float *)(&DAT_060db65c + iVar2 * 12 + 4),
                                           *(float *)(&DAT_060db65c + iVar2 * 12 + 8), alpha);
@@ -520,7 +520,7 @@ void __cdecl BMD__RenderMesh(void *bmd_obj, float meshIdx, int flags,
                     } else if (renderMode == MODE_CHROME) {
                         // Chrome UV from precomputed chrome table
                         if (!chromeColorSent) {
-                            if (alpha < _DAT_00552544) {
+                            if (alpha < 0.99f) {
                                 BufferedDraw::Color4f(bmd->BodyLight[0],
                                           bmd->BodyLight[1],
                                           bmd->BodyLight[2], alpha);

@@ -39,7 +39,7 @@ void __cdecl Particle_Update(void)
                 int *vp = slot + 0x5f;
                 for (int i = 0; i < seg - 1; i++, vp += 3) {
                     BufferedDraw::Begin(BufferedDraw::Primitive::TriangleFan);
-                    float alpha = _DAT_0055256c;
+                    float alpha = 1.0f;
                     if (*(short*)&AsCharacter(g_TrailOwner[slotIdx])->Level == 0)
                         alpha = (float)(seg - i) / (float)seg;
                     BufferedDraw::Color3f(alpha*(float)slot[2], alpha*(float)slot[3], alpha*(float)slot[4]);
@@ -47,7 +47,7 @@ void __cdecl Particle_Update(void)
                     BufferedDraw::Vertex3fv((float *)(vp - 0x5a));
                     BufferedDraw::TexCoord2f((float)i / (float)seg, 0.0f);
                     BufferedDraw::Vertex3fv((float *)vp);
-                    float alpha2 = _DAT_0055256c;
+                    float alpha2 = 1.0f;
                     if (*(short*)&AsCharacter(g_TrailOwner[slotIdx])->Level == 0)
                         alpha2 = (float)(seg - i - 1) / (float)seg;
                     BufferedDraw::Color3f(alpha2*(float)slot[2], alpha2*(float)slot[3], alpha2*(float)slot[4]);

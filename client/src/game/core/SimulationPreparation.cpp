@@ -109,8 +109,8 @@ void PrepareItems() {
         }
         if (type < 0 || type >= 1200) continue;
         LooseWingVisuals_TickGround((intptr_t)&o);
-        MaterialVisuals_PrepareObject(&o,o.Type,false,o.Alpha>_DAT_005524f8 && !*((BYTE *)&o+140));
-        float point[3] = { o.Position[0], o.Position[1], o.Position[2] + _DAT_0055284c };
+        MaterialVisuals_PrepareObject(&o,o.Type,false,o.Alpha>0.01f && !*((BYTE *)&o+140));
+        float point[3] = { o.Position[0], o.Position[1], o.Position[2] + 30.0f };
         int x, y;
         Camera_ProjectWorldToScreen(point, &x, &y);
         *(short *)(base + 164) = (short)x;
@@ -158,7 +158,7 @@ void PrepareCharacter(CHARACTER &c) {
             PART_t &piece = c.BodyPart[part];
             if (piece.Type == -1) continue;
             const int type = gContentCatalog.EntityDrawModel(&c, piece.Type);
-            if (type != 707 || o.Alpha <= _DAT_005524f8) continue;
+            if (type != 707 || o.Alpha <= 0.01f) continue;
             void *pants = (void *)(Models + type * BMD_STRIDE);
             memcpy(context, pants, sizeof(context));
             *(float *)((char *)pants + 0x68 + BMD_FIELD_SHIFT) = o.Scale;

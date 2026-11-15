@@ -111,8 +111,8 @@ static void MouseOnWindow_Update(void)
         // IDA: estos rectángulos comparten el origen guardado por
         // RenderGuildCreation. El port ya no usa Inventory[32] para ese
         // scratch, porque dicho slot pertenece al pool de tienda.
-        int btnX = (int)((float)g_GuildCreatorScratchX + _DAT_005524fc);
-        int btnY = (int)((float)g_GuildCreatorScratchY + _DAT_00552ca4);
+        int btnX = (int)((float)g_GuildCreatorScratchX + 20.0f);
+        int btnY = (int)((float)g_GuildCreatorScratchY + 350.0f);
         if (mx >= btnX && mx < btnX + 70 && my >= btnY && my < btnY + 21) {
             MouseOnWindow = 1; return;
         }
@@ -125,8 +125,8 @@ static void MouseOnWindow_Update(void)
     }
 
     if (HUD_IsGuildListRuntime()) {
-        int iconX = (int)((float)GuildListStartX + _DAT_00552464);
-        int iconY = (int)((float)GuildListStartY + _DAT_0055246c);
+        int iconX = (int)((float)GuildListStartX + 25.0f);
+        int iconY = (int)((float)GuildListStartY + 395.0f);
         if (mx >= iconX && mx < iconX + 24 && my >= iconY && my < iconY + 24) {
             MouseOnWindow = 1; return;
         }
@@ -1067,7 +1067,7 @@ void __cdecl Player_ProcessInput(void)
         // (Walker movido arriba del gate — ya corrió al inicio del tick.)
         unsigned char *ent = (unsigned char*)Hero;
 
-        _DAT_07e11d50 = (WorldTime - _DAT_07e11d4c) * _DAT_00552890;
+        _DAT_07e11d50 = (WorldTime - _DAT_07e11d4c) * 0.001f;
 
         // IDA 0x004ACEF0 L613-625: ANTES de procesar el click, el original lo
         // descarta mientras el heroe no puede actuar:

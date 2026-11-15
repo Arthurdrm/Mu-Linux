@@ -1112,8 +1112,8 @@ void __cdecl SpringMesh_Create(void *widget, OBJECT* entity, int slot, int type,
             float posA[3], posB[3];
             SpringNode_GetPos((void*)pA, posA);
             SpringNode_GetPos((void*)pB, posB);
-            BYTE edge_flags = (BYTE)(2 | (fabsf(posA[0] - posB[0]) <= _DAT_00552560 ? 4 : 1));
-            Spring_StoreEdge(widget, (int)sp, na, nb, dist * _DAT_00552504, dist, edge_flags);
+            BYTE edge_flags = (BYTE)(2 | (fabsf(posA[0] - posB[0]) <= 0.0f ? 4 : 1));
+            Spring_StoreEdge(widget, (int)sp, na, nb, dist * 0.5f, dist, edge_flags);
             sp++;
         }
     }

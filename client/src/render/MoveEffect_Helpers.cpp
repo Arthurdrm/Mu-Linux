@@ -101,7 +101,7 @@ void __cdecl Effect_SpawnLightningBurst(intptr_t param_1)
     // Compute world endpoint relative to entity position
     position[0] = *(float *)(param_1 + 0x10) - position[0];
     position[1] = *(float *)(param_1 + 0x14) - position[1];
-    position[2] = (*(float *)(param_1 + 0x18) - position[2]) + _DAT_00552908;
+    position[2] = (*(float *)(param_1 + 0x18) - position[2]) + 120.0f;
     // Spawn lightning joint: type=0x4eb, from entity pos, width 5.0, persistent
     Joint_Create(0x4eb, position, (float *)(param_1 + 0x10), local_48,
                  *(undefined4 *)(param_1 + 4),
@@ -145,7 +145,7 @@ void __cdecl Effect_SpawnProximityHit(intptr_t param_1)
       (fVar4 = *(float *)(param_1 + 0x10) - *(float *)(pcVar3 + 0x10),
        pfVar1 = (float *)(param_1 + 0x10),
        fVar5 = *(float *)(param_1 + 0x14) - *(float *)(pcVar3 + 0x14),
-       SQRT(fVar4 * fVar4 + fVar5 * fVar5) <= _DAT_005524f0)) {
+       SQRT(fVar4 * fVar4 + fVar5 * fVar5) <= 100.0f)) {
     sVar2 = *(short *)(param_1 + 2);
     *(undefined4 *)(param_1 + 0x60) = 1;  // mark hit flag
     local_c[0] = 1.0f;

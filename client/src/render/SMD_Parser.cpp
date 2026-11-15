@@ -481,8 +481,8 @@ void __cdecl Joint_BoneOffsetApply(BYTE* param_1, int param_2) {
 void __cdecl AddTerrainLight(float xf, float yf, float *Light, int Range, float *Buffer) {
     // DESVIACION (DLL Antilag, ret en 0x004F76C0): sin luces de skills sobre el terreno.
     if (gUserSettings.GetAntilag(ANTILAG_SKILLS)) return;
-    float cx   = xf * _DAT_00552594;
-    float cy   = yf * _DAT_00552594;
+    float cx   = xf * 0.01f;
+    float cy   = yf * 0.01f;
     int   icx  = (int)cx;
     int   icy  = (int)cy;
     int   rMin = icy - Range,  rMax = icy + Range;
@@ -495,11 +495,11 @@ void __cdecl AddTerrainLight(float xf, float yf, float *Light, int Range, float 
         for (int col = cMin; col <= cMax; col++) {
             float fDx  = cx - (float)col;
             float fVal = ((float)Range - sqrtf(fDx * fDx + fDy * fDy)) / (float)Range;
-            if (_DAT_00552580 >= fVal) continue;
+            if (0.0f >= fVal) continue;
             float *dst = Buffer + ((uRow & 0xff) * 0x100 + ((unsigned int)col & 0xff)) * 3;
             for (int k = 0; k < 3; k++) {
                 float fv = fVal * Light[k] + dst[k];
-                dst[k] = (fv < _DAT_00552580) ? 0.0f : fv;
+                dst[k] = (fv < 0.0f) ? 0.0f : fv;
             }
         }
     }
@@ -668,28 +668,28 @@ void __cdecl Joint_SegmentTick(intptr_t param_1, float *param_2) {
         } while (iVar1 != 0);
     }
     // compute new tip vertices
-    local_18[0] = AsJoint(param_1)->Scale * _DAT_00552a14;
+    local_18[0] = AsJoint(param_1)->Scale * (-0.5f);
     local_18[1] = 0.0f; local_18[2] = 0.0f;
     Vector_Rotate(local_18, param_2, local_18 + 3);
     local_18[1] = 0.0f; local_18[2] = 0.0f;
     AsJoint(param_1)->Tails[0][0][0] = local_18[3] + AsJoint(param_1)->Position[0];
     AsJoint(param_1)->Tails[0][0][1] = local_8    + AsJoint(param_1)->Position[1];
     AsJoint(param_1)->Tails[0][0][2] = local_4    + AsJoint(param_1)->Position[2];
-    local_18[0] = AsJoint(param_1)->Scale * _DAT_00552504;
+    local_18[0] = AsJoint(param_1)->Scale * 0.5f;
     Vector_Rotate(local_18, param_2, local_18 + 3);
     local_18[0] = 0.0f;
     AsJoint(param_1)->Tails[0][1][0] = local_18[3] + AsJoint(param_1)->Position[0];
     local_18[1] = 0.0f;
     AsJoint(param_1)->Tails[0][1][1] = local_8    + AsJoint(param_1)->Position[1];
     AsJoint(param_1)->Tails[0][1][2] = local_4    + AsJoint(param_1)->Position[2];
-    local_18[2] = AsJoint(param_1)->Scale * _DAT_00552a14;
+    local_18[2] = AsJoint(param_1)->Scale * (-0.5f);
     Vector_Rotate(local_18, param_2, local_18 + 3);
     local_18[0] = 0.0f;
     AsJoint(param_1)->Tails[0][2][0] = local_18[3] + AsJoint(param_1)->Position[0];
     local_18[1] = 0.0f;
     AsJoint(param_1)->Tails[0][2][1] = local_8    + AsJoint(param_1)->Position[1];
     AsJoint(param_1)->Tails[0][2][2] = local_4    + AsJoint(param_1)->Position[2];
-    local_18[2] = AsJoint(param_1)->Scale * _DAT_00552504;
+    local_18[2] = AsJoint(param_1)->Scale * 0.5f;
     Vector_Rotate(local_18, param_2, local_18 + 3);
     AsJoint(param_1)->Tails[0][3][0] = local_18[3] + AsJoint(param_1)->Position[0];
     AsJoint(param_1)->Tails[0][3][1] = local_8    + AsJoint(param_1)->Position[1];
@@ -725,7 +725,7 @@ float __cdecl MoveHumming(float *param_1, float *param_2, float *param_3, float 
     // Vertical angle: from (pos.z, horizDist) to (target.z, 0)
     float vertAngle = CreateAngle(param_1[2], horizDist, param_3[2], 0.0f);
     // Interpolate rot[0] (pitch) toward (360 - vertAngle)
-    param_2[0] = TurnAngle2(param_2[0], _DAT_0055286c - vertAngle, param_4);
+    param_2[0] = TurnAngle2(param_2[0], 360.0f - vertAngle, param_4);
 
     // VectorLength(Range) — el valor de retorno de la funcion.
     float local[3] = { dx, dy, dz };
@@ -757,7 +757,7 @@ void __cdecl BMD__RenderBody(void *model, int flags, float f1, int f2, float f3,
     BMD__BeginRender();
     if (bmd->LightEnable == '\0') {
         // IDA usa < 0.99f (_DAT_00552544), no < 1.0f.
-        if (f1 < _DAT_00552544) BufferedDraw::Color4f(bmd->BodyLight[0],bmd->BodyLight[1],bmd->BodyLight[2],f1);
+        if (f1 < 0.99f) BufferedDraw::Color4f(bmd->BodyLight[0],bmd->BodyLight[1],bmd->BodyLight[2],f1);
         else BufferedDraw::Color3fv(bmd->BodyLight);
     }
     // HiddenMesh: entero (indice de malla a ocultar, o -1), como el a8 de IDA.

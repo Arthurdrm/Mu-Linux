@@ -121,9 +121,9 @@ void *CharacterEffects_TickLate(intptr_t entity, CharacterEffectScratch &scratch
         local_44 = 0.9f; local_40 = 0.5f; local_3c = 0.5f;
     }
     if ((*(BYTE *)((char *)CharacterAttribute + 0x28) & 2) != 0) {
-        local_44 *= _DAT_00552504;
-        local_40 *= _DAT_005526e8;
-        local_3c *= _DAT_00552504;
+        local_44 *= 0.5f;
+        local_40 *= 0.9f;
+        local_3c *= 0.5f;
     }
 
     // ── 9. Entity-type outer switch — NPC / monster special effects ──────────
@@ -217,21 +217,21 @@ void *CharacterEffects_TickLate(intptr_t entity, CharacterEffectScratch &scratch
 
     case 0x15d:  // Entity 349 — sin-wave orb cloud + occasional lightning joint
     {
-        float fSin = (float)(double)fsin((double)(WorldTime * _DAT_005528e0));
+        float fSin = (float)(double)fsin((double)(WorldTime * 0.002f));
         local_48 = 3.5f; local_44 = -12.0f; local_40 = 10.0f;
-        float fCol = fSin * _DAT_0055294c + _DAT_00552948;
+        float fCol = fSin * 0.35f + 0.65f;
         local_60 = fCol; local_5c = fCol; local_58 = fCol;
         BMD_TransformPosition(pvVar23, (float *)((intptr_t)AsObject(puVar13)->BoneMatrices + 0x3c0),
                      &local_48, &local_54, '\x01');
         Equipment_AddSprite(0x4a7, &local_54, 0.3f, &local_60, (intptr_t)puVar13,
-                     (float)WorldTime * _DAT_00552944, 0);
+                     (float)WorldTime * 0.02f, 0);
         Equipment_AddSprite(0x4a7, &local_54, 0.3f, &local_60, (intptr_t)puVar13,
-                     -(float)WorldTime * _DAT_00552944, 0);
+                     -(float)WorldTime * 0.02f, 0);
         if (rand() % 0x1e == 0) {
             // Scatter lightning from random offsets around bone position
-            local_48 = (float)(rand() % 100) + local_54 - _DAT_00552598;
-            local_44 = (float)(rand() % 100) + local_50 - _DAT_00552598;
-            local_40 = (float)(rand() % 100) + local_4c - _DAT_00552598;
+            local_48 = (float)(rand() % 100) + local_54 - 50.0f;
+            local_44 = (float)(rand() % 100) + local_50 - 50.0f;
+            local_40 = (float)(rand() % 100) + local_4c - 50.0f;
             puVar13 = (int *)Joint_Create(0x4ea, &local_48, &local_54,
                                           (float *)(puVar13 + 7), 6, 0, 20.0f, -1, 0);
             return puVar13;
@@ -264,8 +264,8 @@ void *CharacterEffects_TickLate(intptr_t entity, CharacterEffectScratch &scratch
             BMD_TransformPosition(pvVar23, (float *)((intptr_t)AsObject(puVar13)->BoneMatrices + 0x390),
                          &local_48, &local_54, '\x01');
             Equipment_AddSprite(0x498, &local_54, 0.6f, &local_60, 0, 0, 0);
-            float fS = (float)(double)fsin((double)(WorldTime * _DAT_00552500));
-            Equipment_AddSprite(0x4cf, &local_54, (float)(fS * _DAT_005528b4),
+            float fS = (float)(double)fsin((double)(WorldTime * 0.001f));
+            Equipment_AddSprite(0x4cf, &local_54, (float)(fS * 0.4f),
                          &local_60, 0, 0, 0);
         }
 
@@ -293,9 +293,9 @@ void *CharacterEffects_TickLate(intptr_t entity, CharacterEffectScratch &scratch
             BYTE *pbVar20 = &AsCharacter(puVar13)->Weapon[0].LinkBone;  // c+628 = first weapon LinkBone
             for (int iSlot = 2; iSlot > 0; iSlot--, pbVar20 += sizeof(PART_t)) {
                 int iRnd = rand();
-                local_60 = (float)(iRnd % 0x1e + 0x46) * _DAT_005524f8;
-                local_5c = (float)local_60 * _DAT_005528b8;
-                local_58 = (float)local_60 * _DAT_005526e4;
+                local_60 = (float)(iRnd % 0x1e + 0x46) * 0.01f;
+                local_5c = (float)local_60 * 0.3f;
+                local_58 = (float)local_60 * 0.2f;
                 BMD_TransformPosition(pvVar23,
                     (float *)((intptr_t)AsObject(puVar13)->BoneMatrices + (UINT)*pbVar20 * 0x30),
                     &local_48, &local_54, '\x01');

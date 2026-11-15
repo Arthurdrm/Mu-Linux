@@ -179,9 +179,9 @@ switchD_0051bea9_caseD_8b:
           // no se reinterpretan los bits.
           local_d4 = (float)piVar7[1];
           float local_dc_f = (float)*piVar7;
-          GL_DrawTexture(piVar7[-3] + 0xf0,(float)piVar7[-2] + _DAT_00552d40,
-                       (float)piVar7[-1] + _DAT_0055290c,local_dc_f,local_d4,0.0,0.0,
-                       local_dc_f * _DAT_00552d44,local_d4 * _DAT_00552ae4,'\x01','\x01');
+          GL_DrawTexture(piVar7[-3] + 0xf0,(float)piVar7[-2] + 213.0f,
+                       (float)piVar7[-1] + 60.0f,local_dc_f,local_d4,0.0,0.0,
+                       local_dc_f * 0.0078125f,local_d4 * 0.03125f,'\x01','\x01');
         }
         piVar7 = piVar7 + 5;
       }
@@ -247,8 +247,8 @@ LAB_0051c13d:
       iVar3 = 0;
       do {
         if ((((float)MouseY < *(float*)&local_dc) ||
-            (*(float*)&local_dc + _DAT_00552a2c < (float)MouseY)) ||
-           (((float)MouseX < _DAT_00552cac || (_DAT_0055246c < (float)MouseX)))) {
+            (*(float*)&local_dc + 35.0f < (float)MouseY)) ||
+           (((float)MouseX < 245.0f || (395.0f < (float)MouseX)))) {
           uVar16 = 0x3f333333;
           uVar15 = 0x3f333333;
           uVar10 = 0x3f333333;
@@ -278,7 +278,7 @@ LAB_0051c13d:
         lVar8 = (longlong)(*(float*)&local_dc + 12.0f);   // IDA RenderErrorMessage case 143: (std::int64_t)(Height + 12.0)
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(int)lVar8,pCVar6,
                      ptVar12,cVar13,uVar10);
-        { float _fdc = *(float*)&local_dc + _DAT_00552854; local_dc = *(unsigned int*)&_fdc; }
+        { float _fdc = *(float*)&local_dc + 85.0f; local_dc = *(unsigned int*)&_fdc; }
         gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_NORMAL));
         m_dwTextColor = 0xffffffff;
         if (iVar3 == 0) {
@@ -318,9 +318,9 @@ LAB_0051c13d:
         if ((0 < iVar3) && (iVar3 < 5)) {
           { float _fdc = (float)piVar7[1]; local_dc = *(unsigned int*)&_fdc; }
           local_d4 = (float)*piVar7;
-          GL_DrawTexture(iVar3 + 0xf0,(float)piVar7[-2] + _DAT_00552d40,
-                       (float)piVar7[-1] + _DAT_005524f0,local_d4,*(float*)&local_dc,0.0,0.0,
-                       local_d4 * _DAT_00552d44,*(float*)&local_dc * _DAT_00552ae4,'\x01','\x01');
+          GL_DrawTexture(iVar3 + 0xf0,(float)piVar7[-2] + 213.0f,
+                       (float)piVar7[-1] + 100.0f,local_d4,*(float*)&local_dc,0.0,0.0,
+                       local_d4 * 0.0078125f,*(float*)&local_dc * 0.03125f,'\x01','\x01');
         }
         piVar7 = piVar7 + 5;
       }

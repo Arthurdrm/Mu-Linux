@@ -233,7 +233,7 @@ PATH_FindPath(PathContext *ctx, int param_1, float param_2, int param_3, int par
 
   failValue = 0;
   if ((param_1 != 0) && (param_2 != 0.0f)) {
-    if (_DAT_00552580 == param_7) {
+    if (0.0f == param_7) {
       // Single-target mode: mark target cell directly
       failValue = (uint)(ctx->Width * param_4);
       pbVar1 = (int)failValue + param_3;

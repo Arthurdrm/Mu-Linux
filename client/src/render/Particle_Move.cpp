@@ -74,19 +74,19 @@ enum class ParticleStep { Break, Continue, Return, Next };
 // IDA: MoveParticles (0x00477090): case BITMAP_SMOKE + 1:
 static ParticleStep MoveParticles_Type1221(float& fVar15, int& iVar9)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552ae4;
+    fVar15 = (float)P_LIFE(iVar9) * 0.03125f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
-    P_SCALE(iVar9) += _DAT_00552a7c;
+    P_SCALE(iVar9) += 0.08f;
     P_POSX(iVar9) += P_VELX(iVar9);
     P_POSY(iVar9) += P_VELY(iVar9);
     P_POSZ(iVar9) += P_VELZ(iVar9);
-    P_VELX(iVar9) *= _DAT_005526e8;
-    P_VELY(iVar9) *= _DAT_005526e8;
-    P_VELZ(iVar9) *= _DAT_005526e8;
+    P_VELX(iVar9) *= 0.9f;
+    P_VELY(iVar9) *= 0.9f;
+    P_VELZ(iVar9) *= 0.9f;
     fVar15 = RequestTerrainHeight(P_POSX(iVar9), P_POSY(iVar9));
-    P_POSZ(iVar9) = BMP_HEIGHT(P_TYPE(iVar9)) * P_SCALE(iVar9) * _DAT_00552504 + fVar15;
+    P_POSZ(iVar9) = BMP_HEIGHT(P_TYPE(iVar9)) * P_SCALE(iVar9) * 0.5f + fVar15;
     return ParticleStep::Break;
 }
 
@@ -94,7 +94,7 @@ static ParticleStep MoveParticles_Type1221(float& fVar15, int& iVar9)
 static ParticleStep MoveParticles_Type1222(float& fVar15, int& iVar9)
 {
     if (P_LIFE(iVar9) < 10) {
-        fVar15 = _DAT_0055256c - (float)(10 - P_LIFE(iVar9)) * _DAT_005524f4;
+        fVar15 = 1.0f - (float)(10 - P_LIFE(iVar9)) * 0.1f;
     }
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
@@ -122,19 +122,19 @@ static ParticleStep MoveParticles_Type1222(float& fVar15, int& iVar9)
         P_POSY(iVar9) = worldOff[1] + *(float*)(entPtr + 0x14);
         P_POSZ(iVar9) = worldOff[2] + *(float*)(entPtr + 0x18);
     }
-    P_ANGLE(iVar9) += _DAT_00552660;
-    P_SCALE(iVar9) -= _DAT_005524f8;
+    P_ANGLE(iVar9) += 5.0f;
+    P_SCALE(iVar9) -= 0.01f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case BITMAP_SHINY:
 static ParticleStep MoveParticles_Shiny(float10& fVar11, int& iVar9)
 {
-    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
+    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)0.17453292f);
     P_SCALE(iVar9) = (float)fVar11;
     if (P_SUB(iVar9) == 1) {
-        P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552adc);
-        P_ROT(iVar9) -= _DAT_00552664;
+        P_SCALE(iVar9) = (float)(fVar11 * (float10)0.75f);
+        P_ROT(iVar9) -= 12.0f;
     }
     return ParticleStep::Break;
 }
@@ -146,17 +146,17 @@ static ParticleStep MoveParticles_Type1231(float10& fVar11, float10& fVar12, int
         intptr_t entPtr = P_ENT(iVar9);
         P_POSX(iVar9) = *(float*)(entPtr + 0x10);
         P_POSY(iVar9) = *(float*)(entPtr + 0x14);
-        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + _DAT_00552598;
-        P_ROT(iVar9) -= _DAT_0055256c;
+        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + 50.0f;
+        P_ROT(iVar9) -= 1.0f;
     } else {
-        fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ad8);
-        fVar11 = (float10)_DAT_00552660;
+        fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)0.08726646f);
+        fVar11 = (float10)5.0f;
         P_SCALE(iVar9) = (float)(fVar12 * fVar11);
         if (P_SUB(iVar9) < 2) {
             ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
         } else {
-            P_SCALE(iVar9) = (float)(fVar12 * fVar11 * (float10)_DAT_00552adc);
-            P_ROT(iVar9) -= _DAT_00552664;
+            P_SCALE(iVar9) = (float)(fVar12 * fVar11 * (float10)0.75f);
+            P_ROT(iVar9) -= 12.0f;
             ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
         }
     }
@@ -166,8 +166,8 @@ static ParticleStep MoveParticles_Type1231(float10& fVar11, float10& fVar12, int
 // IDA: MoveParticles (0x00477090): case BITMAP_SHINY + 2:
 static ParticleStep MoveParticles_Type1232(float10& fVar11, int& iVar9)
 {
-    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
-    P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552540);
+    fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)0.17453292f);
+    P_SCALE(iVar9) = (float)(fVar11 * (float10)3.0f);
     ItemDrop_SetupRenderRef(reinterpret_cast<BYTE*>(P_BASE + iVar9));
     return ParticleStep::Break;
 }
@@ -176,10 +176,10 @@ static ParticleStep MoveParticles_Type1232(float10& fVar11, int& iVar9)
 static ParticleStep MoveParticles_Type1234(float10& fVar11, float& fVar15, int& iVar9)
 {
     if (P_SUB(iVar9) == 0) {
-        fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ae0);
-        P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552540 + (float10)_DAT_0055264c);
+        fVar11 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)0.17453292f);
+        P_SCALE(iVar9) = (float)(fVar11 * (float10)3.0f + (float10)2.0f);
     }
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b28;
+    fVar15 = (float)P_LIFE(iVar9) * 0.2f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
@@ -191,11 +191,11 @@ static ParticleStep MoveParticles_Bubble(int& iVar5, int& iVar9)
 {
     P_FRAME(iVar9) += 1;
     iVar5 = _rand();
-    P_POSX(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * _DAT_00552950;
+    P_POSX(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * 2.5f;
     iVar5 = _rand();
-    P_POSY(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * _DAT_00552950;
+    P_POSY(iVar9) += (float)(iVar5 % 0x14 - 10) * P_SCALE(iVar9) * 2.5f;
     iVar5 = _rand();
-    P_POSZ(iVar9) += (float)(iVar5 % 0x14 + 10) * P_SCALE(iVar9) * _DAT_00552950;
+    P_POSZ(iVar9) += (float)(iVar5 % 0x14 + 10) * P_SCALE(iVar9) * 2.5f;
     return ParticleStep::Break;
 }
 
@@ -206,17 +206,17 @@ static ParticleStep MoveParticles_Flower01(float& fVar15, int& iVar9, unsigned i
         uVar7 = _rand();
         uVar7 = uVar7 & 0x8000001f;
         if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
-        P_VELX(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
+        P_VELX(iVar9) += (float)(int)(uVar7 - 0x10) * 0.1f;
 
         uVar7 = _rand();
         uVar7 = uVar7 & 0x8000001f;
         if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
-        P_VELY(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
+        P_VELY(iVar9) += (float)(int)(uVar7 - 0x10) * 0.1f;
 
         uVar7 = _rand();
         uVar7 = uVar7 & 0x8000001f;
         if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xffffffe0) + 1;
-        P_VELZ(iVar9) += (float)(int)(uVar7 - 0x10) * _DAT_005524f4;
+        P_VELZ(iVar9) += (float)(int)(uVar7 - 0x10) * 0.1f;
 
         P_POSX(iVar9) += P_VELX(iVar9);
         P_POSY(iVar9) += P_VELY(iVar9);
@@ -240,7 +240,7 @@ static ParticleStep MoveParticles_Flower01(float& fVar15, int& iVar9, unsigned i
 // IDA: MoveParticles (0x00477090): case BITMAP_FIRECRACKER:
 static ParticleStep MoveParticles_Firecracker(int& iVar9)
 {
-    P_VELZ(iVar9) -= _DAT_00552504;
+    P_VELZ(iVar9) -= 0.5f;
     return ParticleStep::Break;
 }
 
@@ -250,39 +250,39 @@ static ParticleStep MoveParticles_Flare(float10& fVar11, float10& fVar12, float&
     iVar5 = P_SUB(iVar9);
     float lifeF = (float)P_LIFE(iVar9);
     if (iVar5 == 0 || iVar5 == 3) {
-        fVar11 = ((float10)(int)P_LIFE(iVar9) + (float10)P_VELX(iVar9)) * (float10)_DAT_005524f4;
+        fVar11 = ((float10)(int)P_LIFE(iVar9) + (float10)P_VELX(iVar9)) * (float10)0.1f;
         fVar12 = (float10)fsin((double)fVar11);
-        P_POSX(iVar9) = (float)(fVar12 * (float10)_DAT_005528e4 + (float10)P_TGX(iVar9));
+        P_POSX(iVar9) = (float)(fVar12 * (float10)40.0f + (float10)P_TGX(iVar9));
         fVar11 = (float10)fcos((double)fVar11);
-        P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)_DAT_005528e4);
+        P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)40.0f);
         fVar15 = P_GRAV(iVar9);
         P_POSZ(iVar9) += fVar15;
-        P_SCALE(iVar9) -= _DAT_005528e0;
+        P_SCALE(iVar9) -= 0.002f;
     } else if (iVar5 == 2) {
         P_POSX(iVar9) = P_TGX(iVar9);
         P_POSY(iVar9) = P_TGY(iVar9);
         float steps = (float)((0x3c - P_LIFE(iVar9)) / 10);
         fVar15 = steps * P_GRAV(iVar9);
         P_POSZ(iVar9) += fVar15;
-        P_SCALE(iVar9) -= _DAT_005528e0;
+        P_SCALE(iVar9) -= 0.002f;
     }
 
     if (iVar5 == 4) {
-        fVar11 = ((float10)(int)lifeF + (float10)P_VELX(iVar9)) * (float10)_DAT_005524f4;
+        fVar11 = ((float10)(int)lifeF + (float10)P_VELX(iVar9)) * (float10)0.1f;
         fVar12 = (float10)fsin((double)fVar11);
-        P_POSX(iVar9) = (float)(fVar12 * (float10)_DAT_005528e4 + (float10)P_TGX(iVar9));
+        P_POSX(iVar9) = (float)(fVar12 * (float10)40.0f + (float10)P_TGX(iVar9));
         fVar11 = (float10)fcos((double)fVar11);
-        P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)_DAT_005528e4);
+        P_POSY(iVar9) = (float)((float10)P_TGY(iVar9) - fVar11 * (float10)40.0f);
         P_POSZ(iVar9) += P_GRAV(iVar9);
-        P_SCALE(iVar9) -= _DAT_005524bc;
+        P_SCALE(iVar9) -= 0.004f;
         if ((int)lifeF < 0x1f) {
             goto label_color_decay;
         }
     } else if ((int)lifeF < 0x15) {
         label_color_decay:
-        P_LR(iVar9) *= _DAT_00552ae8;
-        P_LG(iVar9) *= _DAT_00552ae8;
-        P_LB(iVar9) *= _DAT_00552ae8;
+        P_LR(iVar9) *= 0.9090909f;
+        P_LG(iVar9) *= 0.9090909f;
+        P_LB(iVar9) *= 0.9090909f;
     }
 
     if (iVar5 == 0) {
@@ -311,9 +311,9 @@ static ParticleStep MoveParticles_Cloud(float10& fVar11, float& fVar15, int& iVa
         P_POSX(iVar9) += P_VELX(iVar9);
         P_POSY(iVar9) += P_VELY(iVar9);
         P_POSZ(iVar9) += P_VELZ(iVar9);
-        P_VELX(iVar9) *= _DAT_00552b44;
-        P_VELY(iVar9) *= _DAT_00552b44;
-        P_VELZ(iVar9) += _DAT_00552534;
+        P_VELX(iVar9) *= 0.95f;
+        P_VELY(iVar9) *= 0.95f;
+        P_VELZ(iVar9) += 0.6f;
 
         uVar7 = _rand(); uVar7 &= 0x80000003;
         if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
@@ -325,17 +325,17 @@ static ParticleStep MoveParticles_Cloud(float10& fVar11, float& fVar15, int& iVa
 
         uVar7 = _rand(); uVar7 &= 0x80000003;
         if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-        P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * _DAT_00552530;
+        P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * 0.8f;
 
-        P_SCALE(iVar9) += _DAT_00552874;
-        fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+        P_SCALE(iVar9) += 0.05f;
+        fVar15 = (float)P_LIFE(iVar9) * 0.02f;
         P_LR(iVar9) = fVar15;
         P_LG(iVar9) = fVar15;
         P_LB(iVar9) = fVar15;
 
         uVar7 = _rand(); uVar7 &= 0x80000001;
         if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
-        P_ROT(iVar9) += (float)(int)uVar7 + _DAT_0055256c;
+        P_ROT(iVar9) += (float)(int)uVar7 + 1.0f;
     } else {
         // Non-sub6: check entity death flag
         if (*(char*)&AsObject(P_ENT(iVar9))->Visible == '\x01') {
@@ -345,18 +345,18 @@ static ParticleStep MoveParticles_Cloud(float10& fVar11, float& fVar15, int& iVa
             *(int*)(P_ENT(iVar9) + 0x58) = 0;
             P_ACTIVE(iVar9) = '\0';
         }
-        fVar11 = (float10)fsin(((float10)WorldTime + (float10)P_GRAV(iVar9)) * (float10)_DAT_00552b0c);
-        P_POSZ(iVar9) = (float)(fVar11 * (float10)_DAT_005524fc + (float10)P_TGZ(iVar9));
+        fVar11 = (float10)fsin(((float10)WorldTime + (float10)P_GRAV(iVar9)) * (float10)0.0002f);
+        P_POSZ(iVar9) = (float)(fVar11 * (float10)20.0f + (float10)P_TGZ(iVar9));
     }
     // Sub-type rotation
     switch (P_SUB(iVar9)) {
     case 1:
     case 4:
-        P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * _DAT_00552914 + P_TGY(iVar9);
+        P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * 0.02f + P_TGY(iVar9);
         break;
     case 2:
     case 5:
-        P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * _DAT_00552acc + P_TGY(iVar9);
+        P_ROT(iVar9) = (float)WorldTime * P_EX0(iVar9) * (-0.02f) + P_TGY(iVar9);
         break;
     }
     return ParticleStep::Break;
@@ -368,17 +368,17 @@ static ParticleStep MoveParticles_AdvSmoke(float& fVar15, int& iVar9)
     P_POSX(iVar9) += P_VELX(iVar9);
     P_POSY(iVar9) += P_VELY(iVar9);
     P_POSZ(iVar9) += P_VELZ(iVar9);
-    P_VELX(iVar9) *= _DAT_00552b44;
-    P_VELY(iVar9) *= _DAT_00552b44;
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
+    P_VELX(iVar9) *= 0.95f;
+    P_VELY(iVar9) *= 0.95f;
+    fVar15 = (float)P_LIFE(iVar9) * 0.1f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
-    P_VELZ(iVar9) += _DAT_005528b8;
+    P_VELZ(iVar9) += 0.3f;
     if (P_SUB(iVar9) == 0) {
-        P_SCALE(iVar9) += _DAT_00552ac8;
+        P_SCALE(iVar9) += 0.07f;
     } else {
-        P_SCALE(iVar9) += _DAT_00552ac4;
+        P_SCALE(iVar9) += 0.09f;
     }
     return ParticleStep::Break;
 }
@@ -389,9 +389,9 @@ static ParticleStep MoveParticles_Type1382(float& fVar15, int& iVar9, unsigned i
     P_POSX(iVar9) += P_VELX(iVar9);
     P_POSY(iVar9) += P_VELY(iVar9);
     P_POSZ(iVar9) += P_VELZ(iVar9);
-    P_VELX(iVar9) *= _DAT_00552b44;
-    P_VELY(iVar9) *= _DAT_00552b44;
-    P_VELZ(iVar9) += _DAT_00552534;
+    P_VELX(iVar9) *= 0.95f;
+    P_VELY(iVar9) *= 0.95f;
+    P_VELZ(iVar9) += 0.6f;
 
     uVar7 = _rand(); uVar7 &= 0x80000003;
     if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
@@ -403,27 +403,27 @@ static ParticleStep MoveParticles_Type1382(float& fVar15, int& iVar9, unsigned i
 
     uVar7 = _rand(); uVar7 &= 0x80000003;
     if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
-    P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * _DAT_00552530;
+    P_POSZ(iVar9) += (float)(int)(uVar7 - 2) * 0.8f;
 
-    P_SCALE(iVar9) += _DAT_00552874;
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_0055295c;
+    P_SCALE(iVar9) += 0.05f;
+    fVar15 = (float)P_LIFE(iVar9) * 0.04f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
 
     uVar7 = _rand(); uVar7 &= 0x80000001;
     if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
-    P_ROT(iVar9) += (float)(int)uVar7 + _DAT_0055256c;
+    P_ROT(iVar9) += (float)(int)uVar7 + 1.0f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case BITMAP_POUNDING_BALL:
 static ParticleStep MoveParticles_PoundingBall(float& fVar15, int& iVar9)
 {
-    fVar15 = P_GRAV(iVar9) + _DAT_005524bc;
+    fVar15 = P_GRAV(iVar9) + 0.004f;
     P_GRAV(iVar9) = fVar15;
-    P_SCALE(iVar9) -= _DAT_00552914;
-    fVar15 = fVar15 * _DAT_00552488;
+    P_SCALE(iVar9) -= 0.02f;
+    fVar15 = fVar15 * 10.0f;
     P_FRAME(iVar9) = (0x17 - P_LIFE(iVar9)) / 6;
     P_POSZ(iVar9) += fVar15;
     return ParticleStep::Break;
@@ -440,8 +440,8 @@ static ParticleStep MoveParticles_Type1430(int& iVar9)
 static ParticleStep MoveParticles_Type1432(float& fVar15, int& iVar9)
 {
     float lifeF2 = (float)P_LIFE(iVar9);
-    P_GRAV(iVar9) = (float)(5 - P_LIFE(iVar9)) * _DAT_00552ad4;
-    fVar15 = lifeF2 * _DAT_005528dc;
+    P_GRAV(iVar9) = (float)(5 - P_LIFE(iVar9)) * 0.22222222f;
+    fVar15 = lifeF2 * 0.25f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
@@ -452,10 +452,10 @@ static ParticleStep MoveParticles_Type1432(float& fVar15, int& iVar9)
 static ParticleStep MoveParticles_Type1433(float10& fVar12, float& fVar15, int& iVar9)
 {
     float grav = P_GRAV(iVar9);
-    P_GRAV(iVar9) = grav - _DAT_005526e4;
-    fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)_DAT_00552ad0);
-    P_SCALE(iVar9) = (float)(fVar12 + (float10)(grav - _DAT_005526e4) + (float10)_DAT_0055256c);
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a30;
+    P_GRAV(iVar9) = grav - 0.2f;
+    fVar12 = (float10)fsin((float10)P_LIFE(iVar9) * (float10)0.87266463f);
+    P_SCALE(iVar9) = (float)(fVar12 + (float10)(grav - 0.2f) + (float10)1.0f);
+    fVar15 = (float)P_LIFE(iVar9) * 0.16666667f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
@@ -466,12 +466,12 @@ static ParticleStep MoveParticles_Type1433(float10& fVar12, float& fVar15, int& 
 static ParticleStep MoveParticles_Type1191(int& iVar9)
 {
     // Terrain light + positioning
-    unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)_DAT_00552500);
-    P_ROT(iVar9) = (float)(int)((long long)(uv) % 1000) * _DAT_00552500;
-    float lightA = (float)P_LIFE(iVar9) * _DAT_00552a00;
-    float ltA0 = lightA * _DAT_00552504;
+    unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)0.001f);
+    P_ROT(iVar9) = (float)(int)((long long)(uv) % 1000) * 0.001f;
+    float lightA = (float)P_LIFE(iVar9) * 0.1f;
+    float ltA0 = lightA * 0.5f;
     float ltA1 = lightA;
-    float ltA2 = lightA * _DAT_00552530;
+    float ltA2 = lightA * 0.8f;
     {
         float ltBuf[3] = { ltA0, ltA1, ltA2 };
         AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)ltBuf, 3, (float*)&DAT_081cb608[0]);
@@ -480,11 +480,11 @@ static ParticleStep MoveParticles_Type1191(int& iVar9)
         intptr_t entPtr = P_ENT(iVar9);
         P_LR(iVar9) = ltA0;
         P_LG(iVar9) = ltA1;
-        P_SCALE(iVar9) += _DAT_005524f4;
+        P_SCALE(iVar9) += 0.1f;
         P_LB(iVar9) = ltA2;
         P_POSX(iVar9) = *(float*)(entPtr + 0x10);
         P_POSY(iVar9) = *(float*)(entPtr + 0x14);
-        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + _DAT_00552878;
+        P_POSZ(iVar9) = *(float*)(entPtr + 0x18) + 80.0f;
     }
     return ParticleStep::Break;
 }
@@ -492,23 +492,23 @@ static ParticleStep MoveParticles_Type1191(int& iVar9)
 // IDA: MoveParticles (0x00477090): case BITMAP_FIRE:, case BITMAP_FIRE + 2:
 static ParticleStep MoveParticles_Fire(float& fVar15, int& iVar5, int& iVar9)
 {
-    float grav2 = P_GRAV(iVar9) + _DAT_005524bc;
+    float grav2 = P_GRAV(iVar9) + 0.004f;
     P_GRAV(iVar9) = grav2;
     switch (P_SUB(iVar9)) {
     case 5:
     case 6:
-        P_SCALE(iVar9) -= _DAT_00552a0c;
-        P_ROT(iVar9) += _DAT_00552660;
+        P_SCALE(iVar9) -= 0.04f;
+        P_ROT(iVar9) += 5.0f;
         break;
     case 7:
         P_FRAME(iVar9) = (0xf - P_LIFE(iVar9)) / 6;
         // fall through
     case 0:
-        P_SCALE(iVar9) -= _DAT_00552a0c;
+        P_SCALE(iVar9) -= 0.04f;
         break;
     case 8:
-        P_SCALE(iVar9) *= _DAT_00552b44;
-        P_ROT(iVar9) += _DAT_00552660;
+        P_SCALE(iVar9) *= 0.95f;
+        P_ROT(iVar9) += 5.0f;
         break;
     case 9: {
         intptr_t entPtr = P_ENT(iVar9);
@@ -519,20 +519,20 @@ static ParticleStep MoveParticles_Fire(float& fVar15, int& iVar5, int& iVar9)
         float rndG = (float)((iVar5 % 0x3c + 0x3c) / 100);
         fVar15 = P_GRAV(iVar9);
         P_GRAV(iVar9) = rndG + fVar15;
-        P_SCALE(iVar9) -= (rndG + fVar15) * _DAT_00552a60;
+        P_SCALE(iVar9) -= (rndG + fVar15) * 0.011111111f;
         break;
     }
     case 10:
-        P_SCALE(iVar9) *= _DAT_00552b44;
+        P_SCALE(iVar9) *= 0.95f;
         break;
     default:
         P_SCALE(iVar9) = grav2 + P_SCALE(iVar9);
-        P_VELX(iVar9) *= _DAT_00552b2c;
-        P_VELY(iVar9) *= _DAT_00552b2c;
-        P_VELZ(iVar9) *= _DAT_00552b2c;
+        P_VELX(iVar9) *= 0.98f;
+        P_VELY(iVar9) *= 0.98f;
+        P_VELZ(iVar9) *= 0.98f;
         break;
     }
-    P_POSZ(iVar9) += P_GRAV(iVar9) * _DAT_00552488;
+    P_POSZ(iVar9) += P_GRAV(iVar9) * 10.0f;
     P_FRAME(iVar9) = (0x17 - P_LIFE(iVar9)) / 6;
     return ParticleStep::Break;
 }
@@ -540,14 +540,14 @@ static ParticleStep MoveParticles_Fire(float& fVar15, int& iVar5, int& iVar9)
 // IDA: MoveParticles (0x00477090): case BITMAP_FIRE + 1:
 static ParticleStep MoveParticles_Type1196(float& fVar15, int& iVar9)
 {
-    fVar15 = P_GRAV(iVar9) + _DAT_00552914;
+    fVar15 = P_GRAV(iVar9) + 0.02f;
     P_GRAV(iVar9) = fVar15;
     P_SCALE(iVar9) += fVar15;
-    P_VELX(iVar9) *= _DAT_00552b24;
-    P_VELY(iVar9) *= _DAT_00552b24;
-    P_VELZ(iVar9) *= _DAT_00552b24;
-    P_POSZ(iVar9) += fVar15 * _DAT_005524fc;
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_005526e4;
+    P_VELX(iVar9) *= 1.05f;
+    P_VELY(iVar9) *= 1.05f;
+    P_VELZ(iVar9) *= 1.05f;
+    P_POSZ(iVar9) += fVar15 * 20.0f;
+    fVar15 = (float)P_LIFE(iVar9) * 0.2f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
@@ -559,8 +559,8 @@ static ParticleStep MoveParticles_Explotion(int& iVar9)
 {
     P_FRAME(iVar9) = (0x14 - P_LIFE(iVar9)) / 2;
     if (P_SUB(iVar9) != 1) {
-        float ltBF = (float)P_LIFE(iVar9) * _DAT_00552a10;
-        float lt4[3] = { ltBF * _DAT_00552504, ltBF * _DAT_005528b8, ltBF * _DAT_005524f4 };
+        float ltBF = (float)P_LIFE(iVar9) * 0.05f;
+        float lt4[3] = { ltBF * 0.5f, ltBF * 0.3f, ltBF * 0.1f };
         AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)lt4, 4, (float*)&DAT_081cb608[0]);
     }
     return ParticleStep::Break;
@@ -576,60 +576,60 @@ static ParticleStep MoveParticles_Type1216(int& iVar9)
 // IDA: MoveParticles (0x00477090): case 1:
 static ParticleStep MoveParticles_FireSub1(float& fVar15, int& iVar9)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
-    P_LR(iVar9) = fVar15 * _DAT_00552504;
+    fVar15 = (float)P_LIFE(iVar9) * 0.02f;
+    P_LR(iVar9) = fVar15 * 0.5f;
     P_LG(iVar9) = fVar15;
-    P_LB(iVar9) = fVar15 * _DAT_00552530;
-    P_VELX(iVar9) *= _DAT_005528b4;
-    P_VELY(iVar9) *= _DAT_005528b4;
-    P_VELZ(iVar9) *= _DAT_005528b4;
-    P_SCALE(iVar9) += _DAT_00552874;
+    P_LB(iVar9) = fVar15 * 0.8f;
+    P_VELX(iVar9) *= 0.4f;
+    P_VELY(iVar9) *= 0.4f;
+    P_VELZ(iVar9) *= 0.4f;
+    P_SCALE(iVar9) += 0.05f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case 2:
 static ParticleStep MoveParticles_FireSub2(float& fVar15, int& iVar9)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+    fVar15 = (float)P_LIFE(iVar9) * 0.02f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
-    fVar15 = P_GRAV(iVar9) - _DAT_005524f4;
+    fVar15 = P_GRAV(iVar9) - 0.1f;
     P_GRAV(iVar9) = fVar15;
-    P_POSX(iVar9) -= fVar15 * _DAT_005526e4;
+    P_POSX(iVar9) -= fVar15 * 0.2f;
     P_POSZ(iVar9) += fVar15;
-    P_SCALE(iVar9) -= _DAT_005524f8;
+    P_SCALE(iVar9) -= 0.01f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case 3:
 static ParticleStep MoveParticles_FireSub3(float& fVar15, float& fVar3, int& iVar9)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
-    fVar3 = fVar15 * _DAT_00552530;
+    fVar15 = (float)P_LIFE(iVar9) * 0.125f;
+    fVar3 = fVar15 * 0.8f;
     P_LR(iVar9) = fVar3;
     P_LG(iVar9) = fVar3;
     P_LB(iVar9) = fVar15;
-    P_VELX(iVar9) *= _DAT_005528b4;
-    P_VELY(iVar9) *= _DAT_005528b4;
-    P_VELZ(iVar9) *= _DAT_005528b4;
-    P_SCALE(iVar9) += _DAT_005524f4;
+    P_VELX(iVar9) *= 0.4f;
+    P_VELY(iVar9) *= 0.4f;
+    P_VELZ(iVar9) *= 0.4f;
+    P_SCALE(iVar9) += 0.1f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case 5:
 static ParticleStep MoveParticles_FireSub5(float& fVar15, int& iVar9, unsigned int& uVar7)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
+    fVar15 = (float)P_LIFE(iVar9) * 0.1f;
     P_LR(iVar9) = fVar15;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
-    P_GRAV(iVar9) -= _DAT_005524f4;
+    P_GRAV(iVar9) -= 0.1f;
     uVar7 = _rand(); uVar7 &= 0x80000001;
     if ((int)uVar7 < 0) uVar7 = ((uVar7 - 1) | 0xfffffffe) + 1;
-    P_POSX(iVar9) -= (float)(int)(uVar7 + 1) * _DAT_005526e4 * P_GRAV(iVar9);
+    P_POSX(iVar9) -= (float)(int)(uVar7 + 1) * 0.2f * P_GRAV(iVar9);
     P_POSZ(iVar9) += P_GRAV(iVar9);
-    P_SCALE(iVar9) -= _DAT_005524f8;
+    P_SCALE(iVar9) -= 0.01f;
     return ParticleStep::Break;
 }
 
@@ -638,16 +638,16 @@ static ParticleStep MoveParticles_FireSub6(float10& fVar11, int& iVar9)
 {
     fVar11 = (float10)WorldTime;
     P_LIFE(iVar9) = 10;
-    fVar11 = (float10)fsin((double)((fVar11 + (float10)P_GRAV(iVar9)) * (float10)_DAT_00552b0c));
-    P_POSZ(iVar9) = (float)(fVar11 * (float10)_DAT_005524fc + (float10)P_ROT(iVar9));
+    fVar11 = (float10)fsin((double)((fVar11 + (float10)P_GRAV(iVar9)) * (float10)0.0002f));
+    P_POSZ(iVar9) = (float)(fVar11 * (float10)20.0f + (float10)P_ROT(iVar9));
     {
-        unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)_DAT_00552500);
+        unsigned long long uv = (unsigned long long)(long long)(double)((float10)WorldTime * (float10)0.001f);
         int modVal = (int)((long long)uv % 0x708);
         P_LR(iVar9) = 0.36f;  // 0x3eb851ec
         P_LG(iVar9) = 0.3f;   // 0x3e99999a
         P_LB(iVar9) = 0.24f;  // 0x3e75c290
-        fVar11 = (float10)fsin((float10)modVal * (float10)_DAT_00552b08);
-        P_SCALE(iVar9) = (float)(fVar11 * (float10)_DAT_00552504 + (float10)_DAT_00552a18);
+        fVar11 = (float10)fsin((float10)modVal * (float10)0.0017453292f);
+        P_SCALE(iVar9) = (float)(fVar11 * (float10)0.5f + (float10)1.8f);
     }
     return ParticleStep::Break;
 }
@@ -655,46 +655,46 @@ static ParticleStep MoveParticles_FireSub6(float10& fVar11, int& iVar9)
 // IDA: MoveParticles (0x00477090): case 7:
 static ParticleStep MoveParticles_FireSub7(float& fVar15, float& fVar3, int& iVar9)
 {
-    P_SCALE(iVar9) += _DAT_00552910;
+    P_SCALE(iVar9) += 0.03f;
     float lifeF3 = (float)P_LIFE(iVar9);
-    fVar3 = P_GRAV(iVar9) + _DAT_0055256c;
+    fVar3 = P_GRAV(iVar9) + 1.0f;
     P_GRAV(iVar9) = fVar3;
-    P_VELY(iVar9) -= _DAT_005524f4;
+    P_VELY(iVar9) -= 0.1f;
     P_POSZ(iVar9) -= fVar3;
     if (P_LIFE(iVar9) < 5) {
-        fVar15 = lifeF3 * _DAT_00552b1c;
-        P_SCALE(iVar9) -= _DAT_005524f4;
+        fVar15 = lifeF3 * 0.125f;
+        P_SCALE(iVar9) -= 0.1f;
     }
-    P_LR(iVar9) = fVar15 * _DAT_00552b04;
-    P_LG(iVar9) = fVar15 * _DAT_00552b00;
-    P_LB(iVar9) = fVar15 * _DAT_00552afc;
+    P_LR(iVar9) = fVar15 * 0.725f;
+    P_LG(iVar9) = fVar15 * 0.572f;
+    P_LB(iVar9) = fVar15 * 0.333f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case 8:
 static ParticleStep MoveParticles_FireSub8(float& fVar15, int& iVar9)
 {
-    fVar15 = P_GRAV(iVar9) + _DAT_00552914;
+    fVar15 = P_GRAV(iVar9) + 0.02f;
     float lifeF4 = (float)P_LIFE(iVar9);
     P_GRAV(iVar9) = fVar15;
     if (P_LIFE(iVar9) < 6) {
-        fVar15 = P_LR(iVar9) * _DAT_00552504;
+        fVar15 = P_LR(iVar9) * 0.5f;
         P_VELX(iVar9) = 0.0f;
         P_VELY(iVar9) = 0.0f;
         P_VELZ(iVar9) = 0.0f;
         P_LR(iVar9) = fVar15;
-        P_LG(iVar9) *= _DAT_00552504;
-        P_LB(iVar9) *= _DAT_00552504;
+        P_LG(iVar9) *= 0.5f;
+        P_LB(iVar9) *= 0.5f;
     } else {
         P_SCALE(iVar9) += fVar15;
-        P_POSZ(iVar9) += fVar15 * _DAT_005524fc;
-        fVar15 = lifeF4 * _DAT_00552af8;
+        P_POSZ(iVar9) += fVar15 * 20.0f;
+        fVar15 = lifeF4 * 0.041666668f;
         P_LR(iVar9) = fVar15;
         P_LG(iVar9) = fVar15;
         P_LB(iVar9) = fVar15;
-        P_VELX(iVar9) *= _DAT_00552af4;
-        P_VELY(iVar9) *= _DAT_00552af4;
-        P_VELZ(iVar9) *= _DAT_00552af4;
+        P_VELX(iVar9) *= 0.42f;
+        P_VELY(iVar9) *= 0.42f;
+        P_VELZ(iVar9) *= 0.42f;
     }
     return ParticleStep::Break;
 }
@@ -703,40 +703,40 @@ static ParticleStep MoveParticles_FireSub8(float& fVar15, int& iVar9)
 static ParticleStep MoveParticles_FireSub9(float& fVar15, int& iVar9)
 {
     P_LB(iVar9) = 0.0f;
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
-    P_LR(iVar9) = fVar15 * _DAT_00552af0;
-    P_LG(iVar9) = fVar15 * _DAT_00552aec;
-    fVar15 = P_GRAV(iVar9) + _DAT_00552504;
+    fVar15 = (float)P_LIFE(iVar9) * 0.1f;
+    P_LR(iVar9) = fVar15 * 0.98039216f;
+    P_LG(iVar9) = fVar15 * 0.6145098f;
+    fVar15 = P_GRAV(iVar9) + 0.5f;
     P_GRAV(iVar9) = fVar15;
     P_POSZ(iVar9) += fVar15;
-    P_SCALE(iVar9) += _DAT_005524f4;
+    P_SCALE(iVar9) += 0.1f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case 10:
 static ParticleStep MoveParticles_FireSub10(float& fVar15, int& iVar9)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_005526dc;
+    fVar15 = (float)P_LIFE(iVar9) * 0.0625f;
     P_LR(iVar9) = fVar15;
-    fVar15 = fVar15 * _DAT_005524f4;
+    fVar15 = fVar15 * 0.1f;
     P_LG(iVar9) = fVar15;
     P_LB(iVar9) = fVar15;
-    P_SCALE(iVar9) += _DAT_00552874;
+    P_SCALE(iVar9) += 0.05f;
     return ParticleStep::Break;
 }
 
 // IDA: MoveParticles (0x00477090): case 0xb:
 static ParticleStep MoveParticles_FireSub11(float& fVar15, int& iVar9)
 {
-    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552944;
+    fVar15 = (float)P_LIFE(iVar9) * 0.02f;
     P_LR(iVar9) = fVar15 * P_EX0(iVar9);
     P_LG(iVar9) = fVar15 * P_EX1(iVar9);
     P_LB(iVar9) = fVar15 * P_EX2(iVar9);
-    P_VELX(iVar9) *= _DAT_005528b4;
-    P_VELY(iVar9) *= _DAT_005528b4;
-    P_VELZ(iVar9) *= _DAT_005528b4;
-    P_SCALE(iVar9) += _DAT_00552874;
-    P_POSZ(iVar9) -= _DAT_0055256c;
+    P_VELX(iVar9) *= 0.4f;
+    P_VELY(iVar9) *= 0.4f;
+    P_VELZ(iVar9) *= 0.4f;
+    P_SCALE(iVar9) += 0.05f;
+    P_POSZ(iVar9) -= 1.0f;
     return ParticleStep::Break;
 }
 
@@ -752,15 +752,15 @@ void __stdcall MoveParticles(void)
     float* shakeVel = g_ParticleDriftVelocity;
     for (int s = 0; s < 2; s++) {
         iVar4 = _rand();
-        fVar19 = (float)(iVar4 % 0x7d1 - 1000) * _DAT_00552b54 + shakeVel[s];
+        fVar19 = (float)(iVar4 % 0x7d1 - 1000) * 0.0006f + shakeVel[s];
         fVar15 = fVar19;
-        if (fVar19 < _DAT_00552534 && fVar19 >= _DAT_00552b50) {
+        if (fVar19 < 0.6f && fVar19 >= (-0.6f)) {
             // nop — keep fVar15 = fVar19
         } else {
-            fVar15 = _DAT_00552534;
+            fVar15 = 0.6f;
         }
-        if (fVar19 < _DAT_00552b50) {
-            fVar15 = _DAT_00552b50;
+        if (fVar19 < (-0.6f)) {
+            fVar15 = (-0.6f);
         }
         shakeVel[s] = fVar15;
     }
@@ -772,13 +772,13 @@ void __stdcall MoveParticles(void)
         fVar19 = shakeVel[s] + shakePos[s];
         shakePos[s] = fVar19;
         fVar15 = fVar19;
-        if (fVar19 < _DAT_00552b4c && fVar19 >= _DAT_00552b48) {
+        if (fVar19 < 1.7f && fVar19 >= (-1.7f)) {
             // nop
         } else {
-            fVar15 = _DAT_00552b4c;
+            fVar15 = 1.7f;
         }
-        if (fVar19 < _DAT_00552b48) {
-            fVar15 = _DAT_00552b48;
+        if (fVar19 < (-1.7f)) {
+            fVar15 = (-1.7f);
         }
         shakePos[s] = fVar15;
     }
@@ -802,7 +802,7 @@ void __stdcall MoveParticles(void)
         float* pVel = &P_VELX(iVar9);
         Vector_AddRotated(pPos, pDir, pVel);
 
-        fVar15 = _DAT_0055256c;
+        fVar15 = 1.0f;
         iVar5 = P_TYPE(iVar9);
 
         // ── Main type switch ─────────────────────────────────────────────────
@@ -942,14 +942,14 @@ void __stdcall MoveParticles(void)
             // ── Type 0x4c4: multi-sub particle (flame/fire) ──────────────────
             switch (P_SUB(iVar9)) {
             case 0: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
+                fVar15 = (float)P_LIFE(iVar9) * 0.125f;
                 P_LR(iVar9) = fVar15;
                 P_LG(iVar9) = fVar15;
                 P_LB(iVar9) = fVar15;
-                fVar15 = P_GRAV(iVar9) + _DAT_005526e4;
+                fVar15 = P_GRAV(iVar9) + 0.2f;
                 P_GRAV(iVar9) = fVar15;
                 P_POSZ(iVar9) += fVar15;
-                P_SCALE(iVar9) += _DAT_00552874;
+                P_SCALE(iVar9) += 0.05f;
                 break;
             }
             case 1:
@@ -971,15 +971,15 @@ void __stdcall MoveParticles(void)
                 }
                 break;
             case 4: {
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_00552b1c;
-                P_LR(iVar9) = fVar15 * _DAT_00552b18;
-                P_LG(iVar9) = fVar15 * _DAT_00552b14;
-                fVar15 = fVar15 * _DAT_00552b10;
+                fVar15 = (float)P_LIFE(iVar9) * 0.125f;
+                P_LR(iVar9) = fVar15 * 0.47058824f;
+                P_LG(iVar9) = fVar15 * 0.39490196f;
+                fVar15 = fVar15 * 0.3137255f;
                 P_LB(iVar9) = fVar15;
-                fVar15 = P_GRAV(iVar9) + _DAT_005526e4;
+                fVar15 = P_GRAV(iVar9) + 0.2f;
                 P_GRAV(iVar9) = fVar15;
                 P_POSZ(iVar9) += fVar15;
-                P_SCALE(iVar9) += _DAT_00552874;
+                P_SCALE(iVar9) += 0.05f;
                 break;
             }
             case 5:
@@ -1035,7 +1035,7 @@ void __stdcall MoveParticles(void)
                 uVar7 = _rand(); uVar7 &= 0x80000003;
                 if ((int)uVar7 < 0) uVar7 = (uVar7 - 1 | 0xfffffffc) + 1;
                 P_FRAME(iVar9) = (int)uVar7;
-                float lightF = (float)P_LIFE(iVar9) * _DAT_00552b28;
+                float lightF = (float)P_LIFE(iVar9) * 0.2f;
                 P_LR(iVar9) = lightF;
                 P_LG(iVar9) = lightF;
                 P_LB(iVar9) = lightF;
@@ -1050,8 +1050,8 @@ void __stdcall MoveParticles(void)
                 // AddTerrainLight — second call with color modulation
                 {
                     float lt1[3];
-                    lt1[0] = lightF * _DAT_005526e4;
-                    lt1[1] = lightF * _DAT_005528b4;
+                    lt1[0] = lightF * 0.2f;
+                    lt1[1] = lightF * 0.4f;
                     lt1[2] = lightF;
                     AddTerrainLight(P_POSX(iVar9), P_POSY(iVar9), (float*)lt1, 4, (float*)&DAT_081cb608[0]);
                 }
@@ -1063,14 +1063,14 @@ void __stdcall MoveParticles(void)
                     // Type 0x498: multi-sub particle
                     switch (P_SUB(iVar9)) {
                     case 0:
-                        fVar15 = P_SCALE(iVar9) - _DAT_00552504;
+                        fVar15 = P_SCALE(iVar9) - 0.5f;
                         P_SCALE(iVar9) = fVar15;
-                        if (fVar15 < _DAT_005526e4) P_ACTIVE(iVar9) = '\0';
+                        if (fVar15 < 0.2f) P_ACTIVE(iVar9) = '\0';
                         break;
                     case 1:
-                        fVar15 = P_SCALE(iVar9) - _DAT_0055264c;
+                        fVar15 = P_SCALE(iVar9) - 2.0f;
                         P_SCALE(iVar9) = fVar15;
-                        if (fVar15 < _DAT_005526e4) P_ACTIVE(iVar9) = '\0';
+                        if (fVar15 < 0.2f) P_ACTIVE(iVar9) = '\0';
                         break;
                     case 2:
                         if (P_LIFE(iVar9) < 1) P_ACTIVE(iVar9) = '\0';
@@ -1080,12 +1080,12 @@ void __stdcall MoveParticles(void)
                             P_LIFE(iVar9) = 5;
                         }
                         {
-                            float lt2 = (float)P_LIFE(iVar9) * _DAT_00552b28;
+                            float lt2 = (float)P_LIFE(iVar9) * 0.2f;
                             P_LR(iVar9) = lt2;
                             P_LG(iVar9) = lt2;
                             P_LB(iVar9) = lt2;
                         }
-                        P_SCALE(iVar9) += _DAT_00552874;
+                        P_SCALE(iVar9) += 0.05f;
                         P_POSX(iVar9) = P_TGX(iVar9) + P_VELX(iVar9);
                         {
                             float newY = P_VELY(iVar9) + P_TGY(iVar9);
@@ -1098,17 +1098,17 @@ void __stdcall MoveParticles(void)
                         }
                         break;
                     case 3:
-                        P_SCALE(iVar9) *= _DAT_00552530;
+                        P_SCALE(iVar9) *= 0.8f;
                         break;
                     }
                 } else {
                     if (iVar5 == 0x499) {
                         // Mismo frenado que BITMAP_BLOOD (antes un goto a ese case).
-                        fVar15 = P_VELX(iVar9) * _DAT_00552b44;
+                        fVar15 = P_VELX(iVar9) * 0.95f;
                         P_VELX(iVar9) = fVar15;
-                        float vy = P_VELY(iVar9) * _DAT_00552b44;
+                        float vy = P_VELY(iVar9) * 0.95f;
                         P_VELY(iVar9) = vy;
-                        float vz = P_VELZ(iVar9) * _DAT_00552b44;
+                        float vz = P_VELZ(iVar9) * 0.95f;
                         P_VELZ(iVar9) = vz;
                         P_FRAME(iVar9) = (0xc - P_LIFE(iVar9)) / 3;
                         P_POSX(iVar9) += fVar15;
@@ -1117,7 +1117,7 @@ void __stdcall MoveParticles(void)
                         continue;
                     }
                     if (iVar5 == 0x49c) {
-                        P_ROT(iVar9) += _DAT_005524fc;
+                        P_ROT(iVar9) += 20.0f;
                     }
                 }
                 continue;
@@ -1125,16 +1125,16 @@ void __stdcall MoveParticles(void)
 
             if (iVar5 == 0x497) {
                 // Type 0x497: bounce + glow decay
-                fVar15 = (float)P_LIFE(iVar9) * _DAT_005526dc;
+                fVar15 = (float)P_LIFE(iVar9) * 0.0625f;
                 P_LR(iVar9) = fVar15;
                 P_LG(iVar9) = fVar15;
                 P_LB(iVar9) = fVar15;
                 P_POSZ(iVar9) += P_GRAV(iVar9);
-                P_GRAV(iVar9) -= _DAT_0055264c;
+                P_GRAV(iVar9) -= 2.0f;
                 fVar15 = RequestTerrainHeight(P_POSX(iVar9), P_POSY(iVar9));
                 if (P_POSZ(iVar9) < fVar15) {
                     P_POSZ(iVar9) = fVar15;
-                    fVar15 = P_GRAV(iVar9) * _DAT_00552b50;
+                    fVar15 = P_GRAV(iVar9) * (-0.6f);
                     P_LIFE(iVar9) -= 4;
                     P_GRAV(iVar9) = fVar15;
                 }
@@ -1147,10 +1147,10 @@ void __stdcall MoveParticles(void)
             // Types < 0x497
             if (iVar5 > 0x47f) {
                 if (iVar5 == 0x490) {
-                    fVar15 = P_GRAV(iVar9) + _DAT_005524f8;
+                    fVar15 = P_GRAV(iVar9) + 0.01f;
                     P_GRAV(iVar9) = fVar15;
                     P_SCALE(iVar9) += fVar15;
-                    fVar15 = (float)P_LIFE(iVar9) * _DAT_00552a00;
+                    fVar15 = (float)P_LIFE(iVar9) * 0.1f;
                     P_LR(iVar9) = fVar15;
                     P_LG(iVar9) = fVar15;
                     P_LB(iVar9) = fVar15;
@@ -1160,9 +1160,9 @@ void __stdcall MoveParticles(void)
 
             if (iVar5 == 0x47f) {
                 P_POSZ(iVar9) -= P_GRAV(iVar9);
-                P_POSY(iVar9) -= _DAT_0055256c;
-                P_GRAV(iVar9) += _DAT_0055256c;
-                P_SCALE(iVar9) *= _DAT_00552b44;
+                P_POSY(iVar9) -= 1.0f;
+                P_GRAV(iVar9) += 1.0f;
+                P_SCALE(iVar9) *= 0.95f;
                 continue;
             }
 
@@ -1177,25 +1177,25 @@ void __stdcall MoveParticles(void)
                     } else if (iVar5 == 2) {
                         fVar19 = 4.0f;
                     } else if (iVar5 == 1 || iVar5 == 5) {
-                        P_LR(iVar9) *= _DAT_005526e8;
-                        P_LG(iVar9) *= _DAT_005526e8;
-                        P_LB(iVar9) *= _DAT_005526e8;
-                        P_SCALE(iVar9) *= _DAT_00552b44;
+                        P_LR(iVar9) *= 0.9f;
+                        P_LG(iVar9) *= 0.9f;
+                        P_LB(iVar9) *= 0.9f;
+                        P_SCALE(iVar9) *= 0.95f;
                         continue;
                     } else if (iVar5 == 3) {
                         intptr_t entPtr = P_ENT(iVar9);
-                        P_LR(iVar9) *= _DAT_005526e8;
-                        P_LG(iVar9) *= _DAT_005526e8;
-                        P_LB(iVar9) *= _DAT_005526e8;
-                        P_SCALE(iVar9) *= _DAT_00552b40;
-                        fVar15 = P_GRAV(iVar9) + _DAT_00552660;
+                        P_LR(iVar9) *= 0.9f;
+                        P_LG(iVar9) *= 0.9f;
+                        P_LB(iVar9) *= 0.9f;
+                        P_SCALE(iVar9) *= 0.85f;
+                        fVar15 = P_GRAV(iVar9) + 5.0f;
                         P_GRAV(iVar9) = fVar15;
                         P_POSX(iVar9) = *(float*)(entPtr + 0x10);
-                        fVar3 = P_POSX(iVar9) + _DAT_0055264c;
+                        fVar3 = P_POSX(iVar9) + 2.0f;
                         P_POSY(iVar9) = *(float*)(entPtr + 0x14);
                         P_POSZ(iVar9) = *(float*)(entPtr + 0x18);
                         P_POSX(iVar9) = fVar3;
-                        P_POSY(iVar9) -= _DAT_0055264c;
+                        P_POSY(iVar9) -= 2.0f;
                         P_POSZ(iVar9) += fVar15;
                         continue;
                     } else if (iVar5 == 4) {
@@ -1237,13 +1237,13 @@ void __stdcall MoveParticles(void)
                             }
                         }
                         iVar5 = _rand();
-                        P_GRAV(iVar9) += (float)(iVar5 % 0x28 + 0x3c) * _DAT_00552b3c;
+                        P_GRAV(iVar9) += (float)(iVar5 % 0x28 + 0x3c) * 0.095f;
                         iVar5 = _rand();
-                        P_SCALE(iVar9) -= (float)(iVar5 % 400 + 400) * _DAT_00552b38;
+                        P_SCALE(iVar9) -= (float)(iVar5 % 400 + 400) * 0.0001f;
                         P_POSZ(iVar9) += P_GRAV(iVar9);
-                        P_LR(iVar9) *= _DAT_00552b34;
-                        P_LG(iVar9) *= _DAT_00552b34;
-                        P_LB(iVar9) *= _DAT_00552b34;
+                        P_LR(iVar9) *= 0.7407407f;
+                        P_LG(iVar9) *= 0.7407407f;
+                        P_LB(iVar9) *= 0.7407407f;
                         continue;
                     } else {
                         continue;
@@ -1251,37 +1251,37 @@ void __stdcall MoveParticles(void)
                     // Shared path for sub 0 and 2: camera shake + drift
                     iVar5 = P_SUB(iVar9);
                     iVar6 = _rand();
-                    fVar15 = (float)(_rand() % 0x7d1 - 1000) * _DAT_00552b30;
-                    float fDrift = (float)(iVar6 % 0x7d1 - 1000) * _DAT_00552b30 + DAT_07c800fc;
+                    fVar15 = (float)(_rand() % 0x7d1 - 1000) * 0.00040000002f;
+                    float fDrift = (float)(iVar6 % 0x7d1 - 1000) * 0.00040000002f + DAT_07c800fc;
                     float fShakeZ = DAT_07c80100 * fVar19;
                     P_POSX(iVar9) += (DAT_07c800f8 + fVar15) * fVar19;
                     P_POSY(iVar9) += fDrift * fVar19;
-                    P_POSZ(iVar9) += fVar19 * _DAT_00552660 + fShakeZ;
+                    P_POSZ(iVar9) += fVar19 * 5.0f + fShakeZ;
                     if (iVar5 == 0) {
-                        fVar15 = P_SCALE(iVar9) - _DAT_00552874;
+                        fVar15 = P_SCALE(iVar9) - 0.05f;
                     } else if (iVar5 == 1) {
-                        fVar15 = P_SCALE(iVar9) * _DAT_00552b2c;
+                        fVar15 = P_SCALE(iVar9) * 0.98f;
                     } else {
-                        fVar15 = P_SCALE(iVar9) * _DAT_00552b44;
+                        fVar15 = P_SCALE(iVar9) * 0.95f;
                     }
                     P_SCALE(iVar9) = fVar15;
                     P_LR(iVar9) = fVar15;
                     P_LG(iVar9) = fVar15;
                     P_LB(iVar9) = fVar15;
                     if (iVar5 == 1) {
-                        fVar15 = P_SCALE(iVar9) * _DAT_005528b8;
+                        fVar15 = P_SCALE(iVar9) * 0.3f;
                         P_LR(iVar9) = fVar15;
                         P_LG(iVar9) = fVar15;
                         P_LB(iVar9) = fVar15;
                     }
                     if (iVar5 == 5) {
-                        fVar15 = P_SCALE(iVar9) * _DAT_005528b8;
+                        fVar15 = P_SCALE(iVar9) * 0.3f;
                         P_LR(iVar9) = fVar15;
                         P_LG(iVar9) = fVar15;
                         P_LB(iVar9) = fVar15;
                     }
-                    if ((iVar5 == 0 && P_SCALE(iVar9) <= _DAT_005524f4) ||
-                        (iVar5 == 2 && P_SCALE(iVar9) <= _DAT_005528b8)) {
+                    if ((iVar5 == 0 && P_SCALE(iVar9) <= 0.1f) ||
+                        (iVar5 == 2 && P_SCALE(iVar9) <= 0.3f)) {
                         P_LIFE(iVar9) = -1;
                         P_ACTIVE(iVar9) = '\0';
                     }
@@ -1295,16 +1295,16 @@ void __stdcall MoveParticles(void)
             if (P_SUB(iVar9) == 1) {
                 fVar15 = P_GRAV(iVar9) + P_SCALE(iVar9);
             } else {
-                fVar15 = P_SCALE(iVar9) + _DAT_00552910;
+                fVar15 = P_SCALE(iVar9) + 0.03f;
             }
             P_SCALE(iVar9) = fVar15;
             {
                 float lt3[3] = { 0.05f, 0.05f, 0.05f };
                 // fall through to color decay label
             }
-            P_LR(iVar9) -= _DAT_00552874;
-            P_LG(iVar9) -= _DAT_00552874;
-            P_LB(iVar9) -= _DAT_00552874;
+            P_LR(iVar9) -= 0.05f;
+            P_LG(iVar9) -= 0.05f;
+            P_LB(iVar9) -= 0.05f;
             continue;
         } // end iVar5 < 0x4a7
 
@@ -1335,8 +1335,8 @@ void __stdcall MoveParticles(void)
             switch (P_SUB(iVar9)) {
             case 1:
                 if (P_LIFE(iVar9) == 10) {
-                    P_VELY(iVar9) += _DAT_00552b20;
-                    P_SCALE(iVar9) -= _DAT_00552934;
+                    P_VELY(iVar9) += 6.4f;
+                    P_SCALE(iVar9) -= 0.15f;
                 }
                 fVar15 = (float)(_rand() % 0x168);
                 break;
@@ -1351,7 +1351,7 @@ void __stdcall MoveParticles(void)
                 P_POSX(iVar9) += *(float*)(entPtr + 0x10) - P_TGX(iVar9);
                 P_POSY(iVar9) += *(float*)(entPtr + 0x14) - P_TGY(iVar9);
                 P_POSZ(iVar9) += *(float*)(entPtr + 0x18) - P_TGZ(iVar9) + P_GRAV(iVar9);
-                fVar15 = P_GRAV(iVar9) + _DAT_005524f4;
+                fVar15 = P_GRAV(iVar9) + 0.1f;
                 P_TGX(iVar9) = *(float*)(entPtr + 0x10);
                 P_TGY(iVar9) = *(float*)(entPtr + 0x14);
                 P_TGZ(iVar9) = *(float*)(entPtr + 0x18);
@@ -1361,8 +1361,8 @@ void __stdcall MoveParticles(void)
             }
             case 5:
                 if (P_LIFE(iVar9) == 10) {
-                    P_VELY(iVar9) += _DAT_00552b20;
-                    P_SCALE(iVar9) *= _DAT_00552530;
+                    P_VELY(iVar9) += 6.4f;
+                    P_SCALE(iVar9) *= 0.8f;
                 }
                 fVar15 = (float)(_rand() % 0x168);
                 break;
@@ -1370,20 +1370,20 @@ void __stdcall MoveParticles(void)
                 continue;
             }
             P_ROT(iVar9) = fVar15;
-            P_LR(iVar9) -= _DAT_00552874;
-            P_LG(iVar9) -= _DAT_00552874;
-            P_LB(iVar9) -= _DAT_00552874;
+            P_LR(iVar9) -= 0.05f;
+            P_LG(iVar9) -= 0.05f;
+            P_LB(iVar9) -= 0.05f;
             break;
         }
 
         case BITMAP_BLOOD:
         case BITMAP_BLOOD + 1:
         {
-            fVar15 = P_VELX(iVar9) * _DAT_00552b44;
+            fVar15 = P_VELX(iVar9) * 0.95f;
             P_VELX(iVar9) = fVar15;
-            float vy = P_VELY(iVar9) * _DAT_00552b44;
+            float vy = P_VELY(iVar9) * 0.95f;
             P_VELY(iVar9) = vy;
-            float vz = P_VELZ(iVar9) * _DAT_00552b44;
+            float vz = P_VELZ(iVar9) * 0.95f;
             P_VELZ(iVar9) = vz;
             P_FRAME(iVar9) = (0xc - P_LIFE(iVar9)) / 3;
             P_POSX(iVar9) += fVar15;

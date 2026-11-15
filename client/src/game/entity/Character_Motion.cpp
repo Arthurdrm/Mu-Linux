@@ -481,9 +481,9 @@ void __cdecl MoveCharacterPosition(CHARACTER* character) {
     float terrainH = RequestTerrainHeight(*(float*)(param_1 + 0x10), *(float*)(param_1 + 0x14));
     if (*(short*)&((CHARACTER*)(uintptr_t)(param_1))->Helper.Type == 0x333) {
         if (gMapManager.Current().mountFlies)
-            terrainH += _DAT_00552848;
+            terrainH += 90.0f;
         else
-            terrainH += _DAT_0055284c;
+            terrainH += 30.0f;
     }
     *(float*)(param_1 + 0x18) = terrainH;
     // IDA 00454BA0: el modelo 272 (Budge Dragon) aletea sobre el terreno.
@@ -492,7 +492,7 @@ void __cdecl MoveCharacterPosition(CHARACTER* character) {
         const float bob = (float)fabs(sin(*(float*)(param_1 + 0x80)));
         *(float*)(param_1 + 0x18) = *(float*)(param_1 + 0x18) - bob * 70.0f + 70.0f;
     }
-    *(float*)(param_1 + 0x80) = *(float*)(param_1 + 0x80) + _DAT_00552934;
+    *(float*)(param_1 + 0x80) = *(float*)(param_1 + 0x80) + 0.15f;
 }
 
 // 0.97.20: vuelve a aplicar al héroe lo que el CharSet no lleva (las piezas
@@ -2555,7 +2555,7 @@ void __cdecl MoveMonsterClient(CHARACTER* character, OBJECT* object)
             SetPlayerStop(AsCharacter(entity));
             // Actualiza el facing según el byte de dirección del camino en +0x2fc
             AsCharacter(entity)->Object.Angle[2] =
-                ((float)*(unsigned char*)&((CHARACTER*)(uintptr_t)(entity))->TargetAngle - _DAT_0055256c) * _DAT_00552844;
+                ((float)*(unsigned char*)&((CHARACTER*)(uintptr_t)(entity))->TargetAngle - 1.0f) * 45.0f;
         }
         MoveCharacterPosition(AsCharacter(entity));
         return;

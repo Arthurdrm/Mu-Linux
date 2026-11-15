@@ -212,16 +212,16 @@ done:
 int __cdecl RenderTerrainTile(int iparam_1, int iparam_2, int param_3, int param_4, float param_5, int param_6, int param_7) {
     float param_1 = *(float*)&iparam_1;
     float param_2 = *(float*)&iparam_2;
-    *(float*)&DAT_07feb258 = param_1 * _DAT_005524f0;
-    *(float*)&DAT_07feb25c = param_2 * _DAT_005524f0;
+    *(float*)&DAT_07feb258 = param_1 * 100.0f;
+    *(float*)&DAT_07feb25c = param_2 * 100.0f;
     TerrainIndex1 = param_4 * 0x100 + param_3;
     TerrainIndex2 = TerrainIndex1 + param_6;
     *(float*)&DAT_07feb260 = (float)BackTerrainHeight[TerrainIndex1];
-    _DAT_07feb264 = *(float*)&DAT_07feb258 + _DAT_005524f0;
+    _DAT_07feb264 = *(float*)&DAT_07feb258 + 100.0f;
     TerrainIndex4 = (param_4 + param_6) * 0x100 + param_3;
     TerrainIndex3 = param_6 + TerrainIndex4;
     _DAT_07feb26c = (float)BackTerrainHeight[TerrainIndex2];
-    _DAT_07feb274 = *(float*)&DAT_07feb25c + _DAT_005524f0;
+    _DAT_07feb274 = *(float*)&DAT_07feb25c + 100.0f;
     _DAT_07feb278 = (float)BackTerrainHeight[TerrainIndex3];
     _DAT_07feb284 = (float)BackTerrainHeight[TerrainIndex4];
     _DAT_07feb268 = *(float*)&DAT_07feb25c;
@@ -324,7 +324,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
     byte *pbVar4 = (byte *)(CharactersClient + 0x84);
     for (int loop1 = 400; loop1 != 0; loop1--, pbVar4 += CHARACTER_STRIDE) {
         if (((*pbVar4 & param_1) == *pbVar4) && (pbVar4[-0x84] != 0) && (AsObject(pbVar4 - 0x84)->Visible != 0) &&
-            (_DAT_00552580 < *(float *)(FieldAddress(pbVar4, &AsObject(pbVar4)->Alpha) - 0x84))) {
+            (0.0f < *(float *)(FieldAddress(pbVar4, &AsObject(pbVar4)->Alpha) - 0x84))) {
             pbVar4[0x58] = 1;
             float r, g, b;
             switch (*(short *)(FieldAddress(pbVar4, &AsCharacter(pbVar4)->Level) - 0x84)) {
@@ -360,7 +360,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
             }
         }
         if ((*ent == '\0') || (*(char *)&AsObject(ent)->Visible == '\0') ||
-            (!(_DAT_00552580 < AsObject(ent)->Alpha)) || (FieldAs(ent, AsCharacter(ent)->Dead) != '\0'))
+            (!(0.0f < AsObject(ent)->Alpha)) || (FieldAs(ent, AsCharacter(ent)->Dead) != '\0'))
             continue;
 
         // Party name matching for DarkLord entities
@@ -562,7 +562,7 @@ char __cdecl Party_HPBar_HoverCheck(void)
     // evita mantener una segunda lista de combinaciones de paneles abiertos.
     const int local_20 = GetScreenWidth();
 
-    float local_14 = (float)local_20 - _DAT_00552598;   // left edge of HP bar column
+    float local_14 = (float)local_20 - 50.0f;   // left edge of HP bar column
     float local_24 = 5.0f;                              // top of first bar (Y)
     char result = 0;
 
@@ -574,7 +574,7 @@ char __cdecl Party_HPBar_HoverCheck(void)
         // DW o elfa; la fila baja 19 px para esos y para los -1, no para el
         // héroe sin resolver (-3).
         if (*puVar5 >= 0x80000000) {
-            if ((int)*puVar5 == -1) local_24 += _DAT_005527d4;
+            if ((int)*puVar5 == -1) local_24 += 19.0f;
             *puVar5 = 0xfffffffe;
             continue;
         }
@@ -592,17 +592,17 @@ char __cdecl Party_HPBar_HoverCheck(void)
             // Check mouse position within screen rect
             float mouseX = (float)MouseX;
             float mouseY = (float)MouseY;
-            bool bPosOk = (mouseX >= local_14 - _DAT_00552540) &&
-                          (mouseX <= local_14 + _DAT_00552598) &&
+            bool bPosOk = (mouseX >= local_14 - 3.0f) &&
+                          (mouseX <= local_14 + 50.0f) &&
                           (mouseY >= local_24) &&
-                          (mouseY <= local_24 + _DAT_005527d4);
+                          (mouseY <= local_24 + 19.0f);
 
             if (bTypeOk && bPosOk) {
                 result = 1;
                 SelectedCharacter = *puVar5;
             }
         }
-        local_24 += _DAT_005527d4;
+        local_24 += 19.0f;
         *puVar5 = 0xfffffffe;
     }
     return result;

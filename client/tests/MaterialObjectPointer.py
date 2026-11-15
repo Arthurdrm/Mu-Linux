@@ -52,9 +52,9 @@ std::uint64_t RunMaterials(BYTE* memory) {
         int expectedDraws=0;
         if(model==414 || model==567) expected.attribute[0]=randomValues[expectedDraws++];
         else if(model==565 || model==606) { expected.attribute[0]=randomValues[expectedDraws++]; expected.attribute[1]=randomValues[expectedDraws++]; }
-        if(beforeAlpha>_DAT_005524f8 && (model==607 || model==608)) {
-            expected.v=static_cast<float>(randomValues[expectedDraws++]%10)*_DAT_005524f4;
-            expected.u=static_cast<float>(randomValues[expectedDraws++]%10)*_DAT_005524f4;
+        if(beforeAlpha>0.01f && (model==607 || model==608)) {
+            expected.v=static_cast<float>(randomValues[expectedDraws++]%10)*0.1f;
+            expected.u=static_cast<float>(randomValues[expectedDraws++]%10)*0.1f;
         }
         Require(randomIndex==expectedDraws && actual.model==expected.model && std::memcmp(actual.attribute,expected.attribute,sizeof(expected.attribute))==0);
         Require(std::memcmp(&actual.u,&expected.u,4)==0 && std::memcmp(&actual.v,&expected.v,4)==0 && std::memcmp(&actual.alpha,&alpha,4)==0 && actual.action==beforeAction);
@@ -67,7 +67,7 @@ std::uint64_t RunMaterials(BYTE* memory) {
         worldValue=trial%2==0?4:0; EditFlag=trial%4==0?0:1;
         OBJECT before; std::memcpy(&before,object,sizeof(before)); MaterialVisualSample sampleBefore=actual;
         randomIndex=0;
-        const bool expectedTick=worldValue==4 && !(object->Alpha<_DAT_005524f8) && object->RenderType!=0x80 && !(EditFlag==0 && object->HiddenMesh==-2) && object->Type!=0 && object->Type!=239;
+        const bool expectedTick=worldValue==4 && !(object->Alpha<0.01f) && object->RenderType!=0x80 && !(EditFlag==0 && object->HiddenMesh==-2) && object->Type!=0 && object->Type!=239;
         Tick(object); Require(randomIndex==(expectedTick?1:0) && std::memcmp(object,&before,sizeof(before))==0);
         Require(std::memcmp(&actual,&sampleBefore,sizeof(actual))==0 && current==&outer);
         for(int i=0;i<16;++i) Require(memory[i]==0x5a && memory[16+sizeof(OBJECT)+i]==0x5a);
@@ -108,7 +108,7 @@ def harness(revision=None):
     prefix+=re.search(r"^const MaterialVisualSample \*MaterialVisuals_Current\([^\n]+",source,re.M).group()
     prefix+="\n".join(re.findall(r"^MaterialVisualScope::[^\n]+",source,re.M))
     globals_header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
-    for name in ("_DAT_005524f8","EditFlag"):
+    for name in ("EditFlag",):
         prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",globals_header).group()
         prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
     prefix+=SERVICES

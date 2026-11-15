@@ -33,9 +33,9 @@ void Scene_MapTick(void)
     DAT_07eaa134 = 1;
   }
   if (CheckInventory == 0) {
-    if ((((DAT_07eaa13c == 1) && (_DAT_00552cac <= (float)MouseX)) &&
-        ((float)MouseX < _DAT_00552c24)) &&
-       ((_DAT_00552c14 <= (float)MouseY && ((float)MouseY < _DAT_00552ca8)))) {
+    if ((((DAT_07eaa13c == 1) && (245.0f <= (float)MouseX)) &&
+        ((float)MouseX < 285.0f)) &&
+       ((115.0f <= (float)MouseY && ((float)MouseY < 175.0f)))) {
       uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,CharacterMachine);
       if (uVar2 == 0xffffffff) {
         pvVar3 = AntiTamper_HashNode();

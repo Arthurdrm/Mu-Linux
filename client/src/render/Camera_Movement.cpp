@@ -45,8 +45,8 @@ void __stdcall MoveCamera(void) {
         CurrentCameraNumber = 1;
         CurrentCameraWalkType = 1;
         for (int i = 0; i < 3; i++) {
-            CurDelta[i]     = (CamWalk[6 + i] - CurPos[i]) * _DAT_00552d44;
-            CurDelta[i + 3] = (CamWalk[9 + i] - CurAngle[i]) * _DAT_00552d44;
+            CurDelta[i]     = (CamWalk[6 + i] - CurPos[i]) * 0.0078125f;
+            CurDelta[i + 3] = (CamWalk[9 + i] - CurAngle[i]) * 0.0078125f;
         }
     }
 
@@ -88,8 +88,8 @@ void __stdcall MoveCamera(void) {
         // Recompute deltas for new target waypoint
         float* target = CamWalk + camNum * 6;
         for (int i = 0; i < 3; i++) {
-            CurDelta[i]     = (target[i] - CurPos[i]) * _DAT_00552d44;
-            CurDelta[i + 3] = (target[i + 3] - CurAngle[i]) * _DAT_00552d44;
+            CurDelta[i]     = (target[i] - CurPos[i]) * 0.0078125f;
+            CurDelta[i + 3] = (target[i + 3] - CurAngle[i]) * 0.0078125f;
         }
     }
 
@@ -98,8 +98,8 @@ void __stdcall MoveCamera(void) {
         // Lerp mode: smooth approach to target
         float* target = CamWalk + camNum * 6;
         for (int i = 0; i < 3; i++) {
-            CurPos[i]   = (target[i] - CurPos[i]) * _DAT_00552a30 + CurPos[i];
-            CurAngle[i] = (target[i + 3] - CurAngle[i]) * _DAT_00552a30 + CurAngle[i];
+            CurPos[i]   = (target[i] - CurPos[i]) * 0.16666667f + CurPos[i];
+            CurAngle[i] = (target[i + 3] - CurAngle[i]) * 0.16666667f + CurAngle[i];
         }
     } else {
         // Linear delta mode: add delta each frame (only X and Y)

@@ -105,8 +105,8 @@ void __cdecl CreateCharacterPointer(unsigned char *param_1, int Type,
     o->BlendMeshTexCoordV           = 0.0f;
 
     // ── Posición de mundo desde la casilla ───────────────────────────────────
-    o->Position[0] = (float)(int)grid_x * _DAT_005524f0 + _DAT_00552598;
-    o->Position[1] = (float)(int)grid_y * _DAT_005524f0 + _DAT_00552598;
+    o->Position[0] = (float)(int)grid_x * 100.0f + 50.0f;
+    o->Position[1] = (float)(int)grid_y * 100.0f + 50.0f;
 
     // World Z: terrain height + height offset based on entity type / state
     float terrainH = RequestTerrainHeight(o->Position[0], o->Position[1]);
@@ -117,10 +117,10 @@ void __cdecl CreateCharacterPointer(unsigned char *param_1, int Type,
         // Normal spawn
     }
     else if (gMapManager.Current().mountFlies) {
-        terrainH += (float)_DAT_00552848;
+        terrainH += (float)90.0f;
     }
     else {
-        terrainH += (float)_DAT_0055284c;
+        terrainH += (float)30.0f;
     }
     o->Position[2] = terrainH;
 

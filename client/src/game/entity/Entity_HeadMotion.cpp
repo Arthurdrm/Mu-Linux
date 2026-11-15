@@ -36,15 +36,15 @@ void __cdecl LookAtTarget(OBJECT* o, const CHARACTER* TargetCharacter) {
 
     float* headTarget = o->HeadTargetAngle;  // o->HeadTargetAngle[3]
 
-    if (deltaAngle < (double)_DAT_00552848) {
+    if (deltaAngle < (double)90.0f) {
         // Within threshold: compute head rotation
         headTarget[0] = oFacing - angle;
-        headTarget[1] = (tZ - (oZ + _DAT_00552598)) * _DAT_005526e4;
+        headTarget[1] = (tZ - (oZ + 50.0f)) * 0.2f;
 
         // Wrap angles if < -180.0f
         for (int i = 0; i < 2; i++) {
-            if (headTarget[i] < _DAT_00552580) {
-                headTarget[i] = headTarget[i] + _DAT_0055286c;
+            if (headTarget[i] < 0.0f) {
+                headTarget[i] = headTarget[i] + 360.0f;
             }
         }
     } else {
@@ -75,8 +75,8 @@ void __cdecl MoveHead(CHARACTER* character) {
             // Clamp both head angles toward 0 by _DAT_0055286c if below _DAT_00552580
             int iVar5 = 2;
             do {
-                if (*pfVar4 < _DAT_00552580) {
-                    *pfVar4 = *pfVar4 + _DAT_0055286c;
+                if (*pfVar4 < 0.0f) {
+                    *pfVar4 = *pfVar4 + 360.0f;
                 }
                 pfVar4 = pfVar4 + 1;
                 iVar5 = iVar5 - 1;

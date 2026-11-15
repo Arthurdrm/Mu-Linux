@@ -197,18 +197,18 @@ void __cdecl OpenMonsterModel(int param_1)
     do {
       if (param_1 == 3) {
         iVar3 = (intptr_t)AsModel(iVar2)->Actions;
-        fVar4 = *(float *)(iVar3 + 4 + iVar5) * _DAT_00552a1c;
+        fVar4 = *(float *)(iVar3 + 4 + iVar5) * 1.0f;
 LAB_005099d1:
         *(float *)(iVar3 + 4 + iVar5) = fVar4;
       }
       else {
         if ((param_1 == 5) || (param_1 == 0x19)) {
           *(float *)((intptr_t)AsModel(iVar2)->Actions + 4 + iVar5) =
-               *(float *)((intptr_t)AsModel(iVar2)->Actions + 4 + iVar5) * _DAT_00552928;
+               *(float *)((intptr_t)AsModel(iVar2)->Actions + 4 + iVar5) * 0.7f;
         }
         if ((param_1 == 0x25) || (param_1 == 0x2a)) {
           iVar3 = (intptr_t)AsModel(iVar2)->Actions;
-          fVar4 = *(float *)(iVar3 + 4 + iVar5) * _DAT_005528b4;
+          fVar4 = *(float *)(iVar3 + 4 + iVar5) * 0.4f;
           goto LAB_005099d1;
         }
       }

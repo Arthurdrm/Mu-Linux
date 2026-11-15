@@ -162,14 +162,14 @@ void __stdcall RenderEquipmentBox(void) {
 
     float sx = (float)(int)InventoryStartX;  // InventoryStartX
     float sy = (float)(int)InventoryStartY;  // InventoryStartY
-    float rowTop = sy + _DAT_00552c18;
-    float rowMid = sy + _DAT_00552c0c;
-    float rowBottom = sy + _DAT_00552c08;
-    float colLeft = sx + _DAT_00552834;
-    float colRing = sx + _DAT_005524a0;
-    float colBody = sx + _DAT_00552c10;
-    float colPendant = sx + _DAT_00552c14;
-    float colRight = sx + _DAT_00552c04;
+    float rowTop = sy + 46.0f;
+    float rowMid = sy + 89.0f;
+    float rowBottom = sy + 152.0f;
+    float colLeft = sx + 15.0f;
+    float colRing = sx + 55.0f;
+    float colBody = sx + 75.0f;
+    float colPendant = sx + 115.0f;
+    float colRight = sx + 134.0f;
 
     // Helper/Pet slot 8.
     SetEquipmentSlotPlaceholderColorForIndex(8);
@@ -266,14 +266,14 @@ void __stdcall RenderEquipment3D(void) {
 
     float sx = (float)(int)InventoryStartX;
     float sy = (float)(int)InventoryStartY;
-    float rowTop = sy + _DAT_00552c18;
-    float rowMid = sy + _DAT_00552c0c;
-    float rowBottom = sy + _DAT_00552c08;
-    float colLeft = sx + _DAT_00552834;
-    float colRing = sx + _DAT_005524a0;
-    float colBody = sx + _DAT_00552c10;
-    float colPendant = sx + _DAT_00552c14;
-    float colRight = sx + _DAT_00552c04;
+    float rowTop = sy + 46.0f;
+    float rowMid = sy + 89.0f;
+    float rowBottom = sy + 152.0f;
+    float colLeft = sx + 15.0f;
+    float colRing = sx + 55.0f;
+    float colBody = sx + 75.0f;
+    float colPendant = sx + 115.0f;
+    float colRight = sx + 134.0f;
 
     InventoryColor(GetPanelEquipmentSourceItem(8));
     RenderEquipmentPart3D(8, colLeft, rowTop, 40.0f, 40.0f);
@@ -287,7 +287,7 @@ void __stdcall RenderEquipment3D(void) {
     }
 
     InventoryColor(GetPanelEquipmentSourceItem(3));
-    RenderEquipmentPart3D(3, colBody, rowMid - _DAT_00552488, 40.0f, 60.0f);
+    RenderEquipmentPart3D(3, colBody, rowMid - 10.0f, 40.0f, 60.0f);
 
     InventoryColor(GetPanelEquipmentSourceItem(4));
     RenderEquipmentPart3D(4, colBody, rowBottom, 40.0f, 40.0f);
@@ -355,8 +355,8 @@ void __cdecl RenderItems3D(float p1, float p2, short* p3, int p4, int p5, char p
                         if (0 < (int)cell->Key) {
                             int idx = (int)itemType;
                             RenderItem3D(x, y,
-                                (float)itemAttr[idx].Width * _DAT_005524fc,
-                                (float)itemAttr[idx].Height * _DAT_005524fc,
+                                (float)itemAttr[idx].Width * 20.0f,
+                                (float)itemAttr[idx].Height * 20.0f,
                                 idx, cell->Level,
                                 (unsigned int)cell->Option1,
                                 (int)cell->byColorState, false);
@@ -364,7 +364,7 @@ void __cdecl RenderItems3D(float p1, float p2, short* p3, int p4, int p5, char p
                             if (p6 != '\0' && itemType > 0x1bf && itemType < 0x1c9 &&
                                 cell->Durability > 1) {
                                 Gfx::Color3f(1.0f, 0.9f, 0.7f);
-                                RenderNumber2D(x + _DAT_005527dc, y,
+                                RenderNumber2D(x + 13.0f, y,
                                     (unsigned int)cell->Durability, 9.0f, 10.0f);
                             }
                         }
@@ -375,12 +375,12 @@ void __cdecl RenderItems3D(float p1, float p2, short* p3, int p4, int p5, char p
                             unsigned int r1 = rand();
                             unsigned int rMod = r1 & 0x80000003;
                             if ((int)rMod < 0) rMod = (rMod - 1 | 0xfffffffc) + 1;
-                            float colorG = (float)(int)(rMod + 4) * _DAT_005524f4;
+                            float colorG = (float)(int)(rMod + 4) * 0.1f;
                             int r2 = rand();
-                            float colorR = (float)(r2 % 6 + 6) * _DAT_005524f4;
+                            float colorR = (float)(r2 % 6 + 6) * 0.1f;
                             // random offset size
                             int r3 = rand();
-                            float sparkSize = (float)(r3 % 10) + _DAT_00552660;
+                            float sparkSize = (float)(r3 % 10) + 5.0f;
                             int r4 = rand();
                             float fx = (float)(r4 % 0x14) + x;
                             int r5 = rand();
@@ -389,8 +389,8 @@ void __cdecl RenderItems3D(float p1, float p2, short* p3, int p4, int p5, char p
                             Gfx::Color3f(colorR, colorG, 0.2f);
                             GL_DrawRotatedRect(0x4ce, fx, fy, sparkSize, sparkSize, 0);
                             GL_DrawRotatedRect(0x4ce, fx, fy, sparkSize, sparkSize, mixRot);
-                            GL_DrawRotatedRect(0x4cf, fx, fy, sparkSize * _DAT_00552540, sparkSize * _DAT_00552540, mixRot);
-                            GL_DrawRotatedRect(0x47e, fx, fy, sparkSize * _DAT_005527d0, sparkSize * _DAT_005527d0, 0);
+                            GL_DrawRotatedRect(0x4cf, fx, fy, sparkSize * 3.0f, sparkSize * 3.0f, mixRot);
+                            GL_DrawRotatedRect(0x47e, fx, fy, sparkSize * 6.0f, sparkSize * 6.0f, 0);
                             GL_ResetState();  // DisableAlphaBlend
                         }
                     }
@@ -413,10 +413,10 @@ void __cdecl RenderItems3D(float p1, float p2, short* p3, int p4, int p5, char p
                 cell->Color == 'c') {
                 Gfx::Color3f(0.0f, 1.0f, 1.0f);
                 float glowX = (float)((unsigned int)cell->x * 0x14)
-                              + (float)TradeInventoryStartX + _DAT_00552834;
-                float sinVal = (float)sin((double)((float)WorldTime * _DAT_005529cc));
+                              + (float)TradeInventoryStartX + 15.0f;
+                float sinVal = (float)sin((double)((float)WorldTime * 0.015f));
                 float glowY = (float)((unsigned int)cell->y * 0x14)
-                              + (float)TradeInventoryStartY + _DAT_00552938 + sinVal + _DAT_00552660;
+                              + (float)TradeInventoryStartY + 70.0f + sinVal + 5.0f;
                 GL_DrawTexture(9, glowX, glowY, 24.0f, 24.0f, 0.0f, 0.4f, 1.0f, 1.0f, 1, 1);
                 Gfx::Color3f(1.0f, 1.0f, 1.0f);
                 // Text rendering for new item label — simplified

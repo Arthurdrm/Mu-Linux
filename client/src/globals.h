@@ -37,166 +37,36 @@ extern DWORD   DAT_00000024;
 // ── Game math / render constants (0x005524xx – 0x00552dxx) ────────────────────
 // Casi todos se acceden como float vía el alias _DAT_; en algunos también hay acceso entero.
 extern float  _DAT_00552464;
-extern float  _DAT_0055246c;
-extern float  _DAT_00552488;   // Z-bob oscillation phase
 extern float  _DAT_005524bc;
 extern float  _DAT_005524f0;   // grid-to-world scale factor
-extern DWORD   DAT_005524f0;
 extern float  _DAT_005524f4;
-extern DWORD   DAT_005524f4;
 extern float  _DAT_005524f8;
-extern DWORD   DAT_005524f8;
-extern float  _DAT_005524fc;
-extern DWORD   DAT_005524fc;
 extern float  _DAT_00552500;
-extern DWORD   DAT_00552500;
 extern float  _DAT_00552504;
-extern DWORD   DAT_00552504;
 extern float  _DAT_00552530;
-extern DWORD   DAT_00552530;
-extern float  _DAT_00552534;
-extern DWORD   DAT_00552534;
-extern float  _DAT_00552538;   // cloth grid uv scale factor
-extern DWORD   DAT_00552538;
 extern float  _DAT_00552540;   // particle dir scale (Matrix_TransformPoint branch)
-extern float  _DAT_005527d4;   // Party HP bar row height in pixels (SecondPassword_HoverCheck)
-extern DWORD   DAT_00552540;
-extern float  _DAT_00552560;   // spring horizontal-vs-vertical angle threshold
-extern DWORD   DAT_00552560;
 extern float  _DAT_0055256c;
-extern DWORD   DAT_0055256c;
 extern DWORD   DAT_00552580;
-extern float  _DAT_00552594;
-extern DWORD   DAT_00552594;
 extern float  _DAT_00552598;
-extern DWORD   DAT_00552598;
 extern float  _DAT_00552660;
-extern DWORD   DAT_00552660;
-extern float  _DAT_00552664;
-extern DWORD   DAT_00552664;
-extern float  _DAT_005526dc;
-extern DWORD   DAT_005526dc;
-extern float  _DAT_005526e0;   // Entity_GetMoveRate: speed for wyvern/dragon-class
-extern DWORD   DAT_005526e0;
 extern float  _DAT_005526e4;
-extern DWORD   DAT_005526e4;
-extern float  _DAT_005526e8;
-extern DWORD   DAT_005526e8;
 extern float  _DAT_00552834;
-extern DWORD   DAT_00552834;
 extern float  _DAT_00552838;   // 1/480 — Y scale constant
-extern DWORD   DAT_00552838;
 extern float  _DAT_0055283c;   // 1/640 — X scale constant
-extern DWORD   DAT_0055283c;
-extern DWORD   DAT_00552844;
-extern DWORD   DAT_00552848;
 extern float  _DAT_00552848;   // height offset — small entities in normal state
 extern float  _DAT_0055284c;
-extern DWORD   DAT_0055284c;
-extern DWORD   DAT_00552850;
 extern float  _DAT_00552868;
-extern DWORD   DAT_00552868;
 extern float  _DAT_00552874;   // alpha fade rate (weather particle)
-extern float  _DAT_0055287c;   // Catmull-Rom weight t=0.25 (substep 1 X bias)
-extern float  _DAT_00552880;
-extern float  _DAT_00552884;   // Catmull-Rom weight (substep 0 main)
-extern float  _DAT_00552888;   // Catmull-Rom weight (substep 0/2 cross)
-extern float  _DAT_0055288c;   // Catmull-Rom weight (substep 0/1 lookahead)
-extern DWORD   DAT_0055286c;
-extern DWORD   DAT_00552874;
-extern DWORD   DAT_00552880;
-extern float  _DAT_00552890;   // movement speed scale (facing dt factor)
-extern float  _DAT_005528b0;
-extern DWORD   DAT_005528b0;
 extern float  _DAT_005528b4;
-extern DWORD   DAT_005528b4;
 extern float  _DAT_005528b8;
-extern DWORD   DAT_005528b8;
-extern DWORD   DAT_005528dc;
-extern float  _DAT_005528e0;   // Z-bob amplitude / fsin input
-extern DWORD   DAT_005528e0;
-extern float  _DAT_005528f0;
-extern DWORD   DAT_005528f0;
 extern float  _DAT_00552908;
-extern DWORD   DAT_00552908;
-extern float  _DAT_005528fc;  // MoveJoint Z-offset constant
 extern float  _DAT_0055290c;
-extern DWORD   DAT_0055290c;
-extern float  _DAT_00552910;   // particle scale constant (gem/bead effects)
-extern DWORD   DAT_00552910;
-extern float  _DAT_0055291c;   // PathFinder spin-speed scale / Entity_Reset spin
-extern DWORD   DAT_0055291c;
-extern float  _DAT_00552920;   // BMD anim frame scale
-extern DWORD   DAT_00552920;
-extern float  _DAT_00552928;
-extern DWORD   DAT_00552928;
-extern float  _DAT_0055293c;   // particle Z offset constant
-extern DWORD   DAT_0055293c;
 extern float  _DAT_00552934;
-extern DWORD   DAT_00552934;
-extern float  _DAT_00552974;
-extern DWORD   DAT_00552974;
-extern float  _DAT_0055297c;
-extern DWORD   DAT_0055297c;
-extern float  _DAT_005529bc;
-extern DWORD   DAT_005529bc;
 extern float  _DAT_005529c0;   // particle velocity scale constant
-extern DWORD   DAT_005529c0;
 extern float  _DAT_005529c8;   // angle-to-radian scale (weather rotation)
-extern DWORD   DAT_005529c8;
-extern float  _DAT_005529e0;
-extern DWORD   DAT_005529e0;
 extern float  _DAT_00552a00;
-extern DWORD   DAT_00552a00;
-extern float  _DAT_00552a10;   // entity flash/tint ramp step multiplier
-extern DWORD   DAT_00552a10;
-extern DWORD   DAT_00552a1c;
-extern float  _DAT_00552a38;   // butterfly/bubble max distance squared
-extern float  _DAT_00552a3c;   // PI constant for angle flip (360°)
-extern float  _DAT_00552a40;   // secondary fsin frequency (rain Y offset)
-extern float  _DAT_00552a48;   // particle velocity cross-product scale
-extern DWORD   DAT_00552a48;
-extern float  _DAT_00552abc;   // particle rotation scale (wind effect)
-extern DWORD   DAT_00552abc;
-extern float  _DAT_00552ac0;   // particle size scale (large smoke/wind)
-extern DWORD   DAT_00552ac0;
-extern float  _DAT_00552adc;   // aspect ratio correction (float view of DAT_00552adc)
-extern DWORD   DAT_00552adc;
-extern DWORD   DAT_00552b70;
-extern float  _DAT_00552b6c;   // facing delta threshold (max dt before skipping)
-extern float  _DAT_00552b7c;
-extern DWORD   DAT_00552b7c;
 extern float  _DAT_00552b88;
-extern DWORD   DAT_00552b88;
-extern float  _DAT_00552c00;   // item spin speed (frames-to-degrees multiplier)
-extern float  _DAT_00552c14;
-extern DWORD   DAT_00552c14;
-extern float  _DAT_00552c24;
-extern DWORD   DAT_00552c24;
-extern float  _DAT_00552ca4;
-extern DWORD   DAT_00552ca4;
-extern float  _DAT_00552ca8;
-extern DWORD   DAT_00552ca8;
-extern float  _DAT_00552cac;
-extern DWORD   DAT_00552cac;
-extern DWORD   DAT_00552cb0;
-extern float  _DAT_00552cc4;   // PI/180 = 0.017453292f  (float view of DAT_00552cc4)
-extern DWORD   DAT_00552cc4;
-extern float  _DAT_00552d08;
-extern DWORD   DAT_00552d08;
-extern float  _DAT_00552d0c;
-extern DWORD   DAT_00552d0c;
 extern float  _DAT_00552d20;   // 1/1600 (world→object-bucket-grid factor)
-extern DWORD   DAT_00552d20;
-extern float  _DAT_00552d38;
-extern DWORD   DAT_00552d38;
-extern float  _DAT_00552d3c;
-extern DWORD   DAT_00552d3c;
-extern float  _DAT_00552d48;
-extern DWORD   DAT_00552d48;
-extern float  _DAT_00552d4c;
-extern DWORD   DAT_00552d4c;
-extern DWORD   DAT_005538a0;
 
 // ── Entity / render constants (0x005590xx – 0x00559dxx) ───────────────────────
 extern BYTE    PacketXorKey16[16];   // DAT_00559050 — 16-byte XOR key table (Crypto/anti-tamper)
@@ -1187,7 +1057,6 @@ extern DWORD   DAT_07abf414[12]; // temp bone matrix buffer C
 
 // ── Animation distance / frequency constants ───────────────────────────────────
 extern float  _DAT_00552650;   // animation LOD cutoff distance
-extern float  _DAT_00552954;   // sin animation frequency constant
 
 // ── Teleport-anim pool (0x07c80110, stride 0x70, 100 slots) ──────────────────
 // Sized via IDA bound: (0x7c82cd0 - 0x7c80110) / 0x70 = 0x2BC0 / 0x70 = 100.
@@ -1201,10 +1070,7 @@ extern int&    DAT_07c85894;   // alias = pool[+4] (Sound_Queue / Sigil_RenderAl
 
 // ── Math / animation constants ────────────────────────────────────────────────
 extern float  _DAT_00552958;   // teleport-anim height offset
-extern DWORD   DAT_00552958;
 // _DAT_0055283c extern declarado arriba (1/640, X scale constant)
-extern float  _DAT_00552cb8;   // login camera X-rotation speed
-extern float  _DAT_00552cbc;   // login camera Y-rotation speed
 
 // Input / player name buffers
 extern char    DAT_007d29e5;
@@ -1212,12 +1078,6 @@ extern char    DAT_007eaa11;
 
 // ── Sprite entity pool (RenderParticles — decoration/item-drop sprite render) ────
 extern DWORD   DAT_07abf634;       // sprite entity pool base (stride 0x70, limit 0x7b116b3)
-extern float  _DAT_005528dc;       // UV step per sprite-sheet column (1/N cols)
-extern float  _DAT_00552940;       // UV row base offset for sprite-sheet
-extern float  _DAT_00552944;       // Entity_UpdateRender sin period scale (0x15d)
-extern float  _DAT_00552948;       // Entity_UpdateRender sin bias (0x15d)
-extern float  _DAT_0055294c;       // Entity_UpdateRender sin amplitude (0x15d)
-extern float  _DAT_00552acc;       // anim speed scale constant A
 extern float  _DAT_00552914;       // anim speed scale constant B
 
 // ── Server select input (CServerSelWin_UpdateWhileActive) ───────────────────────────────────────
@@ -1517,9 +1377,7 @@ extern char    param_2_07d69078;       // own kills format string ("%d")
 // ── Pre-compile missing globals (found by diff scan) ─────────────────────────
 
 // Game math constants missing from 0x005524xx–0x00552dxx section:
-extern float  _DAT_0055264c;   // cursor offset constant (cursor draw X/Y subtract)
 extern float  FloatZero;   // float constant 0.0 (guard for division / degenerate-length check)
-extern float  _DAT_005529fc;   // cursor Y-effect offset (used in animated cursor draw)
 
 // Hash table / debug string (0x00558xxx):
 extern char    DAT_00558128[];  // debug log data block / format string
@@ -1584,11 +1442,6 @@ extern int     DAT_00559fe0;           // class-data cache guard (last built cla
 
 // ── UI_StatsPanel (RenderErrorMessage) globals ─────────────────────────────────────
 // Float step/scale constants (0x00552xxx)
-extern float  _DAT_00552854;   // row height / step in entity loop
-extern float  _DAT_00552a2c;   // button width for entity panel
-extern float  _DAT_00552ae4;   // UV scale V  (Texture_Draw2D)
-extern float  _DAT_00552d40;   // panel X offset
-extern float  _DAT_00552d44;   // UV scale U  (Texture_Draw2D)
 // Dialog text color control
 extern DWORD   m_dwTextColor;   // current text color ABGR (0xffffffff = white)
 // SetBackgroundTextColor — declared above as DWORD
@@ -1625,7 +1478,6 @@ extern char    DAT_083a7c09;   // guild dialog flag B
 // Zona del cursor / hit-test (también se usa en otros paneles)
 // MouseLButtonPush — declared above as DWORD
 // Y del cursor de selección en la lista de servers (también se usa en el panel 0x96)
-extern float  _DAT_00552cac;   // panel cursor bound Y-min
 // String literals at fixed addresses (Ghidra: s__s_xxx_address)
 extern char    s__s_On_0056184c[];    // "Sound: On"  / toggle-on string
 extern char    s__s_Off_00561854[];   // "Sound: Off" / toggle-off string
@@ -1698,14 +1550,10 @@ extern int     DAT_083a42f4;   // screenshot active flag
 extern int     DAT_083a42f0;   // screenshot counter (mod 10000)
 // ── Float constants (overlapping globals) ────────────────────────────────────
 extern float   _DAT_00552580;  // 0.0f guard constant
-extern float   _DAT_00552850;  // particle proximity threshold (squared)
-extern float   _DAT_00552878;  // particle half-way distance
 extern float   Math_DegreesToRadians;  // degrees-to-radians (π/180 = 0.017453f)
 extern float   _DAT_00552ce0;  // half-angle factor 0.5 (used in EulerToQuat EulerToQuat; input already radians)
 extern float   _DAT_00552cf0;  // 1.0f (used in quaternion→matrix)
-extern float   _DAT_00552cf8;  // π/2 (used in SLERP degenerate case)
 extern float   _DAT_00552d00;  // SLERP near-parallel threshold (~1e-3)
-extern float   _DAT_00552a1c;  // animation speed multiplier
 // ── Effect pool ──────────────────────────────────────────────────────────────
 extern OBJECT  Effects[kEffectPoolSize];   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
 // ── Monster_Data string literals ─────────────────────────────────────────────
@@ -1802,20 +1650,7 @@ extern char    s_Monster_iui03_tga_0055cdc8[];
 
 // ── CreateEffect float constants ────────────────────────────────────────────
 extern float   _DAT_005524ec;
-extern float   _DAT_0055253c;
-extern float   _DAT_00552828;
-extern float   _DAT_00552830;  // death particle anim frame upper bound
 extern float   _DAT_00552844;
-extern float   _DAT_005528e8;
-extern float   _DAT_0055295c;
-extern float   _DAT_00552960;
-extern float   _DAT_00552968;
-extern float   _DAT_00552970;
-extern float   _DAT_00552978;
-extern float   _DAT_00552980;
-extern float   _DAT_00552984;
-extern float   _DAT_00552988;
-extern float   _DAT_0055298c;
 // ── Boids (40 slots de OBJECT; IDA: sub_500E80 y su render) ─────────────────
 // Los 30+ globals DAT_0839bc?? son macros que indexan dentro de un único buffer
 // contiguo: Weather_Update y Particle_PathUpdate los acceden con stride 0x1bc
@@ -1854,14 +1689,10 @@ extern OBJECT  Boids[40];   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
 #define DAT_0839be11  (*(char *)&Boids[0].AlphaEnable)                              // slot[0] byte field
 #define DAT_0839be14  (*(unsigned int *)&Boids[0].AlphaTarget)          // slot[0] alpha fade (int/float)
 // ── Weather float constants ───────────────────────────────────────────────────
-extern float   _DAT_0055285c;  // weather float constant
 extern float   _DAT_0055286c;  // weather float constant
 extern float   _DAT_005528e4;  // weather float constant
 extern float   _DAT_00552900;  // weather z-offset constant
-extern float   _DAT_00552ab4;  // weather float constant
 extern float   _DAT_00552ab8;  // weather float constant
-extern float   _DAT_00552d24;  // weather float constant
-extern float   _DAT_00552d28;  // weather float constant
 
 // ── Camera / viewport globals ─────────────────────────────────────────────────
 extern int     DAT_0055a7b0;   // SetActionObject: tipo de objeto que se derrumba
@@ -1881,7 +1712,6 @@ extern float   DAT_00561558;   // fog start distance
 extern DWORD   FogColor;   // fog color pointer / float start  [IDA 0x0056155C]
 
 // ── Perspective constant ──────────────────────────────────────────────────────
-extern float   _DAT_00552d34;  // perspective scale constant
 
 // ── Joint pool ────────────────────────────────────────────────────────────────
 // JOINT lleva un puntero en +0x40: los campos siguientes se corren en x64.
@@ -1892,18 +1722,11 @@ static_assert(sizeof(JOINT) == JOINT_STRIDE, "JOINT_STRIDE");
 
 // ── Joint_Create float constants ─────────────────────────────────────────────
 extern float   _DAT_00552a14;  // joint float constant
-extern float   _DAT_00552658;  // joint float constant
-extern float   _DAT_005526d8;  // joint float constant
-extern float   _DAT_00552a44;  // joint float constant
-extern float   _DAT_00552a34;  // joint float constant
-extern float   _DAT_005529ac;  // joint float constant
 
 // ── Timer globals ─────────────────────────────────────────────────────────────
 extern DWORD   DAT_05826e14;   // FPS counter B
 extern DWORD   FrameTimeCurrentMs;   // IDA: DAT_05826df0
 extern float   _DAT_005528a8;  // 1/1000 ms-to-s scale
-extern float   _DAT_00552898;  // 5.0 second FPS window
-extern float   _DAT_00552890;  // delta-time scale
 extern DWORD   DAT_05826e00;   // FPS accumulator ring buffer
 extern float   DeltaT;  // delta time per frame  [IDA 0x0055979C]
 extern DWORD   FrameTimePreviousMs;  // IDA: DAT_05826dfc
@@ -1973,13 +1796,11 @@ extern BYTE    DAT_07ea5240[0x44];
 #define DAT_07ea525b   (*(char*) (DAT_07ea5240 + 0x1b))
 
 // ── Effect_Tick globals ───────────────────────────────────────────────────────
-extern float   _DAT_00552aac;  // effect tick float constant
 // IDA: MovePlanes usa Planes +0x60; no tiene otra asignación.
 extern char    g_PointerPool[100 * 0x70]; // IDA: Pointers (0x07C82CD0).
 
 // ── Terrain_Light globals ─────────────────────────────────────────────────────
 extern DWORD   DAT_0839bc84;
-extern float   _DAT_00552a08;  // terrain light float constant
 // cb60c / 0828b60c / cb610 / 0828b610 NO son globals separados —
 // son el 2do/3er DWORD del slot 0 de cb608 / 0828b608. Las macros están
 // definidas junto a las declaraciones de cb608 / 0828b608, más arriba en este header.
@@ -2127,7 +1948,6 @@ extern DWORD   DAT_07db8070;         // chat buffer extended
 extern int     DAT_07d78074;         // command table A count (Chat_DrawEntry)
 extern int     DAT_07d78070;         // command table B count (Chat_DrawEntry)
 extern char    DAT_07d27610[20000];  // name-filter table (1000 × 20 bytes, FilterName.bmd)
-extern float   _DAT_00552950;        // speed constant (Ambient_Particles lightning speed)
 
 // ── Terrain map globals ───────────────────────────────────────────────────────
 // La celda original 0x083A0218 pertenece a g_ObjectBucketGrid (ver arriba).
@@ -2240,9 +2060,6 @@ extern "C" char    DAT_07eaa0dc;   // SecondPassword selected grid index (byte)
 extern char    DAT_07ea51ec[33];   // GuildName (0.97.40: 32 bytes + NUL)
 #define DAT_07ea51f0 (*(DWORD*)&DAT_07ea51ec[4])   // 2do DWORD del nombre
 extern "C" char    DAT_07ea51f5[64];   // GuildMark (grilla 8x8, 1 byte por celda)
-extern float  _DAT_00552c20;   // Screen5 button X upper bound
-extern float  _DAT_00552c1c;   // Screen5 button height
-extern float  _DAT_00552c28;   // Screen5 button Y base
 // extern char    DAT_07d6b724;   // Error message: "no item in slot"   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d685ec;   // Error message: "invalid slot" (EventEntrance_HitTest)   // -> alias a GlobalText, ver el final del archivo
 extern short   DAT_00559f5a;   // second-password level check B (short)
@@ -2282,40 +2099,9 @@ extern float   _DAT_005528c4;  // sin period scale for vertex deformation (BMD__
 extern float   _DAT_00552644;  // sin amplitude for vertex deformation (BMD__RenderMeshTranslate)
 
 // ── MoveEffect constants (0x005524a8–0x00552a20 range) ─────────
-extern float   _DAT_005524a8;  // move effect float constant
 extern float   _DAT_00552864;  // move effect float constant
-extern float   _DAT_00552990;  // move effect float constant
 extern float   _DAT_00552994;  // move effect float constant
-extern float   _DAT_00552998;  // move effect float constant
-extern float   _DAT_0055299c;  // move effect float constant
-extern float   _DAT_005529a0;  // move effect float constant
-extern float   _DAT_005529a4;  // move effect float constant
-extern float   _DAT_005529a8;  // move effect float constant
-extern float   _DAT_005529b0;  // move effect float constant
-extern float   _DAT_005529b4;  // move effect float constant
-extern float   _DAT_005529b8;  // move effect float constant
-extern float   _DAT_005529c4;  // move effect float constant
-extern float   _DAT_005529cc;  // move effect float constant
-extern float   _DAT_005529d0;  // move effect float constant
 extern float   _DAT_005529d4;  // move effect float constant
-extern double  _DAT_005529d8;  // 12.5   (double de 8 bytes en el binario)
-extern double  _DAT_005529e8;  // 1/180  (double de 8 bytes en el binario)
-extern double  _DAT_005529f0;  // PI     (double de 8 bytes en el binario)
-extern float   _DAT_005529f8;  // move effect float constant
-extern float   _DAT_00552a04;  // move effect float constant
-extern float   _DAT_00552a0c;  // move effect float constant
-extern float   _DAT_00552a18;  // move effect float constant
-extern float   _DAT_00552a20;  // move effect float constant
-extern float   _DAT_00552938;  // MoveJoint trig scale (mode 1)
-extern float   _DAT_00552a54;  // MoveJoint particle angle scale
-extern float   _DAT_00552a8c;  // MoveJoint color fade rate A
-extern float   _DAT_00552a90;  // MoveJoint color fade rate B
-extern float   _DAT_00552a94;  // MoveJoint trig freq A
-extern float   _DAT_00552a98;  // MoveJoint trig scale B
-extern float   _DAT_00552aa4;  // MoveJoint HP-bar scale factor
-extern float   _DAT_00552a9c;  // Ring_ComputeOrbit ring trig scale X
-extern float   _DAT_00552aa0;  // Ring_ComputeOrbit ring trig scale Y
-extern float   _DAT_00552aa8;  // Ring_ComputeOrbit ring trig scale Z
 extern char    DAT_00559b78[8];
 #define DAT_00559b7f (DAT_00559b78 + 7)   // alias: mismo buffer, offset 7
 
@@ -2335,7 +2121,6 @@ extern int     DAT_00590c10;          // skinned vertex count
 extern float   DAT_055c4068;          // bone output world-vertex array base   (stride 0x1b floats)
 extern float   DAT_00593008;          // source vertex position array          (stride 3 floats)
 extern short   DAT_00590c32;          // parent-bone index array               (stride 0x11 shorts)
-extern float   _DAT_0055259c;         // global mesh scale factor
 extern float   DAT_055c4038;          // bone world-position matrix array base (stride 0x6c bytes)
 extern float   DAT_055c4098;          // bone world-pos X component            (stride 0x1b)
 extern float   DAT_055c409c;          // bone world-pos Y component
@@ -2438,29 +2223,7 @@ extern int     PTR_FUN_0055389c;   // vtable for GameGuard class
 
 // Símbolos de vtable/literal-puntero off_XXXX de IDA, renombrados por port.py a DAT_xxxxxxxx.
 // (en paralelo a los PTR_LAB_/PTR_FUN_ de arriba; port.py usa la forma DAT_)
-extern DWORD   DAT_00552460;
-extern DWORD   DAT_005524b4;
-extern DWORD   DAT_005524b8;
-extern DWORD   DAT_005524c0;
-extern DWORD   DAT_005524c4;
-extern DWORD   DAT_005524c8;
-extern DWORD   DAT_005524d8;
-extern DWORD   DAT_005524e8;
 extern DWORD   DAT_00552508;
-extern DWORD   DAT_00552514;
-extern DWORD   DAT_00552548;
-extern DWORD   DAT_00552568;
-extern DWORD   DAT_00552574;
-extern DWORD   DAT_00552588;
-extern DWORD   DAT_005525a0;
-extern DWORD   DAT_005525c8;
-extern DWORD   DAT_00552668;
-extern DWORD   DAT_00552760;
-extern DWORD   DAT_005527e0;
-extern DWORD   DAT_005527e4;
-extern DWORD   DAT_005527f8;
-extern DWORD   DAT_00552810;
-extern DWORD   DAT_0055389c;
 
 extern DWORD   DAT_07e11e50;       // _PartyNumber
 extern DWORD   DAT_07e11e54;       // _PartyKey
@@ -2548,7 +2311,6 @@ extern DWORD   DAT_00563e00;       // codec state A
 
 // Missing globals (compilation fixes)
 // IDA: RenderTerrainAlphaBitmaps usa g_PointerPool +0x24 y 100 slots.
-extern DWORD   DAT_0055339c;       // JPEG natural order table
 // m_dwTextColor / m_dwBackColor SON DAT_00559c78 / SetBackgroundTextColor (mismo global en IDA:
 // 0x559c78 / 0x559c80, verificado por disasm de sub_40D610 y sub_480980). El render de
 // texto (CUIRenderText_RenderText) lee DAT_00559c78; sin esta unificación los seteos de m_dwTextColor
@@ -2599,23 +2361,12 @@ extern DWORD   DAT_05826d00;       // SendCheck first-call tickCount
 
 // Batch 20 — OpenNpc, MoveCamera, RenderEquipment3D, RenderItems3D, Send_ActionRequest, LookAtTarget
 // Sólo los globals realmente nuevos (los que no estaban declarados arriba):
-extern float   _DAT_005524a0;      // equip pendant X offset
-extern float   _DAT_00552c18;      // equip slot Y offset (helm row)
-extern float   _DAT_00552c10;      // equip slot X offset (pants/gloves/boots col)
-extern float   _DAT_00552c0c;      // equip slot Y offset (mid row)
-extern float   _DAT_00552c08;      // equip slot Y offset (ring/boots row)
-extern float   _DAT_00552c04;      // equip slot X offset (weapon_L/ring_R col)
-extern float   _DAT_005527dc;      // arrow count X offset
 extern float   DAT_083a7adc[];     // CurrentCameraWalkDelta[6] (pos delta + angle delta)
-extern float   _DAT_00552a30;      // lerp speed (camera smoothing)
 extern void*   g_LoginSceneObjects[9]; // exact CreateObject pointers for login bg: sky, 3 ships, 3 waves, banner, sun
 
 // Batch 22 — AttackStage, CreateArrow
 extern int     g_iLimitAttackTime;       // g_iLimitAttackTime (attack frame limit counter)  [IDA 0x00559858]
 extern DWORD   CurrentSkill; // IDA: CurrentSkill (0x05826D10)
-extern float   _DAT_00552904;      // sin/cos offset multiplier (sword trail radius)
-extern float   _DAT_005528f8;      // sin/cos offset multiplier (slash projectile)
-extern float   _DAT_005528f4;      // combo animation offset constant
 
 // Batch 21 — RenderSkillIcon, CheckMixRecipe, MoveObjects, CreateArrows, CollisionDetectLineToMesh
 extern DWORD   DAT_083a3fec;       // visible object counter (MoveObjects)
@@ -2625,7 +2376,6 @@ extern int     DAT_07eaa174;       // mix recipe: combined value score (capped a
 extern char    DAT_00559c6c;       // last rendered hotkey char
 extern float   _DAT_00552ab0;      // arrow angle offset (5-way shot small)
 extern float   _DAT_00552584;      // arrow angle offset (5-way shot large)
-extern float   _DAT_00552a4c;      // RenderNumber2D Y offset
 
 // ── UseSkillWizard dependencies ──────────────────────────────────────────────
 extern DWORD   MovementSkillTarget;       // MovementSkillTarget (index into CharactersClient)  [IDA 0x07D780A0]
@@ -2649,52 +2399,12 @@ extern float g_ParticleDriftVelocity[2]; // 0x07C80104..0x07C8010B
 #define DAT_07c80108 (g_ParticleDriftVelocity[1])
 
 // ── MoveParticles float constants ────────────────────────────────────────────
-extern float  _DAT_00552a60;       // particle damping factor (type 0x4ab sub 9)
-extern float  _DAT_00552a7c;       // particle angle increment (type 0x4c5)
-extern float  _DAT_00552ac4;       // particle scale delta (type 0x565 sub!=0)
-extern float  _DAT_00552ac8;       // particle scale delta (type 0x565 sub==0)
 // _DAT_00552acc — already declared above (line ~958)
-extern float  _DAT_00552ad0;       // sin frequency (type 0x599)
-extern float  _DAT_00552ad4;       // gravity factor (type 0x598)
-extern float  _DAT_00552ad8;       // sin frequency (type 0x4cf)
 // _DAT_00552adc — already declared above (line ~151)
-extern float  _DAT_00552ae0;       // sin frequency (type 0x4ce/0x4d0/0x4d2)
-extern float  _DAT_00552ae8;       // color decay (type 0x4e1 sub 4)
-extern float  _DAT_00552aec;       // green channel factor (type 0x4c4 sub 9)
-extern float  _DAT_00552af0;       // red channel factor (type 0x4c4 sub 9)
-extern float  _DAT_00552af4;       // velocity damping (type 0x4c4 sub 8)
-extern float  _DAT_00552af8;       // lifetime-to-light factor (type 0x4c4 sub 8)
-extern float  _DAT_00552afc;       // blue channel factor (type 0x4c4 sub 7)
-extern float  _DAT_00552b00;       // green channel factor (type 0x4c4 sub 7)
-extern float  _DAT_00552b04;       // red channel factor (type 0x4c4 sub 7)
-extern float  _DAT_00552b08;       // sin frequency (type 0x4c4 sub 6)
-extern float  _DAT_00552b0c;       // sin frequency (type 0x4f4/0x4c4 sub 6)
-extern float  _DAT_00552b10;       // blue tint factor (type 0x4c4 sub 4)
-extern float  _DAT_00552b14;       // green tint factor (type 0x4c4 sub 4)
-extern float  _DAT_00552b18;       // red tint factor (type 0x4c4 sub 4)
-extern float  _DAT_00552b1c;       // lifetime-to-light factor (type 0x4c4 sub 0/3/4/7)
-extern float  _DAT_00552b20;       // velocity Y adjust (type 0x4b0 sub 1/5)
-extern float  _DAT_00552b24;       // velocity damping (type 0x4ac)
 extern float  _DAT_00552b28;       // lifetime-to-light factor (type 0x4a6/0x4d2/0x498)
-extern float  _DAT_00552b2c;       // velocity damping (type 0x4ab/0x47e)
-extern float  _DAT_00552b30;       // random offset scale (type 0x47e)
-extern float  _DAT_00552b34;       // color decay (type 0x47e sub 4)
-extern float  _DAT_00552b38;       // scale decay factor (type 0x47e sub 4)
-extern float  _DAT_00552b3c;       // gravity random scale (type 0x47e sub 4)
-extern float  _DAT_00552b40;       // velocity damping (type 0x47e sub 3)
-extern float  _DAT_00552b44;       // velocity damping general (multiple types)
-extern float  _DAT_00552b48;       // camera shake clamp lower
-extern float  _DAT_00552b4c;       // camera shake clamp upper
-extern float  _DAT_00552b50;       // camera shake bounce / terrain bounce factor
-extern float  _DAT_00552b54;       // camera shake random scale
 
 // ── Additional math/render constants (added for CreateAngle/Terrain_RenderTexturedObject) ──
 extern float  _DAT_00552860;       // 57.29578f = 180/pi (radians to degrees)
-extern DWORD   DAT_00552860;
-extern float  _DAT_00552b9c;       // 0.015625f = 1/64 (terrain UV step)
-extern DWORD   DAT_00552b9c;
-extern float  _DAT_00552cb4;       // 64.0f (terrain tile size)
-extern DWORD   DAT_00552cb4;
 
 // ── CheckArrow / CharSelect chat message string globals ──
 extern char    DAT_07e11df4;        // arrow-required error string ID

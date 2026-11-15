@@ -139,21 +139,21 @@ void WeatherParticles_Update(void)
                 // Random rotation angle
                 unsigned int ur = (unsigned int)_rand() & 0x8000003fu;
                 if ((int)ur < 0) ur = (ur - 1u | 0xffffffc0u) + 1u;
-                float ang = (float)(int)(ur + 0x40) * _DAT_005529c8;
+                float ang = (float)(int)(ur + 0x40) * (-0.1f);
                 pfVar10[8] = ang;
-                if (fy < *(float *)&DAT_083a42d8 + _DAT_00552850)
-                    pfVar10[8] = _DAT_00552a3c - ang;
+                if (fy < *(float *)&DAT_083a42d8 + 400.0f)
+                    pfVar10[8] = 3.2f - ang;
 
                 ur = (unsigned int)_rand() & 0x8000001fu; if ((int)ur < 0) ur = (ur-1u|0xffffffe0u)+1u;
-                pfVar10[9]  = (float)(int)(ur - 0x10) * _DAT_005524f4;
+                pfVar10[9]  = (float)(int)(ur - 0x10) * 0.1f;
                 ur = (unsigned int)_rand() & 0x8000001fu; if ((int)ur < 0) ur = (ur-1u|0xffffffe0u)+1u;
-                pfVar10[10] = (float)(int)(ur - 0x10) * _DAT_005524f4;
+                pfVar10[10] = (float)(int)(ur - 0x10) * 0.1f;
                 ur = (unsigned int)_rand() & 0x8000000fu; if ((int)ur < 0) ur = (ur-1u|0xfffffff0u)+1u;
-                pfVar10[0xb] = (float)(int)(ur - 8) * _DAT_005524f4;
+                pfVar10[0xb] = (float)(int)(ur - 8) * 0.1f;
                 ur = (unsigned int)_rand() & 0x8000003fu; if ((int)ur < 0) ur = (ur-1u|0xffffffc0u)+1u;
-                pfVar10[0xc] = (float)(int)(ur - 0x20) * _DAT_005524f4;
+                pfVar10[0xc] = (float)(int)(ur - 0x20) * 0.1f;
                 ur = (unsigned int)_rand() & 0x8000000fu; if ((int)ur < 0) ur = (ur-1u|0xfffffff0u)+1u;
-                pfVar10[0xd] = (float)(int)(ur - 8) * _DAT_005524f4;
+                pfVar10[0xd] = (float)(int)(ur - 8) * 0.1f;
             }
             else if (iVar7 == 10)
             {
@@ -200,14 +200,14 @@ void WeatherParticles_Update(void)
                 pfVar10[0xe] = fx; pfVar10[0xf] = fy; pfVar10[0x10] = fz;
                 unsigned int ur;
                 ur = (unsigned int)_rand() & 0x8000003fu; if ((int)ur<0) ur=(ur-1u|0xffffffc0u)+1u;
-                float ang = (float)(int)(ur + 0x40) * _DAT_005529c8;
+                float ang = (float)(int)(ur + 0x40) * (-0.1f);
                 pfVar10[8] = ang;
-                if (fy < *(float *)&DAT_083a42d8 + _DAT_00552850) pfVar10[8] = _DAT_00552a3c - ang;
-                ur=(unsigned int)_rand()&0x8000001fu; if((int)ur<0)ur=(ur-1u|0xffffffe0u)+1u; pfVar10[9]  =(float)(int)(ur-0x10)*_DAT_005524f4;
-                ur=(unsigned int)_rand()&0x8000001fu; if((int)ur<0)ur=(ur-1u|0xffffffe0u)+1u; pfVar10[10] =(float)(int)(ur-0x10)*_DAT_005524f4;
-                ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u; pfVar10[0xb]=(float)(int)(ur-8)*_DAT_005524f4;
-                ur=(unsigned int)_rand()&0x8000003fu; if((int)ur<0)ur=(ur-1u|0xffffffc0u)+1u; pfVar10[0xc]=(float)(int)(ur-0x20)*_DAT_005524f4;
-                ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u; pfVar10[0xd]=(float)(int)(ur-8)*_DAT_005524f4;
+                if (fy < *(float *)&DAT_083a42d8 + 400.0f) pfVar10[8] = 3.2f - ang;
+                ur=(unsigned int)_rand()&0x8000001fu; if((int)ur<0)ur=(ur-1u|0xffffffe0u)+1u; pfVar10[9]  =(float)(int)(ur-0x10)*0.1f;
+                ur=(unsigned int)_rand()&0x8000001fu; if((int)ur<0)ur=(ur-1u|0xffffffe0u)+1u; pfVar10[10] =(float)(int)(ur-0x10)*0.1f;
+                ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u; pfVar10[0xb]=(float)(int)(ur-8)*0.1f;
+                ur=(unsigned int)_rand()&0x8000003fu; if((int)ur<0)ur=(ur-1u|0xffffffc0u)+1u; pfVar10[0xc]=(float)(int)(ur-0x20)*0.1f;
+                ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u; pfVar10[0xd]=(float)(int)(ur-8)*0.1f;
             }
         }
         else
@@ -222,7 +222,7 @@ void WeatherParticles_Update(void)
                 float terZ = RequestTerrainHeight(pfVar10[-7], pfVar10[-6]);
                 if (pfVar10[-5] < terZ) {
                     *(char *)(pfVar10 - 0xb) = 0;
-                    pfVar10[-5] = terZ + (float)_DAT_00552488;
+                    pfVar10[-5] = terZ + (float)10.0f;
                     unsigned int r = (unsigned int)_rand() & 0x80000003u;
                     if ((int)r < 0) r = (r - 1u | 0xfffffffcu) + 1u;
                     if (r == 0)
@@ -243,7 +243,7 @@ void WeatherParticles_Update(void)
                     float terZ = RequestTerrainHeight(pfVar10[-7], pfVar10[-6]);
                     if (pfVar10[-5] < terZ) {
                         *(char *)(pfVar10 - 0xb) = 0;
-                        pfVar10[-5] = terZ + (float)_DAT_00552488;
+                        pfVar10[-5] = terZ + (float)10.0f;
                         if (iVar7 != 10)
                             Particle_Spawn(0x67, pfVar10 - 7, pfVar10 - 4, pfVar10 - 1, 0, 1.0f, 0);
                     }
@@ -253,22 +253,22 @@ void WeatherParticles_Update(void)
                     // Butterfly: random drift + distance limit
                     unsigned int ur;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    pfVar10[8]  += (float)(int)(ur-8) * _DAT_005524f4;
+                    pfVar10[8]  += (float)(int)(ur-8) * 0.1f;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    pfVar10[9]  += (float)(int)(ur-8) * _DAT_005524f4;
+                    pfVar10[9]  += (float)(int)(ur-8) * 0.1f;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    float vz = (float)(int)(ur-8)*_DAT_005524f4 + pfVar10[10];
+                    float vz = (float)(int)(ur-8)*0.1f + pfVar10[10];
                     pfVar10[10] = vz;
                     pfVar10[-7] += pfVar10[8];
                     pfVar10[-6] += pfVar10[9];
                     pfVar10[-5] += vz;
 
                     ur=(unsigned int)_rand()&0x80000007u; if((int)ur<0)ur=(ur-1u|0xfffffff8u)+1u;
-                    pfVar10[0xb] += (float)(int)(ur-4)*_DAT_00552914;
+                    pfVar10[0xb] += (float)(int)(ur-4)*0.02f;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    pfVar10[0xc] += (float)(int)(ur-8)*_DAT_00552914;
+                    pfVar10[0xc] += (float)(int)(ur-8)*0.02f;
                     ur=(unsigned int)_rand()&0x80000007u; if((int)ur<0)ur=(ur-1u|0xfffffff8u)+1u;
-                    float az = (float)(int)(ur-4)*_DAT_00552914 + pfVar10[0xd];
+                    float az = (float)(int)(ur-4)*0.02f + pfVar10[0xd];
                     pfVar10[0xd] = az;
                     pfVar10[-4] += pfVar10[0xb];
                     pfVar10[-3] += pfVar10[0xc];
@@ -276,7 +276,7 @@ void WeatherParticles_Update(void)
 
                     // Deactivate if too far from origin
                     float dx = pfVar10[0xe]-pfVar10[-7], dy = pfVar10[0xf]-pfVar10[-6], dz = pfVar10[0x10]-pfVar10[-5];
-                    if (_DAT_00552a38 <= dx*dx + dy*dy + dz*dz)
+                    if (200000.0f <= dx*dx + dy*dy + dz*dz)
                         *(char *)(pfVar10 - 0xb) = 0;
                 }
             }
@@ -288,11 +288,11 @@ void WeatherParticles_Update(void)
                     // still falling
                     unsigned int ur;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    pfVar10[8]  += (float)(int)(ur-8)*_DAT_005524f4;
+                    pfVar10[8]  += (float)(int)(ur-8)*0.1f;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    pfVar10[9]  += (float)(int)(ur-8)*_DAT_005524f4;
+                    pfVar10[9]  += (float)(int)(ur-8)*0.1f;
                     ur=(unsigned int)_rand()&0x8000000fu; if((int)ur<0)ur=(ur-1u|0xfffffff0u)+1u;
-                    float vz = (float)(int)(ur-8)*_DAT_005524f4 + pfVar10[10];
+                    float vz = (float)(int)(ur-8)*0.1f + pfVar10[10];
                     pfVar10[10] = vz;
                     pfVar10[-7] += pfVar10[8];
                     pfVar10[-6] += pfVar10[9];
@@ -300,10 +300,10 @@ void WeatherParticles_Update(void)
                 } else {
                     // on ground: fade RGB and deactivate
                     pfVar10[-5] = terZ;
-                    pfVar10[-1] -= _DAT_00552874;
-                    pfVar10[0]  -= _DAT_00552874;
-                    pfVar10[1]  -= _DAT_00552874;
-                    if (pfVar10[-1] <= _DAT_00552580)
+                    pfVar10[-1] -= 0.05f;
+                    pfVar10[0]  -= 0.05f;
+                    pfVar10[1]  -= 0.05f;
+                    if (pfVar10[-1] <= 0.0f)
                         *(char *)(pfVar10 - 0xb) = 0;
                 }
             }

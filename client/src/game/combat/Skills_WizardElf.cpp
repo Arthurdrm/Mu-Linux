@@ -487,14 +487,14 @@ bool __stdcall Combat_UseElfSkillItem(intptr_t c, intptr_t pItem) {
             //     v35 = c.y - (TargetY * 100.0 + 50.0);
             //     v36 = c.x - (TargetX * 100.0 + 50.0);
             //     if (sqrt(v35*v35 + v36*v36) > Distance * 100.0) -> no dispara
-            float targetWorldX = (float)((int)TargetX) * _DAT_005524f0 + 50.0f;
-            float targetWorldY = (float)((int)TargetY) * _DAT_005524f0 + 50.0f;
+            float targetWorldX = (float)((int)TargetX) * 100.0f + 50.0f;
+            float targetWorldY = (float)((int)TargetY) * 100.0f + 50.0f;
 
             // Check range: distance from hero to target must be within skill range
             float dx = heroPosX - targetWorldX;
             float dy = heroPosY - targetWorldY;
             float dist = SQRT(dx * dx + dy * dy);
-            float maxRange = (float)(int)skillDistance * _DAT_005524f0;
+            float maxRange = (float)(int)skillDistance * 100.0f;
 
             if (dist > maxRange) continue;  // target out of range
 

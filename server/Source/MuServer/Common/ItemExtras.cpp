@@ -12,6 +12,7 @@
 
 #define TOML_EXCEPTIONS 0
 #include "tomlplusplus/toml.hpp"
+#include "Utf8Path.h"
 
 namespace fs = std::filesystem;
 
@@ -33,7 +34,7 @@ int ItemExtras_GetItem(int section, int index)
 
 static fs::path ItemsDir(const std::string& dataDir)
 {
-	return fs::u8path(dataDir) / "Items";
+	return Utf8Path(dataDir) / "Items";
 }
 
 // "00-swords.toml" -> 0; -1 si no es un archivo de sección.
@@ -70,7 +71,7 @@ static bool ListSectionFiles(const std::string& dataDir, std::map<int, fs::path>
 			continue;
 		}
 
-		std::string name = entry.path().filename().u8string();
+		std::string name = PathToUtf8(entry.path().filename());
 
 		int section = FileSection(name);
 
@@ -81,7 +82,7 @@ static bool ListSectionFiles(const std::string& dataDir, std::map<int, fs::path>
 
 		if (out.count(section) != 0)
 		{
-			error = "dos archivos para la sección " + std::to_string(section) + ": '" + out[section].filename().u8string() + "' y '" + name + "'";
+			error = "dos archivos para la sección " + std::to_string(section) + ": '" + PathToUtf8(out[section].filename()) + "' y '" + name + "'";
 
 			return false;
 		}
@@ -100,14 +101,14 @@ std::string ItemExtras_SectionPath(const std::string& dataDir, int section)
 
 	if (ListSectionFiles(dataDir, files, error) && files.count(section) != 0)
 	{
-		return files[section].u8string();
+		return PathToUtf8(files[section]);
 	}
 
 	char name[64];
 
 	snprintf(name, sizeof(name), "%02d-%s.toml", section, ItemExtras_SectionName(section));
 
-	return (ItemsDir(dataDir) / name).u8string();
+	return PathToUtf8(ItemsDir(dataDir) / name);
 }
 
 bool ItemExtras_HasData(const std::string& dataDir)
@@ -248,7 +249,7 @@ static bool TomlToJson(const toml::node& node, JsonValue& out, std::string& erro
 
 static std::string Where(const fs::path& file, const std::string& key)
 {
-	return file.filename().u8string() + " [" + key + "]";
+	return PathToUtf8(file.filename()) + " [" + key + "]";
 }
 
 static bool ReadIntNode(const toml::node* node, int minValue, int maxValue, int& out)
@@ -596,13 +597,13 @@ static bool ReadItemTable(const fs::path& file, int section, const std::string& 
 
 static bool LoadSectionFile(const fs::path& file, int section, std::vector<ItemExtraDef>& out, std::string& error)
 {
-	toml::parse_result result = toml::parse_file(file.u8string());
+	toml::parse_result result = toml::parse_file(PathToUtf8(file));
 
 	if (!result)
 	{
 		const toml::parse_error& e = result.error();
 
-		error = file.filename().u8string() + ":" + std::to_string(e.source().begin.line) + ": " + std::string(e.description());
+		error = PathToUtf8(file.filename()) + ":" + std::to_string(e.source().begin.line) + ": " + std::string(e.description());
 
 		return false;
 	}
@@ -619,7 +620,7 @@ static bool LoadSectionFile(const fs::path& file, int section, std::vector<ItemE
 
 		if (key.empty() || *end != '\0' || index < 0 || index >= ITEM_EXTRAS_MAX_INDEX)
 		{
-			error = file.filename().u8string() + ": '" + key + "' no es un índice de item (0 a 511)";
+			error = PathToUtf8(file.filename()) + ": '" + key + "' no es un índice de item (0 a 511)";
 
 			return false;
 		}
@@ -819,7 +820,7 @@ template <typename F> static bool ForEachRow(const fs::path& path, bool& exists,
 
 		if (!row(tokens, reason))
 		{
-			error = path.filename().u8string() + ":" + std::to_string(line) + ": " + reason;
+			error = PathToUtf8(path.filename()) + ":" + std::to_string(line) + ": " + reason;
 
 			return false;
 		}
@@ -971,7 +972,7 @@ static bool LoadJsonFolder(const fs::path& folder, bool pets, std::vector<ItemEx
 
 		const std::string text = buffer.str();
 
-		const std::string name = (pets ? "Custom/Pets/" : "Custom/Items/") + file.filename().u8string();
+		const std::string name = (pets ? "Custom/Pets/" : "Custom/Items/") + PathToUtf8(file.filename());
 
 		JsonValue root;
 
@@ -1073,7 +1074,7 @@ bool ItemExtras_LoadLegacy(const std::string& dataDir, std::vector<ItemExtraDef>
 
 	std::map<int, size_t> byItem;
 
-	const fs::path data = fs::u8path(dataDir);
+	const fs::path data = Utf8Path(dataDir);
 
 	const fs::path encoder = data / "Custom" / "Encoder";
 
@@ -1307,11 +1308,11 @@ std::vector<std::string> ItemExtras_LegacyFiles(const std::string& dataDir)
 
 	std::error_code ec;
 
-	const fs::path data = fs::u8path(dataDir);
+	const fs::path data = Utf8Path(dataDir);
 
 	for (const char* file : kFiles)
 	{
-		if (fs::is_regular_file(data / fs::u8path(file), ec))
+		if (fs::is_regular_file(data / Utf8Path(file), ec))
 		{
 			out.push_back(file);
 		}
@@ -1328,7 +1329,7 @@ std::vector<std::string> ItemExtras_LegacyFiles(const std::string& dataDir)
 		{
 			if (entry.is_regular_file(ec) && entry.path().extension() == ".json")
 			{
-				out.push_back(std::string(folder) + "/" + entry.path().filename().u8string());
+				out.push_back(std::string(folder) + "/" + PathToUtf8(entry.path().filename()));
 			}
 		}
 	}
@@ -1342,7 +1343,7 @@ void ItemExtras_ReadItemNames(const std::string& itemTxtPath, std::vector<std::s
 {
 	names.assign(8192, std::string());
 
-	std::ifstream file(fs::u8path(itemTxtPath), std::ios::binary);
+	std::ifstream file(Utf8Path(itemTxtPath), std::ios::binary);
 
 	std::string raw;
 
@@ -1647,9 +1648,9 @@ bool ItemExtras_WriteSection(const std::string& path, int section, const std::ve
 {
 	std::error_code ec;
 
-	fs::create_directories(fs::u8path(path).parent_path(), ec);
+	fs::create_directories(Utf8Path(path).parent_path(), ec);
 
-	std::ofstream file(fs::u8path(path), std::ios::binary);
+	std::ofstream file(Utf8Path(path), std::ios::binary);
 
 	if (!file)
 	{

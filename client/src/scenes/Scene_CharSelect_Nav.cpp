@@ -556,16 +556,10 @@ int __fastcall CWsctlc_nRecv(void *context)
         DbgLogPublic(dbg);
         return 1;
     }
-    {
-        char dbg[256];
-        BYTE *p = (BYTE*)(param_1 + 0x2010) + *(int *)(param_1 + 0x4010);
-        int nShow = iVar2 > 24 ? 24 : iVar2;
-        char hexbuf[128]; hexbuf[0] = 0;
-        for (int hi = 0; hi < nShow; ++hi) {
-            char tmp[8]; Platform::TextFormat(tmp, "%02X ", p[hi]);
-            Platform::TextConcat(hexbuf, sizeof(hexbuf), tmp);
-        }
-    }
+    // Para el log de cabecera desconocida: lo que había en el buffer antes de
+    // este recv y cuánto llegó.
+    const int bufferedBefore = *(int *)(param_1 + 0x4010);
+    const int received = iVar2;
 
     iVar2 = *(int *)(param_1 + 0x4010) + iVar2;
     *(int *)(param_1 + 0x4010) = iVar2;
@@ -585,8 +579,16 @@ int __fastcall CWsctlc_nRecv(void *context)
             // Lo que entrega el canal ya es texto plano,
             // así que cualquier cosa que no arranque con C1/C2/C3/C4 es un error real
             // de protocolo — se descarta el buffer y se sale.
-            char dbg[96];
-            Platform::TextFormat(dbg, "NET: Net_Recv UNKNOWN hdr=%02X at off=%d → discard buffer", hdr, iOff);
+            // Con el buffer antes del recv, lo recibido y los primeros bytes del
+            // paquete se puede ver si el desfase viene de un paquete anterior
+            // mal medido o de lo que acaba de llegar.
+            const int total = *(int *)(param_1 + 0x4010);
+            BYTE head[4] = { 0, 0, 0, 0 };
+            for (int k = 0; k < 4 && iOff + k < total; ++k) head[k] = pPkt[k];
+            char dbg[192];
+            Platform::TextFormat(dbg,
+                "NET: Net_Recv UNKNOWN hdr=%02X off=%d buffered=%d received=%d head=%02X %02X %02X %02X → discard buffer",
+                hdr, iOff, bufferedBefore, received, head[0], head[1], head[2], head[3]);
             DbgLogPublic(dbg);
             *(int *)(param_1 + 0x4010) = 0;
             return 0;

@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cstddef>
 // globals.cpp — Definitions for all DAT_ global variables.
 // In the original binary these are fixed addresses; here they are regular
 // zero-initialized globals that the linker places wherever it chooses.

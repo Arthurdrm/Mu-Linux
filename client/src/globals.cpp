@@ -231,9 +231,9 @@ char     DAT_00561b70[8] = "OZJ";   // OpenJPG extension suffix (Data mode: .jpg
 // Scene_CharSelect "account-blocked" warning lines. La tabla original de
 // strings del 0.97k está stripped (ambos quedan todo-ceros en el PE), así que
 // fijamos literales razonables en inglés para que el render muestre algo.
-char     lpString_00561a3c[64]              = {};  // server info line 1
-char     lpString_00561a58[64]              = {};  // server info line 2
-char     lpString_00561a68[64]              = {};  // server info line 3
+char     szHealthWarning1[64]              = {};   // IDA: 0x00561A3C (sin nombre) — aviso de salud coreano, línea 1; acá vacío
+char     szHealthWarning2[64]              = {};   // IDA: 0x00561A58 (sin nombre) — aviso de salud, línea 2
+char     szHealthWarning3[64]              = {};   // IDA: 0x00561A68 (sin nombre) — aviso de salud, línea 3
 
 // ── Misc game globals ─────────────────────────────────────────────────────────
 // DAT_00583d8c es un alias de g_csQuest (ver globals.h).
@@ -927,7 +927,7 @@ extern "C" {
 
 void    *CharacterAttribute  = NULL;  // IDA: CharacterAttribute (0x07CF1FF4)
 
-char     lpData_055c9ba0[12] = {0};
+char     g_szSavedUsername[12] = {0};   // IDA: byte_55C9BA0 (sin nombre) — usuario guardado del login
 
 // DAT_07d4c3ec / DAT_07d4c644 / DAT_07d4c770 son GlobalText[470] / [472] / [473]
 // (ver el bloque de alias al final de globals.h).
@@ -976,7 +976,7 @@ DWORD    ServerLocalSelect = 0;
 // Char menu UI builder (RenderHelpWindow)
 int      DAT_07e11d20 = 0;
 int      DAT_07e11d24 = 0;
-char     lpString_07e90798[3000] = {};  // 30 slots * 100 bytes
+char     TextList[3000] = {};   // IDA: TextList (0x07E90798) — 30 líneas x 100 del tooltip
 int      TextListColor[30] = {};  // IDA: TextListColor (0x07E91708) - 30 slots, igual que lpString
 int      TextBold[30] = {};  // IDA: TextBold (0x07EA7B10) - 30 slots, igual que lpString
 // DAT_07d329c4 / DAT_07d32af0 / DAT_07d34134 / DAT_07d34260 / DAT_07d358a4 son
@@ -1116,7 +1116,7 @@ char     DAT_005592dc  = 0;
 // [249] / [267] / [268]. (Ver el bloque de alias al final de globals.h.)
 DWORD    m_bBlockWhisper_1  = 0;  // IDA: m_bBlockWhisper_1 (0x07E11DAC)
 char     DAT_07eaa132  = 0;
-DWORD    lpDefault_00583d88 = 0;
+DWORD    strID = 0;   // IDA: strID (0x00583D88) — etiqueta vacía de UIChatLogWindow_AddText
 // DAT_07d55410 es GlobalText[593] (ver el bloque de alias al final de globals.h).
 char     RepairEnable_0  = 0;   // RepairEnable_0
 
@@ -1292,7 +1292,7 @@ char     s__s_On_0056184c[32]  = "Auto-ataque : On";
 char     s__s_Off_00561854[32] = "Auto-ataque : Off";
 char     s__s_On_0056185c[32]  = "Susurros : On";
 char     s__s_Off_00561864[32] = "Susurros : Off";
-char     lpString_0056186c[32] = {};
+char     szServerMigrationError[32] = {};   // IDA: byte_56186C (sin nombre) — "error al migrar de servidor" en coreano; acá vacío
 // In the original binary these are 300-byte slots inside a GlobalText[] pool
 // loaded from Data/Local/Text.bmd by sub_479830 (@0x00479830).
 // Los placeholders en español son fallback — OpenTextData() los sobrescribe
@@ -1510,7 +1510,7 @@ float   DAT_00590af8   = 0.0f;
 float   DAT_00590afc   = 0.0f;  // cloth wind Z (flt_590AFC; el binario nunca lo escribe)
 float   _DAT_00559068  = 9.8f;      // gravedad   (flt_559068, leído del binario)
 float   _DAT_0055906c  = 0.0025f;   // dt fijo    (flt_55906C, leído del binario)
-DWORD   lpData_055ca044 = 0;
+DWORD   g_iRenderTextType = 0;   // IDA: g_iRenderTextType (0x055CA044) — modo TextOut del registro
 // Strings reservados de sub_513570 (name-filter). En el binario original son
 // patrones bloqueados (espacio, DBCS coreano, punto). No dejarlos en 0: con string
 // vacío FindText(nombre,"") devuelve 1 y TODO nombre se rechaza con "palabras
@@ -1906,7 +1906,7 @@ float  CameraPosition[3]  = {0};
 // InventoryOpened/116/etc. — see globals.h. Storage is the byte-sized DAT_
 // globals defined above (lines ~745-753).
 FILE  *SMDFile             = NULL;
-// lpDefault_00583d88 already defined above (line ~1014)
+// strID already defined above (line ~1014)
 // DAT_00560694 already defined above (line ~1922)
 
 // Missing globals (compilation fixes)

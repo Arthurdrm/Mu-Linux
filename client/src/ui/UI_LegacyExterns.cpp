@@ -60,7 +60,7 @@ extern void MapFileDecrypt(BYTE* buf, int size);
 //   6. CharMenu_RenderTextList with computed Y / count
 extern "C++" {
 extern char    GlobalText[GLOBALTEXT_ROWS][300];   // ver globals.h
-extern char    lpString_07e90798[];
+extern char    TextList[];
 extern int     TextListColor[30];
 extern int     TextBold[30];
 }
@@ -210,9 +210,9 @@ void __cdecl RenderSkillTooltip(float a1, int a2, int a3)
     //   opcional "no puede usarla"          color 5 (blanco con franja)
     //   ultimo  = "\n"
     //
-    // Usa lpString_07e90798 + CharMenu_RenderTextList, igual que el binario —
+    // Usa TextList + CharMenu_RenderTextList, igual que el binario —
     // misma rutina que el tooltip de item y el menu de personaje.
-    auto  TextListN     = [](int i) -> char* { return lpString_07e90798 + i * 100; };
+    auto  TextListN     = [](int i) -> char* { return TextList + i * 100; };
     auto  GlobalTextOr  = [](int idx, const char* fallback) -> const char* {
         if (idx >= 0 && idx < GLOBALTEXT_ROWS && GlobalText[idx][0])
             return GlobalText[idx];
@@ -221,7 +221,7 @@ void __cdecl RenderSkillTooltip(float a1, int a2, int a3)
 
     int idx = 0;
     for (int i = 0; i < 30; ++i) {
-        lpString_07e90798[i * 100] = 0;
+        TextList[i * 100] = 0;
     }
 
     crt_sprintf(TextListN(idx), "\n");
@@ -290,7 +290,7 @@ void __cdecl RenderSkillTooltip(float a1, int a2, int a3)
         SIZE sz;
         sz.cx = 0;
         sz.cy = 0;
-        gFont.MeasureText(gFont.GetTextDC(), lpString_07e90798, 1, &sz);
+        gFont.MeasureText(gFont.GetTextDC(), TextList, 1, &sz);
         int v31 = (idx - 3) * sz.cy + (3 * sz.cy) / 2;
         int yBox = a2 - (int)((float)v31 / gWindow.GetScreenRateY());
         CharMenu_RenderTextList(skillTipX, yBox, idx, 0, 2, 1);

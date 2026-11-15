@@ -257,7 +257,7 @@ void CNetwork::SendToConnectServer(const BYTE* data, int len)
         if (SceneFlag != 2 || !m_HasConnectServer || !m_ConnectServerMode) return;
         BeginConnectServerSession();
         extern bool CreateSocketNoExit(const char*, unsigned int);
-        if (!CreateSocketNoExit(PTR_s_connect_muonline_co_kr_005615b8, (unsigned int)g_ServerPort)) return;
+        if (!CreateSocketNoExit(szServerIpAddress, (unsigned int)g_ServerPort)) return;
     }
     // Con el ConnectServer el canal va en claro; la cola es la misma.
     NetChannel::Send((const char*)data, len);

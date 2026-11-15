@@ -213,7 +213,7 @@ void GameGuard_TickCheck(void)
 //       FileVersion_Get() → formatea string de versión
 //   5.  Client_GetSystemInfo(local_3d4)          — IDA: FUN_004065F0
 //   6.  Config_ReadServerAddr(this, cmdLine, &DAT_055c9e04, &port)
-//         → PTR_s_connect_muonline_co_kr_005615b8 = &DAT_055c9e04
+//         → szServerIpAddress = &DAT_055c9e04
 //         → g_ServerPort = port
 //       si cmdline == "-1":
 //         WinExec(serverAddr, SW_SHOW)           — lanza otra instancia
@@ -510,7 +510,7 @@ int main(int, char**)
     // Client_GetSystemInfo(local_3d4); // IDA: FUN_004065F0
 
     // 6: Config_ReadServerAddr — toma la dirección de Config/ServerConfig.h y
-    // sobreescribe el buffer al que apunta PTR_s_connect_muonline_co_kr_005615b8.
+    // sobreescribe el buffer al que apunta szServerIpAddress.
     {
         extern char g_ServerIPBuf[128];
         unsigned short cfgPort = g_ServerPort;

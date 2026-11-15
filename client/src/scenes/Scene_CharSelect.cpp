@@ -85,9 +85,9 @@
 //
 // ── SERVER INFO (bottom right, color 0xff67bfdf) ────────────────────────────
 //
-//   DrawText_Centered(0x1b8, 0x186, &lpString_00561a3c)
-//   DrawText_Centered(0x1b8, 0x19a, &lpString_00561a58)
-//   DrawText_Centered(0x1b8, 0x1ae, &lpString_00561a68)
+//   DrawText_Centered(0x1b8, 0x186, &szHealthWarning1)
+//   DrawText_Centered(0x1b8, 0x19a, &szHealthWarning2)
+//   DrawText_Centered(0x1b8, 0x1ae, &szHealthWarning3)
 //
 // ── PANEL INFO (estados 0x1b..0x1c: create character) ────────────────────────
 //
@@ -446,18 +446,18 @@ int Scene_CharSelect(void)
         // ── Server info text (bottom right, blue) ─────────────────────────────
         SetBackgroundTextColor = 0x80000000; m_dwTextColor = 0xff67bfdf;
         gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
-        iVar9 = Platform::TextLength((LPCSTR)&lpString_00561a3c);
-        gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&lpString_00561a3c, iVar9, &tStack_68);
+        iVar9 = Platform::TextLength((LPCSTR)&szHealthWarning1);
+        gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&szHealthWarning1, iVar9, &tStack_68);
         UI_RenderText(0x1b8 - ((uint)(tStack_68.cx * 0x280) / gWindow.GetWidth() >> 1), 0x186,
-                     (LPCSTR)&lpString_00561a3c, (LPSIZE)0x0, '\0', 0);
-        iVar9 = Platform::TextLength((LPCSTR)&lpString_00561a58);
-        gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&lpString_00561a58, iVar9, &tStack_68);
+                     (LPCSTR)&szHealthWarning1, (LPSIZE)0x0, '\0', 0);
+        iVar9 = Platform::TextLength((LPCSTR)&szHealthWarning2);
+        gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&szHealthWarning2, iVar9, &tStack_68);
         UI_RenderText(0x1b8 - ((uint)(tStack_68.cx * 0x280) / gWindow.GetWidth() >> 1), 0x19a,
-                     (LPCSTR)&lpString_00561a58, (LPSIZE)0x0, '\0', 0);
-        iVar9 = Platform::TextLength((LPCSTR)&lpString_00561a68);
-        gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&lpString_00561a68, iVar9, &tStack_68);
+                     (LPCSTR)&szHealthWarning2, (LPSIZE)0x0, '\0', 0);
+        iVar9 = Platform::TextLength((LPCSTR)&szHealthWarning3);
+        gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)&szHealthWarning3, iVar9, &tStack_68);
         UI_RenderText(0x1b8 - ((uint)(tStack_68.cx * 0x280) / gWindow.GetWidth() >> 1), 0x1ae,
-                     (LPCSTR)&lpString_00561a68, (LPSIZE)0x0, '\0', 0);
+                     (LPCSTR)&szHealthWarning3, (LPSIZE)0x0, '\0', 0);
 
         GL_End2D();
         GL_PopMatrixAll();

@@ -155,7 +155,7 @@ int Game_SceneUpdate(void)
         // (the server responds with JoinServer before the user ever sees the
         // list), so we leave it commented out. See IDA line 238+ — only the
         // state/UI globals are initialized here.
-        // CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
+        // CreateSocket(szServerIpAddress,
         //              (unsigned)(0 | (g_ServerPort)));
         EnableSocket = 1;
         ServerListCount = 0;
@@ -174,7 +174,7 @@ int Game_SceneUpdate(void)
             // MuEmu del GameServer). Desactivamos la capa MuEmu mientras hablamos
             // con el CS; Recv_Redirect la reactiva al saltar al GameServer.
             extern void CreateSocket(const char *server, unsigned int port);
-            CreateSocket(PTR_s_connect_muonline_co_kr_005615b8, (unsigned)g_ServerPort);
+            CreateSocket(szServerIpAddress, (unsigned)g_ServerPort);
         }
 
         // Load login-scene resources (sounds, textures)
@@ -300,8 +300,8 @@ int Game_SceneUpdate(void)
 
         // Copy version string → username buffer
         {
-            int vlen = (int)strlen((char*)lpData_055c9ba0);
-            memcpy(InputText, lpData_055c9ba0, vlen + 1);
+            int vlen = (int)strlen((char*)g_szSavedUsername);
+            memcpy(InputText, g_szSavedUsername, vlen + 1);
             // InputTextMax is a per-slot array. IDA canonical init sets BOTH
             // slots so password accepts input too; only setting slot 0 used to
             // silently reject every keystroke in the password field.
@@ -455,7 +455,7 @@ int Game_SceneUpdate(void)
                 DAT_083a7c44 = 0;
                 Net_Disconnect(SocketClient);
                 CurrentProtocolState = 0;
-                CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
+                CreateSocket(szServerIpAddress,
                              (unsigned)g_ServerPort);
             }
         }
@@ -780,8 +780,8 @@ state_fail_common:
                 PlayBuffer(0x1b, 0, 0);
                 ClearInput(1);
                 {
-                    int vlen = (int)strlen((char*)lpData_055c9ba0);
-                    memcpy(InputText, lpData_055c9ba0, vlen + 1);
+                    int vlen = (int)strlen((char*)g_szSavedUsername);
+                    memcpy(InputText, g_szSavedUsername, vlen + 1);
                     InputTextHide[1] = 1;
                     InputNumber = 2;
                     InputLength[0] = (int)vlen;

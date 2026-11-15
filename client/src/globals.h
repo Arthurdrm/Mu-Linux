@@ -139,7 +139,6 @@ extern float   CameraDistanceTarget;   // DAT_005616B4: MoveMainCamera smoothing
 extern float   CameraDistance;         // DAT_083A45D0: current MoveMainCamera distance
 extern DWORD   CachTexture;   // IDA: CachTexture (0x00561574), último slot bindeado
 extern char   *szServerIpAddress; // IDA: szServerIpAddress (0x005615B8)
-#define PTR_s_connect_muonline_co_kr_005615b8  szServerIpAddress
 extern WORD    g_ServerPort; // IDA: g_ServerPort (0x005615BC)
 
 // ── ConnectServer flow ──────────────────────────────────────────
@@ -179,9 +178,9 @@ extern char    DAT_00561b70[]; // "OZJ" JPEG extension suffix
 extern char    DAT_00561ba8[];  // OpenTGA extension suffix used in non-Data2 path (e.g. ".tga")
 
 // Literales de string (datos de sólo lectura, etiquetas de Ghidra)
-extern char    lpString_00561a3c[64];   // server info line 1
-extern char    lpString_00561a58[64];   // server info line 2
-extern char    lpString_00561a68[64];   // server info line 3
+extern char    szHealthWarning1[64];   // IDA: 0x00561A3C (sin nombre) — aviso de salud coreano, línea 1; acá vacío
+extern char    szHealthWarning2[64];   // IDA: 0x00561A58 (sin nombre) — aviso de salud, línea 2
+extern char    szHealthWarning3[64];   // IDA: 0x00561A68 (sin nombre) — aviso de salud, línea 3
 
 // ── Misc game globals (0x00583dxx – 0x00590xxx) ───────────────────────────────
 // DAT_00583d8c @ 0x00583D8C ES `g_csQuest` — el PUNTERO al objeto CSQuest, no
@@ -199,7 +198,7 @@ extern char    lpString_00561a68[64];   // server info line 3
 
 // ── Engine / Window handles (0x055c9xxx – 0x055caxxx) ─────────────────────────
 // Nota: g_hWnd y g_hDC viven en CWindow; el DC del texto (DAT_055c9fec) en CFont.
-extern char    lpData_055c9ba0[12];     // version string buffer (login packet)
+extern char    g_szSavedUsername[12];   // IDA: byte_55C9BA0 (sin nombre) — usuario guardado del login
 extern DWORD   DAT_055c9b80;
 extern char    ConfigLoginVersion[12]; // IDA: m_ExeVersion — config.ini [LOGIN] Version string
 // Contexto de la ofuscación por HashTable — buffer contiguo (el binario original tiene el
@@ -880,7 +879,7 @@ extern DWORD   ServerLocalSelect;        // selected channel (port % 0x14 + 1)  
 // ── Char menu UI builder (RenderHelpWindow) ───────────────────────────────────────
 extern int     DAT_07e11d20;        // UI mode: 1=class-list-A, 2=class-list-B, 3=stats
 extern int     DAT_07e11d24;        // character class/subtype ID (range 0..0x1FF)
-extern char    lpString_07e90798[]; // string list buffer (100 bytes per entry, ~30 slots)
+extern char    TextList[];   // IDA: TextList (0x07E90798) — 30 líneas x 100 del tooltip
 extern int     TextListColor[30];  // IDA: TextListColor (0x07E91708) - color por linea
 extern int     TextBold[30];  // IDA: TextBold (0x07EA7B10) - negrita por linea
 // extern char    DAT_07d329c4;        // class name table A (first entry base)   // -> alias a GlobalText, ver el final del archivo
@@ -1014,7 +1013,7 @@ extern char    DAT_07eaa132;           // guard for B-key toggle enable
 extern char    RepairEnable_0;           // IDA: RepairEnable_0 (0x07EAA134)
 
 // Screenshot / error dialog context
-extern DWORD   lpDefault_00583d88;     // default context for UIChatLogWindow_AddText
+extern DWORD   strID;   // IDA: strID (0x00583D88) — etiqueta vacía de UIChatLogWindow_AddText
 // extern char    DAT_07d55410;           // error/info message for UIChatLogWindow_AddText   // -> alias a GlobalText, ver el final del archivo
 
 // Connection-check context
@@ -1224,7 +1223,7 @@ extern char    s__s_On_0056184c[];    // "Sound: On"  / toggle-on string
 extern char    s__s_Off_00561854[];   // "Sound: Off" / toggle-off string
 extern char    s__s_On_0056185c[];    // "Music: On"
 extern char    s__s_Off_00561864[];   // "Music: Off"
-extern char    lpString_0056186c[];   // "Cancel" or empty string at 0x56186c
+extern char    szServerMigrationError[];   // IDA: byte_56186C (sin nombre) — "error al migrar de servidor" en coreano; acá vacío
 // Error/message string table (in-game dialogs, ~0x07d4xxxx range)
 
 // ── GL_State cached state globals ────────────────────────────────────────────
@@ -1427,7 +1426,7 @@ extern float   DAT_00590af8;   // 3D sound cos component (updated by Sound_Updat
 extern float   DAT_00590afc;   // cloth wind Z
 extern float   _DAT_00559068;  // gravedad 9.8
 extern float   _DAT_0055906c;  // dt fijo 0.0025
-extern DWORD   lpData_055ca044; // IDA: modo numérico TextOut, no dirección.
+extern DWORD   g_iRenderTextType;   // IDA: g_iRenderTextType (0x055CA044) — modo TextOut del registro
 extern DWORD   DAT_00561740;
 extern DWORD   DAT_00561744;
 extern DWORD   DAT_00561748;
@@ -1795,7 +1794,7 @@ extern float   CameraPosition[3];  // DAT_083a42d4 (3 floats)
 extern FILE   *SMDFile;             // DAT_0055c0a0
 
 // Codec / JPEG internal refs (function pointers stored as addresses)
-// lpDefault_00583d88 already declared above (line ~1036) as DWORD
+// strID already declared above (line ~1036) as DWORD
 // DAT_00560694 already declared above (line ~1616) as DWORD
 
 // Missing globals (compilation fixes)

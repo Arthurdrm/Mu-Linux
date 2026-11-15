@@ -219,7 +219,7 @@ void CServerSelWin_UpdateWhileActive(void)
                             // de ServerConfig.h. La transición a state 1 (Connecting)
                             // arranca el progress bar + espera JoinServer.
                             extern void CreateSocket(const char *server, unsigned int port);
-                            CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
+                            CreateSocket(szServerIpAddress,
                                          (unsigned int)g_ServerPort);
                         }
                         LoginSubState = 1;   // state = Connecting

@@ -13,6 +13,7 @@ SERVICES=r'''
 uintptr_t Hero;
 char GlobalText[1040][32];
 char lpString_07e90798[3200];
+#define TextList lpString_07e90798
 int TextListColor[32],TextBold[32],TextNum,DAT_07eaa158;
 '''
 MAIN=r'''

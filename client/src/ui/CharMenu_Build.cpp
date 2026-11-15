@@ -11,7 +11,7 @@
 
 // GUARDA DE RANGO (no esta en IDA).
 // `TextNum` es el numero de linea del panel y se usa como indice de TRES
-// arrays de 30 entradas: `lpString_07e90798` (30 x 100 bytes), `TextListColor`
+// arrays de 30 entradas: `TextList` (30 x 100 bytes), `TextListColor`
 // (color) y `TextBold` (negrita).  Aca se incrementa dentro de bucles cuya
 // cantidad depende de los datos (skills del personaje, filas de stats), sin
 // ningun tope.  Se replica el criterio de `RenderItemInfo` (corta en 28): al
@@ -22,7 +22,6 @@
 
 
 // Aliases de los globals del binario que usa esta funcion.
-#define TextList       lpString_07e90798   // 30 x 100 bytes
 
 // IDA: sub_4C3530 modo 1/2 -- una lista de lineas de ayuda de GlobalText.
 static void HelpWindow_BuildTextList(int title, int firstLine, int endLine)
@@ -174,14 +173,14 @@ void RenderHelpWindow(void)
 // MISMA rutina que usan el menú de personaje (RenderHelpWindow @0x004c3530,
 // CharMenu_RenderStatRow, CharMenu_AppendSkillDesc), el tooltip de ítem (RenderItemInfo @0x004c4650)
 // y el de reparación (RenderRepairInfo @0x004c8d70): dibuja el recuadro y la
-// lista de líneas de lpString_07e90798.
+// lista de líneas de TextList.
 //
 //   param_1 = x del CENTRO del recuadro       param_4 = ancho fijo (0 = automático)
 //   param_2 = y del borde superior            param_5 = iSort (2 = centrado)
 //   param_3 = cantidad de líneas              param_6 = 1 → dibuja el recuadro
 //
 // Globales:
-//   lpString_07e90798 (0x07E90798) líneas, stride 100 — corta en la 1ª vacía
+//   TextList (0x07E90798) líneas, stride 100 — corta en la 1ª vacía
 //   TextListColor      (0x07E91708) color por línea
 //   TextBold      (0x07EA7B10) negrita por línea
 //   m_hFontDC         (0x055C9FEC) DC de medición
@@ -356,7 +355,7 @@ void __cdecl CharMenu_RenderTextList(int param_1, int param_2, int param_3,
     local_18   = 0.0f;
     iVar1      = param_3;
     if (0 < param_3) {
-        pCVar3 = lpString_07e90798;
+        pCVar3 = TextList;
         piVar2 = TextBold;
         do {
             iVar1 = iVar4;
@@ -418,7 +417,7 @@ void __cdecl CharMenu_RenderTextList(int param_1, int param_2, int param_3,
     y = (float)param_2;
     iVar1 = 0;
     if (0 < param_3) {
-        pCVar3 = lpString_07e90798;
+        pCVar3 = TextList;
         do {
             float fAdvance;
             pHVar9 = gFont.GetFont(FONT_NORMAL);
@@ -462,7 +461,7 @@ void __cdecl CharMenu_RenderTextList(int param_1, int param_2, int param_3,
 //
 // Reads weapon skill slots at param_1+0x38 (4 slots, each 4 bytes).
 // Checks hero's class (DAT_07abf5d8+0x1bc) vs required class per slot.
-// Formats each slot into lpString_07e90798 using crt_sprintf with format
+// Formats each slot into TextList using crt_sprintf with format
 // strings from DAT_0055a400/DAT_0055a404.
 // Increments TextNum per entry.
 
@@ -480,7 +479,7 @@ void __cdecl ItemHelp_RequireClass(const BYTE* pItem)
     const int  heroClass = heroSkin & 7;
     const int  heroStep  = heroSkin >> 3;
     auto className = [](int cls, int req) { return GlobalText[4 * req + 16 + cls]; };
-    auto line      = [](int i) { return lpString_07e90798 + i * 100; };
+    auto line      = [](int i) { return TextList + i * 100; };
 
     // v6: 2 si la clase del heroe figura en la tabla, 5 si no.
     const int notMetColor = pItem[56 + heroClass] ? 2 : 5;
@@ -552,7 +551,7 @@ void __cdecl CharMenu_RenderStatRow(int column, unsigned char *format, int *valu
 {
     int last = (kind == 5) ? 0 : 11;
     for (int i = 0; i <= last; i++) {
-        crt_sprintf(lpString_07e90798 + TextNum * 100, (const char*)format,
+        crt_sprintf(TextList + TextNum * 100, (const char*)format,
                     DAT_07e91528[10 * i + column]);
         TextListColor[i] = (DAT_07e91528[10 * i + 1] == 1) ? 0 : 2;
         TextBold[i] = 0;
@@ -561,7 +560,7 @@ void __cdecl CharMenu_RenderStatRow(int column, unsigned char *format, int *valu
     CharMenu_RenderTextList(*value, y, TextNum, 0, 3, 0);
 
     SIZE sz = { 0, 0 };
-    const char* ref = widthRef ? widthRef : lpString_07e90798 + (TextNum - 1) * 100;
+    const char* ref = widthRef ? widthRef : TextList + (TextNum - 1) * 100;
     gFont.MeasureText((HDC)gFont.GetTextDC(), ref, Platform::TextLength(ref), &sz);
     *value += (int)((double)sz.cx / gWindow.GetScreenRateX());
     TextNum = TextNum - 1 - last;
@@ -592,7 +591,7 @@ void __cdecl CharMenu_AppendSkillDesc(int param_1, int param_2, int param_3)
     default:          break;   // IDA: sprintf(..., NULL); ningun caller pasa otro valor
     }
     if (TextNum > CHARMENU_ROW_MAX - 1) TextNum = CHARMENU_ROW_MAX - 1;
-    crt_sprintf(lpString_07e90798 + TextNum * 100, "%s", text);
+    crt_sprintf(TextList + TextNum * 100, "%s", text);
     TextListColor[TextNum] = 1;
     ++TextNum;
     CharMenu_RenderTextList(param_2, param_3, TextNum, 0, 3, 0);

@@ -1552,8 +1552,10 @@ char * __cdecl MoveJoint(undefined1 *param_1, uint param_2)
     case 0x4fd:   // BITMAP_FLARE_BLUE
         return MoveJoint_Orbit(param_1, param_2, local_30);
     default:
-        // El port caía por fallthrough en el código de LABEL_301.
-        return MoveJoint_Orbit(param_1, param_2, local_30);
+        // IDA: `default: goto LABEL_487` -- los tipos sin case propio sólo
+        // pasan por el scroll de segmentos y la vida, sin re-anclar.  El port
+        // caía por fallthrough en el código de LABEL_301 y los movía en órbita.
+        return MoveJoint_Finish(param_1, param_2, local_30, false);
     }
 
     // ─────────────────────────────────────────────────────────────────

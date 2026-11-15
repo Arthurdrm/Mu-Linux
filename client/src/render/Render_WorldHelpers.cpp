@@ -169,9 +169,9 @@ void __cdecl RenderBoids(void)
 void __cdecl Entity_Render(void)
 {
     int v14 = 1, v15 = 0, v16 = 0;
-    BYTE* Items = (BYTE*)DAT_07e12840;
-    BYTE* end   = Items + 1000 * GROUND_ITEM_STRIDE;
-    BYTE* v0    = Items + 333;
+    BYTE* items = (BYTE*)Items;
+    BYTE* end   = items + 1000 * GROUND_ITEM_STRIDE;
+    BYTE* v0    = items + 333;
 
     while (v0 < end) {
         BYTE* v1 = v0 - 261;
@@ -665,7 +665,7 @@ void __cdecl RenderMonsterName(int /*unused*/, int /*unused*/, int /*unused*/, i
     // tampoco lo restaura) y el texto sale como m_dwTextColor x glColor, así que
     // dibujar antes los items teñiría el nombre del monstruo.
     extern void __cdecl RenderItemName(int, const OBJECT*, int, int, bool);
-    BYTE* itemPool = (BYTE*)&DAT_07e12840[0];
+    BYTE* itemPool = (BYTE*)&Items[0];
     const int hovered = (int)SelectedItem;
 
     // IDA LABEL_37: nombre del item bajo el cursor (Sort=0, sobre el item).

@@ -180,7 +180,7 @@ extern float   CameraViewFar;    // IDA: CameraViewFar (0x00561550)
 extern float   CameraFOV;        // IDA: CameraFOV (0x00561554)
 extern float   CameraDistanceTarget;   // DAT_005616B4: MoveMainCamera smoothing target
 extern float   CameraDistance;         // DAT_083A45D0: current MoveMainCamera distance
-extern DWORD   DAT_00561574;
+extern DWORD   CachTexture;   // IDA: CachTexture (0x00561574), último slot bindeado
 extern char   *szServerIpAddress; // IDA: szServerIpAddress (0x005615B8)
 #define PTR_s_connect_muonline_co_kr_005615b8  szServerIpAddress
 extern WORD    g_ServerPort; // IDA: g_ServerPort (0x005615BC)
@@ -318,7 +318,7 @@ extern std::uintptr_t DAT_055c9e48;
 extern int     RandomTable[100];  // IDA: RandomTable (0x055C9E58)
 extern BYTE*   DAT_055c9ff0;   // objeto del historial de chat; layout pendiente de B2
 extern BYTE*   DAT_055c9ff4;   // objeto de susurros; layout pendiente de B2
-extern uintptr_t DAT_055c9ff8;
+extern uintptr_t g_pRenderText;   // IDA: g_pRenderText (0x055C9FF8), objeto CUIRenderText
 // DAT_055ca004 = g_hDC — vive en CWindow (gWindow.GetHdc()).
 extern DWORD   DAT_055ca008;
 extern DWORD   DAT_055ca018;
@@ -550,8 +550,11 @@ extern int     DAT_07e11d5c;   // cursor sprite size/frame index
 extern DWORD   DAT_07e11d64;   // terrain walk flag (0=walkable 1=blocked)
 extern float  _DAT_07e11d4c;   // facing tick reference (last frame time)
 extern float  _DAT_07e11d50;   // facing dt (delta * speed scale)
-extern BYTE    DAT_07e113d8[40];   // world-enter counter (memset writes 40 bytes)
-extern char&   DAT_07e113d9;   // alias de DAT_07e113d8[1] (password-mask flag)
+// IDA: InputTextHide (0x07E113D8): por campo de input, 1 = se dibuja con '*'
+// (el [1] es el password del login).  El port tenía además una copia
+// `InputTextHide[10]` en HUD_Pass4: el login escribía una y el render de
+// HUD_Pass4 leía la otra.
+extern BYTE    InputTextHide[40];
 extern DWORD   DAT_07e11d94;
 extern DWORD   DAT_07e11d98;
 extern DWORD   DAT_07e11da0;
@@ -606,7 +609,7 @@ extern char    lpString_07d4b000[128];  // Exit/Cancel button text
 extern char    lpString_07d4c518[128];  // "Connecting..." string
 extern DWORD   DAT_07e127f8;
 constexpr int GROUND_ITEM_STRIDE = 0x48 + OBJECT_STRIDE;  // cabecera + OBJECT
-extern unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
+extern unsigned char Items[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
 extern DWORD   DAT_07e12945;   // sprite render loop base (stride 0x204)
 extern char    pPickedItem[0x44];       // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
 // IDA: pPickedItem.Key (0x07E91388), "hay un item en el cursor".  En el
@@ -773,14 +776,14 @@ extern BYTE    g_TerrainObjTable[0x328];
 // floats. Las macros de abajo proyectan DAT_081cb60c/610 en el 2do/3er DWORD del
 // slot, como el layout contiguo del binario original.
 extern float   DAT_081cb608[256 * 256 * 3];
-extern float   DAT_0828b608[256 * 256 * 3];   // TerrainLightData[256*256][3] post-normal lighting
+extern float   BackTerrainLight[256 * 256 * 3];   // IDA: BackTerrainLight (0x0828B608) - TerrainLightData[256*256][3] post-normal lighting
 // cb60c/cb610 son el 2do/3er DWORD del slot 0 de cb608 (y análogamente para
 // 0828b608). El código los accede como `(&DAT_*60c)[iVar2*3]` (lee el 2do campo
 // del slot iVar2) o `(char*)&DAT_*60c + iVar2*12` (escribe en el 2do campo).
 #define DAT_081cb60c   (*(DWORD*)((char*)&DAT_081cb608[0] + 4))
 #define DAT_081cb610   (*(DWORD*)((char*)&DAT_081cb608[0] + 8))
-#define DAT_0828b60c   (*(DWORD*)((char*)&DAT_0828b608[0] + 4))
-#define DAT_0828b610   (*(DWORD*)((char*)&DAT_0828b608[0] + 8))
+#define DAT_0828b60c   (*(DWORD*)((char*)&BackTerrainLight[0] + 4))
+#define DAT_0828b610   (*(DWORD*)((char*)&BackTerrainLight[0] + 8))
 extern float   TerrainMappingAlpha[0x10000];          // TerrainMappingAlpha[256*256] — blend factor layer1↔layer2 (IDA/DLL; NO es height)  [IDA 0x0834B608]
 extern float   FrustrumFaceNormal;  // frustum plane 0 normal X  [IDA 0x0838B7C4]
 extern float   DAT_0838b7c8;  // frustum plane 0 normal Y
@@ -886,7 +889,7 @@ extern DWORD&  DAT_083a42dc;   // alias → CameraPosition[2] (DWORD view)
 extern char    CameraTopViewEnabled;   // DAT_083A42E9: top-view / force-cull-bypass flag
 extern char    FogEnable;  // IDA: FogEnable (0x083A42EA) - reset to 0 each frame in Scene_Loading
 extern char    DAT_083a42eb;   // auto-drop trigger flag (inventory)
-extern DWORD   DAT_083a42ec;
+extern DWORD   GrabEnable;    // IDA: GrabEnable (0x083A42EC), captura de pantalla
 // DAT_083a42fc  — macro alias dentro de DAT_083a42f8 (ver bloque de dialog button rects)
 extern DWORD   DAT_083a4320;
 // DAT_083a4324 @ 0x083A4324 ES `g_iNumLineMessageBoxCustom` — la cantidad de
@@ -895,8 +898,7 @@ extern DWORD   DAT_083a4320;
 // `a3 24 43 3a 08` = `mov [0x083A4324], eax` justo despues del
 // SeparateTextIntoLines.  La etiqueta vieja ("shop item list display count")
 // era una misidentificacion.
-extern DWORD   DAT_083a4324;
-#define g_iNumLineMessageBoxCustom  (*(int*)&DAT_083a4324)
+extern int     g_iNumLineMessageBoxCustom;   // IDA: g_iNumLineMessageBoxCustom (0x083A4324)
 extern DWORD   DAT_083a4328;
 // CurrentCameraPosition[3] contiguous (see globals.cpp).
 extern float   CurrentCameraPosition[3];
@@ -1238,7 +1240,7 @@ extern DWORD   m_bBlockWhisper_1;  // IDA: m_bBlockWhisper_1 (0x07E11DAC) - comm
 // 0x07EAA131 es g_bServerDivisionAccept, un int aparte en el port.
 #define ServerDivisionOpened   (*(char*)&g_bServerDivisionEnable)
 extern char    DAT_07eaa132;           // guard for B-key toggle enable
-extern char    DAT_07eaa134;           // RepairEnable_0
+extern char    RepairEnable_0;           // IDA: RepairEnable_0 (0x07EAA134)
 
 // Screenshot / error dialog context
 extern DWORD   lpDefault_00583d88;     // default context for UIChatLogWindow_AddText

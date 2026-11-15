@@ -814,10 +814,10 @@ void __cdecl Chat_InputTick(void)
                 BYTE* repairFlag = &((BYTE*)&DAT_07eaa150)[2];
                 if (*repairFlag) {
                     *repairFlag = 0;
-                    DAT_07eaa134 = 0;       // RepairEnable_0
+                    RepairEnable_0 = 0;       // RepairEnable_0
                 } else {
                     *repairFlag = 2;
-                    DAT_07eaa134 = 1;
+                    RepairEnable_0 = 1;
                 }
                 return;
             }
@@ -839,8 +839,8 @@ void __cdecl Chat_InputTick(void)
                 // cerrada, inventario abierto y nivel >= 80.  Al port le
                 // faltaban la primera rama y el `!ShopOpened` de la segunda.
                 if (ShopOpened != 0 && DAT_07eaa132 != 0 && pPickedItemKey == 0) {
-                    DAT_07eaa134 = (DAT_07eaa134 == 0) ? 1 : 0;
-                    ((BYTE*)&DAT_07eaa150)[2] = (DAT_07eaa134 != 0) ? 2 : 0;
+                    RepairEnable_0 = (RepairEnable_0 == 0) ? 1 : 0;
+                    ((BYTE*)&DAT_07eaa150)[2] = (RepairEnable_0 != 0) ? 2 : 0;
                 } else if (ShopOpened == 0 && InventoryOpened != 0 && CharacterAttribute != nullptr) {
                     unsigned short level =
                         *(unsigned short*)((char*)CharacterAttribute + 0x0e);
@@ -851,9 +851,9 @@ void __cdecl Chat_InputTick(void)
                         EventWindowOpened == 0 &&
                         GoldenArcherOpenType == 0)
                     {
-                        DAT_07eaa134 = (DAT_07eaa134 == 0) ? 1 : 0;
+                        RepairEnable_0 = (RepairEnable_0 == 0) ? 1 : 0;
                         ((BYTE*)&DAT_07eaa150)[2] =
-                            (DAT_07eaa134 != 0) ? 2 : 0;
+                            (RepairEnable_0 != 0) ? 2 : 0;
                     }
                 }
             }

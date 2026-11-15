@@ -123,8 +123,8 @@ bool RenderInterpolation_OwnerContinuous(const void *owner) {
     if (!active) return false;
     if (slot>=0) return RenderSnapshots_Character(slot,RenderInterpolation_MaxDisplacement,pair) && pair.continuous;
     if (SceneObjects::Contains(owner)) return RenderSnapshots_Object(owner,RenderInterpolation_MaxDisplacement,pair) && pair.continuous;
-    const uintptr_t itemOffset=(uintptr_t)owner-((uintptr_t)DAT_07e12840+72);
-    if (DAT_07e12840 && itemOffset<1000*GROUND_ITEM_STRIDE && itemOffset%GROUND_ITEM_STRIDE==0)
+    const uintptr_t itemOffset=(uintptr_t)owner-((uintptr_t)Items+72);
+    if (Items && itemOffset<1000*GROUND_ITEM_STRIDE && itemOffset%GROUND_ITEM_STRIDE==0)
         return RenderSnapshots_Item((int)(itemOffset/GROUND_ITEM_STRIDE),RenderInterpolation_MaxDisplacement,pair) && pair.continuous;
     RenderFxView view;
     return RenderFxSnapshots_Owner(owner,view) && view.bytes!=0x2f0 && view.continuous && Near(view,0x10);
@@ -154,10 +154,10 @@ void RenderInterpolation_Begin(int remainder) {
             piece->AnimationFrame=pose.animationFrame; piece->PriorAnimationFrame=pose.priorAnimationFrame;
         }
     }
-    if (DAT_07e12840) for (int slot=0;slot<1000;++slot) {
+    if (Items) for (int slot=0;slot<1000;++slot) {
         RenderPosePair pair;
         if (RenderSnapshots_Item(slot,RenderInterpolation_MaxDisplacement,pair))
-            ApplyObject(*(OBJECT *)((unsigned char *)DAT_07e12840+slot*GROUND_ITEM_STRIDE+72),pair);
+            ApplyObject(*(OBJECT *)((unsigned char *)Items+slot*GROUND_ITEM_STRIDE+72),pair);
     }
     // DESVIACION: sólo los objetos que se movieron; en los quietos la pose
     // interpolada es la que ya tienen. Guardarlos antes de escribir.
@@ -179,8 +179,8 @@ bool RenderInterpolation_OwnerOffset(const void *owner, float *offset) {
     if (slot>=0) pose=RenderSnapshots_Character(slot,RenderInterpolation_MaxDisplacement,pair);
     else if (SceneObjects::Contains(owner)) pose=RenderSnapshots_Object(owner,RenderInterpolation_MaxDisplacement,pair);
     else {
-        const uintptr_t itemOffset=(uintptr_t)owner-((uintptr_t)DAT_07e12840+72);
-        if (DAT_07e12840 && itemOffset<1000*GROUND_ITEM_STRIDE && itemOffset%GROUND_ITEM_STRIDE==0)
+        const uintptr_t itemOffset=(uintptr_t)owner-((uintptr_t)Items+72);
+        if (Items && itemOffset<1000*GROUND_ITEM_STRIDE && itemOffset%GROUND_ITEM_STRIDE==0)
             pose=RenderSnapshots_Item((int)(itemOffset/GROUND_ITEM_STRIDE),RenderInterpolation_MaxDisplacement,pair);
     }
     if (!pose) {

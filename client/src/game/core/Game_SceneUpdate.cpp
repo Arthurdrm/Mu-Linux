@@ -19,7 +19,7 @@
 //   0x0d  Login fail B  → state=4, DAT_07e11d78=6
 //   0x14  Char list rdy → sends 0xC1/0xF3; transitions to char-select
 //   0x15-0x26 errors    → state=2, various DAT_07e11d78 values
-//   0x3e  special       → state=8, CharSelect_Init, DAT_07e113d9=2
+//   0x3e  special       → state=8, CharSelect_Init, InputTextHide[1]=2
 //   0x40-0x47 success   → state=2, CharSelect_Init, restore version→username
 //
 // ── ANIMATION (DAT_005616a4 = dialog Y lerp) ─────────────────────────────────
@@ -308,7 +308,7 @@ int Game_SceneUpdate(void)
             ((int*)&InputTextMax)[0] = 10;  // InputTextMax[0] = username max
             ((int*)&InputTextMax)[1] = 10;  // InputTextMax[1] = password max
             InputNumber = 2;
-            DAT_07e113d9 = 1;
+            InputTextHide[1] = 1;
             *(DWORD*)DAT_07d780a8 = vlen;
             InputIndex = (vlen != 0) ? 1 : 0;
         }
@@ -757,7 +757,7 @@ state_fail_common:
                 DAT_00559c90 = 1;
                 InputTextMax = 0x1e;
                 _DAT_00559c98 = 0xe;
-                DAT_07e113d9 = 2;
+                InputTextHide[1] = 2;
                 return 0;
 
             case 0x3d: // 0x3f
@@ -782,7 +782,7 @@ state_fail_common:
                 {
                     int vlen = (int)strlen((char*)lpData_055c9ba0);
                     memcpy(InputText, lpData_055c9ba0, vlen + 1);
-                    DAT_07e113d9 = 1;
+                    InputTextHide[1] = 1;
                     InputNumber = 2;
                     *(DWORD*)DAT_07d780a8 = vlen;
                     InputTextMax = 10;

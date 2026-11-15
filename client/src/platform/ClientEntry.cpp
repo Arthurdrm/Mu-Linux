@@ -683,7 +683,7 @@ int main(int, char**)
     // scanners de grilla del motor (Item_FindQuickSlotByCategory/sub_482850/
     // sub_482E40) toman el 0 como un tipo de arma válido y matchean celdas vacías.
     HUD_InitInventoryPools();
-    DAT_055c9ff8 = (uintptr_t)calloc(1, 0x18);
+    g_pRenderText = (uintptr_t)calloc(1, 0x18);
 
     // Fallback de la tabla de modelos: Model_LoadPlayerAndItemMeshes
     // (IDA: OpenPlayers) sólo corre

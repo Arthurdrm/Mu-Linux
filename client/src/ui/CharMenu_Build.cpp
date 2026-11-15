@@ -321,7 +321,7 @@ static float RenderText_0040fb70(int iPos_x, int iPos_y, const char *pszText,
     {
         const DWORD dwSavedBack = m_dwBackColor;
         m_dwBackColor = 0;
-        CUIRenderText_RenderText((HDC)(uintptr_t)DAT_055c9ff8,
+        CUIRenderText_RenderText((HDC)(uintptr_t)g_pRenderText,
                      iPos_x + (int)(fVar4 / fTexScaleX), iPos_y, pszText, 0);
         m_dwBackColor = dwSavedBack;
     }

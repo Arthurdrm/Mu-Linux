@@ -531,7 +531,7 @@ void __cdecl Inventory_HitTest(void) {
                     (int)MouseY < (int)(InventoryStartY + 0x1a3) &&
                     IsClickPushed()) {
                     MouseLButtonPush = '\0';
-                    DAT_07eaa134 ^= 1;
+                    RepairEnable_0 ^= 1;
                 }
             }
             // Back button
@@ -1028,10 +1028,10 @@ void __cdecl Shop_InputTick(void) {
                 MouseLButtonPush = '\0';
                 if (((BYTE*)&DAT_07eaa150)[2] == 0) {
                     ((BYTE*)&DAT_07eaa150)[2] = 2;
-                    DAT_07eaa134 = 1;
+                    RepairEnable_0 = 1;
                 } else {
                     ((BYTE*)&DAT_07eaa150)[2] = 0;
-                    DAT_07eaa134 = 0;
+                    RepairEnable_0 = 0;
                 }
             }
 
@@ -1040,9 +1040,9 @@ void __cdecl Shop_InputTick(void) {
             if (iX2 <= (int)MouseX && (int)MouseX < iX2 + 0x18 &&
                 iY1 <= (int)MouseY && (int)MouseY < iY1 + 0x18 &&
                 IsClickPushed()) {
-                DAT_07eaa134 ^= 1;
+                RepairEnable_0 ^= 1;
                 MouseLButtonPush = '\0';
-                ((BYTE*)&DAT_07eaa150)[2] = DAT_07eaa134 ? 2 : 0;
+                ((BYTE*)&DAT_07eaa150)[2] = RepairEnable_0 ? 2 : 0;
             }
 
             // IDA sub_4EC330: boton "reparar todo" (x+115, y+365).  Manda

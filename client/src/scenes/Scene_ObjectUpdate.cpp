@@ -277,11 +277,11 @@ static void CustomPet_Move(char* e, const BYTE* owner, const Proto::CATALOG_PET&
     // da vueltas cortas sobre él hasta que el server lo levanta (y el zen
     // desaparece del suelo).  El server decide; esto es sólo lo que se ve.
     const float* zen = nullptr;
-    if ((pet.Flags & Proto::CATALOG_PET_FLAG_COLLECT) && DAT_07e12840) {
+    if ((pet.Flags & Proto::CATALOG_PET_FLAG_COLLECT) && Items) {
         const float range = (float)pet.CollectRange * 100.0f + 50.0f;
         float best = range * range;
         for (int i = 0; i < 1000; ++i) {
-            const BYTE* ip = (const BYTE*)DAT_07e12840 + i * GROUND_ITEM_STRIDE;
+            const BYTE* ip = (const BYTE*)Items + i * GROUND_ITEM_STRIDE;
             if (ip[72] == 0 || *(const short*)(ip + 74) != 863) continue;   // zen
             const float* p = (const float*)(ip + 88);
             const float dx = p[0] - ownerPos[0], dy = p[1] - ownerPos[1];

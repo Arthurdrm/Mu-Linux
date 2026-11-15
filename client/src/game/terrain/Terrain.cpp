@@ -474,7 +474,7 @@ void __cdecl CreateTerrainLight(void) {
             do {
                 iVar4 = iVar3 + 4;
                 iVar5--;
-                *(float*)((char*)&DAT_0828b608 + iVar3) = fVar2 * *(float*)((char*)&DAT_07eeb238 + iVar3);
+                *(float*)((char*)&BackTerrainLight + iVar3) = fVar2 * *(float*)((char*)&DAT_07eeb238 + iVar3);
                 iVar3 = iVar4;
             } while (iVar5 != 0);
             iVar6--;

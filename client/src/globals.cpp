@@ -192,7 +192,7 @@ float    CameraViewFar  = 2000.0f;  // IDA: CameraViewFar (0x00561550)
 float    CameraFOV      = 55.0f;    // IDA: CameraFOV (0x00561554); MoveMainCamera lo reescribe a 35.0
 float    CameraDistanceTarget  = 0.0f;  // DAT_005616B4: MoveMainCamera target
 float    CameraDistance  = 0.0f;        // DAT_083A45D0: current MoveMainCamera distance
-DWORD    DAT_00561574  = 0;
+DWORD    CachTexture  = 0;   // IDA: CachTexture (0x00561574)
 // Buffer de la IP del server: Config_ReadServerAddr lo llena desde Config/ServerConfig.h.
 // szServerIpAddress apunta a este buffer; el valor inicial se reemplaza siempre.
 char     g_ServerIPBuf[128] = "connect.muonline.co.kr";
@@ -412,7 +412,7 @@ std::uintptr_t DAT_055c9e48 = 0;
 int      RandomTable[100] = {};  // IDA: RandomTable (0x055C9E58) - lo siembra WinMain
 BYTE*    DAT_055c9ff0  = nullptr;  // objeto del historial de chat
 BYTE*    DAT_055c9ff4  = nullptr;  // objeto de susurros
-uintptr_t DAT_055c9ff8 = 0;
+uintptr_t g_pRenderText = 0;   // IDA: g_pRenderText (0x055C9FF8)
 // DAT_055c9ffc = g_hWnd (gWindow.GetHwnd())
 // Font memory DC (GDI-only, DIB-backed). Set by Font_BuildLayout.
 // NOT the window DC — that is g_hDC (DAT_055ca004) que vive en CWindow.
@@ -671,7 +671,7 @@ DWORD    DAT_07e127f8  = 0;
 // model@ip+74, pos@ip+88 y el render (Entity_Render, en Render/Render_WorldHelpers.cpp)
 // los lee en los mismos offsets (active@slot+72). Ambos alineados sobre
 // DAT_07e12840.
-unsigned char DAT_07e12840[1000 * GROUND_ITEM_STRIDE] = {};
+unsigned char Items[1000 * GROUND_ITEM_STRIDE] = {};
 DWORD    DAT_07e12945  = 0;
 alignas(4) char pPickedItem[0x44] = {0};   // IDA: pPickedItem (0x07E91350), el ITEM que lleva el cursor
 DWORD    pPickedItemKey  = 0;   // IDA: pPickedItem.Key (0x07E91388); en el port es una variable aparte
@@ -831,7 +831,7 @@ BYTE     g_TerrainObjTable[0x328] = {};   // ambient terrain-object table (sub_4
 float    DAT_081cb608[256 * 256 * 3] = {};
 // TerrainLightData[256*256][3].
 // FUN_004f71c0 (Terrain_FinalizeLighting) escribe 196608 floats acá.
-float    DAT_0828b608[256 * 256 * 3] = {};
+float    BackTerrainLight[256 * 256 * 3] = {};   // IDA: BackTerrainLight (0x0828B608)
 float    TerrainMappingAlpha[0x10000] = {};
 // Frustum plane normals: 5 planes × 3 floats
 float    FrustrumFaceNormal  = 0.0f;  // plane 0 normal X
@@ -938,7 +938,7 @@ DWORD&   DAT_083a42dc = *(DWORD*)&CameraPosition[2];
 char     CameraTopViewEnabled  = 0;  // DAT_083A42E9
 char     FogEnable  = 0;  // IDA: FogEnable (0x083A42EA)
 char     DAT_083a42eb  = 0;  // auto-drop trigger flag (inventory)
-DWORD    DAT_083a42ec  = 0;
+DWORD    GrabEnable  = 0;   // IDA: GrabEnable (0x083A42EC)
 DWORD    DAT_083a4320  = 0;
 DWORD    DAT_083a4328  = 0;
 // CurrentCameraPosition[3] @ 0x083a432c — 3 contiguous floats read by MoveCamera
@@ -1041,12 +1041,11 @@ DWORD    MouseUpdateTime  = 0;  // IDA: MouseUpdateTime (0x07E11D28)
 DWORD    DAT_07e11d64  = 0;
 float   _DAT_07e11d4c  = 0.0f;
 float   _DAT_07e11d50  = 0.0f;
-BYTE     DAT_07e113d8[40]  = {0};
-// DAT_07e113d9 es DAT_07e113d8[1] en el binario original (flag per-slot de
+BYTE     InputTextHide[40]  = {0};   // IDA: InputTextHide (0x07E113D8)
+// InputTextHide[1] es InputTextHide[1] en el binario original (flag per-slot de
 // obfuscación: 0=plain, 1=password-mask, 2=hybrid). Separarlo en su propio
 // global hacía que el init escribiera a otra address y Chat_DrawField siempre
 // leyera 0 → password se mostraba en texto plano.
-char&    DAT_07e113d9 = reinterpret_cast<char&>(DAT_07e113d8[1]);
 
 DWORD    TargetX  = 0;
 DWORD    TargetY  = 0;
@@ -1243,7 +1242,7 @@ char     DAT_083a7c09  = 0;
 int      g_iNumAnswer  = 0;   // IDA: g_iNumAnswer (0x083A7C0C)
 DWORD    DAT_083a7c2c  = 0;
 // DAT_083a42fc — ahora macro dentro de DAT_083a42f8 (dialog button rects)
-DWORD    DAT_083a4324  = 0;
+int      g_iNumLineMessageBoxCustom = 0;   // IDA: g_iNumLineMessageBoxCustom (0x083A4324)
 // see comment near DAT_083a44ea — sized as 7×0x26 message-box-custom buffer.
 char     DAT_083a44c4[7 * 0x26] = {0};
 // DAT_07d566d0 (fallback char name string) es GlobalText[609] (ver el bloque de
@@ -1301,7 +1300,7 @@ char     DAT_07eaa132  = 0;
 DWORD    lpDefault_00583d88 = 0;
 // DAT_07d55410 es GlobalText[593] (ver el bloque de alias al final de globals.h).
 DWORD    DAT_07ea9848  = 0;
-char     DAT_07eaa134  = 0;   // RepairEnable_0
+char     RepairEnable_0  = 0;   // RepairEnable_0
 
 // ── Chat / UI countdown timers ────────────────────────────────────────────────
 int      NoticeTime  = 300;  // IDA: NoticeTime (0x00559CDC)

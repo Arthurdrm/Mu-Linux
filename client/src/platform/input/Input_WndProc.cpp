@@ -17,7 +17,6 @@
 extern "C" void Chat_SendChatLine(const char* text);
 #include "ui/ChatHistory.h"
 void ChatListBox_AddWheel(int notches);
-extern "C" BYTE InputTextHide[10];
 
 // Chat_TryAssignMacro -- "/1 texto" guarda una macro en la tecla 1.
 //

@@ -86,7 +86,7 @@ UI_RenderText(undefined4 param_1,undefined4 param_2,LPCSTR param_3,LPSIZE param_
 // FUN_0047F0B0 @ 0x0047F0B0 (IDA)
 // UI_RenderInputField — Chat_DrawField
 // Draws an input field character at (param_1, param_2) for field index param_3.
-// Masks characters with '*' if field type is password (DAT_07e113d8[param_3]==1).
+// Masks characters with '*' if field type is password (InputTextHide[param_3]==1).
 // Shows partial mask (first 7 chars visible) for type 2.
 // Also draws a blinking '_' or IME composition after the active field.
 // IDA: FUN_0047F0B0
@@ -97,7 +97,7 @@ void __cdecl UI_RenderInputField(int x, undefined4 y, int index)
     // local_100/local_fc/local_fa/auStack_f9 variables whose order MSVC can change.
     char text[256];
     const char* input = InputText[index];
-    const char hide = DAT_07e113d8[index];
+    const char hide = InputTextHide[index];
     m_dwTextColor = 0xffd2e6ff;
     SetBackgroundTextColor = 0;
 

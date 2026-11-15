@@ -2096,12 +2096,12 @@ extern "C" void __cdecl RenderRepairInfo_impl(void* param_1, int param_2, void* 
     // si esta sano; color = tier (v12), en negrita.
     char repairGold[64] = "0";
     if (curDur < maxDur) {
-        DAT_07eaa134 = 2;
+        RepairEnable_0 = 2;
         // Same ItemValue/ConvertRepairGold pair.
         int gold = Item_CalculateValue((void*)param_3, 2);
         Item_CalculateRepairCost(gold, (int)curDur, (int)maxDur, (short)itemType, repairGold);
     } else {
-        DAT_07eaa134 = 1;
+        RepairEnable_0 = 1;
     }
     crt_sprintf(lpString_07e90798 + TextNum * 100, GlobalText[238], repairGold);
     TextListColor[TextNum] = (int)tier;   // TextListColor = v12

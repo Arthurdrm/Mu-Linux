@@ -234,7 +234,7 @@ void CMiniMap::BuildTexture()
     Gfx::TexParameter(Gfx::TexParam::WrapT, Gfx::TexValue::Clamp);
     const float border[] = { 0.0f, 0.0f, 0.0f, 0.0f };
     Gfx::TexBorderColor(border);
-    DAT_00561574 = 0xFFFFFFFF;   // la caché de BindTexture ya no vale
+    CachTexture = 0xFFFFFFFF;   // la caché de BindTexture ya no vale
     m_TextureWorld = gMapManager.GetCurrentMap();
 }
 
@@ -243,7 +243,7 @@ void CMiniMap::RenderBackground() const
     const View v = CurrentView(m_Zoom);
     EnableAlphaTest(true);
     Gfx::BindTexture(m_Texture);
-    DAT_00561574 = 0xFFFFFFFF;
+    CachTexture = 0xFFFFFFFF;
     BufferedDraw::Color4f(1.0f, 1.0f, 1.0f, m_Alpha * 0.1f);
     BitRotate(CenterX, CenterY, MaxSize, MaxSize, Rotation,
               v.offsetX, v.offsetY, v.size / 512.0f, v.size / 512.0f);

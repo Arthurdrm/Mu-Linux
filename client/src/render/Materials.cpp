@@ -145,8 +145,8 @@ bool BindTexture(TextureSlot texture){
     const unsigned slot=static_cast<unsigned>(texture.index);
     // Conservar el caché por slot y el orden de referencia: publicar el índice
     // antes de asegurar la tabla, y resolver el handle sólo si cambia el slot.
-    if(DAT_00561574!=slot){
-        DAT_00561574=slot;ResourceTables::EnsureTextures(std::size_t(slot)+1);
+    if(CachTexture!=slot){
+        CachTexture=slot;ResourceTables::EnsureTextures(std::size_t(slot)+1);
         const unsigned native=(&DAT_083a7ccc)[std::size_t(slot)* TEXTURE_STRIDE_DWORDS];
         Gfx::BindTexture(native);
     }

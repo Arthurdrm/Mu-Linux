@@ -106,12 +106,12 @@ void __cdecl Cursor_Render(void) {
         return;
     }
     // Repair active (modo taladro del smith)
-    if (DAT_07eaa134 == 1) {
+    if (RepairEnable_0 == 1) {
         GL_DrawTexture(7, cx, cy, 24.0f, 24.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-                     DAT_07eaa134, DAT_07eaa134);
+                     RepairEnable_0, RepairEnable_0);
         return;
     }
-    if (DAT_07eaa134 == 2) {
+    if (RepairEnable_0 == 2) {
         float10 fv = fsin((float10)(long long)WorldTime * (float10)0.02f);
         if (fv <= (float10)FloatZero) {
             GL_DrawRotatedRect(7, (float)(int)MouseX + 5.0f,

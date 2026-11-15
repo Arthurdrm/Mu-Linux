@@ -29,8 +29,8 @@ void Scene_MapTick(void)
   // IDA Scene_MapTick L32-38: RepairEnable_0 sólo se NORMALIZA a 1; nunca se
   // apaga acá (RepairEnable, 0x07EAA138, vale 0 siempre que la tienda está
   // abierta, y apagarlo cortaría el modo reparación del herrero).
-  if (DAT_07eaa134 != 0) {
-    DAT_07eaa134 = 1;
+  if (RepairEnable_0 != 0) {
+    RepairEnable_0 = 1;
   }
   if (CheckInventory == 0) {
     if ((((DAT_07eaa13c == 1) && (245.0f <= (float)MouseX)) &&
@@ -48,7 +48,7 @@ void Scene_MapTick(void)
     goto LAB_004f6824;
   }
   if ((((int)MouseX < (int)InventoryStartX) || ((int)MouseX >= gWindow.PanelOrigin(Ui::WindowRight))) ||
-     ((MouseY < InventoryStartY || ((0x1df < MouseY || (DAT_07eaa134 == 0)))))) {
+     ((MouseY < InventoryStartY || ((0x1df < MouseY || (RepairEnable_0 == 0)))))) {
     uVar2 = HashTable_GetIndex(&MAIN_HASH_CLASS,CharacterMachine);
     if (uVar2 == 0xffffffff) {
       pvVar3 = AntiTamper_HashNode();

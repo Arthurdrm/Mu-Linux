@@ -125,11 +125,6 @@ extern "C" {
     // as the closest existing handle until a dedicated big font is created.
 }
 
-// Render-text engine stub — must be at namespace scope (extern "C" with
-// initialiser inside another extern "C" was tripping MSVC).
-static int g_RenderTextStubObj[16] = {0};
-extern "C" int*  g_pRenderText = g_RenderTextStubObj;
-
 // Externs for globals defined in HUD_Pass2.cpp.
 // (UI flags are now #defined in globals.h to DAT_07eaa11x bytes.)
 extern "C" int  GetScreenWidth(void);
@@ -155,7 +150,6 @@ extern "C" std::uintptr_t DAT_07d78068;
 #define byte_7E11D6E             DAT_07e11d6e
 #define byte_7E919BC             DAT_07e919bc
 #define ppvBits                  gFont.GetTextBits()
-#define g_pRenderText            g_pRenderText                       // exposed above
 #define dword_7EAA14C_alias      dword_7EAA14C
 #define m_Resolution_alias       m_Resolution
 
@@ -706,7 +700,7 @@ void __cdecl RenderBoolean(int x, int y, intptr_t c)
             // Se conserva la medición del texto; el logo no amplía el hover ni su caja de separación.
             constexpr float MarkSize = 16.0f;
             constexpr float MarkOffset = 21.0f;
-            const int previousTextureSlot = DAT_00561574;
+            const int previousTextureSlot = CachTexture;
             Gfx::PushAttrib(Gfx::AttribCurrent | Gfx::AttribTexture);
             // Alpha/blend ya están preparados al entrar; estos helpers sólo cambian la textura.
             Gfx::Color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -714,7 +708,7 @@ void __cdecl RenderBoolean(int x, int y, intptr_t c)
             RenderBitmap(0x22, (float)x - MarkOffset, (float)y, MarkSize, MarkSize,
                          0.0f, 0.0f, 1.0f, 1.0f, true, true);
             Gfx::PopAttrib();
-            DAT_00561574 = previousTextureSlot;
+            CachTexture = previousTextureSlot;
         }
     }
 }

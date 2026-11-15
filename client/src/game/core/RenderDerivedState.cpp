@@ -62,8 +62,8 @@ void RenderDerivedState_Begin() {
         if (character->Object.Live) SaveObject(character,sizeof(CHARACTER));
     }
     SaveObject(CharacterView,sizeof(CHARACTER));
-    if (DAT_07e12840) for (int slot=0; slot<1000; ++slot) {
-        auto *item=(BYTE *)DAT_07e12840+slot*GROUND_ITEM_STRIDE+72;
+    if (Items) for (int slot=0; slot<1000; ++slot) {
+        auto *item=(BYTE *)Items+slot*GROUND_ITEM_STRIDE+72;
         if (AsObject(item)->Live) SaveObject(item,sizeof(OBJECT));
     }
     for (int slot=0; slot<kEffectPoolSize; ++slot) SaveObject(&Effects[slot],sizeof(OBJECT));

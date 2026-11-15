@@ -63,9 +63,9 @@ std::uint64_t RunInput(BYTE* memory,BYTE* attributes,BYTE* machine) {
         const short textIds[]={-32768,-1,0,1,199,200,32767}; Put(record+340,textIds[next()%7]);
         Put(attributes+14,levels[next()%3]); Put(machine+0x548,amounts[next()%6]);
         margin=margins[trial%4]; g_iCurrentDialogScript=scripts[next()%4];
-        DAT_083a7c0c=next()%11; DAT_083a4324=next()%8;
+        DAT_083a7c0c=next()%11; g_iNumLineMessageBoxCustom=next()%8;
         const int origin=450+margin;
-        const int yBase=quest[0x1c882]!=1 && quest[0x1c87f]==1?250:((7-(static_cast<int>(DAT_083a7c0c)+static_cast<int>(DAT_083a4324)))*18)/2+66+static_cast<int>(DAT_083a4324)*18;
+        const int yBase=quest[0x1c882]!=1 && quest[0x1c87f]==1?250:((7-(static_cast<int>(DAT_083a7c0c)+static_cast<int>(g_iNumLineMessageBoxCustom)))*18)/2+66+static_cast<int>(g_iNumLineMessageBoxCustom)*18;
         const int x=origin+xEdges[next()%13];
         const int y=trial%2?yBase+(static_cast<int>(next()%13)-2)*18+rowEdges[next()%4]:yEdges[next()%14];
         MouseX=static_cast<DWORD>(x); MouseY=static_cast<DWORD>(y);
@@ -91,7 +91,7 @@ std::uint64_t RunInput(BYTE* memory,BYTE* attributes,BYTE* machine) {
         if(events.empty()) coverage|=16; if(oldState!=5 && quest[0x1c882]==5) coverage|=32; if(oldScript!=g_iCurrentDialogScript) coverage|=64;
         for(int event : events) { digest^=static_cast<unsigned>(event); digest*=1099511628211ull; }
         for(int offset=0x1c87a;offset<=0x1c887;++offset) { digest^=quest[offset]; digest*=1099511628211ull; }
-        const DWORD values[]={MouseLButtonPush,MouseLButton,MouseUpdateTime,MouseUpdateTimeMax,DAT_07d78094,MouseLButtonPop,static_cast<DWORD>(g_iCurrentDialogScript),DAT_083a7c0c,DAT_083a4324};
+        const DWORD values[]={MouseLButtonPush,MouseLButton,MouseUpdateTime,MouseUpdateTimeMax,DAT_07d78094,MouseLButtonPop,static_cast<DWORD>(g_iCurrentDialogScript),DAT_083a7c0c,g_iNumLineMessageBoxCustom};
         for(DWORD value : values) { digest^=value; digest*=1099511628211ull; }
     }
     if(coverage!=127) std::fprintf(stderr,"cobertura de entrada: %u\n",coverage);
@@ -122,7 +122,7 @@ def harness(revision=None):
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     prefix += "\n" + re.search(r"^#define DIALOG_SCRIPT_COUNT[^\n]+", header, re.M).group() + "\n"
     prefix += re.search(r"struct DIALOG_SCRIPT\s*\{.*?\n\};", header, re.S).group() + "\nstatic_assert(sizeof(DIALOG_SCRIPT)==0x400);\n"
-    names=("CharacterAttribute","CharacterMachine","DAT_005615dc","DAT_083a7c0c","DAT_083a4324","MouseY","MouseX","MouseLButtonPush","MouseLButton","MouseUpdateTime","MouseUpdateTimeMax","DAT_07d78094","MouseLButtonPop")
+    names=("CharacterAttribute","CharacterMachine","DAT_005615dc","DAT_083a7c0c","g_iNumLineMessageBoxCustom","MouseY","MouseX","MouseLButtonPush","MouseLButton","MouseUpdateTime","MouseUpdateTimeMax","DAT_07d78094","MouseLButtonPop")
     for name in names:
         # DAT_07d78094 paso a llamarse MouseOnWindow (T8e); el arnes sigue
         # usando el nombre viejo, asi que con el nuevo se agrega un alias.

@@ -460,7 +460,7 @@ int __cdecl Entity_SelectNearest(int param_1_int)
 // IDA: FUN_004afa40
 int __cdecl ItemOnGround_HoverTest(void)
 {
-    BYTE* pool = (BYTE*)&DAT_07e12840[0];
+    BYTE* pool = (BYTE*)&Items[0];
 
     // Pass 1: atenuar todos los items activos + visibles.
     for (int i = 0; i < 1000; ++i) {

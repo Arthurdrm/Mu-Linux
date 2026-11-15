@@ -62,7 +62,6 @@ extern "C" {
     // Input fields — IDA exposes 10 slots (chat + whisper-target + ...).
     // InputText / InputLength son los globals DAT_07db8710 / DAT_07d780a8 que
     // escribe WM_CHAR (ver los aliases de arriba), no storage local.
-    BYTE  InputTextHide[10]       = {0};
     char  InputTextIME[10][256]   = {{0}};
     // `InputIndex` e `InputFrame` son los globals reales, no copias locales:
     //
@@ -106,10 +105,8 @@ extern "C" void   __cdecl RenderTipText(int, int, const char*);
 // TradeInventoryStartX/Y se declaran en globals.h.
 extern "C" BYTE   OffsetMixItems[];
 extern "C" BYTE   Inventory[];
-extern "C" int*   g_pRenderText;
 extern "C" DWORD  SetTextColor_0;
 extern "C" int    InputTextWidth;
-extern "C" int    RepairEnable_0;
 
 
 static bool HUD_IsGuildCreationRuntime(void)

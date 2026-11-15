@@ -276,12 +276,7 @@ void __cdecl ShowCheckBox(int num, int index, int message)
         }
         numLines = num;
     }
-    g_iNumLineMessageBoxCustom = numLines;
-    // El render de las líneas del message box (UI_StatsPanel case 0x97/0x99) usa
-    // DAT_083a4324 como count del loop; en el binario es la misma dirección que
-    // g_iNumLineMessageBoxCustom, en nuestro build están separados: se setean ambos.
-    extern DWORD DAT_083a4324;
-    DAT_083a4324 = (DWORD)numLines;
+    g_iNumLineMessageBoxCustom = numLines;   // lo usa el render de las líneas (UI_StatsPanel case 0x97/0x99)
 
     // Yes button rectangle: id=1 at (21, 90) size 70x21 → DAT_083a42f8[0..4]
     DAT_083a42f8[0] = 1;
@@ -754,7 +749,7 @@ void __cdecl InventoryGrid_Tick(char* origin_x, int origin_y, short* inv_base,
 
             // ── BRANCH C: RepairEnable mode (NPC repair UI active) ─────────
             // IDA: RepairEnable_0 (0x07EAA134).
-            if (DAT_07eaa134 != 0) {
+            if (RepairEnable_0 != 0) {
                 // Tipos de item que SE PUEDEN reparar (= armas/armaduras con
                 // durability), excluding stackables like potions/jewels.
                 // Per IDA lines 579-586.

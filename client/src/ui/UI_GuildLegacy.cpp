@@ -160,7 +160,7 @@ int __cdecl GuildOverview_Render(void)
 // then transitions ErrorMessage or NextErrorMessage to state 0x8b.
 void __cdecl CreateOkMessageBox(char *msg)
 {
-    DAT_083a4324 = SeparateTextIntoLines(msg, (char *)&DAT_083a44c4, 7, 0x26);
+    g_iNumLineMessageBoxCustom = SeparateTextIntoLines(msg, (char *)&DAT_083a44c4, 7, 0x26);
     // clear panel descriptor (10 dwords)
     int *p = (int*)&DAT_083a42f8[0];
     for (int i = 0; i < 10; i++) p[i] = 0;

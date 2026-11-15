@@ -10,12 +10,12 @@ using std::uintptr_t;
 #ifndef _WIN32
 using LPBYTE=BYTE*;
 #endif
-DWORD DAT_055c9ff8=0x26000000u;unsigned calls;int rendererType;unsigned selectedSize;DWORD textDc,rendererDc;
+DWORD g_pRenderText=0x26000000u;unsigned calls;int rendererType;unsigned selectedSize;DWORD textDc,rendererDc;
 struct Window{void* GetHdc(){return reinterpret_cast<void*>(uintptr_t(0x12345678u));}}gWindow;
 void PathFinder_ResetContext(){Require(calls++==0);}
 void OpenTGA(const char* name,int slot,unsigned filter,unsigned wrap,int arg,char flag){Require(calls==unsigned(slot+1)&&std::strcmp(name,slot==0?"Interface/FontInput.tga":"Interface/FontTest.tga")==0&&filter==0x2600&&wrap==0x2900&&arg==0&&flag==1);++calls;}
 void Font_CreateTextDib(DWORD dc){Require(calls++==3);textDc=dc;}
-void Font_CreateRenderer(int self,int param_1,int dc){Require(calls++==4&&DWORD(self)==DAT_055c9ff8);rendererType=param_1;rendererDc=DWORD(dc);selectedSize=(MODE_CONDITION)?0x2c4:4;}
+void Font_CreateRenderer(int self,int param_1,int dc){Require(calls++==4&&DWORD(self)==g_pRenderText);rendererType=param_1;rendererDc=DWORD(dc);selectedSize=(MODE_CONDITION)?0x2c4:4;}
 '''
 MAIN=r'''
 int main(){std::uint64_t hash=14695981039346656037ull;unsigned cases=0;const DWORD boundary[]={0x10000u,0x7fffffffu,0x80000000u,0xfffffffeu,0xffffffffu};

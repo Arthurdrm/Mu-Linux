@@ -107,11 +107,11 @@ int __cdecl GuildOverview_Render(void)
     tagSIZE sz = {};
     HDC hdc = (HDC)(uintptr_t)gFont.GetTextDC();
     if (DAT_083a7c30 == 0) {
-        title    = lpString_07d68bc8;
-        subtitle = lpString_07d68cf4;
+        title    = GlobalText[859];
+        subtitle = GlobalText[860];
     } else {
-        title    = lpString_07d68970;
-        subtitle = lpString_07d68a9c;
+        title    = GlobalText[857];
+        subtitle = GlobalText[858];
     }
     int len = Platform::TextLength(title);
     gFont.MeasureText(hdc, title, len, &sz);

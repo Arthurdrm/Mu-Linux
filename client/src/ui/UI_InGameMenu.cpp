@@ -1013,7 +1013,6 @@ void __cdecl UI_InGameMenu(void)
         case 0x7e:
             memset(InputText, 0, 0x100);
             InputLength[0] = 0;
-            DAT_07d552e4  = 0;
             // IDA consume MouseLButtonPush al cancelar. Estos dos latches son
             // el equivalente del pump reconstruido y evitan propagar el click
             // del modal al movimiento en el mismo frame.

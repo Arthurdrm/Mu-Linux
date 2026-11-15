@@ -135,10 +135,10 @@ uint Scene_Login(void)
                          0.0f, 0.0f, 0.546875f, 0.59375f, '\x01', '\x01');
         }
         ptVar10 = &tStack_74;
-        iVar2 = Platform::TextLength((LPCSTR)lpString_07d4aed4);
-        gFont.MeasureText(gFont.GetTextDC(), (LPCSTR)lpString_07d4aed4, iVar2, ptVar10);
+        iVar2 = Platform::TextLength((LPCSTR)GlobalText[452]);
+        gFont.MeasureText(gFont.GetTextDC(), (LPCSTR)GlobalText[452], iVar2, ptVar10);
         UI_RenderText(0x165 - ((uint)(tStack_74.cx * 0x280) / gWindow.GetWidth() >> 1),
-                     iVar3 + 100, (LPCSTR)lpString_07d4aed4, (LPSIZE)0x0, '\0', 0);
+                     iVar3 + 100, (LPCSTR)GlobalText[452], (LPSIZE)0x0, '\0', 0);
 
         // Exit/Cancel button hit-test
         tStack_74.cx = iVar3 + 0xb4;
@@ -149,10 +149,10 @@ uint Scene_Login(void)
                          0.0f, 0.0f, 0.546875f, 0.625f, '\x01', '\x01');
         }
         ptVar10 = &tStack_74;
-        iVar2 = Platform::TextLength((LPCSTR)lpString_07d4b000);
-        gFont.MeasureText(gFont.GetTextDC(), (LPCSTR)lpString_07d4b000, iVar2, ptVar10);
+        iVar2 = Platform::TextLength((LPCSTR)GlobalText[453]);
+        gFont.MeasureText(gFont.GetTextDC(), (LPCSTR)GlobalText[453], iVar2, ptVar10);
         UI_RenderText(0x13f - ((uint)(tStack_74.cx * 0x280) / gWindow.GetWidth() >> 1),
-                     iVar3 + 0xb9, (LPCSTR)lpString_07d4b000, (LPSIZE)0x0, '\0', 0);
+                     iVar3 + 0xb9, (LPCSTR)GlobalText[453], (LPSIZE)0x0, '\0', 0);
     }
 
     // ── Version strings (bottom of screen) ───────────────────────────────────
@@ -279,7 +279,7 @@ uint Scene_Login(void)
         SetBackgroundTextColor = 0x80000000;
         // IDA 0x00521630 L134-136: these reference GlobalText[471] (localized
         // "Conectando..." status string), not the standalone empty buffer
-        // lpString_07d4c518 that Ghidra emitted.
+        // GlobalText[471] that Ghidra emitted.
         iVar3 = Platform::TextLength((LPCSTR)GlobalText[471]);
         gFont.MeasureText(gFont.GetTextDC(), (LPCSTR)GlobalText[471], iVar3, ptVar10);
         UI_RenderText(0x140 - ((uint)(tStack_74.cx * 0x280) / gWindow.GetWidth() >> 1), 0xd0,

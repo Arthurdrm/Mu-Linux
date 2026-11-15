@@ -695,20 +695,8 @@ int main(int, char**)
         Models = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
     }
 
-    // Class name table (DAT_07d2b494, stride 300, indexed por cidx = (klass&7) +
-    // 4*(klass>>3)). En el original vive en GlobalText[20..] (cargado del .bmd de
-    // texto); acá lo poblamos directo con los nombres para el create-panel
-    // (RenderText 285,+200 lee `DAT_07d2b494 + class*300`) y para consistencia con
-    // el char-list.
-    {
-        extern char DAT_07d2b494[9000];
-        static const char* kCN[7] = {
-            "Dark Wizard", "Dark Knight", "Fairy Elf", "Magic Gladiator",
-            "Soul Master", "Blade Knight", "Muse Elf"
-        };
-        for (int i = 0; i < 7; ++i)
-            Platform::TextCopy(DAT_07d2b494 + i * 300, kCN[i], 300);
-    }
+    // Los nombres de clase son GlobalText[20..26] (Text.bmd); el port tenía una
+    // copia aparte (DAT_07d2b494) que se llenaba acá con los nombres en inglés.
 
     SceneFlag = 1;  // SceneFlag: 1=Intro, 2=Login, 3=Loading, 4=CharSelect, 5=InGame
 

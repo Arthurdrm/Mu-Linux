@@ -95,7 +95,7 @@
 //      Empty dots (load/5..20): Tex 0xf6, gray (fVar3 * _DAT_005524f4)
 //
 //  PASS 5 — selected server IP display:
-//    Compares selected server name vs DAT_07d52c38 (currently connected server)
+//    Compares selected server name vs GlobalText[559]
 //    If match:
 //      glColor3f(1.0, 0.3, 0.1)  — orange-red
 //      UI_RenderText(0x96, y-0x2e, DAT_07d530e8)   — server IP line 1
@@ -422,7 +422,7 @@ LAB_0051f314:
         Gfx::Color3f(1.0f, 0.2f, 0.1f);   // orange-red (IP text)
 
         fVar4   = (float)(int)(intptr_t)puStack00000010;
-        pbVar14 = (byte*)&DAT_07d52c38;
+        pbVar14 = (byte*)GlobalText[559];
         pbVar11 = (byte*)sel.Name;
         do {
             bVar2 = *pbVar11; bVar15 = bVar2 < *pbVar14;

@@ -243,8 +243,6 @@ extern char    s_____2d_00559f4c[];
 extern char    s__d__d_00559f00[];
 extern char    s__d__d_00559f1c[];
 extern char    s__s__d_00561a34[];
-extern char    lpString_07d49c14[128];  // "Cannot create..." warning text
-extern char    lpString_07d49d40[128];  // warning text line 2
 extern char    lpString_00561a3c[64];   // server info line 1
 extern char    lpString_00561a58[64];   // server info line 2
 extern char    lpString_00561a68[64];   // server info line 3
@@ -465,7 +463,6 @@ extern char    CharacterView[0x580];  // IDA: CharacterView (0x07ABF050)
 #define _DAT_07abf140 (*(float*)(CharacterView + 0x0f0))  // IDA: CharacterView (0x07ABF050)
 #define  DAT_07abf140 (*(DWORD*)(CharacterView + 0x0f0))  // IDA: CharacterView (0x07ABF050)
 #define  DAT_07abf20c (*(DWORD*)(CharacterView + 0x1bc))  // IDA: CharacterView (0x07ABF050)
-extern char    DAT_07d2b494[];  // class name table (stride 300, 30 slots)
 #define _DAT_07abf5c4 (*(float*)(CharacterView + 0x574))  // IDA: CharacterView (0x07ABF050) - preview entity field (BodyOrigin x)
 #define _DAT_07abf5c8 (*(float*)(CharacterView + 0x578))  // IDA: CharacterView (0x07ABF050) - preview entity field (BodyOrigin y)
 #define _DAT_07abf5cc (*(float*)(CharacterView + 0x57c))  // IDA: CharacterView (0x07ABF050) - preview entity field (BodyOrigin z)
@@ -575,7 +572,6 @@ extern DWORD   DAT_07e11e98;   // party HP bars (stride 0x24)
 // 0x07E11E9C = Party + 0x1C (indice de entidad del slot 0). Era un char suelto.
 #define DAT_07e11e9c (*(char*)(Party + 0x1C))
 extern char    DAT_07e11d6e;            // flag reset each login frame
-extern DWORD   DAT_07d552e4;            // UI inventory/item selection state
 extern int     MouseOnWindow;           // IDA: MouseOnWindow (0x07D78094) — cursor sobre una ventana de UI
 extern int     InputLength[10];          // IDA: InputLength (0x07D780A8) — largo de cada campo de InputText
 // InputLength[1] — el largo del campo 1 (destino del susurro).
@@ -594,18 +590,14 @@ extern char    InputText[10][256];    // input slot table (10 × 256 bytes)
 // extern char    DAT_07d4c3ec[256];       // connecting status string buffer   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4c644[256];       // char name send buffer   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4c770[256];       // char name confirm buffer   // -> alias a GlobalText, ver el final del archivo
-extern DWORD   DAT_07d52c38;            // server select render flag
 // extern char    DAT_07d530e8[256];       // server group name buffer   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d53214[256];       // server channel name buffer   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4ac7c[256];       // username display buffer   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4ada8[256];       // password display buffer   // -> alias a GlobalText, ver el final del archivo
-extern char    lpString_07d4aed4[128];  // OK button text
-extern char    lpString_07d4b000[128];  // Exit/Cancel button text
 // extern char    DAT_07d4b708[128];       // char name format string   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4b12c[128];       // version string 1   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4b258[128];       // version string 2   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d4b384[128];       // version string 3 format   // -> alias a GlobalText, ver el final del archivo
-extern char    lpString_07d4c518[128];  // "Connecting..." string
 extern DWORD   DAT_07e127f8;
 constexpr int GROUND_ITEM_STRIDE = 0x48 + OBJECT_STRIDE;  // cabecera + OBJECT
 extern unsigned char Items[1000 * GROUND_ITEM_STRIDE];   // GroundItem pool: 1000 × 0x204 bytes
@@ -1204,7 +1196,6 @@ extern DWORD   DAT_005592d8;           // name utility ptr A
 extern DWORD   DAT_005592d4;           // name utility ptr B
 
 // Text input / command buffers
-extern char    DAT_07d5391c;           // current in-game text input buffer (char array)
 // extern char    DAT_07d3d284;           // "/whisper" command string   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d3d3b0;           // "/pvp" command string   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d3cdd4;           // GM command string   // -> alias a GlobalText, ver el final del archivo
@@ -1355,10 +1346,6 @@ extern char    param_2_005618a4;       // rank number format string ("%d.")
 extern char    param_2_005618a8;       // kills column format string ("%d")
 extern char    param_2_005618b0;       // deaths column format string ("%d")
 extern char    param_2_005618b4;       // score column format string ("%d")
-extern char    lpString_07d68bc8[300];      // guild win title string (no guild state)
-extern char    lpString_07d68cf4[300];      // guild win subtitle (no guild state)
-extern char    lpString_07d68970[300];      // guild win title string (guild state)
-extern char    lpString_07d68a9c[300];      // guild win subtitle (guild state)
 extern char    param_2_07d68e20;       // score total format string
 extern char    param_2_07d68f4c;       // opponent deaths format string ("%d")
 extern char    param_2_07d69078;       // own kills format string ("%d")
@@ -1441,19 +1428,8 @@ extern char    m_bWhisperSound;   // IDA: m_bWhisperSound (0x07E11D80) — aviso
 // Entity/level data
 // Format strings for numeric dialogs
 // extern char    DAT_07d46e60;   // login account name format   // -> alias a GlobalText, ver el final del archivo
-extern char    DAT_07d486fc[300]; // party/trade request status format
-extern char    DAT_07d48828;   // second-password error format
-extern char    DAT_07d48f30[300]; // party/trade request secondary format
 // extern char    DAT_07d493e0;   // duel offer sub-text format   // -> alias a GlobalText, ver el final del archivo
-extern char    DAT_07d4950c;   // trade/duel request line 1
-extern char    DAT_07d49638;   // trade accept text
-extern char    DAT_07d49764;   // duel accept text
 // Vendor/NPC name tables
-extern char    DAT_07d5fa78;   // vendor item name list (stride 300, 2 entries)
-extern char    DAT_07d698ac;   // NPC/vendor info line A
-extern char    DAT_07d699d8;   // NPC/vendor info line B
-extern char    DAT_07d69b04;   // NPC entry 0 line A
-extern char    DAT_07d69c30;   // NPC entry 0 line B
 // DAT_083a4304  — macro alias dentro de DAT_083a42f8 (ver bloque de dialog button rects)
 // g_lpszDialogAnswer @ 0x083A4348 — las 10 respuestas del
 // dialogo, 38 (0x26) bytes cada una.  Disassembly 0x401812:
@@ -1474,62 +1450,6 @@ extern char    s__s_On_0056185c[];    // "Music: On"
 extern char    s__s_Off_00561864[];   // "Music: Off"
 extern char    lpString_0056186c[];   // "Cancel" or empty string at 0x56186c
 // Error/message string table (in-game dialogs, ~0x07d4xxxx range)
-extern char    lpString_07d45ba0[300]; // dialog string 0x6e/0 (menu title)
-extern char    lpString_07d45ccc[300]; // dialog string 0x6e/1
-extern char    lpString_07d45df8[300]; // dialog string 0x6e/2
-extern char    lpString_07d45f24[300]; // dialog string 0x6e/3
-extern char    lpString_07d46050[300]; // dialog string 0x6e/4 / 0x96 header
-extern char    lpString_07d463d4[300];// options panel string 0x96/3 (Cancelar)
-extern char    lpString_07d4662c[300];     // dialog string 0x7a
-extern char    lpString_07d46758[300];     // dialog string 0x7b
-extern char    lpString_07d46884[300];     // dialog string 0x73/line0
-extern char    lpString_07d469b0[300];     // dialog string 0x73/line1
-extern char    lpString_07d46adc[300];     // dialog string 0x36/line0
-extern char    lpString_07d46c08[300];     // dialog string 0x36/line1
-extern char    lpString_07d46d34[300];     // dialog string 0x37
-extern char    lpString_07d46f8c[300];     // dialog string 0x72/line1
-extern char    lpString_07d470b8[300];     // dialog string 0x84/line0
-extern char    lpString_07d471e4[300];     // dialog string 0x84/line1
-extern char    lpString_07d47310[300];     // dialog string 0x8a/0x3a/0x90
-extern char    lpString_07d4743c[300];     // dialog string 0x71
-extern char    lpString_07d47568[300];     // dialog string 0x64 (decimal 100)
-extern char    lpString_07d47694[300];     // dialog string 0x65
-extern char    lpString_07d477c0[300];     // dialog string 0x1a/0x70/line0
-extern char    lpString_07d478ec[300];     // dialog string 0x1a/0x70/line1
-extern char    lpString_07d47a18[300];     // dialog string 0x15/0x47
-extern char    lpString_07d47b44[300];     // dialog string 0x1b
-extern char    lpString_07d47c70[300];     // dialog string 0x1c
-extern char    lpString_07d47d9c[300];     // dialog string 0x1d
-extern char    lpString_07d47ec8[300];     // dialog string 0x1e
-extern char    lpString_07d47ff4[300];     // dialog string 0x1f
-extern char    lpString_07d48120[300];     // dialog string 0x20
-extern char    lpString_07d4824c[300];     // dialog string 0x16/0x3f/0x41/0x45
-extern char    lpString_07d48378[300];     // dialog string 0x17
-extern char    lpString_07d484a4[300];     // dialog string 0x18
-extern char    lpString_07d485d0[300];     // dialog string 0x19
-extern char    lpString_07d48954[300];     // dialog string 0x74 case 0
-extern char    lpString_07d48a80[300];     // dialog string 0x74 case 1
-extern char    lpString_07d48bac[300];     // dialog string 0x74 case 2
-extern char    lpString_07d48cd8[300];     // dialog string 0x75
-extern char    lpString_07d48e04[300];     // dialog string 0x76
-extern char    lpString_07d4905c[300];     // dialog string 0x7f
-extern char    lpString_07d49188[300];     // dialog string 0x7e/line0
-extern char    lpString_07d492b4[300];     // dialog string 0x7e/line1
-extern char    lpString_07d49890[300];     // dialog string 0x25
-extern char    lpString_07d499bc[300];     // dialog string 0x85
-extern char    lpString_07d49ae8[300];     // dialog string 0x26
-extern char    lpString_07d49e6c[300];     // dialog string 0x3a case 0
-extern char    lpString_07d49f98[300];     // dialog string 0x3a case 3
-extern char    lpString_07d4a0c4[300];     // dialog string 0x86
-extern char    lpString_07d4a1f0[300];     // dialog string 0x87
-extern char    lpString_07d4a31c[300];     // dialog string 0x88
-extern char    lpString_07d4a448[300];     // dialog string 0x98/line0
-extern char    lpString_07d4a574[300];     // dialog string 0x98/line1
-extern char    lpString_07d4a6a0[300];     // dialog string 0x89
-extern char    lpString_07d558c0[300];     // dialog string 0x22
-extern char    lpString_07d559ec[300];     // dialog string 0x23
-extern char    lpString_07d55b18[300];     // dialog string 0x24
-extern char    lpString_07d5f94c[300];     // dialog string 0x8f (guild membership)
 
 // ── GL_State cached state globals ────────────────────────────────────────────
 extern int AlphaBlendType;   // IDA: AlphaBlendType (0x083A412C)
@@ -1889,7 +1809,6 @@ extern float   DAT_00590afc;   // cloth wind Z
 extern float   _DAT_00559068;  // gravedad 9.8
 extern float   _DAT_0055906c;  // dt fijo 0.0025
 extern DWORD   lpData_055ca044; // IDA: modo numérico TextOut, no dirección.
-extern char   *lpText_07d63aec;
 extern DWORD   DAT_00561740;
 extern DWORD   DAT_00561744;
 extern DWORD   DAT_00561748;
@@ -2146,7 +2065,6 @@ extern short   ObjectSelect_PriorAction;          // item render: state flag C  
 // ── Filter / name-filter system globals ──────────────────────────────────────
 extern DWORD   DAT_007cfa00;    // word-filter BMD checksum seed
 extern DWORD   DAT_00578200;    // name-filter BMD checksum seed
-extern char    lpText_07d2aa08[];  // fatal-error message string (shown by ExitProgram)
 
 // ── HeroTile — terrain tile type under the hero character ─────────────────────
 // HeroTile ya declarado como DWORD cerca de la línea 546 (tipo de mundo/mapa)
@@ -2397,7 +2315,6 @@ extern float  _DAT_00552860;       // 57.29578f = 180/pi (radians to degrees)
 // ── CheckArrow / CharSelect chat message string globals ──
 extern char    DAT_07e11df4;        // arrow-required error string ID
 extern char    DAT_07e11df8;        // bolt-required error string ID
-extern char    DAT_07d3c348;        // empty chat message string
 
 // ── Skill selection globals ──
 extern char    DAT_07d78098;        // skill mode flag (0=direct, nonzero=from attribute)

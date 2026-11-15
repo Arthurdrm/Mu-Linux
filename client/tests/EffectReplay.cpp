@@ -50,6 +50,9 @@ alignas(16) unsigned char g_textures[0x40000];
 // Tabla de modelos en ceros: en el juego la aloca el cargador; sin ella los
 // efectos con modelo leen Models + tipo*BMD_STRIDE sobre una base nula.
 alignas(16) unsigned char g_models[4096 * BMD_STRIDE];
+// CharacterMachine: los efectos leen el serial de proyectiles (+1408) y la cola
+// de CreateEffect lo incrementa.  Con el puntero nulo esos casos crasheaban.
+alignas(16) unsigned char g_charMachine[0x800];
 
 // Puntero -> identificador estable entre builds.
 std::uint64_t Region(const void* p)
@@ -66,6 +69,7 @@ std::uint64_t Region(const void* p)
     if (auto r = in(g_bones, sizeof(g_bones), 4)) return r;
     if (auto r = in(g_textures, sizeof(g_textures), 5)) return r;
     if (auto r = in(g_models, sizeof(g_models), 6)) return r;
+    if (auto r = in(g_charMachine, sizeof(g_charMachine), 7)) return r;
     return 0xFFull << 32;   // otra memoria (globales): la dirección cambia entre builds
 }
 void MixP(const void* p) { MixU(Region(p)); }
@@ -276,8 +280,9 @@ void RunCase(const CaseArgs& a)
 {
     float pos[3] = { 1200.0f, 1300.0f, 40.0f }, angle[3] = { 0.0f, 0.0f, 90.0f }, light[3] = { 1.0f, 0.5f, 0.25f };
     ScrubStack();
-    float* slot = CreateEffect(a.type, pos, angle, light, (float*)(intptr_t)a.sub, (float*)a.owner, (float*)(intptr_t)-1, nullptr, 0);
-    MixP(slot);
+    // El valor de retorno no se hashea: CreateEffect es void en el binario y
+    // ningún caller lo usa; el port devuelve lo que quede en un registro.
+    CreateEffect(a.type, pos, angle, light, (float*)(intptr_t)a.sub, (float*)a.owner, (float*)(intptr_t)-1, nullptr, 0);
     for (int t = 0; t < a.ticks; ++t)
         for (int i = 0; i < kEffectPoolSize; ++i)
             if (Active(i)) { MixU(0x7100u | (unsigned)t); ScrubStack(); MoveEffect(reinterpret_cast<float*>(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE), i); }
@@ -317,6 +322,9 @@ int main()
     for (int ownerMode = 0; ownerMode < 3; ++ownerMode) {
         FillOwner(g_owners[0], 0); FillOwner(g_owners[1], 1);
         Hero = reinterpret_cast<char*>(g_owners[0]);
+        std::memset(g_charMachine, 0, sizeof(g_charMachine));
+        g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
+        DAT_07cf1ffc = g_charMachine;
         ClearPool();
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];
@@ -327,6 +335,7 @@ int main()
         }
         if (g_dump) { int tag[4] = { -1, type, sub, ownerMode }; std::fwrite(tag, 4, 4, g_dump); }
         for (int i = 0; i < kEffectPoolSize; ++i) if (Active(i)) HashSlot(i);
+        Mix(g_charMachine, sizeof(g_charMachine));
         ++cases;
     }
     ClearPool();

@@ -244,7 +244,7 @@ void GameGuard_TickCheck(void)
 //
 //  19.  BUFFER ALLOCATIONS:
 //         GateAttribute = new(900)             → cleared 0xe1*4 bytes
-//         DAT_07d29d20 = new(0xa00)           → cleared 0x280*4 bytes
+//         SkillAttribute = new(0xa00)         → cleared 0x280*4 bytes
 //         DAT_07cf1ff8 = new(0xa00)           → cleared 0x280*4 bytes
 //         DAT_055c9e44 = new(0x18000)         → DAT_07d78068 = base + rand()%0x400 * 0x40
 //                                               cleared 0x2000*4 bytes
@@ -624,7 +624,7 @@ int main(int, char**)
 
     // 19: alocación de buffers (tamaños sacados del decompile)
     GateAttribute = static_cast<GATE_ATTRIBUTE*>(malloc(900)); memset(GateAttribute, 0, 0xe1 * 4);
-    DAT_07d29d20 = static_cast<BYTE*>(malloc(0xa00)); memset(DAT_07d29d20, 0, 0x280 * 4);
+    // SkillAttribute (0x07D29D20) es estática en este build: no se reserva.
     DAT_07cf1ff8 = static_cast<BYTE*>(malloc(0xa00)); memset(DAT_07cf1ff8, 0, 0x280 * 4);
 
     // ItemAttribute — base aleatorizada (anti-tamper, pero igual necesitamos el alloc)

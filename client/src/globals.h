@@ -1978,7 +1978,6 @@ extern char    s__s_d_bmd_0055a7e0[];  // "%s%d.bmd"
 // ── Item/Skill/Gate data loader globals ──────────────────────────────────────
 extern BYTE*   DAT_07cf1ff0;       // Base de la tabla sombra de atributos de items.
 extern BYTE*   DAT_07cf1ff8;       // Base de los registros sombra de skills.
-extern BYTE*   DAT_07d29d20;       // Base reservada para registros de skills de 0x28 bytes.
 extern GATE_ATTRIBUTE* GateAttribute; // IDA 0x07CF5600: base de 100 registros de nueve bytes
 // ── g_DialogScript @ 0x07CF5608 — 200 entradas x 0x400 bytes ────────────────
 // Layout verificado contra el disassembly de CSQuest::ShowDialogText (0x4017E0):
@@ -2185,6 +2184,10 @@ extern unsigned char* TerrainWall;
 #endif
 
 // ── SkillAttribute @ 0x07D29D20 — 64 entradas × 40 bytes ─────────────────────
+// IDA: SkillAttribute (0x07D29D20).  En el binario es un PUNTERO a un bloque
+// `new(0xA00)` (`mov ecx, dword_7D29D20` en OpenSkillScript 0x47AC50).  Acá es
+// la tabla estática; el port tenía además el puntero `DAT_07d29d20`, malloqueado
+// en ceros: el cargador llenaba ésta y el tooltip de skills leía el otro.
 // WinMain reserva 0xA00 (= 2560) bytes y OpenSkillScript / el anti-tamper copian
 // de a 0x28 (40) bytes por entrada, así que la stride es 40 — no 300.  Los
 // consumidores indexan por BYTE: `&SkillAttribute[8 * (5*Level + 150)]`

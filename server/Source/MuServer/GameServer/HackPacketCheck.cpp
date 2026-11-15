@@ -5,6 +5,7 @@
 #include "ReadScript.h"
 #include "SerialCheck.h"
 #include "ServerInfo.h"
+#include "SkillManager.h"
 #include "Util.h"
 
 CHackPacketCheck gHackPacketCheck;
@@ -202,6 +203,16 @@ bool CHackPacketCheck::CheckPacketHack(int aIndex, int index, int value, int enc
 bool CHackPacketCheck::CheckPacketRate(int aIndex, int index, int value)
 {
 	if (gServerInfo.m_PacketRateCheck == 0 || gServerInfo.m_PacketRateMax <= 0)
+	{
+		return 1;
+	}
+
+	// El 0x1D de los impactos de Triple Shot, Twisting Slash, Rageful Blow y
+	// Death Stab se descarta sin efecto (ver CGMultiSkillAttackRecv): no cuenta
+	// para el limite.  Con autoclick y agilidad alta esos impactos pasan solos
+	// de 60 por segundo, y en modo 2 desconectarian a un jugador legitimo.  En
+	// el 0x1D, `value` es el byte del skill.
+	if (index == 0x1D && SkillResolvesTargetsInDurationAttack(value))
 	{
 		return 1;
 	}

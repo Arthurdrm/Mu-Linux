@@ -656,7 +656,7 @@ void Render_Scene3D(void)
     if (!noInterface) Render_GameFrame();        // full HUD render
     RenderInformation();                        // HUD/notices/chat/help/cursor/info3D
 
-    if (DAT_055c9ff8 != 0 && *(BYTE*)(DAT_055c9ff8 + 8) == 1) {
+    if (g_pRenderText != 0 && *(BYTE*)(g_pRenderText + 8) == 1) {
         if (++DAT_083a7c50 > 10) {
             DAT_083a7c50 = 0;
         }

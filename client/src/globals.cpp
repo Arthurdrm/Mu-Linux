@@ -412,7 +412,7 @@ std::uintptr_t DAT_055c9e48 = 0;
 int      RandomTable[100] = {};  // IDA: RandomTable (0x055C9E58) - lo siembra WinMain
 BYTE*    DAT_055c9ff0  = nullptr;  // objeto del historial de chat
 BYTE*    DAT_055c9ff4  = nullptr;  // objeto de susurros
-uintptr_t DAT_055c9ff8 = 0;
+uintptr_t g_pRenderText = 0;   // IDA: g_pRenderText (0x055C9FF8)
 // DAT_055c9ffc = g_hWnd (gWindow.GetHwnd())
 // Font memory DC (GDI-only, DIB-backed). Set by Font_BuildLayout.
 // NOT the window DC — that is g_hDC (DAT_055ca004) que vive en CWindow.

@@ -106,7 +106,7 @@ static void SkillTooltip_RenderLines(int sx, int sy, char lines[][100], int coun
     for (int i = 0; i < count; ++i) {
         m_dwTextColor = (i == 0) ? 0xFFFFFF00 : 0xFFFFFFFF;
         m_dwBackColor = 0;
-        CUIRenderText_RenderText((HDC)(uintptr_t)DAT_055c9ff8, drawX + padX, lineY, lines[i], 0);
+        CUIRenderText_RenderText((HDC)(uintptr_t)g_pRenderText, drawX + padX, lineY, lines[i], 0);
         lineY += lineH;
     }
 }
@@ -346,7 +346,7 @@ void __cdecl UI_DrawText(int param_1, int param_2, char *param_3, int param_4, i
         }
     }
 
-    CUIRenderText_RenderText((HDC)(uintptr_t)DAT_055c9ff8, x, param_2,
+    CUIRenderText_RenderText((HDC)(uintptr_t)g_pRenderText, x, param_2,
                  (const char*)param_3, (DWORD)param_4);
 }
 

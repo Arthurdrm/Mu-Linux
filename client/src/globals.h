@@ -318,7 +318,7 @@ extern std::uintptr_t DAT_055c9e48;
 extern int     RandomTable[100];  // IDA: RandomTable (0x055C9E58)
 extern BYTE*   DAT_055c9ff0;   // objeto del historial de chat; layout pendiente de B2
 extern BYTE*   DAT_055c9ff4;   // objeto de susurros; layout pendiente de B2
-extern uintptr_t DAT_055c9ff8;
+extern uintptr_t g_pRenderText;   // IDA: g_pRenderText (0x055C9FF8), objeto CUIRenderText
 // DAT_055ca004 = g_hDC — vive en CWindow (gWindow.GetHdc()).
 extern DWORD   DAT_055ca008;
 extern DWORD   DAT_055ca018;

@@ -4,6 +4,7 @@ web/_template/
 node_modules/
 
 /server/out/
+/server/build/
 /server/Source/MuServer/bin/
 
 # Ajustes locales de cada instalación (puertos, proxy); Compose los carga solo.
@@ -13,3 +14,6 @@ docker-compose.override.yml
 # El README.md de la carpeta si se versiona; explica como agregarlos.
 client/bin/Client/Content/audio/sound/Dances/*
 !client/bin/Client/Content/audio/sound/Dances/README.md
+
+# Credenciales locales.
+.env

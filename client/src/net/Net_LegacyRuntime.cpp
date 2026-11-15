@@ -253,51 +253,56 @@ void __fastcall FUN_00422c50(intptr_t param_1)
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AppearMonster @ 0x0042A0C0 (234 bytes, ~44 lines)
-// Sets initial animation + sound when a monster entity first appears on screen.
-// Dispatched by MonsterIndex (entity type):
-//   0x15 (21)       → action 1, sound 0x13  (bull fighter)
-//   0x2C (44)       → action 1, sound 0x126 (agon)
-//   0x35-0x36 (53-54) → action 1, Appear=60 frames (fade-in over ~2.4s)
-//   0x55,0x5B,0x61,0x72,0x78,0x7E → sound 0x14B (boss monsters)
-//   Object.Type==0x186 → action 0x81, alpha 1.0 (special NPC)
-//   default         → alpha 0.0 (invisible, fade-in handled elsewhere)
+// AppearMonster (0x0042A0C0): animación y sonido de un monstruo al aparecer en
+// el viewport.  Despacha por el tipo de Monster.txt (CHARACTER::MonsterIndex):
+//   0x15        -> acción 1, sonido 19
+//   0x2C        -> acción 1, sonido 294
+//   0x35 / 0x36 -> Appear = 60 (MoveCharacterVisual lo baja por frame) y acción 1
+//   0x55, 0x5B, 0x61, 0x72, 0x78, 0x7E -> sonido 331
+//   resto: un jugador (Type 390) arranca con la acción 129; cualquier otra
+//   entidad arranca invisible (Alpha 0) y la sube Alpha() con AlphaTarget.
+//
+// El port anterior leía el tipo en +0x02 (Object.Type), escribía el Alpha como
+// float en +0x04 (pisaba SubType) y Appear como int en un offset inventado.
 // ─────────────────────────────────────────────────────────────────────────────
 void __cdecl AppearMonster(intptr_t c)
 {
-    BYTE monIdx = *(BYTE *)(c + 0x02);  // MonsterIndex
-    switch (monIdx) {
+    CHARACTER* ch = AsCharacter(c);
+    OBJECT* o = &ch->Object;
+    switch (ch->MonsterIndex) {
     case 0x15:
-        *(int*)&AsObject(c)->CurrentAction = 1;   // SetAction(obj, 1)
-        *(int*)&AsObject(c)->PriorAction = 1;   // PriorAction = 1
-        *(float *)(c + 0x04) = 1.0f; // Alpha = 1.0
-        PlayBuffer(0x13, 0, 0);
-        return;
+        SetAction(o, 1);
+        o->PriorAction = 1;
+        o->Alpha = 1.0f;
+        PlayBuffer(19, 0, 0);
+        break;
     case 0x2C:
-        *(int*)&AsObject(c)->CurrentAction = 1;
-        *(int*)&AsObject(c)->PriorAction = 1;
-        *(float *)(c + 0x04) = 1.0f;
-        PlayBuffer(0x126, 0, 0);
-        return;
+        SetAction(o, 1);
+        o->PriorAction = 1;
+        o->Alpha = 1.0f;
+        PlayBuffer(294, 0, 0);
+        break;
     case 0x35:
     case 0x36:
-        *(int *)(c + EntityOffset(0x100)) = 60;  // Appear = 60 frames
-        *(int*)&AsObject(c)->CurrentAction = 1;
-        *(int*)&AsObject(c)->PriorAction = 1;
-        *(float *)(c + 0x04) = 1.0f;
-        return;
+        ch->Appear = 60;
+        SetAction(o, 1);
+        o->PriorAction = 1;
+        o->Alpha = 1.0f;
+        break;
     case 0x55: case 0x5B: case 0x61:
     case 0x72: case 0x78: case 0x7E:
-        PlayBuffer(0x14B, 0, 0);   // boss spawn sound
-        return;
+        PlayBuffer(331, 0, 0);
+        break;
+    default:
+        if (o->Type == 390) {
+            SetAction(o, 129);
+            o->PriorAction = 129;
+            o->Alpha = 1.0f;
+        } else {
+            o->Alpha = 0.0f;
+        }
+        break;
     }
-    if (*(int *)(c + 0x00) == 0x186) {  // Object.Type == special NPC
-        *(int*)&AsObject(c)->CurrentAction = 0x81;
-        *(int*)&AsObject(c)->PriorAction = 0x81;
-        *(float *)(c + 0x04) = 1.0f;
-        return;
-    }
-    *(float *)(c + 0x04) = 0.0f;  // default: invisible
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

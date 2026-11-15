@@ -83,7 +83,6 @@ extern "C" void   __cdecl RenderInputText(int x, int y, int Index);
 extern "C" void   __cdecl CreateGuildMark(int nMarkIndex, bool blend);
 extern "C" void GuildMark_InitializePalette(bool blend);
 extern "C" int    InputTextWidth;
-extern "C" BYTE   InputTextHide[10];
 #define dword_7E91388 pPickedItemKey
 extern "C" DWORD pPickedItemKey;
 extern "C" char   DAT_07ea51f5[64];

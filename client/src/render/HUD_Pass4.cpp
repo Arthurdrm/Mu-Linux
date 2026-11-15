@@ -62,7 +62,6 @@ extern "C" {
     // Input fields — IDA exposes 10 slots (chat + whisper-target + ...).
     // InputText / InputLength son los globals DAT_07db8710 / DAT_07d780a8 que
     // escribe WM_CHAR (ver los aliases de arriba), no storage local.
-    BYTE  InputTextHide[10]       = {0};
     char  InputTextIME[10][256]   = {{0}};
     // `InputIndex` e `InputFrame` son los globals reales, no copias locales:
     //

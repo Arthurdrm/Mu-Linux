@@ -1807,7 +1807,6 @@ extern "C" void  __cdecl RenderTipText(int sx, int sy, const char* Text);
 // functions.h con vinculacion C++; no re-declararlos aca.
 // PlayBuffer tambien viene de functions.h (vinculacion C++).
 extern "C" float flt_83A7ACC[8];
-extern "C" BYTE  InputTextHide[10];
 
 // Globales que en el binario solo tocan sub_40EF10 / sub_40F320 y el estado 126
 // de UI_InGameMenu (el dialogo de expulsar miembro).

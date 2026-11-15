@@ -1041,12 +1041,11 @@ DWORD    MouseUpdateTime  = 0;  // IDA: MouseUpdateTime (0x07E11D28)
 DWORD    DAT_07e11d64  = 0;
 float   _DAT_07e11d4c  = 0.0f;
 float   _DAT_07e11d50  = 0.0f;
-BYTE     DAT_07e113d8[40]  = {0};
-// DAT_07e113d9 es DAT_07e113d8[1] en el binario original (flag per-slot de
+BYTE     InputTextHide[40]  = {0};   // IDA: InputTextHide (0x07E113D8)
+// InputTextHide[1] es InputTextHide[1] en el binario original (flag per-slot de
 // obfuscación: 0=plain, 1=password-mask, 2=hybrid). Separarlo en su propio
 // global hacía que el init escribiera a otra address y Chat_DrawField siempre
 // leyera 0 → password se mostraba en texto plano.
-char&    DAT_07e113d9 = reinterpret_cast<char&>(DAT_07e113d8[1]);
 
 DWORD    TargetX  = 0;
 DWORD    TargetY  = 0;

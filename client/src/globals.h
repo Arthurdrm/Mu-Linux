@@ -550,8 +550,11 @@ extern int     DAT_07e11d5c;   // cursor sprite size/frame index
 extern DWORD   DAT_07e11d64;   // terrain walk flag (0=walkable 1=blocked)
 extern float  _DAT_07e11d4c;   // facing tick reference (last frame time)
 extern float  _DAT_07e11d50;   // facing dt (delta * speed scale)
-extern BYTE    DAT_07e113d8[40];   // world-enter counter (memset writes 40 bytes)
-extern char&   DAT_07e113d9;   // alias de DAT_07e113d8[1] (password-mask flag)
+// IDA: InputTextHide (0x07E113D8): por campo de input, 1 = se dibuja con '*'
+// (el [1] es el password del login).  El port tenía además una copia
+// `InputTextHide[10]` en HUD_Pass4: el login escribía una y el render de
+// HUD_Pass4 leía la otra.
+extern BYTE    InputTextHide[40];
 extern DWORD   DAT_07e11d94;
 extern DWORD   DAT_07e11d98;
 extern DWORD   DAT_07e11da0;

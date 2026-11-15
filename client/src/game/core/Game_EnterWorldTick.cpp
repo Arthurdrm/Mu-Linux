@@ -380,7 +380,7 @@ void Game_EnterWorldTick(void)
                     ClearInput(1);
                     InputEnable = 1; InputNumber = 1;
                     InputTextMax = DAT_083a7acc;
-                    DAT_07e113d8[0] = 1;
+                    InputTextHide[0] = 1;
                 }
             } else {
                 if (ErrorMessage == 0) ErrorMessage = 0x84; else NextErrorMessage = 0x84;

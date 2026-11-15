@@ -50,6 +50,9 @@ alignas(16) unsigned char g_textures[0x40000];
 // Tabla de modelos en ceros: en el juego la aloca el cargador; sin ella los
 // efectos con modelo leen Models + tipo*BMD_STRIDE sobre una base nula.
 alignas(16) unsigned char g_models[4096 * BMD_STRIDE];
+// CharacterMachine: los efectos leen el serial de proyectiles (+1408) y la cola
+// de CreateEffect lo incrementa.  Con el puntero nulo esos casos crasheaban.
+alignas(16) unsigned char g_charMachine[0x800];
 
 // Puntero -> identificador estable entre builds.
 std::uint64_t Region(const void* p)
@@ -60,12 +63,13 @@ std::uint64_t Region(const void* p)
         return (v >= b && v < b + size) ? (tag << 32) | (v - b) : 0;
     };
     if (!v) return 0;
-    if (auto r = in(DAT_07b11670, sizeof(DAT_07b11670), 1)) return r;
+    if (auto r = in(Effects, sizeof(Effects), 1)) return r;
     if (auto r = in(g_owners, sizeof(g_owners), 2)) return r;
     if (auto r = in(g_scratch, sizeof(g_scratch), 3)) return r;
     if (auto r = in(g_bones, sizeof(g_bones), 4)) return r;
     if (auto r = in(g_textures, sizeof(g_textures), 5)) return r;
     if (auto r = in(g_models, sizeof(g_models), 6)) return r;
+    if (auto r = in(g_charMachine, sizeof(g_charMachine), 7)) return r;
     return 0xFFull << 32;   // otra memoria (globales): la dirección cambia entre builds
 }
 void MixP(const void* p) { MixU(Region(p)); }
@@ -200,8 +204,8 @@ FILE* g_dump = nullptr;   // EFFECT_REPLAY_DUMP=archivo: los bytes de cada slot,
 
 void HashSlot(int index)
 {
-    if (g_dump) { std::fwrite(&index, 4, 1, g_dump); std::fwrite(DAT_07b11670 + (std::size_t)index * OBJECT_STRIDE, OBJECT_STRIDE, 1, g_dump); }
-    const unsigned char* slot = reinterpret_cast<const unsigned char*>(DAT_07b11670) + (std::size_t)index * OBJECT_STRIDE;
+    if (g_dump) { std::fwrite(&index, 4, 1, g_dump); std::fwrite((char *)&Effects[index], OBJECT_STRIDE, 1, g_dump); }
+    const unsigned char* slot = reinterpret_cast<const unsigned char*>(&Effects[index]);
     MixU((unsigned)index);
     std::size_t pos = 0;
     for (std::size_t x86 : kPointerFields) {
@@ -213,12 +217,12 @@ void HashSlot(int index)
     Mix(slot + pos, OBJECT_STRIDE - pos);
 }
 
-bool Active(int index) { return DAT_07b11670[(std::size_t)index * OBJECT_STRIDE] != 0; }
+bool Active(int index) { return *reinterpret_cast<const char*>(&Effects[index]) != 0; }
 
 void ClearPool()
 {
     for (int i = 0; i < kEffectPoolSize; ++i)
-        if (Active(i)) std::memset(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE, 0, OBJECT_STRIDE);
+        if (Active(i)) std::memset((char *)&Effects[i], 0, OBJECT_STRIDE);
 }
 
 void FillOwner(unsigned char* c, unsigned seed)
@@ -276,11 +280,12 @@ void RunCase(const CaseArgs& a)
 {
     float pos[3] = { 1200.0f, 1300.0f, 40.0f }, angle[3] = { 0.0f, 0.0f, 90.0f }, light[3] = { 1.0f, 0.5f, 0.25f };
     ScrubStack();
-    float* slot = CreateEffect(a.type, pos, angle, light, (float*)(intptr_t)a.sub, (float*)a.owner, (float*)(intptr_t)-1, nullptr, 0);
-    MixP(slot);
+    // El valor de retorno no se hashea: CreateEffect es void en el binario y
+    // ningún caller lo usa; el port devuelve lo que quede en un registro.
+    CreateEffect(a.type, pos, angle, light, (float*)(intptr_t)a.sub, (float*)a.owner, (float*)(intptr_t)-1, nullptr, 0);
     for (int t = 0; t < a.ticks; ++t)
         for (int i = 0; i < kEffectPoolSize; ++i)
-            if (Active(i)) { MixU(0x7100u | (unsigned)t); ScrubStack(); MoveEffect(reinterpret_cast<float*>(DAT_07b11670 + (std::size_t)i * OBJECT_STRIDE), i); }
+            if (Active(i)) { MixU(0x7100u | (unsigned)t); ScrubStack(); MoveEffect(reinterpret_cast<float*>(&Effects[i]), i); }
 }
 
 bool RunGuarded(const CaseArgs& a)
@@ -312,14 +317,25 @@ int main()
     const bool trace = std::getenv("EFFECT_REPLAY_TRACE") != nullptr;
     unsigned cases = 0, crashes = 0;
     if (const char* dump = std::getenv("EFFECT_REPLAY_DUMP")) g_dump = std::fopen(dump, "wb");
+    // EFFECT_REPLAY_CASES=archivo: el hash de cada caso por separado, para ubicar
+    // en qué combinación difieren dos revisiones.
+    FILE* perCase = nullptr;
+    if (const char* path = std::getenv("EFFECT_REPLAY_CASES")) perCase = std::fopen(path, "w");
     for (int type = 0; type < maxType; ++type)
     for (int sub = 0; sub < maxSub; ++sub)
     for (int ownerMode = 0; ownerMode < 3; ++ownerMode) {
         FillOwner(g_owners[0], 0); FillOwner(g_owners[1], 1);
         Hero = reinterpret_cast<char*>(g_owners[0]);
+        std::memset(g_charMachine, 0, sizeof(g_charMachine));
+        g_charMachine[1408] = (unsigned char)(0x40 + type);   // serial de proyectiles
+        DAT_07cf1ffc = g_charMachine;
         ClearPool();
         std::srand((unsigned)(type * 977 + sub * 31 + ownerMode));
         void* owner = ownerMode == 0 ? nullptr : g_owners[ownerMode - 1];
+        // Cada caso se hashea aparte y se pliega al total: una diferencia queda
+        // localizada en su caso en vez de arrastrarse a todos los siguientes.
+        const std::uint64_t total = g_hash;
+        g_hash = 14695981039346656037ull;
         MixU(0xC0DE0000u | (unsigned)type); MixU((unsigned)sub); MixU((unsigned)ownerMode);
         if (!RunGuarded({ type, sub, ownerMode, ticks, owner })) {
             ++crashes; MixU(0xDEAD0000u | (unsigned)type);
@@ -327,9 +343,15 @@ int main()
         }
         if (g_dump) { int tag[4] = { -1, type, sub, ownerMode }; std::fwrite(tag, 4, 4, g_dump); }
         for (int i = 0; i < kEffectPoolSize; ++i) if (Active(i)) HashSlot(i);
+        Mix(g_charMachine, sizeof(g_charMachine));
+        const std::uint64_t caseHash = g_hash;
+        if (perCase) std::fprintf(perCase, "%d %d %d %016llx\n", type, sub, ownerMode, (unsigned long long)caseHash);
+        g_hash = total;
+        Mix(&caseHash, sizeof(caseHash));
         ++cases;
     }
     ClearPool();
+    if (perCase) std::fclose(perCase);
     std::printf("EffectReplay: %u casos, %u crashes de combinaciones invalidas, %u llamadas a servicios, %016llx\n",
                 cases, crashes, g_calls, (unsigned long long)g_hash);
     return 0;

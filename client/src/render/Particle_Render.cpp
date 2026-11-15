@@ -99,7 +99,7 @@ struct ParticleSample { bool valid = false; short type = 0; int variant = 0; flo
 ParticleSample samples[kEffectPoolSize];
 }
 void Particle_InvalidateRender(const void *entity) {
-    const uintptr_t offset = (uintptr_t)entity - (uintptr_t)DAT_07b11670;
+    const uintptr_t offset = (uintptr_t)entity - (uintptr_t)Effects;
     // El índice es por OBJECT_STRIDE: con 0x1bc, en x64 pasaba de 199 y pisaba
     // los globals siguientes (la burbuja de chat pendiente: crash en Blood Castle).
     if (offset < (uintptr_t)kEffectPoolSize * OBJECT_STRIDE && offset % OBJECT_STRIDE == 0) samples[offset / OBJECT_STRIDE].valid = false;
@@ -107,7 +107,7 @@ void Particle_InvalidateRender(const void *entity) {
 // DESVIACION: el pool se muestrea antes del pase de personajes, a 25 Hz.
 void Particle_PrepareRender() {
     for (int i = 0; i < kEffectPoolSize; ++i) {
-        char *slot = (char *)DAT_07b11670 + i * OBJECT_STRIDE;
+        char *slot = (char *)&Effects[i];
         ParticleSample &sample = samples[i];
         sample.valid = slot[0] && FieldAs(slot, AsObject(slot)->Visible);
         if (!sample.valid) continue;
@@ -121,7 +121,7 @@ void Particle_PrepareRender() {
 
 // =============================================================================
 // IDA: FUN_0046be40 @ 0x0046BE40 — Particle_RenderAll
-// Itera el effect pool DAT_07b11670 (kEffectPoolSize slots; IDA: 200). Para cada slot
+// Itera el effect pool Effects (kEffectPoolSize slots; IDA: 200). Para cada slot
 // activo y visible, despacha por type code (1191/1200/1264/1265) llamando a
 // RenderTerrainAlphaBitmap con escala/color/rotación per-tipo:
 //   1191 = scaling glow (incrementa scale 0.2/frame, color desde counter)
@@ -143,7 +143,7 @@ void Particle_PrepareRender() {
 // (RenderTerrainAlphaBitmap declared in functions.h; Effect_DrawRing too)
 void __cdecl Particle_RenderAll(void)
 {
-    char* base = (char*)&DAT_07b11670[0];
+    char* base = (char*)Effects;
     for (int i = 0; i < kEffectPoolSize; ++i) {
         char* slot = base + i * OBJECT_STRIDE;
         if (slot[0] == 0) continue;          // inactive

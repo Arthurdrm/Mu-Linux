@@ -30,7 +30,7 @@ Pool *Pools() {
     // Los offsets se toman de los creadores/lectores activos, no de los anclajes
     // históricos DAT que pueden apuntar al interior del primer slot.
     static Pool pools[] = {
-        {DAT_07b11670,OBJECT_STRIDE,kEffectPoolSize,2,2,4,0xfc},
+        {(unsigned char *)Effects,OBJECT_STRIDE,kEffectPoolSize,2,2,4,0xfc},
         {DAT_07b27150,JOINT_STRIDE,kJointPoolSize,4,4,8,0x40},
         {DAT_07abf5f0,0x70,kParticlePoolSize,4,4,8,0x3c},
         {DAT_07c5ab3c,0x70,200,4,4,-1,-1},

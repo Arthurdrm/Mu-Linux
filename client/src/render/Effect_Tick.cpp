@@ -9,7 +9,7 @@
 // MovePointers @ 0x004794a0 — Effect_TickFlare
 // MovePoints @ 0x00479380 — Effect_TickSpark
 //
-// Effect pool:  DAT_07b11670, stride 0x1bc bytes (0x6f * sizeof(float))
+// Effect pool:  Effects, stride 0x1bc bytes (0x6f * sizeof(float))
 // Joint pool:   DAT_07b27150, stride 0x9d8 bytes
 
 #include "stdafx.h"
@@ -21,14 +21,14 @@ extern "C" void DbgLogPublic(const char* msg);
 
 
 // MoveEffects — Effect_TickAll
-// Iterates the effect pool (base DAT_07b11670, stride 0x1bc, end 0x7b27150).
+// Iterates the effect pool (base Effects, stride 0x1bc, end 0x7b27150).
 // For each active slot (first byte != 0), calls MoveEffect(slot, index).
 // IDA: MoveEffects
 void Effect_TickAll(void)
 {
-  // Pool DAT_07b11670[kEffectPoolSize] (IDA: 200 × 0x1bc).
-  float *pfVar1 = (float *)DAT_07b11670;
-  const uintptr_t poolEnd = (uintptr_t)DAT_07b11670 + sizeof(DAT_07b11670);
+  // Pool Effects[kEffectPoolSize] (IDA: 200 × 0x1bc).
+  float *pfVar1 = (float *)Effects;
+  const uintptr_t poolEnd = (uintptr_t)Effects + sizeof(Effects);
   int iVar2 = 0;
   do {
     if (*(char *)pfVar1 != '\0') {

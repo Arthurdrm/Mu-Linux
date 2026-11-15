@@ -5,7 +5,7 @@
 // Per-frame particle/effect spawner for active effect slots.
 // Called by Effect_TickAll (MoveEffects) once per slot per frame.
 //
-// param_1 = float* pointing to effect slot (stride 0x1bc, base DAT_07b11670)
+// param_1 = float* pointing to effect slot (stride 0x1bc, base Effects)
 // param_2 = slot index
 //
 // Effect slot layout (float offsets):
@@ -81,7 +81,7 @@ static bool IsEffectOwner(const void* owner)
         (characters - allocation) % CHARACTER_STRIDE == 0 &&
         SceneObjects::IsSlot(owner, (void*)characters, 400 * CHARACTER_STRIDE, CHARACTER_STRIDE)) return true;
     return SceneObjects::Contains(owner) ||
-        SceneObjects::IsSlot(owner, DAT_07b11670, sizeof(DAT_07b11670), OBJECT_STRIDE) ||
+        SceneObjects::IsSlot(owner, Effects, sizeof(Effects), OBJECT_STRIDE) ||
         SceneObjects::IsSlot(owner, DAT_07c85890, sizeof(DAT_07c85890), OBJECT_STRIDE) ||
         SceneObjects::IsSlot(owner, g_PlayerRenderPool, sizeof(g_PlayerRenderPool), OBJECT_STRIDE) ||
         SceneObjects::IsSlot(owner, DAT_083a1218, sizeof(DAT_083a1218), OBJECT_STRIDE) ||

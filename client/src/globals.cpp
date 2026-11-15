@@ -1742,7 +1742,7 @@ float   _DAT_00552d00 = 0.001f;        // SLERP near-parallel epsilon
 float   _DAT_00552a1c = 1.0f;
 // ── Effect pool ───────────────────────────────────────────────────────────────
 // Effect pool — Effect_TickAll itera 200 slots × 0x1bc bytes.
-char    DAT_07b11670[kEffectPoolSize * OBJECT_STRIDE] = {};   // IDA: 200 slots: (0x07B27150-0x07B11670)/0x1bc (IDA bound unk_7B27178 = poolEnd+40)
+OBJECT  Effects[kEffectPoolSize] = {};   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
 // ── Monster_Data string literals ─────────────────────────────────────────────
 char    s_Data2_MonsterSetBase2_txt_00561530[] = "Data2/MonsterSetBase2.txt";
 char    s_Data2_Monster__0055e06c[] = "Data2/Monster/";

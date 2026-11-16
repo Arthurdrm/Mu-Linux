@@ -2,10 +2,10 @@
 // Server-select UI: mouse hit-test for group buttons + individual server entries.
 //
 // Called each frame during server select to handle mouse clicks.
-// Server list: DAT_083a45d8, stride 0x21e, 24 entries.
+// Server list: ServerList, stride 0x21e, 25 entries.
 //   +0x00: server name (null-terminated)
-//   +0x14: active flag (DAT_083a45ec offset)
-//   +0x15: group flag: 0=group1, 1=group2 (DAT_083a45ed offset)
+//   +0x14: active flag (ServerList[i].Number)
+//   +0x15: group flag: 0=group1, 1=group2 (ServerList[i].extServer)
 //
 // Screen layout (X axis):
 //   Group 1 button:  X = 0x96..0xdc  (150..220)
@@ -58,21 +58,20 @@ void CServerSelWin_UpdateWhileActive(void)
     int iVar8  = 0;   // group1 count
     int iVar10 = 0;   // group2 count
 
-    // IDA: for ( i = 0; i < 13550; i += 542 )  — 25 iterations (0x34ee / 0x21e).
-    // `(&DAT_083a45ec)[i]` sería DWORD* (scale 4); IDA usa byte arith:
-    //   `*((_BYTE*)&unk_83A45EC + i)`.
-    for (int iVar12 = 0; iVar12 < 0x34ee; iVar12 += 0x21e) {
-        if (*((unsigned char*)&DAT_083a45ec + iVar12) != '\0') {
+    // IDA: for ( i = 0; i < 13550; i += 542 )  — los 25 grupos de ServerList.
+    for (int i = 0; i < MAX_SERVER_HI; ++i) {
+        SERVER_LIST_t& srv = ServerList[i];
+        if (srv.Number != 0) {
             // Check if server name ends with '2' → group 2
             // IDA: unk_83A45D7 + i + strlen(&ServerList[i]) == 50   (50 = '2')
-            const char *name = (const char*)DAT_083a45d8 + iVar12;
+            const char *name = srv.Name;
             int len = 0;
             while (name[len]) len++;
             if (len > 0 && name[len - 1] == '2') {
-                *((unsigned char*)&DAT_083a45ed + iVar12) = 1;
+                srv.extServer = true;
                 iVar10++;
             } else {
-                *((unsigned char*)&DAT_083a45ed + iVar12) = 0;
+                srv.extServer = false;
                 iVar8++;
             }
         }
@@ -89,15 +88,14 @@ void CServerSelWin_UpdateWhileActive(void)
     const int iYPvpBase    = iVar4;
 
     int local_834 = 0;
-    const char *local_830 = &DAT_083a45ed;
     int local_820 = iVar12;
     int local_824 = iVar4;
 
     // ── Pass 2: hit-test group buttons ───────────────────────────────────────
     do {
-        if (local_830[-1] != '\0') {
+        if (ServerList[local_834].Number != 0) {
             int iVar9, iVar3, iVar6;
-            if (*local_830 == '\0') {
+            if (!ServerList[local_834].extServer) {
                 // Group 1 entry
                 iVar6 = 0x96;
                 iVar9 = iVar12;
@@ -139,24 +137,21 @@ void CServerSelWin_UpdateWhileActive(void)
                 iVar4  = local_824;
             }
         }
-        local_830 += 0x21e;
         local_834++;
-    // IDA recorre 25 entradas de 0x21e bytes. La cota por contador conserva
-    // ese recorrido sin depender de los bits de la dirección base.
-    } while (local_834 < 0x34ee / 0x21e);
+    } while (local_834 < MAX_SERVER_HI);   // IDA: 25 entradas de 0x21e
 
     // ── Pass 3: hit-test individual server entries in selected group ──────────
     if ((int)ServerSelectHi == -1) goto done;
 
     {
-        int iVar10b = (int)ServerSelectHi * 0x21e;
+        SERVER_LIST_t& sel = ServerList[ServerSelectHi];
         int iVar8b;
 
         // IDA Pass 3 uses v38 (non-PVP base) / v40 (PVP base), NOT the mutated
         // v4/v7. Mismatch de 16px hacía que ciertas zonas del hit-area no
         // coincidieran con el render.
-        unsigned char numCh = *((unsigned char*)&DAT_083a45ec + iVar10b);
-        if (*((unsigned char*)&DAT_083a45ed + iVar10b) == 0) {
+        unsigned char numCh = sel.Number;
+        if (!sel.extServer) {
             // Non-PVP server: cnt = posición en la lista non-PVP (antes de este)
             // Para single-entry, cnt=0. Scan strcmp omitido (solo relevante con >1 server).
             int cnt = 0;
@@ -176,31 +171,24 @@ void CServerSelWin_UpdateWhileActive(void)
 
         ServerSelectLo = -1;
         int local_834b = 0;
-        int local_830b = 0;   // byte offset into server port/flag arrays for this group
 
         do {
             // Check mouse in entry rect (X=0xe5..0x16c) and server not full (flag & 0x80 == 0)
             if (0xe5 <= (int)MouseX && (int)MouseX < 0x16c &&
                 iVar8b <= (int)MouseY && (int)MouseY < iVar8b + 0x14)
             {
-                // Byte arith: DAT_083a4604 es *(DWORD*) y DAT_083a4606 *(WORD*) lvalues →
-                // `&DAT + i` / `(&DAT)[i]` escalarían el offset ×4/×2. Igual que en el render
-                // (Scene_Login_ServerSelect), se castea a char*/unsigned char*.
-                ServerLocalSelect = (unsigned int)
-                    *(unsigned short *)((char*)&DAT_083a4604 + iVar10b + local_830b) % 0x14 + 1;
+                ServerLocalSelect = (unsigned int)sel.Server[local_834b].Index % 0x14 + 1;
                 ServerSelectLo = local_834b;
 
-                bool full = ((*((unsigned char*)&DAT_083a4606 + iVar10b + local_830b)) & 0x80) == 0x80;
-                bool ping_ok = ((*((unsigned char*)&DAT_083a4606 + iVar10b + local_830b)) & 0x7f) < 100;
+                bool full = (sel.Server[local_834b].Percent & 0x80) == 0x80;
+                bool ping_ok = (sel.Server[local_834b].Percent & 0x7f) < 100;
 
                 if (!full && MouseLButtonPush != '\0') {
                     MouseLButtonPush = '\0';
                     PlayBuffer(0x19, 0, 0);
 
                     if (ping_ok && DAT_083a7c44 == 0) {
-                        ServerLocalSelect = (unsigned int)
-                            *(unsigned short *)((char*)&DAT_083a4604 + (int)ServerSelectHi * 0x21e + local_830b)
-                            % 0x14 + 1;
+                        ServerLocalSelect = (unsigned int)sel.Server[local_834b].Index % 0x14 + 1;
                         CErrorReport_Write(&DAT_055c9bf0, "> Server selected");
 
                         DAT_083a7c44 = 0x32;
@@ -210,8 +198,7 @@ void CServerSelWin_UpdateWhileActive(void)
                         DAT_083a4320 = 0;
 
                         // Selected server's ServerCode (channel_id, +0x2c field).
-                        unsigned short serverCode =
-                            *(unsigned short *)((char*)&DAT_083a4604 + (int)ServerSelectHi * 0x21e + local_830b);
+                        unsigned short serverCode = sel.Server[local_834b].Index;
                         DAT_083a4328 = (DAT_083a4328 & 0xffff0000) | serverCode;
 
                         if (gNetwork.IsConnectServerMode()) {
@@ -253,7 +240,6 @@ void CServerSelWin_UpdateWhileActive(void)
 
             local_834b++;
             iVar8b    += 0x14;
-            local_830b += 0x1a;   // stride in port/flag arrays
         } while (local_834b < server_count);
     }
 

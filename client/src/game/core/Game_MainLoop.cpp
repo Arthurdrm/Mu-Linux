@@ -300,12 +300,12 @@ void __cdecl Game_MainLoop(HDC param_1)
     {
         // ServerSelectHi es signed en el original (Game_SceneUpdate lo setea a -1
         // cuando "no server selected"). Tratarlo como unsigned haría si=0x1e y
-        // leer OOB de DAT_083a45d8[0x3600] → strlen de basura → overflow del
+        // leer fuera de ServerList → strlen de basura → overflow del
         // titleBuf[64] → /GS cookie fail al retornar Game_MainLoop.
         int idx = (int)ServerSelectHi;
-        int si  = (idx < 0x1e) ? idx : 0x1e;
+        int si  = (idx < MAX_SERVER_HI) ? idx : MAX_SERVER_HI - 1;
         if (si < 0) si = 0;
-        const char* serverName = (const char*)&DAT_083a45d8 + si * 0x21e;
+        const char* serverName = ServerList[si].Name;
         const char* charName   = Hero ? EntityName::Get(Hero) : "";
         // Copia defensiva con tope: %s puede ser largo si DAT_07abf5d8+0x1c1
         // apunta a bytes no-inicializados; wsprintfA no trunca.

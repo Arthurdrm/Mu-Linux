@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Selección real de servidores: tabla nativa, bordes, paquetes y estado x86."""
 import argparse
+import re
 import os
 from pathlib import Path
 import tempfile
@@ -15,6 +16,8 @@ char* table;
 #define DAT_083a45ed (*(table+21))
 #define DAT_083a4604 (*reinterpret_cast<DWORD*>(table+44))
 #define DAT_083a4606 (*reinterpret_cast<unsigned short*>(table+46))
+STRUCTS
+#define ServerList (*reinterpret_cast<SERVER_LIST_t(*)[MAX_SERVER_HI]>(table))
 struct State{DWORD hi,lo,local,click,x,y,cooldown,c24,c28,tick,reset,code;int login;};State state;
 #define ServerSelectHi state.hi
 #define ServerSelectLo state.lo
@@ -51,8 +54,18 @@ std::uint64_t Run(BYTE* memory){table=reinterpret_cast<char*>(memory+16);std::ui
 int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));Require(low);const auto expected=Run(low);if(sizeof(void*)>4){auto* high=static_cast<BYTE*>(Reserve(std::uint64_t(0x126000000ull)));auto* bit31=static_cast<BYTE*>(Reserve(0x7fff0000u));auto* wrap=static_cast<BYTE*>(Reserve(std::uint64_t(0xffff0000ull)));Require(high && bit31 && wrap);BYTE* addresses[]={high,bit31+0xe000,wrap+0xe000};for(auto* address:addresses){std::memset(low,0x7b,13856);Require(Run(address)==expected);for(unsigned i=0;i<13856;++i)Require(low[i]==0x7b);}std::puts("tabla alta y cruces bit31/4GiB; paquetes/estado/aliases iguales");}std::printf("Server input: 8192 consultas por ruta %016llx\n",static_cast<unsigned long long>(expected));}
 '''
 
+def server_structs(revision=None):
+    structs=read_source('src/structs.h',revision)
+    out='using WORD=std::uint16_t;\n'
+    for name in ('MAX_SERVER_HI','MAX_SERVER_LO'):
+        out+=re.search(rf'^#define {name}[^\n]+',structs,re.M).group()+'\n'
+    for name in ('SERVER_t','SERVER_LIST_t'):
+        out+=re.search(rf'^struct {name}\s*\{{.*?^\}};',structs,re.M|re.S).group()+'\n'
+    return out
+
+
 def harness(revision=None):
-    return PREAMBLE.split('char DAT_00559bb4',1)[0].replace('0x10000','0x20000')+SERVICES+function(read_source('src/scenes/Scene_ServerSelect_Input.cpp',revision),'CServerSelWin_UpdateWhileActive')+MAIN
+    return PREAMBLE.split('char DAT_00559bb4',1)[0].replace('0x10000','0x20000')+SERVICES.replace('STRUCTS',server_structs(revision))+function(read_source('src/scenes/Scene_ServerSelect_Input.cpp',revision),'CServerSelWin_UpdateWhileActive')+MAIN
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--architecture',choices=('Win32','x64'),default='x64');parser.add_argument('--generator');parser.add_argument('--reference-ref');args=parser.parse_args()

@@ -573,7 +573,7 @@ int main(int, char**)
 
     // 14c: STATIC SERVER LIST — workaround hasta que Net_ProcessPacket implemente
     // el dispatcher F1/02 (server list, 1824 líneas en el original). Sin esto,
-    // DAT_083a45d8 queda en ceros y Scene_Login_ServerSelect no dibuja botones.
+    // ServerList queda en ceros y Scene_Login_ServerSelect no dibuja botones.
     //
     // Layout por entrada (stride 0x21e):
     //   +0x00  char[20]  name
@@ -585,11 +585,11 @@ int main(int, char**)
     // Solo en modo directo (sin ConnectServer en ServerConfig). Con ConnectServer la lista
     // la trae el F4/02 como en el original: si el CS no responde, queda vacia.
     if (!gNetwork.HasConnectServer()) {
-        char* srv0 = DAT_083a45d8;                           // entry index 0
-        memset(srv0, 0, 0x21e);
-        Platform::TextCopy(srv0, "MuServer", 20);                     // +0x00 name
-        srv0[0x14] = 1;                                      // +0x14 num_channels
-        *(unsigned short*)(srv0 + 0x2c) = 1;                 // channel[0] id → "1"
+        SERVER_LIST_t& srv0 = ServerList[0];
+        memset(&srv0, 0, sizeof(srv0));
+        Platform::TextCopy(srv0.Name, "MuServer", 20);
+        srv0.Number = 1;                                     // un canal
+        srv0.Server[0].Index = 1;                            // channel[0] id → "1"
         // Load byte = ocupación del server (0..100). El original lo recibe por
         // red (ReceiveServerList @0x423E10: byte_83A4606 = ReceiveBuffera[2]) y
         // con 0 cuentas logeadas llega 0 → barra vacía. Como conectamos directo
@@ -597,7 +597,7 @@ int main(int, char**)
         // e inicializamos load=0 para replicar ese estado "server vacío". El
         // render (Scene_Login_ServerSelect Pass 4) dibuja load/5 cuadros llenos:
         // 0 → 0 llenos + 20 vacíos = barra vacía, igual que el binario original.
-        srv0[0x2e] = 0;                                      // channel[0] load = 0 (vacío)
+        srv0.Server[0].Percent = 0;                          // channel[0] load = 0 (vacío)
     }
 
     // 15: fuentes (CFont, Core/Font.h). El tamaño depende de la resolución.

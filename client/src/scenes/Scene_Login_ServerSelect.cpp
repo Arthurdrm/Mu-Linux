@@ -6,7 +6,7 @@
 //
 // ─── SERVER LIST DATA ──────────────────────────────────────────────────────────
 //
-//  Base array : DAT_083a45d8
+//  Base array : ServerList (SERVER_LIST_t[25], structs.h)
 //  Stride     : 0x21e bytes per server-group entry
 //  Count      : 24 entries  (0x83a7ac6 - 0x83a45d8) / 0x21e
 //
@@ -25,8 +25,6 @@
 //  So channel[i] load is at: entry+0x2e + i*0x1a
 //      channel[i] id  is at: entry+0x2c + i*0x1a  (ushort)
 //
-//  DAT_083a45ec = &DAT_083a45d8 + 0x14  (alias: start of num_channels field)
-//  DAT_083a4606 = &DAT_083a45d8 + 0x2e  (alias: start of load bytes)
 //
 // ─── SELECTION STATE ───────────────────────────────────────────────────────────
 //
@@ -123,12 +121,11 @@
 
 // Scene_Login_ServerSelect @ 0x0051F020
 // Renders the server-group + channel selection panel inside the login screen.
-// Server list: DAT_083a45d8, stride 0x21e, 24 entries.
+// Server list: ServerList, stride 0x21e, 25 entries.
 // Stack allocates ~48 KB of display strings (triggers __chkstk_probe).
 int Scene_Login_ServerSelect(void)
 {
 
-    char        cVar1;
     byte        bVar2;
     float       fVar3, fVar18, fVar20;
     // fVar4: "current Y of last drawn row" en Pass 3 (float-but-really-int).
@@ -139,8 +136,7 @@ int Scene_Login_ServerSelect(void)
     float       fVar4 = 0.0f;
     int         iVar5, iVar8, iVar10;
     uint        uVar6;
-    char       *pcVar7, *pcVar13;
-    undefined1 *puVar9, *puVar12;
+    undefined1 *puVar9;
     byte       *pbVar11, *pbVar14;
     LPCSTR      lpString;
     bool        bVar15;
@@ -148,15 +144,14 @@ int Scene_Login_ServerSelect(void)
     // float (en el decomp era undefined4): glColor3f recibe el valor, no el bit-pattern.
     float       uVar17;
     int         iStack00000004;
-    float       fStack00000008, fStack0000000c, fStack00000014, fStack00000018;
+    float       fStack00000008, fStack0000000c, fStack00000014;
     int         iStack0000001c, iStack00000020;
     LPSIZE      ptVar19;
     undefined1 *puStack00000010;
     // Grupos de servidor x canales x 100 bytes por nombre.
     //
     // DESBORDE (2026-10-02): estaba en 24 grupos, pero el loop de Pass 1 recorre
-    // 25 -- su cota es `DAT_083a45d8 + 0x34ee` y 0x34ee/0x21e = 25, y el array
-    // global da para eso (0x3600 = 13824 >= 25*0x21e).  El grupo 24 escribia en
+    // 25 -- su cota es `ServerList + 0x34ee` y 0x34ee/0x21e = 25 (MAX_SERVER_HI).  El grupo 24 escribia en
     // chan_buf + 24*20*100 = 48000, o sea el primer byte DESPUES del buffer.
     // En Debug el padding del frame se lo comia; en Release reventaba la cookie
     // de /GS -- y como esta funcion se inlinea dentro de Scene_Login, la cookie
@@ -172,7 +167,6 @@ int Scene_Login_ServerSelect(void)
     puVar9 = (undefined1*)chan_buf;
     InputTextWidth = 0x100;
     iStack00000004 = 0;
-    puVar12 = (undefined1*)&DAT_083a45d8;
 
     // ── PASS 1: format channel name strings ──────────────────────────────────
     // IDA reference (0x0051F020):
@@ -187,11 +181,15 @@ int Scene_Login_ServerSelect(void)
         const char* STATUS_NORMAL = "NORMAL";
         const char* STATUS_LOW    = "LOW";
 
-        do {
-            pbVar11 = puVar12 + 0x2e;   // load byte of first channel
-            puStack00000010 = puVar9;
-            const char* serverName = (const char*)puVar12;    // +0x00 = name (null-term)
-            unsigned char numCh    = (unsigned char)puVar12[0x14];
+        auto statusOf = [&](BYTE load) {
+            if ((load & 0x80) == 0x80) return STATUS_FULL;
+            if ((load & 0x7f) < 100)   return STATUS_LOW;
+            return STATUS_NORMAL;
+        };
+        for (int srvIdx = 0; srvIdx < MAX_SERVER_HI; ++srvIdx) {
+            const SERVER_LIST_t& srv = ServerList[srvIdx];
+            char* groupBuf = chan_buf + srvIdx * SRV_CHANS * SRV_NAMELEN;
+            unsigned char numCh = srv.Number;
             // numCh sale crudo del paquete F4/02 (un byte, hasta 255) mientras
             // que chan_buf reserva SRV_CHANS por grupo: sin este clamp un server
             // que reporte mas canales escribe sobre el grupo siguiente y, en el
@@ -199,68 +197,39 @@ int Scene_Login_ServerSelect(void)
             if (numCh > SRV_CHANS) numCh = SRV_CHANS;
 
             if (numCh == 1) {
-                // Single-channel entry
-                const char* status;
-                if ((*pbVar11 & 0x80) == 0x80)            status = STATUS_FULL;
-                else if ((*pbVar11 & 0x7f) < 100)         status = STATUS_LOW;
-                else                                       status = STATUS_NORMAL;
-                crt_sprintf((char*)puVar9, "%s %s", serverName, status);
-                puStack00000010 = puVar9;
-            } else if (numCh != 0) {
-                iVar10 = 0;
-                do {
-                    int chNum = (int)((unsigned)*(unsigned short *)(pbVar11 - 2) % 0x14 + 1);
-                    int isPvp = Packet_IsValidSockType(iStack00000004, chNum);
-                    const char* status;
-                    if ((*pbVar11 & 0x80) == 0x80)        status = STATUS_FULL;
-                    else if ((*pbVar11 & 0x7f) < 100)     status = STATUS_LOW;
-                    else                                   status = STATUS_NORMAL;
-
-                    char* outBuf = chan_buf + (iVar8 + iVar10) * 100;
-                    if (isPvp == 0) {
-                        // Non-PVP channel
-                        crt_sprintf(outBuf, "%s-%d(Non-PVP) %s", serverName, chNum, status);
-                    } else {
-                        // PVP channel (Open-PVP i.e. sin etiqueta)
-                        crt_sprintf(outBuf, "%s-%d %s", serverName, chNum, status);
-                    }
-                    iVar10++;
-                    pbVar11 = pbVar11 + 0x1a;   // next channel (stride 0x1a)
-                } while (iVar10 < (int)numCh);
+                crt_sprintf(groupBuf, "%s %s", srv.Name, statusOf(srv.Server[0].Percent));
+            } else {
+                for (int ch = 0; ch < numCh; ++ch) {
+                    int chNum = (int)((unsigned)srv.Server[ch].Index % 0x14 + 1);
+                    const char* status = statusOf(srv.Server[ch].Percent);
+                    char* outBuf = groupBuf + ch * SRV_NAMELEN;
+                    if (Packet_IsValidSockType(srvIdx, chNum) == 0)
+                        crt_sprintf(outBuf, "%s-%d(Non-PVP) %s", srv.Name, chNum, status);  // Non-PVP
+                    else
+                        crt_sprintf(outBuf, "%s-%d %s", srv.Name, chNum, status);           // Open-PVP
+                }
             }
-            puVar12 = puVar12 + 0x21e;   // next server group
-            iStack00000004++;
-            puVar9 = puStack00000010 + 2000;
-            iVar8  = iVar8 + 0x14;
-        } while (reinterpret_cast<char*>(puVar12) < DAT_083a45d8 + 0x34ee);
+        }
+        // Pass 3 toma el cursor del buffer donde lo deja este recorrido.
+        puVar9 = (undefined1*)(chan_buf + MAX_SERVER_HI * SRV_CHANS * SRV_NAMELEN);
     }
 
     // ── PASS 2: tag PVP/non-PVP groups, count each ───────────────────────────
     iVar8  = 0;   // PVP count
     iVar10 = 0;   // non-PVP count
-    pcVar7 = (char*)&DAT_083a45ec;   // pvp_flag field of first entry (+0x14 from base)
-    do {
-        if (*pcVar7 != '\0') {
-            // strlen of server name (pcVar7 - 0x14)
-            uVar6  = 0xffffffff;
-            pcVar13 = pcVar7 - 0x14;
-            do {
-                if (uVar6 == 0) break;
-                uVar6--;
-                cVar1 = *pcVar13;
-                pcVar13++;
-            } while (cVar1 != '\0');
-            // If last relevant char in name == '2' → PVP server
-            if (pcVar7[static_cast<ptrdiff_t>(~uVar6) - 0x16] == '2') {
-                pcVar7[1] = '\x01';   // pvp_flag = 1
-                iVar8++;
-            } else {
-                pcVar7[1] = '\0';
-                iVar10++;
-            }
+    for (int i = 0; i < MAX_SERVER_HI; ++i) {
+        SERVER_LIST_t& srv = ServerList[i];
+        if (srv.Number == 0) continue;
+        // IDA: el último carácter del nombre decide; '2' = servidor PVP.
+        const char* name = srv.Name;
+        if (name[strlen(name) - 1] == '2') {
+            srv.extServer = true;
+            iVar8++;
+        } else {
+            srv.extServer = false;
+            iVar10++;
         }
-        pcVar7 = pcVar7 + 0x21e;
-    } while (pcVar7 < DAT_083a45d8 + 0x3502);
+    }
 
     // ── PASS 3: draw two-column server group list ─────────────────────────────
     puStack00000010 = puVar9;
@@ -289,12 +258,11 @@ int Scene_Login_ServerSelect(void)
     m_dwTextColor = 0xffffffff;
     iVar8 = 0;
     SetBackgroundTextColor = 0;
-    lpString = (LPCSTR)&DAT_083a45d8;
-
-    do {
-        if (lpString[0x14] != '\0') {
+    for (iVar8 = 0; iVar8 < MAX_SERVER_HI; ++iVar8) {
+        lpString = ServerList[iVar8].Name;
+        if (ServerList[iVar8].Number != 0) {
             int iDrawY;   // Y where this row's quad + text draw
-            if (lpString[0x15] == '\0') {
+            if (!ServerList[iVar8].extServer) {
                 // Non-PVP entry
                 iVar10 = 0x96;
                 iDrawY = iYNonPvp;
@@ -328,74 +296,25 @@ LAB_0051f314:
             UI_RenderText((iVar10 - ((uint)(text_size.cx * 0x280) / gWindow.GetWidth() >> 1)) + 0x23,
                          iDrawY + 2, lpString, (LPSIZE)0x0, '\0', 0);
         }
-        lpString = lpString + 0x21e;
-        iVar8++;
-    } while (lpString < DAT_083a45d8 + 0x34ee);
+    }
 
     // ── PASS 4: draw channel sub-list for selected server ─────────────────────
     iVar8 = ServerSelectHi;
     if (ServerSelectHi != -1) {
-        iVar8 = ServerSelectHi * 0x21e;
-        if ((&DAT_083a45ed)[iVar8] == '\0') {
-            // Non-PVP server: find Y position by counting preceding non-PVP entries
-            iStack00000004 = 0;
-            pcVar7 = (char*)&DAT_083a45ec;
-            do {
-                pbVar14 = (byte*)&DAT_083a45d8 + iVar8;
-                pbVar11 = (byte *)(pcVar7 - 0x14);
-                do {
-                    bVar2 = *pbVar11;
-                    bVar15 = bVar2 < *pbVar14;
-                    if (bVar2 != *pbVar14) { iVar10 = (1 - (uint)bVar15) - (uint)(bVar15 != 0); goto LAB_0051f4b0; }
-                    if (bVar2 == 0) break;
-                    bVar2 = pbVar11[1]; bVar15 = bVar2 < pbVar14[1];
-                    if (bVar2 != pbVar14[1]) { iVar10 = (1 - (uint)bVar15) - (uint)(bVar15 != 0); goto LAB_0051f4b0; }
-                    pbVar11 += 2; pbVar14 += 2;
-                } while (bVar2 != 0);
-                iVar10 = 0;
-LAB_0051f4b0:
-                iVar5 = iStack00000004;
-                if (iVar10 == 0) goto LAB_0051f4d9;
-                if ((*pcVar7 != '\0') && (pcVar7[1] == '\0'))
-                    iStack00000004++;
-                pcVar7 = pcVar7 + 0x21e;
-            } while (pcVar7 < DAT_083a45d8 + 0x3502);
-            iVar5 = 0;
-LAB_0051f4d9:
-            // DAT_083a45ec es `*(DWORD*)(...)` lvalue → &DAT es DWORD*, así que
-            // (&DAT)[iVar8] avanzaría iVar8*4 bytes. Disasm @ 0x0051f44e/4db
-            // muestra `MOV AL, byte ptr [ECX + 0x83a45ec]` con ECX=iVar8 (byte
-            // offset): se castea la base a char* para byte arith.
-            uVar6  = (uint)*((unsigned char*)&DAT_083a45ec + iVar8);
-            iVar10 = iVar5 * 0x10 + uVar6 * -10 + 8 + (int)fVar4;
-        } else {
-            // PVP server: find Y position by counting preceding PVP entries
-            iStack00000004 = 0;
-            pcVar7 = (char*)&DAT_083a45ec;
-            do {
-                pbVar11 = (byte *)(pcVar7 - 0x14);
-                pbVar14 = (byte*)&DAT_083a45d8 + iVar8;
-                do {
-                    bVar2 = *pbVar11; bVar15 = bVar2 < *pbVar14;
-                    if (bVar2 != *pbVar14) { iVar10 = (1 - (uint)bVar15) - (uint)(bVar15 != 0); goto LAB_0051f428; }
-                    if (bVar2 == 0) break;
-                    bVar2 = pbVar11[1]; bVar15 = bVar2 < pbVar14[1];
-                    if (bVar2 != pbVar14[1]) { iVar10 = (1 - (uint)bVar15) - (uint)(bVar15 != 0); goto LAB_0051f428; }
-                    pbVar11 += 2; pbVar14 += 2;
-                } while (bVar2 != 0);
-                iVar10 = 0;
-LAB_0051f428:
-                iVar5 = iStack00000004;
-                if (iVar10 == 0) goto LAB_0051f44c;
-                if ((*pcVar7 != '\0') && (pcVar7[1] == '\x01'))
-                    iStack00000004++;
-                pcVar7 = pcVar7 + 0x21e;
-            } while (pcVar7 < DAT_083a45d8 + 0x3502);
-            iVar5 = 0;
-LAB_0051f44c:
-            uVar6  = (uint)*((unsigned char*)&DAT_083a45ec + iVar8);  // byte arith (ver arriba)
-            iVar10 = iVar5 * 0x10 + uVar6 * -10 + 8 + (int)fStack00000008;
+        const SERVER_LIST_t& sel = ServerList[ServerSelectHi];
+        // Fila del server elegido dentro de su columna: cuántos servers activos de
+        // la misma columna hay antes del primero con el mismo nombre.
+        iVar5 = 0;
+        iStack00000004 = 0;
+        for (int k = 0; k < MAX_SERVER_HI; ++k) {
+            const SERVER_LIST_t& srv = ServerList[k];
+            if (strcmp(srv.Name, sel.Name) == 0) { iVar5 = iStack00000004; break; }
+            if (srv.Number != 0 && srv.extServer == sel.extServer)
+                iStack00000004++;
         }
+        uVar6 = sel.Number;
+        iVar10 = iVar5 * 0x10 + uVar6 * -10 + 8
+               + (sel.extServer ? (int)fStack00000008 : (int)fVar4);
 
         // Clamp scroll
         iVar5 = (0x18 - uVar6) * 0x14;
@@ -404,31 +323,23 @@ LAB_0051f44c:
         // Render each channel row
         iVar5 = 0;
         if (uVar6 != 0) {
-            fStack00000018 = 0.0f;
             iStack00000004 = iVar10;
             do {
-                fVar4 = fStack00000018;
                 fVar3 = 1.0f;
                 if (iVar5 != ServerSelectLo)
                     fVar3 = 0.8f;   // not selected → dim
 
                 // Color by load
-                // DAT_083a4606 es `*(WORD*)(...)` y DAT_083a4604 es `*(DWORD*)(...)`
-                // lvalues: indexar `(&DAT)[idx]` o `&DAT+idx` multiplicaría el offset por
-                // 2/4. Disasm @ 0x0051f538/540:
-                //   MOV AX,word ptr [ECX+EBP*1+0x83a4604]   ; channel_id
-                //   MOV CL,byte ptr [ECX+EBP*1+0x83a4606]   ; load byte
-                // ECX=server*0x21e, EBP=chan*0x1a (ambos byte offsets).
-                if ((*((unsigned char*)&DAT_083a4606 + (int)fStack00000018 + iVar8) & 0x80) == 0x80) {
+                const SERVER_t& chan = sel.Server[iVar5];
+                if ((chan.Percent & 0x80) == 0x80) {
                     // FULL: red-ish
                     fVar18 = fVar3 * 0.7f;
                     fVar20 = fVar3 * 0.5f;
-                } else if ((*((unsigned char*)&DAT_083a4606 + (int)fStack00000018 + iVar8) & 0x7f) < 100) {
+                } else if ((chan.Percent & 0x7f) < 100) {
                     // LOW: greenish; special teal for channel_id % 20 == 0 or 14
                     fVar18 = fVar3;
-                    if (((uint)*(ushort *)((char*)&DAT_083a4604 + (int)fStack00000018 + iVar8) % 0x14 == 0) ||
-                        (fVar20 = fVar3,
-                         (uint)*(ushort *)((char*)&DAT_083a4604 + (int)fStack00000018 + iVar8) % 0x14 == 0xe))
+                    if (((uint)chan.Index % 0x14 == 0) ||
+                        (fVar20 = fVar3, (uint)chan.Index % 0x14 == 0xe))
                     {
                         fVar20 = fVar3 * 0.7f;
                     }
@@ -463,9 +374,8 @@ LAB_0051f44c:
                 }
 
                 // Load bar (only for non-full servers)
-                // WORD lvalue → byte arith (char* cast), igual que arriba.
-                if ((*((unsigned char*)&DAT_083a4606 + ServerSelectHi * 0x21e + (int)fVar4) & 0x80) != 0x80) {
-                    uVar6 = *((unsigned char*)&DAT_083a4606 + ServerSelectHi * 0x21e + (int)fVar4) & 0x7f;
+                if ((chan.Percent & 0x80) != 0x80) {
+                    uVar6 = chan.Percent & 0x7f;
                     if (100 < uVar6) uVar6 = 100;
                     uVar6 = uVar6 / 5;   // 0..20 dots
                     fStack00000008 = 0.0f;
@@ -483,7 +393,6 @@ LAB_0051f44c:
                             fStack00000008 = (float)(iVar8 + 1);
                             iStack00000020--;
                             iStack0000001c += 5;
-                            fVar4 = fStack00000018;
                         } while ((int)fStack00000008 < (int)uVar6);
                     }
                     // Empty dots (gray)
@@ -502,10 +411,8 @@ LAB_0051f44c:
                 }
 
                 iVar5++;
-                iVar8 = ServerSelectHi * 0x21e;
                 iStack00000004 += 0x14;
-                fStack00000018 = (float)((int)fVar4 + 0x1a);
-            } while (iVar5 < (int)(uint)*((unsigned char*)&DAT_083a45ec + iVar8));  // byte arith
+            } while (iVar5 < (int)sel.Number);
         }
 
         // ── PASS 5: selected server IP display ───────────────────────────────
@@ -516,7 +423,7 @@ LAB_0051f44c:
 
         fVar4   = (float)(int)(intptr_t)puStack00000010;
         pbVar14 = (byte*)&DAT_07d52c38;
-        pbVar11 = (byte*)&DAT_083a45d8 + ServerSelectHi * 0x21e;
+        pbVar11 = (byte*)sel.Name;
         do {
             bVar2 = *pbVar11; bVar15 = bVar2 < *pbVar14;
             if (bVar2 != *pbVar14) { iVar8 = (1 - (uint)bVar15) - (uint)(bVar15 != 0); goto LAB_0051f8b4; }

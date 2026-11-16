@@ -5,7 +5,9 @@
 // Todo lo que el cliente manda y recibe por el socket pasa por acá:
 //   - Con el GameServer va por un SecureChannel: saludo al conectar y después
 //     registros cifrados y autenticados (ver net/SecureChannel.h).
-//   - Con el ConnectServer va en claro: sólo lleva la lista pública de servers.
+//   - Con el ConnectServer también, con la misma clave del server.  Si el
+//     ConnectServer no lo habla (uno viejo, o sin la clave todavía) la
+//     conexión sigue en claro: sólo lleva la lista pública de servers.
 //
 // Reemplaza al XOR de byte de MuEmu (MuEmu::EncryptSend / DecryptRecv).  Ese XOR
 // no tenía estado, así que cualquier sitio podía llamar a send() por su cuenta.
@@ -17,9 +19,14 @@
 
 namespace NetChannel {
 
-// Al crear el socket: se olvida el canal de la conexión anterior.
-// secure = true para el GameServer, false para el ConnectServer.
-void OnNewConnection(bool secure);
+// Al crear el socket: se olvida el canal de la conexión anterior y se arranca
+// uno nuevo.  allowPlain = true para el ConnectServer: si contesta en claro
+// en vez de con el saludo, la conexión sigue en claro (con el GameServer eso
+// es un error).
+void OnNewConnection(bool allowPlain);
+
+// true si la conexión actual terminó el saludo del canal cifrado.
+bool IsSecure();
 
 // Manda `len` bytes (uno o más paquetes ya armados).  Siempre los acepta
 // enteros: lo que el socket no toma ahora queda en la cola de SocketClient, que

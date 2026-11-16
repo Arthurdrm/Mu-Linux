@@ -2,8 +2,9 @@
 
 // Identidad del server (Fase 5, C3): un par de claves de firma (EdDSA de
 // Monocypher) propio de cada instalación.  Con la clave privada se firma el
-// manifiesto del catálogo; el cliente guarda la pública del primer contacto (o
-// la trae compilada en ServerConfig.h) y desconfía si después cambia.
+// manifiesto del catálogo y el saludo del canal seguro (GameServer y
+// ConnectServer); el cliente guarda la pública del primer contacto (o la trae
+// compilada en ServerConfig.h) y desconfía si después cambia.
 //
 // La clave vive en Data/Keys/ServerIdentity.key y se genera sola en el primer
 // arranque.  Data/ es un volumen, así que sobrevive a las actualizaciones de la
@@ -27,6 +28,12 @@ public:
 
 	// Carga la clave de `folder` o la genera.  Sólo la primera llamada trabaja.
 	bool Load(const char* folder);
+
+	// Sólo lectura, para los servers que usan la clave del GameServer pero no la
+	// generan (el ConnectServer).  Lee `folder`/ServerIdentity.key si cambió
+	// desde la última vez: así toma la clave nueva cuando el GameServer la
+	// rota.  Devuelve true si la clave cambió (o se cargó por primera vez).
+	bool Reload(const char* folder);
 
 	bool IsLoaded() const { return this->m_Loaded; }
 
@@ -53,6 +60,9 @@ private:
 	bool Generate();
 
 	bool m_Loaded;
+
+	// Fecha del archivo leído por Reload (0 = todavía no se leyó).
+	long long m_ReloadTime;
 
 	bool m_HasRotation;
 

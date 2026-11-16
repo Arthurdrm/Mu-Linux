@@ -27,6 +27,7 @@ const int kQueueSize = 0x2000;          // tamaño de SocketClientSendBuffer
 const std::size_t kEarlyLimit = 0x10000;
 
 bool s_Secure = false;
+bool s_AllowPlain = false;
 SecureChannel s_Channel;
 std::vector<unsigned char> s_Plain;     // texto claro recibido, sin entregar
 std::vector<unsigned char> s_Early;     // lo que se quiso mandar antes de terminar el saludo
@@ -93,9 +94,10 @@ bool IsPlainRefusal(const unsigned char* raw, int size)
 
 } // namespace
 
-void OnNewConnection(bool secure)
+void OnNewConnection(bool allowPlain)
 {
-    s_Secure = secure;
+    s_Secure = true;
+    s_AllowPlain = allowPlain;
     s_Channel.Reset();
     s_Plain.clear();
     s_Early.clear();
@@ -103,7 +105,6 @@ void OnNewConnection(bool secure)
     // la vaciaba).  En el socket nuevo saldría antes que el saludo y el server
     // cerraría la conexión.
     SocketClientSendBufferLength = 0;
-    if (!secure) return;
     std::uint8_t random[SecureChannel::KeySize];
     if (!SecureRandomBytes(random, sizeof(random))) {
         // Sin bytes aleatorios no hay canal: el saludo va a fallar y se cierra.
@@ -153,6 +154,16 @@ bool Receive(const unsigned char* raw, int size)
                 s_Plain.assign(raw, raw + size);
                 return true;
             }
+            if (s_AllowPlain) {
+                // ConnectServer viejo o sin la clave todavía: sigue en claro.
+                // Lo que se había guardado para después del saludo sale tal cual.
+                DbgLogPublic("NET: canal: el ConnectServer contesta en claro, se sigue sin cifrar");
+                s_Secure = false;
+                s_Plain.assign(raw, raw + size);
+                const std::vector<unsigned char> early = std::move(s_Early);
+                s_Early.clear();
+                return Write(early.data(), (int)early.size());
+            }
             // El server no habla este protocolo: mismo cartel que la versión
             // incorrecta, que al confirmarlo cierra el cliente.
             SetErrorMessage(MESSAGE_LOGIN_VERSION);
@@ -180,6 +191,8 @@ bool Receive(const unsigned char* raw, int size)
 } // namespace
 
 int PendingPlain() { return (int)s_Plain.size(); }
+
+bool IsSecure() { return s_Secure && s_Channel.IsReady(); }
 
 bool IsQueued(const char* data)
 {

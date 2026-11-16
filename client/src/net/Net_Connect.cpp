@@ -15,6 +15,9 @@
 #include "net/Reconnect.h"
 #include "net/Net.h"
 #include "assets/data/ContentCatalog.h"
+#include "net/ServerTrust.h"
+#include "platform/UserPath.h"
+#include <string>
 
 extern "C" void DbgLogPublic(const char* msg);
 
@@ -47,9 +50,15 @@ void __cdecl CreateSocket(const char *param_1,unsigned int param_2)
     CWsctlc_Startup(reinterpret_cast<uintptr_t>(SocketClient));
   }
   CWsctlc_Create(&SocketClient,(int)(uintptr_t)gWindow.GetHwnd());
-  // DESVIACION (Fase 5, C4): cada conexión arranca su canal.  Con el GameServer
-  // va cifrado; con el ConnectServer, en claro.
-  NetChannel::OnNewConnection(!gNetwork.IsConnectServerMode());
+  // DESVIACION (Fase 5, C4): cada conexión arranca su canal cifrado.  El
+  // ConnectServer puede contestar en claro (uno viejo o sin clave): ahí la
+  // conexión sigue sin cifrar.  Su clave se fija en su propia carpeta de caché
+  // (la del GameServer la fija gContentCatalog.SetServer, más abajo).
+  if (gNetwork.IsConnectServerMode())
+    ServerTrust::SetServer(param_1 && *param_1
+      ? std::string(Platform::UserDir()) + "Cache/" + CContentCatalog::CacheId(param_1, param_2)
+      : std::string());
+  NetChannel::OnNewConnection(gNetwork.IsConnectServerMode());
   iVar2 = Net_Connect(&SocketClient,(char*)param_1,(u_short)param_2,0x400);
   {
     char dbg[64];

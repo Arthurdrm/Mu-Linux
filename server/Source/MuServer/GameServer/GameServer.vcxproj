@@ -123,7 +123,7 @@
     <ClInclude Include="CustomPkFree.h" />
     <ClInclude Include="CustomSafeZone.h" />
     <ClInclude Include="ContentCatalog.h" />
-    <ClInclude Include="ServerIdentity.h" />
+    <ClInclude Include="..\Common\ServerIdentity.h" />
     <ClInclude Include="SecureLink.h" />
     <ClInclude Include="..\Common\SecureChannel.h" />
     <ClInclude Include="..\Common\SecureRandom.h" />
@@ -238,7 +238,7 @@
     <ClCompile Include="CustomPkFree.cpp" />
     <ClCompile Include="CustomSafeZone.cpp" />
     <ClCompile Include="ContentCatalog.cpp" />
-    <ClCompile Include="ServerIdentity.cpp" />
+    <ClCompile Include="..\Common\ServerIdentity.cpp" />
     <ClCompile Include="SecureLink.cpp" />
     <ClCompile Include="..\Common\SecureChannel.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>

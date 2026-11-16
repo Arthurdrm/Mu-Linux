@@ -81,6 +81,8 @@ CServerIdentity::CServerIdentity()
 {
 	this->m_Loaded = false;
 
+	this->m_ReloadTime = 0;
+
 	this->m_HasRotation = false;
 
 	memset(this->m_Seed, 0, sizeof(this->m_Seed));
@@ -270,6 +272,67 @@ bool CServerIdentity::Load(const char* folder)
 	LogAdd(LOG_BLUE, "[ServerIdentity] Clave %s. Publica: %s", exists ? "regenerada (con rotacion)" : "generada", ToHex(this->m_Public, sizeof(this->m_Public)).c_str());
 
 	return true;
+}
+
+bool CServerIdentity::Reload(const char* folder)
+{
+	std::string path(folder);
+
+	for (char& c : path)
+	{
+		if (c == '\\') c = '/';
+	}
+
+	while (!path.empty() && path.back() == '/')
+	{
+		path.pop_back();
+	}
+
+	path += "/ServerIdentity.key";
+
+	std::error_code ec;
+
+	const auto time = std::filesystem::last_write_time(path, ec);
+
+	if (ec)
+	{
+		return false;
+	}
+
+	const long long stamp = (long long)time.time_since_epoch().count();
+
+	if (this->m_Loaded && stamp == this->m_ReloadTime)
+	{
+		return false;
+	}
+
+	// Se lee en una copia: si el archivo está a medio escribir (el GameServer
+	// rotando la clave) la que estaba cargada sigue sirviendo.
+	CServerIdentity next;
+
+	if (!next.Read(path.c_str()))
+	{
+		return false;
+	}
+
+	next.m_Loaded = true;
+
+	next.m_ReloadTime = stamp;
+
+	const bool changed = !this->m_Loaded || memcmp(next.m_Public, this->m_Public, sizeof(this->m_Public)) != 0;
+
+	*this = next;
+
+	crypto_wipe(next.m_Seed, sizeof(next.m_Seed));
+
+	crypto_wipe(next.m_Secret, sizeof(next.m_Secret));
+
+	if (changed)
+	{
+		LogAdd(LOG_BLUE, "[ServerIdentity] Clave publica: %s", ToHex(this->m_Public, sizeof(this->m_Public)).c_str());
+	}
+
+	return changed;
 }
 
 void CServerIdentity::Sign(BYTE signature[SERVER_IDENTITY_SIGNATURE_SIZE], const BYTE* message, size_t size) const

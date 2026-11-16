@@ -187,9 +187,8 @@ set(MU_SOURCES
     src/net/HWID.cpp
     src/game/entity/Entity_Init.cpp
     src/game/entity/Entity_MoveClient.cpp
-    src/game/entity/Character_Motion.cpp
     src/game/entity/CharacterVisual_Models.cpp
-    src/game/entity/CharacterVisual_Models.h
+    src/game/entity/Character_Motion.cpp
     src/game/entity/Entity_Spawn.cpp
     src/render/Scene_CharPreview.cpp
     src/scenes/Scene_Resources.cpp
@@ -408,7 +407,6 @@ set(MU_SOURCES
     src/scenes/Scene_ObjectInteraction.cpp
     src/scenes/Scene_ObjectUpdate.cpp
     src/scenes/WorldObject_Behavior.cpp
-    src/scenes/WorldObject_Behavior.h
     src/render/BMD_SkinUpdate.cpp
     src/app/debug/Benchmark.cpp
 )
@@ -442,6 +440,8 @@ set(MU_HEADERS
     src/app/config/Config.h
     src/app/config/ServerConfig.h
     src/app/config/UserSettings.h
+    src/game/entity/CharacterVisual_Models.h
+    src/scenes/WorldObject_Behavior.h
     src/ui/DialogMessage.h
     src/ui/UIState.h
     src/ui/ChatTypes.h

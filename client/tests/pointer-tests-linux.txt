@@ -207,6 +207,7 @@ tests/ParticleOwnerPointer.py --generator Ninja
 tests/SoundTablePointer.py --generator Ninja
 tests/MonsterSpawnPointer.py --generator Ninja
 tests/NpcModelPointer.py --generator Ninja
+tests/MonsterModelPointer.py --generator Ninja
 tests/InventoryPosePointer.py --generator Ninja
 tests/MapInfoPointer.py --generator Ninja
 tests/WorldModelsPointer.py --generator Ninja

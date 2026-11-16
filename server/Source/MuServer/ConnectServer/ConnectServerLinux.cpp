@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MiniDump.h"
+#include "ClientContent.h"
 #include "SecureLink.h"
 #include "ServerDisplayer.h"
 #include "ServerList.h"
@@ -28,6 +29,9 @@ int main()
 		// La clave del canal cifrado (la genera el GameServer en Data/Keys).
 		gSecureLink.Refresh();
 
+		// Los .toml del cliente que se reparten por el canal (Data/ClientContent).
+		gClientContent.Refresh(true);
+
 		if (gSocketManager.Start(ConnectServerPortTCP) != 0)
 		{
 			if (gSocketManagerUdp.Start(ConnectServerPortUDP) != 0)
@@ -52,6 +56,7 @@ int main()
 		{
 			gServerList.MainProc();
 			gSecureLink.Refresh();
+			gClientContent.Refresh();
 			nextList = now + std::chrono::seconds(1);
 		}
 

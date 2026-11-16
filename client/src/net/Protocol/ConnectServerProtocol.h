@@ -61,4 +61,62 @@ struct PMSG_CUSTOM_SERVER_LIST
 static_assert(sizeof(PMSG_CUSTOM_SERVER_LIST) == 34, "F4:04 entrada");
 static_assert(offsetof(PMSG_CUSTOM_SERVER_LIST, ServerName) == 2, "F4:04 ServerName");
 
+// ── Contenido del cliente (ClientContent del ConnectServer) ─────────────────
+// Sólo por el canal cifrado.  Sin relleno entre campos (#pragma pack(1) en los
+// dos lados).  El cliente pide el manifiesto de a partes (F4:10 → F4:11) y los
+// archivos de a pedazos (F4:12 → F4:13).
+#pragma pack(push, 1)
+
+enum ContentResult : std::uint8_t {
+    CONTENT_OK = 0,
+    CONTENT_NOT_SECURE = 1,     // la conexión no tiene canal cifrado
+    CONTENT_CHANGED = 2,        // el manifiesto cambió: volver a pedirlo
+    CONTENT_BAD_REQUEST = 3,    // índice u offset fuera de rango
+};
+
+struct PMSG_CONTENT_MANIFEST_RECV
+{
+    PSBMSG_HEAD header;     // C1:F4:10
+    std::uint32_t serial;   // 0 = la versión actual
+    std::uint16_t first;
+};
+static_assert(sizeof(PMSG_CONTENT_MANIFEST_RECV) == 10, "F4:10");
+
+// Seguido de `count` entradas: BYTE largo, ruta (relativa a Content/, con '/'),
+// DWORD tamaño, BYTE sha256[32].
+struct PMSG_CONTENT_MANIFEST_SEND
+{
+    PSWMSG_HEAD header;     // C2:F4:11
+    std::uint8_t result;
+    std::uint32_t serial;
+    std::uint16_t total;
+    std::uint16_t first;
+    std::uint8_t count;
+};
+static_assert(sizeof(PMSG_CONTENT_MANIFEST_SEND) == 15, "F4:11");
+
+struct PMSG_CONTENT_FILE_RECV
+{
+    PSBMSG_HEAD header;     // C1:F4:12
+    std::uint32_t serial;
+    std::uint16_t index;
+    std::uint32_t offset;
+};
+static_assert(sizeof(PMSG_CONTENT_FILE_RECV) == 14, "F4:12");
+
+// Seguido de `length` bytes del archivo desde `offset`.
+struct PMSG_CONTENT_FILE_SEND
+{
+    PSWMSG_HEAD header;     // C2:F4:13
+    std::uint8_t result;
+    std::uint32_t serial;
+    std::uint16_t index;
+    std::uint32_t offset;
+    std::uint32_t size;     // tamaño del archivo entero
+    std::uint16_t length;
+};
+static_assert(sizeof(PMSG_CONTENT_FILE_SEND) == 22, "F4:13");
+
+#pragma pack(pop)
+
 } // namespace Proto

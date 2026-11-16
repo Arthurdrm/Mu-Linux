@@ -5,11 +5,7 @@
 #include "SecureRandom.h"
 #include "ServerIdentity.h"
 #include "Util.h"
-#include <cstdlib>
 #include <string>
-#ifndef _WIN32
-#include <unistd.h>
-#endif
 
 CSecureLink gSecureLink;
 
@@ -18,23 +14,7 @@ namespace
 	// La misma carpeta Data que usa el GameServer (CServerInfo::ReadInit).
 	std::string KeyFolder()
 	{
-#ifndef _WIN32
-		const char* env = std::getenv("MU_DATA_PATH");
-
-		if (env != nullptr && env[0] != '\0')
-		{
-			return std::string(env) + "/Keys";
-		}
-
-		if (access("/opt/mu/Data", F_OK) == 0)
-		{
-			return "/opt/mu/Data/Keys";
-		}
-
-		return "../Data/Keys";
-#else
-		return "..\\Data\\Keys";
-#endif
+		return GetDataPath() + "Keys";
 	}
 }
 

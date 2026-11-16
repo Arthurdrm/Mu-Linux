@@ -2,8 +2,40 @@
 #include "Util.h"
 #include "ClientManager.h"
 #include "SocketManager.h"
+#include <cstdlib>
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 int gClientCount = 0;
+
+std::string GetDataPath()
+{
+#ifndef _WIN32
+	const char* env = std::getenv("MU_DATA_PATH");
+
+	if (env != nullptr && env[0] != '\0')
+	{
+		std::string path(env);
+
+		if (path.back() != '/')
+		{
+			path += '/';
+		}
+
+		return path;
+	}
+
+	if (access("/opt/mu/Data", F_OK) == 0)
+	{
+		return "/opt/mu/Data/";
+	}
+
+	return "../Data/";
+#else
+	return "..\\Data\\";
+#endif
+}
 
 void ConnectServerTimeoutProc()
 {

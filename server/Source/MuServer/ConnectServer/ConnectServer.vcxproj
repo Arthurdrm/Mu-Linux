@@ -95,6 +95,7 @@
     <None Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ClientContent.h" />
     <ClInclude Include="ClientManager.h" />
     <ClInclude Include="ConnectServer.h" />
     <ClInclude Include="ConnectServerProtocol.h" />
@@ -125,6 +126,7 @@
     <ClInclude Include="..\Common\UtilCommon.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientContent.cpp" />
     <ClCompile Include="ClientManager.cpp" />
     <ClCompile Include="ConnectServer.cpp" />
     <ClCompile Include="ConnectServerProtocol.cpp" />

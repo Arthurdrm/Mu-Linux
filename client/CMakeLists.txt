@@ -187,6 +187,7 @@ set(MU_SOURCES
     src/net/HWID.cpp
     src/game/entity/Entity_Init.cpp
     src/game/entity/Entity_MoveClient.cpp
+    src/game/entity/CharacterVisual_Models.cpp
     src/game/entity/Character_Motion.cpp
     src/game/entity/Entity_Spawn.cpp
     src/render/Scene_CharPreview.cpp
@@ -437,6 +438,7 @@ set(MU_HEADERS
     src/app/config/Config.h
     src/app/config/ServerConfig.h
     src/app/config/UserSettings.h
+    src/game/entity/CharacterVisual_Models.h
     src/ui/DialogMessage.h
     src/ui/UIState.h
     src/ui/ChatTypes.h

@@ -61,7 +61,12 @@ def harness(revision=None):
     start=source.index('void __cdecl MoveCharacterVisual(intptr_t entity_ptr)')
     end=source.index('// SafeZone update por frame',start)
     prefix=source[start:end].replace('MoveCharacterVisual(','ModelPrefix(',1)+'\n}\n'
-    tail=source[end:];base=r'(?:\(int\)model|static_cast<BYTE\*>\(model\))'
+    tail=source[end:]
+    # S11: el switch por modelo pasó a CharacterVisual_Models.cpp; las
+    # revisiones anteriores no lo tienen y todo sigue en Character_Motion.
+    try:tail+=read_source('src/game/entity/CharacterVisual_Models.cpp',revision)
+    except Exception:pass
+    base=r'(?:\(int\)model|static_cast<BYTE\*>\(model\))'
     bones=re.findall(r'\*\(short \*\)\('+base+r' \+ 34\)',tail)
     roots=re.findall(r'\*\(int \*\)\('+base+r' \+ 84\)',tail)
     if len(bones)!=2 or len(roots)!=1:raise ValueError('Lecturas de modelo inesperadas')

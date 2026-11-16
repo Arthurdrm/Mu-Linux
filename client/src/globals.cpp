@@ -1759,34 +1759,6 @@ char   DAT_083a4100       = 0;            // Lorencia models-loaded flag
 // Was 1 byte → OpenWorldModels case 7 (Icarus map) wrote 32 filename strings
 // past the global → heap corruption on map enter. IDA bound: 0x83a91d8 - 0x83a8ad8 = 0x700.
 
-// ── BMD_SkinUpdate (0x0040b630) ──────────────────────────────────────────────
-int    DAT_00590c10       = 0;            // skinned vertex count
-float  DAT_055c4068       = 0.0f;         // bone world-vertex array base
-float  DAT_00593008       = 0.0f;         // source vertex position array base
-short  DAT_00590c32       = 0;            // parent-bone index array base
-float  DAT_055c4038       = 0.0f;         // bone world-position matrix base
-float  DAT_055c4098       = 0.0f;         // bone world-pos X
-float  DAT_055c409c       = 0.0f;         // bone world-pos Y
-float  DAT_055c40a0       = 0.0f;         // bone world-pos Z
-int    DAT_00593968       = 0;            // triangle count
-BYTE   DAT_0059396a       = 0;            // material name array base (stride 0x20)
-float  DAT_00608c70       = 0.0f;         // triangle vertex data base
-short  DAT_0080a428       = 0;            // UV index count per mesh group
-short  DAT_0080a42a       = 0;            // normal index count per mesh group
-short  DAT_0080a42c       = 0;            // vertex index count per mesh group
-short  DAT_008097a0       = 0;            // material group count accumulator
-BYTE   DAT_008097a2       = 0;            // material name table base
-float  DAT_0080a424       = 0.0f;         // packed vertex buffer base
-short  DAT_00879588       = 0;            // vertex index table base
-short  DAT_00896a48       = 0;            // UV index table base
-short  DAT_00831530       = 0;            // UV name/linked-vert table base
-float  DAT_00831534       = 0.0f;         // UV coordinate data base
-float  DAT_0083153c       = 0.0f;         // UV extra/Z channel base
-short  DAT_00831540       = 0;            // UV linked vertex index table base
-float  DAT_00862270       = 0.0f;         // normal data base
-float  DAT_00862274       = 0.0f;         // normal Y channel base
-short  DAT_008b3f08       = 0;            // normal index table base
-
 // ── Parse_NextToken (0x0050e2c0) ─────────────────────────────────────────────
 int    ParserCurrentToken = 0;             // DAT_083A40F4 — last token type code
 float  ParserTokenNumber  = 0.0f;          // DAT_083A40F8 — last numeric token value

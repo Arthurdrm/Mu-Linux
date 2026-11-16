@@ -65,14 +65,14 @@
 //     GL_ResetState();   // GL_ResetBlend()
 //     SetBackgroundTextColor = 0x80000000;
 //
-//     // BLOQUE 1: buff activo (DAT_05826d30 != '\0' && entity[0x1da] != -1)
-//     if (DAT_05826d30 != '\0' && *(short*)(DAT_07abf5d8+0x1da) != -1) {
+//     // BLOQUE 1: buff activo (EnableGuildWar != '\0' && entity[0x1da] != -1)
+//     if (EnableGuildWar != '\0' && *(short*)(DAT_07abf5d8+0x1da) != -1) {
 //       GL_SetBlendSrcOver('\x01');   // GL_SetMode(1)
 //       iVar3 = GetScreenWidth(); // Screen_GetWidth()
 //       fVar2 = (float)iVar3 * 0.5f - _DAT_005524fc;   // X centrado
 //       gFont.SelectFont(DC, font_small);
-//       // Color según DAT_05826d32:
-//       DAT_00559c78 = DAT_05826d32 ? 0x005901 : 0xffc301;   // verde o amarillo
+//       // Color según HeroSoccerTeam:
+//       DAT_00559c78 = HeroSoccerTeam ? 0x005901 : 0xffc301;   // verde o amarillo
 //       CreateGuildMark((int)*(short*)(DAT_07abf5d8+0x1da), '\x01'); // compone el mark propio
 //       Texture_Draw2D(0x22, fVar2, 4.0, 8.0, 8.0, 0,0,1,1, '\x01', '\x01');
 //       crt_sprintf(local_64, &DAT_00559ef0);   // format buff name
@@ -82,13 +82,13 @@
 //       DrawText(ftol()+0x1e, 4, lpString, 0, 1, 0);
 //
 //       // Buscar icono del buff (search en tabla &DAT_07e919bc..0x7ea51ec stride 0x50)
-//       // comparando con &lpString_05826bfc
+//       // comparando con GuildWarName
 //       // Color hover: 0xff00a6ff o 0x9600
 //       CreateGuildMark(found_idx, '\x01');   // compone el mark encontrado
 //       Texture_Draw2D(0x22, fVar2, 19.0, 8.0, 8.0, ...);
 //       crt_sprintf(local_64, &DAT_00559ef4);   // segundo stat
 //       DrawText(ftol()+0xd, 0x13, local_64, 0, 1, 0);
-//       DrawText(ftol()+0x1e, 0x13, &lpString_05826bfc, 0, 1, 0);
+//       DrawText(ftol()+0x1e, 0x13, GuildWarName, 0, 1, 0);
 //     }
 //
 //     // BLOQUE 2: segundo buff (DAT_05826d33 != '\0')
@@ -111,10 +111,10 @@
 //   Entity offsets relevantes:
 //   entity + 0x1da  → short: buff slot activo (-1 = ninguno)
 //   DAT_07e919bc    → tabla de buffs (stride 0x50 bytes)
-//   lpString_05826bfc → nombre buff actual
+//   GuildWarName → nombre buff actual
 //   lpString_05826cc0 → nombre buff 2
 //   lpString_05826cc9 → nombre buff 2b
-//   DAT_05826d30..d33 → flags de buff activo
+//   EnableGuildWar..d33 → flags de buff activo
 //   DAT_05826c08    → kill counter
 //
 // ══════════════════════════════════════════════════════════════════════════════

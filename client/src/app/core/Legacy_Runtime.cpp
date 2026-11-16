@@ -8,16 +8,7 @@
 #include "render/Camera.h"
 
 // ── Missing globals (extern-declared in various .cpp but never defined) ──────
-// Trade.cpp
-BYTE  g_trade_active   = 0;   // DAT_05826d30
-BYTE  g_duel_mode      = 0;   // DAT_05826d31
-BYTE  g_trade_param    = 0;   // DAT_05826d32
-BYTE  g_trade_accepted = 0;   // DAT_05826c04
-DWORD g_trade_requester= 0;   // DAT_05826c00
-char  g_active_shop_name[4]= {};  // lpString_05826bfc
-int   g_cached_shop_slot   = 0;   // DAT_00559684
 BYTE* g_EntityBase    = nullptr;  // DAT_07abf5d0
-intptr_t g_LocalEntity = 0;        // DAT_07abf5d8
 
 // Sound.cpp — real DirectSound8 globals live in globals.cpp:
 //   g_EnableSound, g_Enable3DSound, g_lpDS, g_lpDS3DListener, wavefile,

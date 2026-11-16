@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Direcciones nativas del helper legado; conserva su mapeo y saver inactivo."""
+"""Direcciones nativas del helper legado (SkillAttribute_LoadNames); conserva su mapeo."""
 import argparse
 import os
 from pathlib import Path
@@ -33,16 +33,16 @@ std::uint64_t Run(BYTE* memory){table=reinterpret_cast<char*>(memory+16);std::ui
   Hash(hash,memory,2592);++queries;
  }}
  Require(queries==8816);BYTE before[2592];std::memcpy(before,memory,2592);failOpen=true;openCalls=tokenCalls=step=0;SkillAttribute_LoadNames("fixture.txt");Require(openCalls==1 && tokenCalls==0 && !SMDFile_0 && std::memcmp(memory,before,2592)==0);
- openCalls=tokenCalls=0;SkillAttribute_SaveBin("fixture.txt");Require(openCalls==0 && tokenCalls==0 && std::memcmp(memory,before,2592)==0);Require(std::fseek(opened,0,SEEK_SET)==0);std::fclose(opened);return hash;
+ std::fclose(opened);return hash;
 }
-int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));Require(low);const auto expected=Run(low);if(sizeof(void*)>4){auto* high=static_cast<BYTE*>(Reserve(std::uint64_t(0x126000000ull)));Require(high);std::memset(low,0x7b,2592);Require(Run(high)==expected);for(unsigned i=0;i<2592;++i)Require(low[i]==0x7b);std::puts("destino legado alto; alias bajo intacto y saver sin efectos");}std::printf("Legacy text: 8816 consultas %016llx\n",static_cast<unsigned long long>(expected));}
+int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));Require(low);const auto expected=Run(low);if(sizeof(void*)>4){auto* high=static_cast<BYTE*>(Reserve(std::uint64_t(0x126000000ull)));Require(high);std::memset(low,0x7b,2592);Require(Run(high)==expected);for(unsigned i=0;i<2592;++i)Require(low[i]==0x7b);std::puts("destino legado alto; alias bajo intacto");}std::printf("Legacy text: 8816 consultas %016llx\n",static_cast<unsigned long long>(expected));}
 '''
 
 def harness(revision=None):
     source=read_source('src/scenes/Scene_CharSelect_Nav.cpp',revision)
     header=read_source('src/globals.h',revision)
     entry=re.search(r'struct _SkillAttrEntry\s*\{[^}]+\};',header).group(0)
-    return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES.replace('ENTRY',entry)+'\n'+function(source,'SkillAttribute_LoadNames')+'\n'+function(source,'SkillAttribute_SaveBin')+MAIN
+    return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES.replace('ENTRY',entry)+'\n'+function(source,'SkillAttribute_LoadNames')+MAIN
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)

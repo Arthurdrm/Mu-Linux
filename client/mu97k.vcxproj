@@ -707,7 +707,6 @@
     <ClCompile Include="src\scenes\Scene_ObjectInteraction.cpp" />
     <ClCompile Include="src\scenes\Scene_ObjectUpdate.cpp" />
     <ClCompile Include="src\scenes\WorldObject_Behavior.cpp" />
-    <ClCompile Include="src\render\BMD_SkinUpdate.cpp" />
     <ClCompile Include="src\app\debug\Benchmark.cpp" />
   </ItemGroup>
 

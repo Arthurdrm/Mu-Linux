@@ -796,36 +796,6 @@ void __cdecl LoadGlobalTextBin(const char *param_1)
     LoadTextData_Bin(param_1);
 }
 
-// SkillAttribute_SaveBin @ 0x00479950 — SkillAttribute_SaveBin (binary file)
-// Guarda la tabla SkillAttribute a un archivo binario, encriptando con XOR cada
-// entrada de 300 bytes con BuxConvert_0 antes de escribirla.
-void __cdecl SkillAttribute_SaveBin(const char *param_1)
-{
-    return;  // AUTO-SKIP: absolute end-bound loop (Ghidra artifact — pool not populated in our build).
-    FILE *pFile = Platform::GetFileSystem().Open(param_1, (const char *)&DAT_005597d4);
-    BYTE *Buffer = (BYTE *)operator_new(300);
-
-    char *pcVar3 = reinterpret_cast<char *>(&SkillAttribute) + 4;
-    int nRowGT = 0;
-    do {
-        BYTE *pBuf = Buffer;
-        char *pcVar4 = pcVar3;
-        for (int i = 0x4b; i != 0; i--, pcVar4 += 4, pBuf += 4)
-            *(DWORD *)pBuf = *(DWORD *)pcVar4;
-        BuxConvert_0(Buffer, 300);
-        crt_fwrite((char *)Buffer, 300, 1, (int *)pFile);
-        pcVar3 += 300;
-        // IDA usa la dirección absoluta 0x7d73104 como bound. La base es
-        // `&SkillAttribute + 4` = 0x07D29D24 = GlobalText[0], y
-        // (0x7D73104 - 0x7D29D24) / 300 = 1000 -- las 1000 filas de GlobalText.
-        // (Confirma que esta funcion escribe GlobalText, no SkillAttribute.)
-        if (++nRowGT >= 1000) break;
-    } while (true);
-
-    operator_delete(Buffer);
-    fclose(pFile);
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Terrain helpers
 // ─────────────────────────────────────────────────────────────────────────────

@@ -1610,34 +1610,6 @@ extern char    DAT_083a4100;          // flag: Lorencia object models already lo
 // DAT_005580ac — declared above (file open mode char)
 // DAT_083a410c, DAT_0055a7c4, World, DAT_05828d58 — declared above
 
-// ── BMD_SkinUpdate (0x0040b630) ──────────────────────────────────────────────
-extern int     DAT_00590c10;          // skinned vertex count
-extern float   DAT_055c4068;          // bone output world-vertex array base   (stride 0x1b floats)
-extern float   DAT_00593008;          // source vertex position array          (stride 3 floats)
-extern short   DAT_00590c32;          // parent-bone index array               (stride 0x11 shorts)
-extern float   DAT_055c4038;          // bone world-position matrix array base (stride 0x6c bytes)
-extern float   DAT_055c4098;          // bone world-pos X component            (stride 0x1b)
-extern float   DAT_055c409c;          // bone world-pos Y component
-extern float   DAT_055c40a0;          // bone world-pos Z component
-extern int     DAT_00593968;          // triangle count
-extern BYTE    DAT_0059396a;          // material name array base (stride 0x20, parallel to triangle data)
-extern float   DAT_00608c70;          // triangle vertex data (9 floats/vert: bone,x,y,z,nx,ny,nz,u,v)
-extern short   DAT_0080a428;          // UV index count per mesh group
-extern short   DAT_0080a42a;          // normal index count per mesh group
-extern short   DAT_0080a42c;          // vertex index count per mesh group
-extern short   DAT_008097a0;          // material group count (build loop accumulator)
-extern BYTE    DAT_008097a2;          // material name table base (stride 0x20 bytes per entry)
-extern float   DAT_0080a424;          // packed vertex buffer (stride 0x31be9 floats per mesh group)
-extern short   DAT_00879588;          // vertex index table   (stride 0x637d2 per mesh group)
-extern short   DAT_00896a48;          // UV index table       (same stride)
-extern short   DAT_00831530;          // UV name/linked-vert table
-extern float   DAT_00831534;          // UV coordinate data   (stride 0x31be9)
-extern float   DAT_0083153c;          // UV extra/Z channel
-extern short   DAT_00831540;          // UV linked vertex index table
-extern float   DAT_00862270;          // normal data          (stride 0x31be9)
-extern float   DAT_00862274;          // normal Y channel
-extern short   DAT_008b3f08;          // normal index table   (stride 0x637d2)
-
 // ── RenderObjectScreen (0x004e13a0) ──────────────────────────────────────────
 // Estos globals guardan la pose de render por frame del item/objeto que se está mostrando.
 extern float   ObjectSelect_Angle;         // item render: rotation X offset  [IDA 0x07EA952C]

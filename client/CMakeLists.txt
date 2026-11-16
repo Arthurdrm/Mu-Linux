@@ -408,7 +408,6 @@ set(MU_SOURCES
     src/scenes/Scene_ObjectInteraction.cpp
     src/scenes/Scene_ObjectUpdate.cpp
     src/scenes/WorldObject_Behavior.cpp
-    src/render/BMD_SkinUpdate.cpp
     src/app/debug/Benchmark.cpp
 )
 

@@ -257,9 +257,17 @@ def harness(revision=None):
                        "WorldObject_EmitFireSmoke")
     angles = function(read_source("src/game/math/Math_LegacyTransforms.cpp", revision), "AngleMatrix")
     rotate = function(read_source("src/game/math/Math_3D.cpp", revision), "Vector_Rotate")
-    start = scene.index("struct SceneFlamePreset {")
-    end = scene.index("} // namespace", start)
-    flames = scene[start:end]
+    try:
+        # S12: las llamas y el resto del tick por mapa viven en WorldObject_Behavior.cpp.
+        behavior = read_source("src/scenes/WorldObject_Behavior.cpp", revision)
+    except Exception:
+        behavior = None
+    if behavior is not None:
+        flames = behavior[behavior.index("namespace {"):]
+    else:
+        start = scene.index("struct SceneFlamePreset {")
+        end = scene.index("} // namespace", start)
+        flames = scene[start:end]
     call = "FUN_004fdc00(reinterpret_cast<OBJECT*>(object));"
     if "float o)" in tick:
         call = ("float bits; const auto address = static_cast<DWORD>("

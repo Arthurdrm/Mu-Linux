@@ -135,6 +135,7 @@
     <ClInclude Include="src\app\config\ServerConfig.h" />
     <ClInclude Include="src\app\config\UserSettings.h" />
     <ClInclude Include="src\game\entity\CharacterVisual_Models.h" />
+    <ClInclude Include="src\scenes\WorldObject_Behavior.h" />
     <ClInclude Include="src\ui\DialogMessage.h" />
     <ClInclude Include="src\ui\UIState.h" />
     <ClInclude Include="src\ui\ChatTypes.h" />
@@ -701,6 +702,7 @@
     <ClCompile Include="src\ui\RenderItemInfo.cpp" />
     <ClCompile Include="src\scenes\Scene_ObjectInteraction.cpp" />
     <ClCompile Include="src\scenes\Scene_ObjectUpdate.cpp" />
+    <ClCompile Include="src\scenes\WorldObject_Behavior.cpp" />
     <ClCompile Include="src\render\BMD_SkinUpdate.cpp" />
     <ClCompile Include="src\app\debug\Benchmark.cpp" />
   </ItemGroup>

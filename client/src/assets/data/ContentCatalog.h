@@ -11,6 +11,7 @@
 #include "platform/PlatformHeaders.h"
 #include "game/item/ItemDefines.h"
 #include "net/Protocol/GameServerProtocol.h"
+#include <string>
 
 struct CatalogItemPose
 {
@@ -73,6 +74,9 @@ public:
     // que hay guardado.  ReceiveSync: F3:F6, carga de disco lo que el server
     // no va a mandar.
     void SetServer(const char* ip, unsigned int port);
+
+    // Nombre de la carpeta de un server en User/Cache ("<ip>_<puerto>").
+    static std::string CacheId(const char* ip, unsigned int port);
     void SendCacheList();
     void ReceiveSignature(const BYTE* msg, int size);   // F3/FC, antes del F3/F6
     void ReceiveSync(const BYTE* msg, int size);   // F3/F6

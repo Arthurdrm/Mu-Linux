@@ -576,18 +576,23 @@ void CContentCatalog::ApplySkills()
     Log("ContentCatalog: %d skills", count);
 }
 
+std::string CContentCatalog::CacheId(const char* ip, unsigned int port)
+{
+    std::string id;
+    for (const char* p = ip; *p; ++p)
+        id += (isalnum((unsigned char)*p) || *p == '.' || *p == '-') ? *p : '_';
+    char suffix[16];
+    Platform::TextFormat(suffix, "_%u", port);
+    return id + suffix;
+}
+
 void CContentCatalog::SetServer(const char* ip, unsigned int port)
 {
     s_CacheDir.clear();
     Platform::ContentLayers::SetServer("");
     ServerTrust::SetServer("");
     if (!ip || !*ip) return;
-    std::string id;
-    for (const char* p = ip; *p; ++p)
-        id += (isalnum((unsigned char)*p) || *p == '.' || *p == '-') ? *p : '_';
-    char suffix[16];
-    Platform::TextFormat(suffix, "_%u", port);
-    id += suffix;
+    const std::string id = CacheId(ip, port);
     s_CacheDir = std::string(Platform::UserDir()) + "Cache/" + id;   // Fase 5 (E1): User/
     ServerTrust::SetServer(s_CacheDir);   // Fase 5 (C3): ahí va también la clave fijada
     // Fase 5 (E2): el contenido propio del server va en Servers/<mismo id>.

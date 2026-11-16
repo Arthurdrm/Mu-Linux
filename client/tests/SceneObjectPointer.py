@@ -21,6 +21,12 @@ import re
 import subprocess
 import tempfile
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -211,7 +217,7 @@ int main() {
 def harness(revision=None):
     header = read_source("src/globals.h", revision)
     globals_source = read_source("src/globals.cpp", revision)
-    declaration = re.search(r"extern [^;\n]*\bModels\s*;", header).group()
+    declaration = optional_definition(re.search(r"extern [^;\n]*\bModels\s*;", header))
     definition = re.search(r"^[^/\n]*\bModels\s*=\s*[^;]+;", globals_source, re.M).group()
     initializers = []
     for path in ("src/platform/ClientEntry.cpp", "src/assets/model/PlayerModels.cpp"):

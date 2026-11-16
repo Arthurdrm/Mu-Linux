@@ -14,6 +14,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #include <string>
 #include <array>
@@ -242,8 +248,8 @@ def harness(revision=None):
     for name in names:
         # DAT_083a7c0c paso a llamarse g_iNumAnswer (T8e).
         if name=="DAT_083a7c0c" and not re.search(r"\bDAT_083a7c0c\s*;",header): name="g_iNumAnswer"
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     # g_lpszMessageBoxCustom era un alias con cast de DAT_083a44c4 hasta la T8i.
     for name in ("DAT_083a44c4","g_lpszMessageBoxCustom","g_lpszDialogAnswer"):
         match=re.search(rf"extern [^;\n]*\b{name}\[[^;]+;",header)

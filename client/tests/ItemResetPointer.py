@@ -14,6 +14,12 @@ from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from LegacyEntityLayout import opaque_cloth_fields
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 using float10=long double;
 using undefined4=std::uint32_t;
@@ -104,8 +110,8 @@ def harness(revision=None):
     source = read_source("src/game/entity/Entity_Reset.cpp", revision)
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     for name in sorted(set(re.findall(r"_DAT_\w+|\bWorldTime\b", source))):
-        prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
-        prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
+        prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
+        prefix += optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M))
     for name in ("ItemObjectAttributeImpl", "ItemObjectAttribute", "ItemObjectAttributeForRender"):
         prefix += function(source, name)
     arg = "object" if "ItemObjectAttribute(OBJECT*" in source else "static_cast<int>(reinterpret_cast<std::uintptr_t>(object))"

@@ -13,6 +13,12 @@ import tempfile
 from ItemSpecialPointer import harness as special_harness, MAIN as SPECIAL_MAIN
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 BYTE* activeMachine;
 bool serverApply;
@@ -95,7 +101,7 @@ def harness(revision=None):
     prefix += function(SPECIAL_MAIN, "ExpectedPlus")
     header, globals_source = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     name = "CharacterAttribute"
-    prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+    prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
     prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     speed = function(read_source("src/scenes/Scene_CharSelect_Nav.cpp", revision), "CalculateAttackSpeed")
     arg = "machine" if "BYTE* param_1" in speed else "static_cast<int>(reinterpret_cast<std::uintptr_t>(machine))"

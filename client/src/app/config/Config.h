@@ -12,7 +12,7 @@
 //   MusicOnOff  -> g_MusicOn
 //   Resolution  -> sets g_ScreenW / g_ScreenH:
 //     0=640x480  1=800x600  2=1024x768  3=1280x1024  4=1600x1200
-//   TextOut     -> g_TextOut
+//   TextOut     -> g_iRenderTextType
 // config.ini [LOGIN] Version=
 // Returns 1 on success, 0 on failure.
 // @ 0x0041E0A0
@@ -29,7 +29,6 @@ int  Config_ReadServerAddr(void* pConfig, char* lpCmdLine, char* outIP, unsigned
 extern DWORD g_SoundOn;    // lpData_055c9fe8  (1 = sound on)
 // Música: gSound.GetMusicEnabled()/SetMusicEnabled().
 extern DWORD g_Resolution; // lpData_055c9e38 (0-4)
-extern DWORD g_TextOut;    // lpData_055ca044
 
 // -- Modo ventana (DESVIACION DELIBERADA) ------------------------------------
 // El 0.97k sólo corre a pantalla completa con un modo de video de 16 bits, que en

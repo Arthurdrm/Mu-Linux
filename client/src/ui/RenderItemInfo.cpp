@@ -6,7 +6,7 @@
 #include "game/item/Item_ServerValue.h"
 
 // RenderItemInfo.cpp  @0x004C4650 / 0x004C8D70
-// Populates the item info tooltip string buffer (lpString_07e90798, stride 100, ~0x18 slots)
+// Populates the item info tooltip string buffer (TextList, stride 100, ~0x18 slots)
 // and the color-flag array (TextListColor). Called from inventory/shop tooltip draw path.
 
 // SEH wrapper (desviación): RenderItemInfo / RenderRepairInfo envuelven el
@@ -408,7 +408,7 @@ static void AppendInventorySpecialTooltipLines(ITEM* ip)
     auto addLine = [](const char* text, int color, bool bold = false) {
         if (!text || !text[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, "%s", text);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -418,7 +418,7 @@ static void AppendInventorySpecialTooltipLines(ITEM* ip)
     auto addFmt = [](const char* fmt, int value, int color, bool bold = false) {
         if (!fmt || !fmt[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, value);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -428,7 +428,7 @@ static void AppendInventorySpecialTooltipLines(ITEM* ip)
     auto addFmt2 = [](const char* fmt, int value1, int value2, int color, bool bold = false) {
         if (!fmt || !fmt[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, value1, value2);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -438,7 +438,7 @@ static void AppendInventorySpecialTooltipLines(ITEM* ip)
     auto addFmtStr = [](const char* fmt, const char* text, int color, bool bold = false) {
         if (!fmt || !fmt[0] || !text || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, text);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -683,7 +683,7 @@ static void AppendInventoryDurabilityTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* p, u
     auto addLine = [](const char* text, int color, bool bold = false) {
         if (!text || !text[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, "%s", text);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -693,7 +693,7 @@ static void AppendInventoryDurabilityTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* p, u
     auto addFmt = [](const char* fmt, int value, int color, bool bold = false) {
         if (!fmt || !fmt[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, value);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -703,7 +703,7 @@ static void AppendInventoryDurabilityTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* p, u
     auto addFmt2 = [](const char* fmt, int value1, int value2, int color, bool bold = false) {
         if (!fmt || !fmt[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, value1, value2);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -787,7 +787,7 @@ static void AppendInventoryLateBonusTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* p)
     auto addLine = [](const char* text, int color, bool bold = false) {
         if (!text || !text[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, "%s", text);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -797,7 +797,7 @@ static void AppendInventoryLateBonusTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* p)
     auto addFmt = [](const char* fmt, int value, int color, bool bold = false) {
         if (!fmt || !fmt[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, value);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -977,7 +977,7 @@ static void AppendInventorySpecialOptionLines(ITEM* ip, ITEM_ATTRIBUTE* p)
     auto addLine = [](const char* text, int color, bool bold = false) {
         if (!text || !text[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, "%s", text);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -987,7 +987,7 @@ static void AppendInventorySpecialOptionLines(ITEM* ip, ITEM_ATTRIBUTE* p)
     auto addFmt = [](const char* fmt, int value, int color, bool bold = false) {
         if (!fmt || !fmt[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, value);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = bold ? 1 : 0;
@@ -1004,7 +1004,7 @@ static void AppendInventorySpecialOptionLines(ITEM* ip, ITEM_ATTRIBUTE* p)
         const BYTE special = ip->Special[i];
         const int value = (int)ip->SpecialValue[i];
         int manaCost = 0;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         GetSkillInformation((int)special, 1, NULL, &manaCost, NULL, NULL);
         bool wrote = GetInventorySpecialOptionText(ip->Type, special, (BYTE)value, manaCost, dst, 100);
 
@@ -1061,7 +1061,7 @@ static void AppendInventoryRequirementTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* pAt
         if (!fmt || !fmt[0] || reqVal <= 0 || TextNum >= 28)
             return;
 
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, fmt, reqVal);
 
         const bool missing = currentVal < reqVal;
@@ -1070,7 +1070,7 @@ static void AppendInventoryRequirementTooltipLines(ITEM* ip, ITEM_ATTRIBUTE* pAt
         TextNum++;
 
         if (missing && TextNum < 28) {
-            char* needDst = lpString_07e90798 + TextNum * 100;
+            char* needDst = TextList + TextNum * 100;
             if (GlobalText[74] && GlobalText[74][0]) {
                 snprintf(needDst, 100, GlobalText[74], reqVal - currentVal);
             } else {
@@ -1115,7 +1115,7 @@ static void AppendInventoryRequireClassLines(ITEM_ATTRIBUTE* pItem)
     auto addClassLine = [](const char* text, int color) {
         if (!text || !text[0] || TextNum >= 28)
             return;
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         snprintf(dst, 100, "%s", text);
         TextListColor[TextNum] = color;
         TextBold[TextNum] = 0;
@@ -1183,7 +1183,7 @@ static void AppendInventoryRequireClassLines(ITEM_ATTRIBUTE* pItem)
 // comparar las dos en el juego.
 //
 // Contrato de la lista de texto (igual que en el binario):
-//   TextList      = lpString_07e90798 (30 x 100)   TextNum
+//   TextList      = TextList (30 x 100)   TextNum
 //   TextListColor, TextBold
 //   SkipNum (dword_7EAA158) = DAT_07eaa158 (lineas de media altura)
 // Unica desviacion: RII_Line devuelve un scratch si el indice se pasa de 30,
@@ -1196,7 +1196,7 @@ void __cdecl ItemHelp_RequireClass(const BYTE* pItem);   // RequireClass (0x4C28
 static char* RII_Line(int i)
 {
     static char scratch[100];
-    return (i >= 0 && i < 30) ? lpString_07e90798 + i * 100 : scratch;
+    return (i >= 0 && i < 30) ? TextList + i * 100 : scratch;
 }
 static void RII_Style(int i, int color, int bold)
 {
@@ -1368,7 +1368,7 @@ static void RenderItemInfo_IDA(int sx, int sy, ITEM* ip, bool Sell)
     TextNum = 0;
     DAT_07eaa158 = 0;
     for (int i = 0; i < 20; ++i) TextListColor[i] = 0;    // memset(TextListColor, 0, 0x50)
-    memset(lpString_07e90798, 0, 30 * 100);             // TextList .. &pPickedItem
+    memset(TextList, 0, 30 * 100);             // TextList .. &pPickedItem
     RII_GAP();
 
     const int Level = (ip->Level >> 3) & 0xF;
@@ -1653,7 +1653,7 @@ static void RenderItemInfo_IDA(int sx, int sy, ITEM* ip, bool Sell)
 
     // ── Epilogo: alto del recuadro y dibujo (identico al port anterior) ─────
     SIZE sz = { 0, 0 };
-    gFont.MeasureText(gFont.GetTextDC(), lpString_07e90798, 1, &sz);
+    gFont.MeasureText(gFont.GetTextDC(), TextList, 1, &sz);
     const int h = sz.cy * DAT_07eaa158 / 2 + sz.cy * (TextNum - DAT_07eaa158);
     int y = sy - (int)((float)h / gWindow.GetScreenRateY());
     if (y < 0) y = sy + 20 * p->Height;
@@ -1743,7 +1743,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
     DAT_07eaa158 = 0;
 
     // Clear color array — el binario limpia SOLO 0x14 slots (bucle de 20 en
-    // 0x004c4686), aunque lpString_07e90798 tiene 30.  Se respeta tal cual: un
+    // 0x004c4686), aunque TextList tiene 30.  Se respeta tal cual: un
     // tooltip de mas de 20 lineas hereda el color de la llamada anterior en los
     // slots 20..29, igual que el original.
     for (int i = 0; i < 0x14; i++)
@@ -1751,10 +1751,10 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
 
     // Clear string table (each slot = 100 bytes, 30 slots = 3000-byte buffer).
     for (int i = 0; i < 30; ++i)
-        lpString_07e90798[i * 100] = 0;
+        TextList[i * 100] = 0;
 
     // Slot 0: item name
-    crt_sprintf(lpString_07e90798, DAT_0055a4e0);
+    crt_sprintf(TextList, DAT_0055a4e0);
     TextNum++;
     DAT_07eaa158++;
 
@@ -1813,14 +1813,14 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
         char  priceStr[32];
         FormatThousands(priceStr, sizeof(priceStr), price);
         const char* gt = GlobalText[param_4 ? 62 : 63];
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         if (gt && gt[0]) snprintf(dst, 100, gt, priceStr);
         else             snprintf(dst, 100, "%s", priceStr);
         TextListColor[TextNum] = GetInventorySpecialNameColor((ITEM*)param_3);
         TextBold[TextNum] = 1;
         TextNum++;
 
-        crt_sprintf(lpString_07e90798 + TextNum * 100, DAT_0055a4e4);
+        crt_sprintf(TextList + TextNum * 100, DAT_0055a4e4);
         TextNum++;
         DAT_07eaa158++;
     }
@@ -1834,7 +1834,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
         const char* itemName = (const char*)attrBase;   // p->Name at +0
         if (!ItemAttribute_IsRow((uintptr_t)itemName))
             itemName = "";
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         unsigned char optFlags = *(unsigned char*)((char*)param_3 + 0x1b) & 0x3f;
 
         if (!BuildInventorySpecialNameLine(it, p, level, dst, 100)) {
@@ -1866,7 +1866,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
 
     // Separador de media altura tras el nombre (switchD_004c4db2_caseD_4):
     //   sprintf(linea, DAT_0055a570);  TextNum++;  SkipNum++;
-    crt_sprintf(lpString_07e90798 + TextNum * 100, DAT_0055a570);
+    crt_sprintf(TextList + TextNum * 100, DAT_0055a570);
     TextNum++;
     DAT_07eaa158++;
 
@@ -1876,7 +1876,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
     // options on combat stats.
     auto addStatLine = [&](const char* fmt, int v1, int v2, int colorFlag) {
         if (TextNum >= 28) return;   // pool cap (30 slots minus tail)
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         if (v2 == INT_MIN) snprintf(dst, 100, fmt, v1);
         else               snprintf(dst, 100, fmt, v1, v2);
         TextListColor[TextNum] = colorFlag;
@@ -1906,7 +1906,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
             int twoHand = (int)p->TwoHand;
             int gtIdx = (twoHand & 1) ? 41 : 40;   // GlobalText[40] = "Damage", [41] = "TwoHand"
             const char* gt = GlobalText[gtIdx];
-            char* dst = lpString_07e90798 + TextNum * 100;
+            char* dst = TextList + TextNum * 100;
             if (gt && gt[0]) snprintf(dst, 100, gt, dmgMin, dmgMax);
             else             snprintf(dst, 100, "Damage: %d ~ %d", dmgMin, dmgMax);
             TextListColor[TextNum] = (excFlags != 0) ? 1 : 0;
@@ -1918,7 +1918,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
         int defense = (int)p->Defense;
         if (defense) {
             const char* gt = GlobalText[65];
-            char* dst = lpString_07e90798 + TextNum * 100;
+            char* dst = TextList + TextNum * 100;
             if (gt && gt[0]) snprintf(dst, 100, gt, defense);
             else             snprintf(dst, 100, "Defense: %d", defense);
             int hl = (itemType >= 224 && itemType < 384 &&
@@ -1932,7 +1932,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
         int magicDef = (int)p->MagicDefense;
         if (magicDef) {
             const char* gt = GlobalText[66];
-            char* dst = lpString_07e90798 + TextNum * 100;
+            char* dst = TextList + TextNum * 100;
             if (gt && gt[0]) snprintf(dst, 100, gt, magicDef);
             else             snprintf(dst, 100, "Magic Defense: %d", magicDef);
             TextListColor[TextNum] = 0;
@@ -1945,7 +1945,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
             if (it->SuccessfulBlocking) {
                 int block = (int)it->SuccessfulBlocking;
                 const char* gt = GlobalText[67];
-                char* dst = lpString_07e90798 + TextNum * 100;
+                char* dst = TextList + TextNum * 100;
                 if (gt && gt[0]) snprintf(dst, 100, gt, block);
                 else             snprintf(dst, 100, "Defense Rate: %d", block);
                 TextListColor[TextNum] = (excFlags != 0) ? 1 : 0;
@@ -1956,7 +1956,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
             // ── Attack Speed (weapons) / GlobalText[64]
             if (it->WeaponSpeed) {
                 const char* gt = GlobalText[64];
-                char* dst = lpString_07e90798 + TextNum * 100;
+                char* dst = TextList + TextNum * 100;
                 if (gt && gt[0]) snprintf(dst, 100, gt, (int)it->WeaponSpeed);
                 else             snprintf(dst, 100, "Attack Speed: %d", (int)it->WeaponSpeed);
                 TextListColor[TextNum] = 0;
@@ -1967,7 +1967,7 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
             // ── Walk Speed (boots)
             if (p->WalkSpeed) {
                 const char* gt = GlobalText[68];
-                char* dst = lpString_07e90798 + TextNum * 100;
+                char* dst = TextList + TextNum * 100;
                 if (gt && gt[0]) snprintf(dst, 100, gt, (int)p->WalkSpeed);
                 else             snprintf(dst, 100, "Walk Speed: %d", (int)p->WalkSpeed);
                 TextListColor[TextNum] = 0;
@@ -2004,13 +2004,13 @@ extern "C" void __cdecl RenderItemInfo_impl(void* param_1, void* param_2, void* 
         int  iStack_70;
         int  iVar15;
 
-        crt_sprintf(lpString_07e90798 + TextNum * 100, DAT_0055a5f0);
+        crt_sprintf(TextList + TextNum * 100, DAT_0055a5f0);
         TextNum++;
         DAT_07eaa158++;
 
         tStack_6c.cx = 0;
         tStack_6c.cy = 0;
-        gFont.MeasureText(gFont.GetTextDC(), lpString_07e90798, 1, &tStack_6c);
+        gFont.MeasureText(gFont.GetTextDC(), TextList, 1, &tStack_6c);
         iVar21 = TextNum;
         iStack_70 = (TextNum - DAT_07eaa158) * tStack_6c.cy +
                     (DAT_07eaa158 * tStack_6c.cy) / 2;
@@ -2056,7 +2056,7 @@ extern "C" void __cdecl RenderRepairInfo_impl(void* param_1, int param_2, void* 
     DAT_07eaa158 = 0;
 
     for (int i = 0; i < 30; ++i)
-        lpString_07e90798[i * 100] = 0;
+        TextList[i * 100] = 0;
 
     unsigned int level = (*(unsigned int*)(param_3 + 2) >> 3) & 0xf;
 
@@ -2081,7 +2081,7 @@ extern "C" void __cdecl RenderRepairInfo_impl(void* param_1, int param_2, void* 
     }
 
     // Slot 0: name
-    crt_sprintf(lpString_07e90798, DAT_0055a5f4);
+    crt_sprintf(TextList, DAT_0055a5f4);
     TextNum++;
     DAT_07eaa158++;
 
@@ -2103,19 +2103,19 @@ extern "C" void __cdecl RenderRepairInfo_impl(void* param_1, int param_2, void* 
     } else {
         RepairEnable_0 = 1;
     }
-    crt_sprintf(lpString_07e90798 + TextNum * 100, GlobalText[238], repairGold);
+    crt_sprintf(TextList + TextNum * 100, GlobalText[238], repairGold);
     TextListColor[TextNum] = (int)tier;   // TextListColor = v12
     TextBold[TextNum] = 1;
     TextNum++;
 
     // Slot 2: separador
-    crt_sprintf(lpString_07e90798 + TextNum * 100, DAT_0055a5fc);
+    crt_sprintf(TextList + TextNum * 100, DAT_0055a5fc);
     TextNum++;
     DAT_07eaa158++;
 
     // Slot 3: nombre del item
     {
-        char* dst = lpString_07e90798 + TextNum * 100;
+        char* dst = TextList + TextNum * 100;
         const char* itemName = ((ITEM_ATTRIBUTE*)(uintptr_t)attrBase)->Name;
         unsigned char optFlags = *(unsigned char*)((char*)param_3 + 0x1b) & 0x3f;
 
@@ -2146,13 +2146,13 @@ extern "C" void __cdecl RenderRepairInfo_impl(void* param_1, int param_2, void* 
     TextNum++;
 
     // Slot 4: separador
-    crt_sprintf(lpString_07e90798 + TextNum * 100, DAT_0055a63c);
+    crt_sprintf(TextList + TextNum * 100, DAT_0055a63c);
     TextNum++;
     DAT_07eaa158++;
 
     // Slot 5: durabilidad (solo si itemType < 0x1c0)
     if (itemType < 0x1c0) {
-        crt_sprintf(lpString_07e90798 + TextNum * 100, GlobalText[71], (int)curDur, (int)maxDur);
+        crt_sprintf(TextList + TextNum * 100, GlobalText[71], (int)curDur, (int)maxDur);
         TextListColor[TextNum] = 0;
         TextBold[TextNum] = 0;
         TextNum++;
@@ -2166,13 +2166,13 @@ extern "C" void __cdecl RenderRepairInfo_impl(void* param_1, int param_2, void* 
         int  h;
         int  yBox;
 
-        crt_sprintf(lpString_07e90798 + TextNum * 100, DAT_0055a640);
+        crt_sprintf(TextList + TextNum * 100, DAT_0055a640);
         TextNum++;
         DAT_07eaa158++;
 
         sz.cx = 0;
         sz.cy = 0;
-        gFont.MeasureText(gFont.GetTextDC(), lpString_07e90798, 1, &sz);
+        gFont.MeasureText(gFont.GetTextDC(), TextList, 1, &sz);
         h = (TextNum - DAT_07eaa158) * sz.cy + (DAT_07eaa158 * sz.cy) / 2;
         yBox = param_2 - (int)((unsigned int)(h * 15 * 32) / gWindow.GetHeight());
         if (yBox < 0) {

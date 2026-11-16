@@ -14,6 +14,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SUPPORT = r'''
 using vec3_t = float[3];
 struct CHARACTER {
@@ -105,7 +111,7 @@ int main() {
 def harness(revision=None):
     header = read_source("src/globals.h", revision)
     globals_source = read_source("src/globals.cpp", revision)
-    declaration = re.search(r"extern [^;\n]*\bCharactersClient\s*;", header).group()
+    declaration = optional_definition(re.search(r"extern [^;\n]*\bCharactersClient\s*;", header))
     definition = re.search(r"^[^/\n]*\bCharactersClient\s*=\s*[^;]+;", globals_source, re.M).group()
     # El alias CharactersClient -> CharactersClient existe sólo en revisiones viejas.
     alias = (lambda m: m.group() if m else "")(re.search(r"^#define DAT_07abf5d0[^\n]+", read_source("src/structs.h", revision), re.M))

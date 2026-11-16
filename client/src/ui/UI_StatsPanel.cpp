@@ -855,9 +855,9 @@ LAB_0051c13d:
     break;
   case 0x91:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)&lpString_0056186c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)&lpString_0056186c,iVar3,ptVar17);
-    ppCVar11 = lpString_0056186c;
+    iVar3 = Platform::TextLength((LPCSTR)&szServerMigrationError);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)&szServerMigrationError,iVar3,ptVar17);
+    ppCVar11 = szServerMigrationError;
     break;
   case 0x97:
   case 0x99:

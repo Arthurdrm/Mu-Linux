@@ -12,6 +12,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES=r'''
 static_assert(sizeof(int)==4);
 char* DAT_07abf5f0;
@@ -88,7 +94,7 @@ def harness(revision=None):
     macros='\n'.join(re.findall(r'^#define P_[A-Z0-9]*(?:\([^)]*\))?\s+[^\n]+',source,re.M))
     if '#define P_ENT(o)' not in macros:raise ValueError('Macros de partículas incompletas')
     globals_source=read_source('src/globals.cpp',revision)
-    constants='\n'.join(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',globals_source,re.M).group(0) for name in ('_DAT_00552b28','_DAT_00552874'))
+    constants='\n'.join(optional_definition(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',globals_source,re.M)) for name in ('_DAT_00552b28','_DAT_00552874'))
     return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES.replace('PARTICLE_TYPES',particle_types(revision)+('\n#define PARTICLE_DEFINED' if particle_types(revision) else '')).replace('MACROS',macros).replace('CONSTANTS',constants).replace('CASE',source[begin:end])+MAIN
 
 def main():

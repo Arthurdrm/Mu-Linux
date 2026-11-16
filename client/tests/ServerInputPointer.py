@@ -32,7 +32,9 @@ struct State{DWORD hi,lo,local,click,x,y,cooldown,c24,c28,tick,reset,code;int lo
 #define DAT_083a4320 state.reset
 #define DAT_083a4328 state.code
 #define LoginSubState state.login
-int DAT_055c9bf0;char DAT_083a7c64[64];DWORD DAT_083a7c68;char GlobalText[1000][300];const char* PTR_s_connect_muonline_co_kr_005615b8="fixture";unsigned short g_ServerPort=55901;bool connectMode;unsigned trial;std::vector<DWORD> events;
+int DAT_055c9bf0;char DAT_083a7c64[64];DWORD DAT_083a7c68;char GlobalText[1000][300];
+#define szServerIpAddress PTR_s_connect_muonline_co_kr_005615b8
+const char* PTR_s_connect_muonline_co_kr_005615b8="fixture";unsigned short g_ServerPort=55901;bool connectMode;unsigned trial;std::vector<DWORD> events;
 void CErrorReport_Write(int* context,const char* message){Require(context==&DAT_055c9bf0);if(std::strcmp(message,"> Server group selected")==0)events.push_back(1);else{Require(std::strcmp(message,"> Server selected")==0);events.push_back(4);}}
 struct Network{void SendToConnectServer(const BYTE* packet,int n){Require(n==4 || n==6);events.push_back(2);events.push_back(n);for(int i=0;i<n;++i)events.push_back(packet[i]);}bool IsConnectServerMode(){events.push_back(6);return connectMode;}}gNetwork;
 void PlayBuffer(int id,int a,int b){Require(id==0x19 && !a && !b);events.push_back(3);}

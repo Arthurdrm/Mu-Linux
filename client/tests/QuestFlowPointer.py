@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #ifndef _WIN32
 #define __fastcall
@@ -123,8 +129,8 @@ def harness(revision=None):
     prefix += "inline CHARACTER* AsCharacter(std::uintptr_t p) { return reinterpret_cast<CHARACTER*>(p); }\n"
     header, definitions = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     for name in ("g_csQuest", "Hero", "CharacterAttribute", "CharacterMachine", "GoldenArcherOpenType", "InventoryOpened", "CharacterOpened"):
-        prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
-        prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
+        prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
+        prefix += optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M))
     aliases = header + read_source("src/structs.h", revision)
     for name in ("DAT_07abf5d8", "_g_bEventChipDialogEnable"):   # el primero sólo existe en revisiones viejas
         prefix += "\n" + (lambda m: m.group() if m else "")(re.search(rf"^#define\s+{name}\s+[^\n]+", aliases, re.M)) + "\n"

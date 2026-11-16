@@ -23,39 +23,23 @@ float    _DAT_00000020 = 0.0f;
 float    _DAT_00000024 = 0.0f;
 
 // ── Game math / render constants ─────────────────────────────────────────────
-float    _DAT_00552464 = 25.0f;
-float    _DAT_005524bc = 0.004f;
-float    _DAT_005524f0 = 100.0f;  // grid-to-world scale = TERRAIN_SCALE
 float    _DAT_005524f4 = 0.1f;
-float    _DAT_005524f8 = 0.01f;
-float    _DAT_00552500 = 0.001f;
 float    _DAT_00552504 = 0.5f;
 float    _DAT_00552530 = 0.8f;
 float    _DAT_00552540 = 3.0f;
 float    _DAT_0055256c = 1.0f;
 DWORD    DAT_00552580  = 0;
-float    _DAT_00552598 = 50.0f;
-float    _DAT_00552660 = 5.0f;
 float    _DAT_005526e4 = 0.2f;
-float    _DAT_00552834 = 15.0f;
 // _DAT_00552838 = 1/480 (Y scale), _DAT_0055283c = 1/640 (X scale) — compile-time constants.
 // ConvertX(x) = WindowWidth * x * _DAT_0055283c ; ConvertY(y) = WindowHeight * y * _DAT_00552838
 // Used by GL_DrawTexture (RenderBitmap), Screen_ToGLX/80 (ConvertX/Y), Camera_SetupFrustum, etc.
 float    _DAT_00552838 = 1.0f / 480.0f;
 float    _DAT_0055283c = 1.0f / 640.0f;
-float    _DAT_00552848 = 90.0f;
-float    _DAT_0055284c = 30.0f;
 float    _DAT_00552868 = 0.0001f;  // epsilon for near-zero float checks
 float    _DAT_005528b4 = 0.4f;
-float    _DAT_005528b8 = 0.3f;
-float    _DAT_00552908 = 120.0f;
-float    _DAT_0055290c = 60.0f;
-float    _DAT_00552934 = 0.15f;
 float    _DAT_005529c0 = -0.3f;
 float    _DAT_00552a00 = 0.1f;
-float    _DAT_00552b88 = 0.0002f;
 // World → object-bucket grid factor (1/1600; celda = 1600 unidades de mundo)
-float    _DAT_00552d20 = 6.25e-4f;   // 0.000625 = 1/1600
 
 // ── Entity / render constants ─────────────────────────────────────────────────
 // 16-byte XOR key table — usado por Crypto.cpp/CreateEffect.cpp/Net_PacketSession etc.
@@ -247,9 +231,9 @@ char     DAT_00561b70[8] = "OZJ";   // OpenJPG extension suffix (Data mode: .jpg
 // Scene_CharSelect "account-blocked" warning lines. La tabla original de
 // strings del 0.97k está stripped (ambos quedan todo-ceros en el PE), así que
 // fijamos literales razonables en inglés para que el render muestre algo.
-char     lpString_00561a3c[64]              = {};  // server info line 1
-char     lpString_00561a58[64]              = {};  // server info line 2
-char     lpString_00561a68[64]              = {};  // server info line 3
+char     szHealthWarning1[64]              = {};   // IDA: 0x00561A3C (sin nombre) — aviso de salud coreano, línea 1; acá vacío
+char     szHealthWarning2[64]              = {};   // IDA: 0x00561A58 (sin nombre) — aviso de salud, línea 2
+char     szHealthWarning3[64]              = {};   // IDA: 0x00561A68 (sin nombre) — aviso de salud, línea 3
 
 // ── Misc game globals ─────────────────────────────────────────────────────────
 // DAT_00583d8c es un alias de g_csQuest (ver globals.h).
@@ -727,7 +711,7 @@ float    DAT_0838b7fc  = 0.0f;  // plane 4 (near) normal Z
 // escribe 1080 bytes acá.
 unsigned char DAT_0838b800[1080] = {};
 DWORD    TerrainFlag  = 0;  // IDA: TerrainFlag (0x0838BC44)
-char     DAT_0838bc70[0x10000] = {};  // terrain walk flags (per-tile byte array, 256x256 grid)
+unsigned char TerrainWall[0x10000] = {};   // IDA: TerrainWall (0x0838BC70) — atributos por casilla
 DWORD    DAT_0839bc88  = 0;            // terrain-light double-buffer toggle (RenderTerrain)
 DWORD    DAT_0839bc86  = 0;
 DWORD    WaterTextureNumber  = 0;  // IDA: WaterTextureNumber (0x0839BC8C)
@@ -943,7 +927,7 @@ extern "C" {
 
 void    *CharacterAttribute  = NULL;  // IDA: CharacterAttribute (0x07CF1FF4)
 
-char     lpData_055c9ba0[12] = {0};
+char     g_szSavedUsername[12] = {0};   // IDA: byte_55C9BA0 (sin nombre) — usuario guardado del login
 
 // DAT_07d4c3ec / DAT_07d4c644 / DAT_07d4c770 son GlobalText[470] / [472] / [473]
 // (ver el bloque de alias al final de globals.h).
@@ -983,7 +967,6 @@ OBJECT   Sprites[kSpritePoolSize] = {};   // IDA: unk_7C85890 (0x07C85890); nomb
 // Lo dejamos como referencia al int en pool[4..7] para compartir storage.
 
 // Math / animation constants
-float   _DAT_00552958 = 140.0f;
 // _DAT_0055283c — X-scale constant (1/640); definido arriba con valor correcto.
 // Esta definición fue 0.0f por error; reemplazada por la inicialización en la zona de video-scale.
 
@@ -993,7 +976,7 @@ DWORD    ServerLocalSelect = 0;
 // Char menu UI builder (RenderHelpWindow)
 int      DAT_07e11d20 = 0;
 int      DAT_07e11d24 = 0;
-char     lpString_07e90798[3000] = {};  // 30 slots * 100 bytes
+char     TextList[3000] = {};   // IDA: TextList (0x07E90798) — 30 líneas x 100 del tooltip
 int      TextListColor[30] = {};  // IDA: TextListColor (0x07E91708) - 30 slots, igual que lpString
 int      TextBold[30] = {};  // IDA: TextBold (0x07EA7B10) - 30 slots, igual que lpString
 // DAT_07d329c4 / DAT_07d32af0 / DAT_07d34134 / DAT_07d34260 / DAT_07d358a4 son
@@ -1026,7 +1009,6 @@ char     DAT_0055a640[] = "\n";  // 0x0055A640 — separador de media altura (Re
 DWORD    RainAngle  = 0;   // IDA: RainAngle (0x07C74AE8)
 DWORD    RainPosition  = 0;  // IDA: RainPosition (0x07C74AEC)
 int     RainSpeed  = 0;   // IDA: RainSpeed (0x00559B9C)
-float   _DAT_00552874  = 0.05f;
 float   _DAT_005529c8  = -0.1f;
 
 // Mouse hover tick (Mouse_UpdateHoverTargets)
@@ -1134,7 +1116,7 @@ char     DAT_005592dc  = 0;
 // [249] / [267] / [268]. (Ver el bloque de alias al final de globals.h.)
 DWORD    m_bBlockWhisper_1  = 0;  // IDA: m_bBlockWhisper_1 (0x07E11DAC)
 char     DAT_07eaa132  = 0;
-DWORD    lpDefault_00583d88 = 0;
+DWORD    strID = 0;   // IDA: strID (0x00583D88) — etiqueta vacía de UIChatLogWindow_AddText
 // DAT_07d55410 es GlobalText[593] (ver el bloque de alias al final de globals.h).
 char     RepairEnable_0  = 0;   // RepairEnable_0
 
@@ -1310,7 +1292,7 @@ char     s__s_On_0056184c[32]  = "Auto-ataque : On";
 char     s__s_Off_00561854[32] = "Auto-ataque : Off";
 char     s__s_On_0056185c[32]  = "Susurros : On";
 char     s__s_Off_00561864[32] = "Susurros : Off";
-char     lpString_0056186c[32] = {};
+char     szServerMigrationError[32] = {};   // IDA: byte_56186C (sin nombre) — "error al migrar de servidor" en coreano; acá vacío
 // In the original binary these are 300-byte slots inside a GlobalText[] pool
 // loaded from Data/Local/Text.bmd by sub_479830 (@0x00479830).
 // Los placeholders en español son fallback — OpenTextData() los sobrescribe
@@ -1334,13 +1316,10 @@ int     GrabScreen = 0;   // IDA: GrabScreen (0x083A42F0)
 // ── Float constants ───────────────────────────────────────────────────────────
 float   _DAT_00552580 = 0.0f;
 float   Math_DegreesToRadians = 0.017453292f;  // π/180
-float   _DAT_00552ce0 = 0.5f;          // half-angle factor for EulerToQuat (EulerToQuat).
                                        // IDA sub_4FA1D0 shows literal `a1[k] * 0.5` — quaternion
                                        // half-angle. Input Euler angles are already in RADIANS
                                        // (AngleMatrix path uses Math_DegreesToRadians=π/180, different const).
                                        // No usar π/180 acá: deja toda rotación de hueso ≈ 0.
-float   _DAT_00552cf0 = 1.0f;          // 1.0 (quaternion normalization)
-float   _DAT_00552d00 = 0.001f;        // SLERP near-parallel epsilon
 // ── Effect pool ───────────────────────────────────────────────────────────────
 // Effect pool — Effect_TickAll itera 200 slots × 0x1bc bytes.
 OBJECT  Effects[kEffectPoolSize] = {};   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
@@ -1361,17 +1340,11 @@ int     DAT_07d7807c = 0;
 // ── Monster s_ named sound strings ───────────────────────────────────────────
 
 // ── CreateEffect float constants ────────────────────────────────────────────
-float   _DAT_005524ec = 180.0f;
-float   _DAT_00552844 = 45.0f;
 // ── Weather particle pool (40 × 0x1bc = 0x4560 bytes) ────────────────────────
 // Backing buffer único: Weather_Update recorre los slots 1..39 con stride 0x1bc.
 // Ver globals.h para los macros de field accessors.
 OBJECT   Boids[40] = {};   // IDA: unk_839BCB0 (0x0839BCB0); nombre de MU 5.2
 // ── Weather float constants ───────────────────────────────────────────────────
-float   _DAT_0055286c = 360.0f;
-float   _DAT_005528e4 = 40.0f;
-float   _DAT_00552900 = 300.0f;
-float   _DAT_00552ab8 = 1000.0f;
 
 // ── Camera / viewport globals ─────────────────────────────────────────────────
 // SetActionObject (0x4FA5C0) / MoveObject_Special (0x4FA5F0): animacion de
@@ -1409,7 +1382,6 @@ float   _DAT_00552a14  = -0.5f;
 DWORD   DAT_05826e14   = 0;
 // IDA: DAT_05826df0
 DWORD   FrameTimeCurrentMs   = 0;
-float   _DAT_005528a8  = 0.001f;  // 1/1000 ms-to-s
 // _DAT_00552890 — defined above (float)
 DWORD   DAT_05826e00   = 0;
 float   DeltaT  = 0.0f;    // delta time per frame
@@ -1538,7 +1510,7 @@ float   DAT_00590af8   = 0.0f;
 float   DAT_00590afc   = 0.0f;  // cloth wind Z (flt_590AFC; el binario nunca lo escribe)
 float   _DAT_00559068  = 9.8f;      // gravedad   (flt_559068, leído del binario)
 float   _DAT_0055906c  = 0.0025f;   // dt fijo    (flt_55906C, leído del binario)
-DWORD   lpData_055ca044 = 0;
+DWORD   g_iRenderTextType = 0;   // IDA: g_iRenderTextType (0x055CA044) — modo TextOut del registro
 // Strings reservados de sub_513570 (name-filter). En el binario original son
 // patrones bloqueados (espacio, DBCS coreano, punto). No dejarlos en 0: con string
 // vacío FindText(nombre,"") devuelve 1 y TODO nombre se rechaza con "palabras
@@ -1648,13 +1620,10 @@ char    DAT_0056337c     = 0;
 float   _DAT_00552570   = -0.2f;   // gravity min clamp
 // Valores leídos del binario:
 // 0x5527D0 = 40 C0 00 00 → 6.0f  y  0x552A28 = C1 20 00 00 → -10.0f.
-float   _DAT_005527d0   = 6.0f;    // MoveItems: decaimiento de la velocidad Z por frame
-float   _DAT_00552a28   = -10.0f;  // MoveItems: giro del item mientras cae
 
 
 // ── Terrain map globals (OpenTerrainMapping, OpenObjectsEnc, CreateTerrain) ────────────
 // La celda original 0x083A0218 pertenece a g_ObjectBucketGrid[0].
-float   _DAT_00552b70 = 0.00392156886f; // height scale
 
 // ── Terrain tile pick / normal buffer globals ─────────────────────────────────
 // Estos son ALIASES dentro de g_TilePickBuf[12] declarado arriba para garantizar
@@ -1741,7 +1710,6 @@ char    DAT_07ea51f5[64] = {0};   // GuildMark (grilla 8x8)
 // int     DAT_00559f60  = 0;   // level range lower array
 // int     DAT_00559f64  = 0;   // level range upper array
 // DAT_07ea7b88 — declared above as DWORD
-char    DAT_07ea5b30  = 0;   // second-password char-slot list base
 
 // ── BMD_DrawMesh / BMD_DrawBoneSlot_Anim buffers ─────────────────────────────
 // LightTransform RGB buffer (float R,G,B per vertex). Stride 12 B per vertex.
@@ -1760,12 +1728,8 @@ float   g_ChromeUVBuf[15000 * 2] = {0};   // 120,000 bytes
 char    g_BoneChromeNormalBuf[32 * 15000 * 12] = {0};  // 5,760,000 bytes
 float  _DAT_00552544  = 0.99f; // alpha threshold (alpha < this → use alpha channel path)
 float  _DAT_005528c0  = 0.00024f; // chrome U scale factor
-float  _DAT_005528c4  = 0.007f; // sin period scale for vertex deformation
-float  _DAT_00552644  = 28.0f; // sin amplitude for vertex deformation
 
 // ── MoveEffect constants ──────────────────────────────────────
-float  _DAT_00552864  = 270.0f;
-float  _DAT_00552994  = 250.0f;
 float  _DAT_005529d4  = 0.333333343f;
 // Los tres son DOUBLES de 8 bytes en el binario (no float).
 // Bytes reales (ida_get_bytes 0x5529D8, 32): la region intercala
@@ -1942,7 +1906,7 @@ float  CameraPosition[3]  = {0};
 // InventoryOpened/116/etc. — see globals.h. Storage is the byte-sized DAT_
 // globals defined above (lines ~745-753).
 FILE  *SMDFile             = NULL;
-// lpDefault_00583d88 already defined above (line ~1014)
+// strID already defined above (line ~1014)
 // DAT_00560694 already defined above (line ~1922)
 
 // Missing globals (compilation fixes)
@@ -1999,8 +1963,6 @@ DWORD  DAT_07eaa178       = 0;     // mix recipe: socket flag byte
 DWORD  DAT_07eaa170       = 0;     // mix recipe: wing socket option value
 int    DAT_07eaa174       = 0;     // mix recipe: combined value score (capped at 0x5a)
 char   DAT_00559c6c       = 0;     // last rendered hotkey char
-float  _DAT_00552ab0      = 7.5f;  // arrow angle offset (5-way shot small)
-float  _DAT_00552584      = 22.5f;  // arrow angle offset (5-way shot large)
 
 // ── UseSkillWizard dependencies ──────────────────────────────────────────────
 DWORD  MovementSkillTarget       = 0;     // MovementSkillTarget (index into CharactersClient)
@@ -2022,10 +1984,8 @@ float g_ParticleDriftVelocity[2] = {};
 // ── MoveParticles float constants ───────────────────────────────────────────
 // _DAT_00552acc — already defined above (line ~964)
 // _DAT_00552adc — already defined above (line ~141)
-float  _DAT_00552b28      = 0.2f;
 
 // Additional math/render constants
-float  _DAT_00552860      = 57.29578f;  // 180/pi (radians to degrees)
 
 // CheckArrow chat string globals (runtime-initialized by resource loader)
 char   DAT_07e11df4       = 0;

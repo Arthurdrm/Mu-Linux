@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #ifndef _WIN32
 #define __fastcall
@@ -135,8 +141,8 @@ def harness(revision=None):
         if name == "DAT_083a7c0c" and not re.search(r"\bDAT_083a7c0c\s*;", header):
             name = "g_iNumAnswer"
             prefix += "\n#define DAT_083a7c0c g_iNumAnswer\n"
-        prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
-        prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M).group()
+        prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
+        prefix += optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", definitions, re.M))
     prefix += re.search(r"^DWORD\s+DAT_07cf5608\[[^;]+;", definitions, re.M).group()
     aliases=header+read_source("src/structs.h",revision)
     for name in ("g_DialogScript","g_iCurrentDialogScript"):

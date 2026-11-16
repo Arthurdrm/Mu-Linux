@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #include <type_traits>
 using undefined4=std::uint32_t; using std::uintptr_t;
@@ -99,8 +105,8 @@ def harness(revision=None, legacy_function=None):
     prefix=PREAMBLE.split("char DAT_00559bb4",1)[0]+SERVICES
     header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
     for name in ("DAT_055c9ff0","DAT_055c9ff4","g_bUseChatListBox"):
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     source=read_source("src/platform/ClientEntry.cpp",revision)
     assignments=[re.search(rf"\b{name}\s*=\s*[^;]*\b{ctor}\([^;]*;",source).group() for name,ctor in (("DAT_055c9ff0","ChatListBox_Construct"),("DAT_055c9ff4","ChatListBox_ConstructWhisper"))]
     prefix+="\nvoid Publish() {"+"".join(assignments)+"}\n"

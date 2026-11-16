@@ -10,6 +10,12 @@ import re
 import tempfile
 from ItemResetPointer import harness as reset_harness
 from SceneObjectPointer import build_and_run, function, read_source
+
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
 SERVICES=r'''
 int SceneFlag,worldId,EditFlag;
 struct Map{int GetCurrentMap(){return worldId;}}gMapManager;
@@ -49,7 +55,7 @@ std::uint64_t Run(BYTE* objectMemory,BYTE* modelMemory,BYTE* boneMemory,BYTE* ve
   edgeCount=frameNumber%7;for(unsigned i=0;i<edgeCount;++i){inputs[i][0]=(i+frameNumber)%6;inputs[i][1]=(i+frameNumber+1)%6;inputs[i][2]=(i+frameNumber/5)%2;inputs[i][3]=static_cast<short>(frameNumber);inputs[i][4]=static_cast<short>(i*7);if(i>0 && frameNumber%4==0 && i==edgeCount-1)std::memcpy(inputs[i],inputs[0],10);}
   for(unsigned mesh=0;mesh<2;++mesh)for(unsigned i=0;i<6;++i)for(unsigned a=0;a<3;++a)vertexBuffer[mesh*45000+i*3+a]=float(frameNumber+mesh*7+i*3+a)*.25f;
   BYTE objectBefore[476],modelBefore[220],bonesBefore[192];std::memcpy(objectBefore,objectMemory,476);std::memcpy(modelBefore,modelMemory,220);std::memcpy(bonesBefore,boneMemory,192);std::memcpy(vertexBefore.data(),vertexMemory,180128);
-  current=Golden{};current.present=activeObject->Live && activeObject->Type==319 && activeObject->Alpha>=_DAT_005524f8 && activeObject->RenderType!=128 && (EditFlag!=0 || activeObject->HiddenMesh!=-2);current.registered=SceneObjects::Contains(activeObject);current.generation=SceneObjects::Generation(activeObject);
+  current=Golden{};current.present=activeObject->Live && activeObject->Type==319 && activeObject->Alpha>=0.01f && activeObject->RenderType!=128 && (EditFlag!=0 || activeObject->HiddenMesh!=-2);current.registered=SceneObjects::Contains(activeObject);current.generation=SceneObjects::Generation(activeObject);
   if(current.present){++eligibleFrames;const int randomValues[]={0,1,99,100,101,32767,1234567,2147483647};for(unsigned i=0;i<edgeCount;++i){MoltEdgeSample edge;edge.first=inputs[i][0];edge.second=inputs[i][1];edge.mesh=inputs[i][2];const unsigned base=edge.mesh*45000;std::memcpy(edge.p1,vertexBuffer+base+3*edge.first,12);std::memcpy(edge.p2,vertexBuffer+base+3*edge.second,12);edge.jitter=float(double(randomValues[(frameNumber+i)%8]%100)*0.0099999998);current.edges.push_back(edge);}}
   randomCalls=skeletonCalls=buildCalls=0;Tick();Require(skeletonCalls==(current.present?1u:0u) && buildCalls==skeletonCalls && randomCalls==(current.present?edgeCount:0u) && _DAT_005597c8==savedLod && std::memcmp(objectMemory,objectBefore,476)==0 && std::memcmp(modelMemory,modelBefore,220)==0 && std::memcmp(boneMemory,bonesBefore,192)==0 && std::memcmp(vertexMemory,vertexBefore.data(),180128)==0);
   const auto found=moltSamples.find(activeObject);Require((found!=moltSamples.end())==current.present);if(current.present){const auto& sample=found->second;Require(sample.registered==current.registered && sample.generation==current.generation && sample.edges.size()==current.edges.size());std::unordered_map<std::uint64_t,std::size_t> expectedIndex;for(unsigned i=0;i<current.edges.size();++i){const auto& e=current.edges[i];const auto& actual=sample.edges[i];Require(actual.first==e.first && actual.second==e.second && actual.mesh==e.mesh && actual.jitter==e.jitter && std::memcmp(actual.p1,e.p1,12)==0 && std::memcmp(actual.p2,e.p2,12)==0);if(expectedIndex.find(Key(e))==expectedIndex.end())expectedIndex[Key(e)]=i;}Require(sample.edgeIndex==expectedIndex);for(unsigned a=0;a<3;++a)Require(sample.direction[a]==activeObject->Position[a]*.125f+float(a));}
@@ -70,7 +76,7 @@ def harness(revision=None):
  prefix+=re.search(r'^std::unordered_map<const void \*, MoltSample>[^;]+;',source,re.M).group()+re.search(r'^int moltScene[^;]+;',source,re.M).group()
  prefix+=re.search(r'std::uint64_t MoltEdgeKey\([^)]*\)\s*\{.*?\n\}',source,re.S).group()
  for name in ('_DAT_005524f8','_DAT_005597c8'):
-  if not re.search(r'^float\s+'+name+r'\b',prefix,re.M):prefix+=re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',read_source('src/globals.cpp',revision),re.M).group()
+  if not re.search(r'^float\s+'+name+r'\b',prefix,re.M):prefix+=optional_definition(re.search(r'^float\s+'+name+r'\s*=\s*[^;]+;',read_source('src/globals.cpp',revision),re.M))
  prefix+=SERVICES+function(read_source('src/game/core/RenderInterpolationMath.cpp',revision),'RenderBlend')
  for name in ('MoltSilhouette_BeginStep','MoltSilhouette_Invalidate','MoltSilhouette_Tick','MoltSilhouette_Render'):prefix+=function(source,name)
  tick=function(source,'MoltSilhouette_Tick');arg='activeObject' if 'OBJECT* entity' in tick else 'static_cast<int>(reinterpret_cast<uintptr_t>(activeObject))'

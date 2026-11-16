@@ -229,7 +229,7 @@ int __cdecl RenderTerrainTile(int iparam_1, int iparam_2, int param_3, int param
     _DAT_07feb27c = *(float*)&DAT_07feb258;
     _DAT_07feb280 = _DAT_07feb274;
     if (param_7 == 0) {
-        if (((unsigned char)DAT_0838bc70[TerrainIndex1] & 8) != 8)
+        if (((unsigned char)TerrainWall[TerrainIndex1] & 8) != 8)
             RenderTerrainFace(param_1, param_2, param_3, param_4, param_5);   // RenderTerrainFace(xf,yf,xi,yi,lodf)
         return 0;
     }
@@ -277,9 +277,9 @@ int __cdecl RenderTerrainTile(int iparam_1, int iparam_2, int param_3, int param
     if (EditFlag == 3) {
         bool draw = false;
         if (SelectWall == 0) {
-            if (((unsigned char)DAT_0838bc70[TerrainIndex1] & 4) == 4) draw = true;
+            if (((unsigned char)TerrainWall[TerrainIndex1] & 4) == 4) draw = true;
         } else if (SelectWall == 2) {
-            if (((unsigned char)DAT_0838bc70[TerrainIndex1] & 1) == 1) draw = true;
+            if (((unsigned char)TerrainWall[TerrainIndex1] & 1) == 1) draw = true;
         }
         if (draw) {
             GL_DisableDepthTest();

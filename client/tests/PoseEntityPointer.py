@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import ROOT, build_and_run, function, read_source
 from LegacyEntityLayout import opaque_cloth_fields
+
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
 SERVICES=r'''
 #include <array>
 #include <algorithm>
@@ -92,7 +98,7 @@ def harness(revision=None):
  view='using vec3_t=float[3];using vec34_t=float[3][4];\n#pragma pack(push,1)\n'+fields+'\n#pragma pack(pop)\nstatic_assert(sizeof(OBJECT)==444 && offsetof(OBJECT,BoneMatrices)==276 && offsetof(OBJECT,BoundingBoxMin)==280 && offsetof(OBJECT,OBB)==304);\n'
  structures=pose[pose.index('struct FrozenModel {'):pose.index('// Cada slot conserva capacidad',pose.index('struct FrozenModel {'))]
  code=''.join(bodies)+function(read_source('src/game/entity/ObjectBounds.h',revision),'ObjectBounds_Build')
- constants=''.join(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',read_source('src/globals.cpp',revision),re.M).group()for n in sorted(set(re.findall(r'\b_DAT_[0-9a-f]+\b',code))))
+ constants=''.join(optional_definition(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',read_source('src/globals.cpp',revision),re.M))for n in sorted(set(re.findall(r'\b_DAT_[0-9a-f]+\b',code))))
  services=SERVICES.replace('VIEW',view).replace('TRANSFORMS','#include "'+(ROOT/'src/render/TransformMath.h').as_posix()+'"').replace('STRUCTURES',structures).replace('FORWARDS',prototypes)
  if 'AsModel(' in bodies[0]:
   from LegacyModelLayout import VIEW

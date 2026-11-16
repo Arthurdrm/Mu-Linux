@@ -13,6 +13,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 TYPES = r'''
 #include <cmath>
 #include <type_traits>
@@ -138,8 +144,8 @@ std::uint64_t Positions(OBJECT* owners, OBJECT* listener) {
             Require(std::isfinite(event.x) && std::isfinite(event.z));
             if(yaw == 0.0f) {
                 const auto& p = owners[(slot + ch) % 4].Position;
-                Require(event.x == -(listener->Position[0] - p[0]) * _DAT_005524bc);
-                Require(event.z == -(listener->Position[1] - p[1]) * _DAT_005524bc);
+                Require(event.x == -(listener->Position[0] - p[0]) * 0.004f);
+                Require(event.z == -(listener->Position[1] - p[1]) * 0.004f);
             }
             Hash(&event.slot, sizeof(event.slot)); Hash(&event.channel, sizeof(event.channel));
             Hash(&event.x, 4); Hash(&event.y, 4); Hash(&event.z, 4);
@@ -173,10 +179,10 @@ def harness(revision=None):
     header, globals_source = (read_source(path, revision) for path in ("src/globals.h", "src/globals.cpp"))
     declarations = ""
     for name in ("g_EnableSound", "g_Enable3DSound", "MaxBufferChannel", "BufferChannel", "Enable3DSound", "Object3DSound"):
-        declarations += re.search(rf"extern [^;\n]*\b{name}\b[^;\n]*;", header).group()
+        declarations += optional_definition(re.search(rf"extern [^;\n]*\b{name}\b[^;\n]*;", header))
         declarations += re.search(rf"^[^/\n]*\b{name}\b\s*(?:\[[^;\n]*\])?\s*=\s*[^;]+;", globals_source, re.M).group()
     for name in ("_DAT_005524bc", "Math_DegreesToRadians"):
-        declarations += re.search(rf"^float\s+{name}\s*=\s*[^;]+;", globals_source, re.M).group()
+        declarations += optional_definition(re.search(rf"^float\s+{name}\s*=\s*[^;]+;", globals_source, re.M))
     field = re.search(r"vec3_t\s+Position\s*;", read_source("src/game/entity/EntityTypes.h", revision)).group()
     source = read_source("src/audio/Sound_DS3D.cpp", revision)
     play = function(source, "PlayBuffer")

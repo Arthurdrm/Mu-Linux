@@ -68,10 +68,9 @@ void __cdecl OpenTerrainMapping(const char *path) {
 //
 // Reads a 65539-byte .att file into a temp buffer, runs BuxConvert_1 (XOR
 // descrambler with 3-byte key at DAT_0055a770), then memcpy bytes [+3..+65539]
-// into the terrain wall array DAT_0838bc70 (256×256). First byte must be 0,
+// into the terrain wall array TerrainWall (256×256). First byte must be 0,
 // next short must be 0xFFFF (file marker). Per-world magic-byte check at
 // known offsets validates the right map. Any byte >= 0x80 triggers Error.
-unsigned char* TerrainWall = (unsigned char*)&DAT_0838bc70;
 int __cdecl OpenTerrainAttribute(const char *FileName) {
     FILE *fp = Platform::GetFileSystem().Open(FileName, "rb");
     if (!fp) {

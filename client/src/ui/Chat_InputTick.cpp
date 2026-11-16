@@ -673,7 +673,7 @@ void __cdecl Chat_InputTick(void)
                                             strlen(&DAT_07d3d284)) == 0) {
                                     // /whisper command
                                     m_bBlockWhisper_1 = 1;
-                                    UIChatLogWindow_AddText((const char*)&lpDefault_00583d88,&DAT_07d3d608, 1);
+                                    UIChatLogWindow_AddText((const char*)&strID,&DAT_07d3d608, 1);
                                     goto chat_done;
                                 }
                                 if (strlen(&DAT_07d3d3b0) > 0 &&
@@ -681,7 +681,7 @@ void __cdecl Chat_InputTick(void)
                                             strlen(&DAT_07d3d3b0)) == 0) {
                                     // /pvp command
                                     m_bBlockWhisper_1 = 0;
-                                    UIChatLogWindow_AddText((const char*)&lpDefault_00583d88,&DAT_07d3d734, 1);
+                                    UIChatLogWindow_AddText((const char*)&strID,&DAT_07d3d734, 1);
                                     goto chat_done;
                                 }
                             }

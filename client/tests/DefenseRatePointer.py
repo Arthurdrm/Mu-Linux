@@ -16,6 +16,12 @@ import tempfile
 from ItemSpecialPointer import harness as special_harness
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 int g_bAddDefense, EquipmentLevelSet;
 BYTE* activeMachine;
@@ -115,7 +121,7 @@ def harness(revision=None):
     prefix += "\nstatic_assert(sizeof(ITEM_ATTRIBUTE) == 64);\n"
     header, globals_source = read_source("src/globals.h", revision), read_source("src/globals.cpp", revision)
     for name in ("CharacterAttribute", "DAT_07d78068"):
-        prefix += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+        prefix += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
         prefix += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     prefix += function(read_source("src/app/core/Runtime_Small.cpp", revision), "CalcDurabilityPercent")
     rate = function(read_source("src/scenes/Scene_CharSelect_Nav.cpp", revision), "Stats_CalcDefenseRate")

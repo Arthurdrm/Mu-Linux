@@ -111,6 +111,6 @@ void __cdecl OpenFont(void) {
     OpenTGA("Interface/FontInput.tga", 0, 0x2600, 0x2900, 0, '\x01');
     OpenTGA("Interface/FontTest.tga",  1, 0x2600, 0x2900, 0, '\x01');
     Font_CreateTextDib(((DWORD)(uintptr_t)gWindow.GetHdc()));
-    Font_CreateRenderer(g_pRenderText, static_cast<int>(lpData_055ca044), ((DWORD)(uintptr_t)gWindow.GetHdc()));
+    Font_CreateRenderer(g_pRenderText, static_cast<int>(g_iRenderTextType), ((DWORD)(uintptr_t)gWindow.GetHdc()));
 }
 // Scene resource load/unload routines are implemented in src/scenes/Scene_Resources.cpp.

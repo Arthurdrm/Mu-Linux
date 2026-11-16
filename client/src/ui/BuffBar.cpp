@@ -138,7 +138,7 @@ void CBuffBar::Render()
 
 void CBuffBar::RenderTooltip(const Buff& buff, int x, int y) const
 {
-    char* line = lpString_07e90798;
+    char* line = TextList;
     int count = 0;
     auto add = [&](int color, int bold, const char* text) {
         Platform::TextFormatSecure(line + count * 100, 100, "%s", text);

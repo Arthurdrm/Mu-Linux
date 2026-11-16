@@ -13,6 +13,12 @@ import tempfile
 from ItemResetPointer import harness as reset_harness
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 int worldValue;
 struct Map { int GetCurrentMap() { return worldValue; } } gMapManager;
@@ -109,8 +115,8 @@ def harness(revision=None):
     prefix+="\n".join(re.findall(r"^MaterialVisualScope::[^\n]+",source,re.M))
     globals_header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
     for name in ("EditFlag",):
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",globals_header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",globals_header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     prefix+=SERVICES
     reset=read_source("src/game/entity/Entity_Reset.cpp",revision)
     for name in ("ItemObjectAttributeImpl","ItemObjectAttributeForRender"):

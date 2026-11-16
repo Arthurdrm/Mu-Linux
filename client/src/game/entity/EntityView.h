@@ -14,20 +14,18 @@ public:
     static constexpr BYTE SoccerBall = 200;
     explicit EntityView(const void* entity) : m_Data((const BYTE*)entity) {}
     bool IsActive() const { return m_Data && m_Data[0] != 0; }
-    BYTE Kind() const { return m_Data[0x84]; }
+    BYTE Kind() const { return Character()->Object.Kind; }
     // IDA: CreateMonster (0x0045CCF0) escribe el tipo de Monster.txt como BYTE.
-    BYTE MonsterIndex() const { return m_Data[EntityOffset(0x2EB)]; }
+    BYTE MonsterIndex() const { return Character()->MonsterIndex; }
     // IDA: CreateChat (0x00481BA0), índice firmado; -1 indica sin guild.
-    short GuildMarkIndex() const { return Read<short>(EntityOffset(0x1DA)); }
-    WORD NetworkKey() const { return Read<WORD>(EntityOffset(0x1DC)); }
+    short GuildMarkIndex() const { return Character()->GuildMarkIndex; }
+    WORD NetworkKey() const { return Character()->Key; }
     const char* Name() const { return EntityName::Get(m_Data); }
-    float X() const { return Read<float>(0x10); }
-    float Y() const { return Read<float>(0x14); }
-    float Z() const { return Read<float>(0x18); }
-    float Height() const { return Read<float>(EntityOffset(0x12C)); }
+    float X() const { return Character()->Object.Position[0]; }
+    float Y() const { return Character()->Object.Position[1]; }
+    float Z() const { return Character()->Object.Position[2]; }
+    float Height() const { return Character()->Object.BoundingBoxMax[2]; }
 private:
-    template<typename T> T Read(size_t offset) const {
-        T value; memcpy(&value, m_Data + offset, sizeof(value)); return value;
-    }
+    const CHARACTER* Character() const { return AsCharacter(m_Data); }
     const BYTE* m_Data;
 };

@@ -6,11 +6,11 @@
 //
 // 1. Windows Registry: HKEY_CURRENT_USER\SOFTWARE\Webzen\Mu\Config
 //    Values:
-//      (default)   -> version string (lpData_055c9ba0, 11 bytes)
+//      (default)   -> version string (g_szSavedUsername, 11 bytes)
 //      SoundOnOff  -> DWORD -> g_SoundOn  (default: 1)
 //      MusicOnOff  -> DWORD -> m_MusicOnOff @ 0x055C9E3C (default: 0)
 //      Resolution  -> DWORD -> resolution index (default: 0)
-//      TextOut     -> DWORD -> g_TextOut   (default: 0)
+//      TextOut     -> DWORD -> g_iRenderTextType   (default: 0)
 //
 // 2. config.ini in current directory
 //    [LOGIN]
@@ -25,7 +25,7 @@
 //
 // Config_ReadServerAddr @ 0x0041E800
 //   Reads server IP from config.ini using key 0x75 ('u') and port using 0x70 ('p').
-//   Result stored at: PTR_s_connect_muonline_co_kr_005615b8 (IP) and g_ServerPort (port).
+//   Result stored at: szServerIpAddress (IP) and g_ServerPort (port).
 //   Patchs.cpp overrides these:
 //     MemoryCpy(0x00558ED8, serverIP, size);
 //     SetWord(0x005615BC, serverPort);
@@ -62,7 +62,6 @@ extern "C" void DbgLogPublic(const char* msg);
 DWORD g_SoundOn    = 1;      // DAT_?? (default 1 = sound on)
 // La preferencia de música vive en CSound (IDA 0x055C9E3C).
 DWORD g_Resolution = 0;      // DAT_?? (default 0 = 640x480)
-DWORD g_TextOut    = 0;      // DAT_?? (default 0)
 
 char  ConfigLoginVersion[12] = {}; // IDA: m_ExeVersion — config.ini [LOGIN] Version string
 
@@ -125,13 +124,13 @@ int Config_Load(void)
 
     // --- 4. Registry: HKCU\SOFTWARE\Webzen\Mu\Config ---
     Platform::InitialClientSettings initial;
-    std::memcpy(initial.username, lpData_055c9ba0, sizeof(initial.username));
+    std::memcpy(initial.username, g_szSavedUsername, sizeof(initial.username));
     initial.sound = g_SoundOn; initial.music = gSound.GetMusicEnabled();
-    initial.resolution = g_Resolution; initial.textOut = g_TextOut;
+    initial.resolution = g_Resolution; initial.textOut = g_iRenderTextType;
     Platform::GetClientSettings().ReadDefaults(initial, configPath);
-    std::memcpy(lpData_055c9ba0, initial.username, sizeof(initial.username));
+    std::memcpy(g_szSavedUsername, initial.username, sizeof(initial.username));
     g_SoundOn = initial.sound; gSound.SetMusicEnabled(initial.music);
-    g_Resolution = initial.resolution; g_TextOut = initial.textOut;
+    g_Resolution = initial.resolution; g_iRenderTextType = initial.textOut;
 
     // --- 4b. Preferencias de Config.ini (DESVIACION, ver UserSettings.h) ---
     // Se aplican DESPUES del registro: lo que esté en Config.ini gana.
@@ -148,7 +147,7 @@ int Config_Load(void)
         gWindow.SetWindowMode(windowMode, borderless);
     }
     if (gUserSettings.GetUsername()[0] != 0)
-        Platform::TextCopy((char*)lpData_055c9ba0, gUserSettings.GetUsername(), 11);
+        Platform::TextCopy((char*)g_szSavedUsername, gUserSettings.GetUsername(), 11);
 
     // --- 5. Resolution -> screen dimensions ---
     //
@@ -220,7 +219,7 @@ int Config_Load(void)
 // Called from WinMain:
 //   Config_ReadServerAddr(this, param_3, &DAT_055c9e04, &port)
 //   If success:
-//     PTR_s_connect_muonline_co_kr_005615b8 = &DAT_055c9e04  (server IP)
+//     szServerIpAddress = &DAT_055c9e04  (server IP)
 //     g_ServerPort = port
 //
 // Helpers:

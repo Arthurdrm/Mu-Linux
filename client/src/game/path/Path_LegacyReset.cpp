@@ -29,7 +29,7 @@ void __cdecl PathFinder_ResetContext(void) {
     ctx->DirtyMax = -1;
     ctx->Width    = 0x100;
     ctx->Height   = 0x100;
-    ctx->Walk     = reinterpret_cast<unsigned char *>(&DAT_0838bc70);
+    ctx->Walk     = TerrainWall;
     ctx->Size     = 0x10000;
     ctx->Flags    = static_cast<unsigned char *>(operator_new(0x10000));
     ctx->Cost     = static_cast<int *>(operator_new(ctx->Size * sizeof(int)));

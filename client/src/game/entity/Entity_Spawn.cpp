@@ -40,7 +40,7 @@ void __cdecl CreateCharacterPointer(unsigned char *param_1, int Type,
 
     // Atributo del terreno en la posición de spawn → SafeZone (+0x34E)
     int terrainAttr = Terrain_GetTileIndex((int)grid_x, (int)grid_y);
-    if ((unsigned char)DAT_0838bc70[terrainAttr] & 1) {
+    if ((unsigned char)TerrainWall[terrainAttr] & 1) {
         c->SafeZone = 1;   // spawn dentro de zona segura
     } else {
         c->SafeZone = 0;

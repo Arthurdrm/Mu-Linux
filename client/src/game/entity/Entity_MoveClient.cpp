@@ -15,7 +15,7 @@ void __stdcall MoveCharactersClient(void) {
     // Phase 3: Call MoveCharacterClient for each entity, then MoveBlurs
 
     // Phase 1: Clear walk-occupied bit from terrain
-    char* terrainWall = (char*)&DAT_0838bc70;
+    char* terrainWall = (char*)TerrainWall;
     for (int i = 0; i < 0x10000; i++) {
         if ((terrainWall[i] & 2) == 2) {
             terrainWall[i] = terrainWall[i] - 2;

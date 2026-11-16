@@ -14,6 +14,12 @@ from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 from legacy_fields import lower_names
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SERVICES = r'''
 #include <algorithm>
 struct OBJECT;
@@ -132,8 +138,8 @@ def harness(revision=None):
     prefix+="\n".join(helpers)
     header,definitions=read_source("src/globals.h",revision),read_source("src/globals.cpp",revision)
     for name in ("_DAT_005524f4","_DAT_005526e4","_DAT_0055256c"):
-        prefix+=re.search(rf"extern [^;\n]*\b{name}\s*;",header).group()
-        prefix+=re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M).group()
+        prefix+=optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;",header))
+        prefix+=optional_definition(re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;",definitions,re.M))
     for name in ("DAT_083a7cc0","DAT_083a7cc4"):
         prefix+="\n"+re.search(rf"^#define\s+{name}\s+[^\n]+",header,re.M).group()+"\n"
     source=read_source("src/audio/Sound_Queue.cpp",revision)

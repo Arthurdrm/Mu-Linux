@@ -16,6 +16,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import build_and_run, function, read_source
 
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
+
 SUPPORT = r'''
 BYTE* reservation;
 unsigned selectedOffset;
@@ -77,7 +83,7 @@ def harness(revision=None):
     globals_source = read_source("src/globals.cpp", revision)
     declarations = ""
     for name in ("DAT_055c9e48", "CharactersClient"):
-        declarations += re.search(rf"extern [^;\n]*\b{name}\s*;", header).group()
+        declarations += optional_definition(re.search(rf"extern [^;\n]*\b{name}\s*;", header))
         declarations += re.search(rf"^[^/\n]*\b{name}\s*=\s*[^;]+;", globals_source, re.M).group()
     # Extraer también el alias de producción: no crear almacenamiento paralelo.
     # El alias CharactersClient -> CharactersClient existe sólo en revisiones viejas.

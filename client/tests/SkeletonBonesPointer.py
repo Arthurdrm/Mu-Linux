@@ -8,6 +8,12 @@ import tempfile
 from GatePointer import PREAMBLE
 from SceneObjectPointer import ROOT, build_and_run, function, read_source
 from X86Views import CLOTH_MODEL_MESH, model_view
+
+
+def optional_definition(match):
+    # Desde la T8o los DAT_ sin uso no están en globals: el código actual no los
+    # necesita y las revisiones viejas (--reference-ref) siguen encontrándolos.
+    return match.group() if match else ''
 SERVICES=r'''
 #include <algorithm>
 #include <cmath>
@@ -73,7 +79,7 @@ int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));auto* p=static_cas
 def harness(revision=None):
  source=read_source('src/render/Entity_AnimationLegacy.cpp',revision);body=function(source,'Skeleton_Transform');math=read_source('src/game/math/Math_3D.cpp',revision)
  bodies=''.join(function(math,n)for n in ('Matrix_BuildFromEuler','Vector_Transform','Vector_Rotate','Vector_InverseRotate'))+function(read_source('src/game/entity/ObjectBounds.h',revision),'ObjectBounds_Build')+body
- names=sorted(set(re.findall(r'\b(?:_DAT_[0-9a-f]+|Math_DegreesToRadians)\b',bodies)));globals=read_source('src/globals.cpp',revision);constants=''.join(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',globals,re.M).group()for n in names)
+ names=sorted(set(re.findall(r'\b(?:_DAT_[0-9a-f]+|Math_DegreesToRadians)\b',bodies)));globals=read_source('src/globals.cpp',revision);constants=''.join(optional_definition(re.search(r'^float\s+'+n+r'\s*=\s*[^;]+;',globals,re.M))for n in names)
  skin=re.search(r'struct Source\s*\{[\s\S]*?\};',read_source('src/render/Skinning.h',revision)).group()
  service=SERVICES.replace('TRANSFORM_HEADER','#include "'+(ROOT/'src/render/TransformMath.h').as_posix()+'"').replace('SOURCE',skin)
  tail=MAIN.replace('ARG','palette' if 'float* boneMatrices' in body else 'static_cast<int>(reinterpret_cast<uintptr_t>(palette))').replace('GLOBAL_TRANSLATE','')

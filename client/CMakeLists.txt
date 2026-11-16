@@ -188,6 +188,8 @@ set(MU_SOURCES
     src/game/entity/Entity_Init.cpp
     src/game/entity/Entity_MoveClient.cpp
     src/game/entity/Character_Motion.cpp
+    src/game/entity/CharacterVisual_Models.cpp
+    src/game/entity/CharacterVisual_Models.h
     src/game/entity/Entity_Spawn.cpp
     src/render/Scene_CharPreview.cpp
     src/scenes/Scene_Resources.cpp

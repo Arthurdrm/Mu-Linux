@@ -116,7 +116,7 @@
 //   CErrorReport_Write  → Log(hashtable, msg)
 
 #include "stdafx.h"
-#include "assets/data/TextureList.h"
+#include "assets/data/AssetList.h"
 #include "render/Gfx.h"
 #include "scenes/Scene_Intro.h"
 

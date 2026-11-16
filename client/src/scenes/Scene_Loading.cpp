@@ -58,7 +58,7 @@
 //   ClearInput  → CharList_Init(mode)
 
 #include "stdafx.h"
-#include "assets/data/TextureList.h"
+#include "assets/data/AssetList.h"
 #include "render/Gfx.h"
 #include "scenes/Scene_Loading.h"
 

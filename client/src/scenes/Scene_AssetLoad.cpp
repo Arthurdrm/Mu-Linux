@@ -1,7 +1,7 @@
 // Scene_AssetLoad.cpp
 
 #include "stdafx.h"
-#include "assets/data/TextureList.h"
+#include "assets/data/AssetList.h"
 #include "assets/text/ClientText.h"
 #include "render/text/TextCore.h"
 #include "globals.h"

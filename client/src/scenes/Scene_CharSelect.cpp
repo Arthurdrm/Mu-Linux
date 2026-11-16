@@ -417,7 +417,7 @@ int Scene_CharSelect(void)
                             /* 8.. */ "", "", "", "", "", "", "", ""
                         };
                         const char* cn = kClassNames[cidx & 0xF];
-                        crt_sprintf(aCStack_50, s__s__d_00561a34, cn, (int)lvl);
+                        crt_sprintf(aCStack_50, "%s %d", cn, (int)lvl);
                     }
                     iVar4 = Platform::TextLength(aCStack_50);
                     gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), aCStack_50, iVar4, &tStack_68);

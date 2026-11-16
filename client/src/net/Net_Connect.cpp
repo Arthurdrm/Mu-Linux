@@ -69,7 +69,7 @@ void __cdecl CreateSocket(const char *param_1,unsigned int param_2)
   }
   if (iVar2 == 0) {
     DbgLogPublic("NET: CreateSocket CONNECT FAILED → abort/SetErrorMessage(0x71)");
-    CErrorReport_Write(&DAT_055c9bf0,s_Failed_to_connect__00559688);
+    CErrorReport_Write(&DAT_055c9bf0,"Failed to connect.");
     CErrorReport_WriteCurrentTime(1); // IDA: FUN_004055A0
     SetErrorMessage(0x71);
     // Original-client behaviour: the server can't be reached (no listener,
@@ -174,7 +174,7 @@ void CNetwork::InitializePacketSerials()
       uVar6 = uVar6 + 1;
     } while (uVar6 < DAT_055c9bd4);
   }
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
+  CErrorReport_Write(&DAT_055c9bf0,"Hash table full!!! GetIndex");
 LAB_00423a34:
   pvVar4 = AntiTamper_HashNode();
   static_cast<BYTE*>(pvVar4)[1] = 1;
@@ -235,7 +235,7 @@ LAB_00423a52:
       uVar6 = uVar6 + 1;
     } while (uVar6 < DAT_055c9bd4);
   }
-  CErrorReport_Write(&DAT_055c9bf0,s_Hash_table_full______GetIndex_00558108);
+  CErrorReport_Write(&DAT_055c9bf0,"Hash table full!!! GetIndex");
 LAB_00423b59:
   uVar3 = HashTable_GetIndex(&MAIN_HASH_CLASS,&m_ReceiveSerial);
   if (uVar3 == 0xffffffff) {

@@ -199,7 +199,7 @@ uint __cdecl Weather_Update(void)
             uVar13++;
         } while (uVar13 < DAT_055c9bd4);
     }
-    CErrorReport_Write(&DAT_055c9bf0, s_Hash_table_full______GetIndex_00558108);
+    CErrorReport_Write(&DAT_055c9bf0, "Hash table full!!! GetIndex");
 LAB_00500f16:
     pvVar9 = AntiTamper_HashNode();
     *(static_cast<unsigned char*>(pvVar9) + 4) = 1;
@@ -252,7 +252,7 @@ LAB_00500f34:
             uVar13++;
         } while (uVar13 < DAT_055c9bd4);
     }
-    CErrorReport_Write(&DAT_055c9bf0, s_Hash_table_full______GetIndex_00558108);
+    CErrorReport_Write(&DAT_055c9bf0, "Hash table full!!! GetIndex");
 LAB_00501064:
 
     // ── Weather-mode: random rain effects (EnableEvent != 0) ─────────────────

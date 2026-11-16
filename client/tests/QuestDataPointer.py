@@ -18,7 +18,7 @@ SERVICES = r'''
 using uint=unsigned int;
 using byte=unsigned char;
 char DAT_005580ac[]="rb";
-const char s__s___File_not_exist__00558094[]="archivo inexistente";
+const char s__s___File_not_exist__00558094[]="%s - File not exist.";
 BYTE* scratch;
 BYTE* quest;
 bool failOpen=false, closed=false;

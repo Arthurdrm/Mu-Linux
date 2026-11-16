@@ -70,9 +70,9 @@ void __cdecl Scene_Loading(HDC param_1)
     // Load textures once (guarded by init flag)
     if (InitLoading == '\0') {
         InitLoading = '\x01';
-        OpenJPG(s_Local_Loading01_jpg_00561a88, 0x1e, 0x2600, 0x2900, 0, '\x01');
-        OpenJPG(s_Local_Loading02_jpg_00561a9c, 0x1f, 0x2600, 0x2900, 0, '\x01');
-        OpenJPG(s_Local_Loading03_jpg_00561ab0, 0x20, 0x2600, 0x2900, 0, '\x01');
+        OpenJPG("Local/Loading01.jpg", 0x1e, 0x2600, 0x2900, 0, '\x01');
+        OpenJPG("Local/Loading02.jpg", 0x1f, 0x2600, 0x2900, 0, '\x01');
+        OpenJPG("Local/Loading03.jpg", 0x20, 0x2600, 0x2900, 0, '\x01');
     }
 
     FogEnable = 0;

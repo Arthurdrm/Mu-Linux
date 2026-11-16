@@ -173,7 +173,6 @@ DWORD    FrustrumBoundMaxX_1  = 0;
 DWORD    FrustrumBoundMaxY_1  = 0;
 DWORD    FrustrumBoundMaxX_2  = 0;
 DWORD    FrustrumBoundMaxY_2  = 0;
-char     s__s_file_not_found__0055a784[] = "%s file not found";
 DWORD    DAT_0055a798  = 0;
 char     DAT_0055a79c[] = "Data\\";    // texture/asset path prefix ("Data mode")
 char     DAT_0055a7a4[] = "Data2\\";   // texture/asset path prefix ("Data2 / pak mode")
@@ -267,40 +266,12 @@ DWORD    DAT_00561b04  = 0;
 char     DAT_00561b70[8] = "OZJ";   // OpenJPG extension suffix (Data mode: .jpg→.OZJ)
 
 // String literals (read-only — actual game strings come from the binary)
-char     s_Local_Webzenlogo_jpg_00561774[]  = "Local/Webzenlogo.jpg";
-char     s_Local_Everyone_jpg_0056178c[]    = "Local/Everyone.jpg";
-char     s_Local_Loading01_jpg_00561a88[]   = "Local/Loading01.jpg";
-char     s_Local_Loading02_jpg_00561a9c[]   = "Local/Loading02.jpg";
-char     s_Local_Loading03_jpg_00561ab0[]   = "Local/Loading03.jpg";
-char     s_connect_muonline_co_kr_005615b8[] = "connect.muonline.co.kr";
-char     s_Dialog_005595e0[]                = "Dialog";
-char     s_Hash_table_full______GetIndex_00558108[] = "Hash table full!!! GetIndex";
-char     s_Hash_table_full______Insert_005580e8[] = "Hash table full!!! Insert";
-char     s_Macro_Time_00559f30[]            = "Macro_Time";
-char     s___2d_00559f44[]                  = " - ";
-char     s___2d___00559f3c[]                = " -  ";
-char     s_____2d_00559f4c[]                = "  - ";
-char     s__d__d_00559f00[]                 = "%d/%d";
-char     s__d__d_00559f1c[]                 = "%d / %d";
-char     s__s__d_00561a34[]                 = "%s %d";
 // Scene_CharSelect "account-blocked" warning lines. La tabla original de
 // strings del 0.97k está stripped (ambos quedan todo-ceros en el PE), así que
 // fijamos literales razonables en inglés para que el render muestre algo.
 char     lpString_00561a3c[64]              = {};  // server info line 1
 char     lpString_00561a58[64]              = {};  // server info line 2
 char     lpString_00561a68[64]              = {};  // server info line 3
-char     s__s__d_Non_PVP___s_0056192c[]     = "%s%d Non PVP %s";
-char     s__s__d_Non_PVP___s_00561940[]     = "%s%d Non PVP %s";
-char     s__s__d_Non_PVP___s_00561954[]     = "%s%d Non PVP %s";
-char     s__s__d__s_0056192c[]              = "%s%d %s";
-char     s__s__d__s_00561940[]              = "%s%d %s";
-char     s__s__d__s_00561954[]              = "%s%d %s";
-char     s__s__d__s_00561968[]              = "%s%d %s";
-char     s__s__d__s_00561974[]              = "%s%d %s";
-char     s__s__d__s_00561980[]              = "%s%d %s";
-char     s__s__s_00561914[]                 = "%s%s";
-char     s__s__s_0056191c[]                 = "%s%s";
-char     s__s__s_00561924[]                 = "%s%s";
 
 // ── Misc game globals ─────────────────────────────────────────────────────────
 // DAT_00583d8c es un alias de g_csQuest (ver globals.h).
@@ -547,7 +518,6 @@ byte     DAT_005618b8  = 0;
 byte     DAT_005618bc  = 0;
 byte     DAT_005618c0  = 0;
 byte     DAT_005618c4  = 0;
-char     s____s___005618c8[] = " %s ";
 
 // ── Bone / skeleton data ──────────────────────────────────────────────────────
 // Bone-matrix scratch buffer. In the original binary this region (0x06970a9c..
@@ -1093,8 +1063,6 @@ char     lpData_055c9ba0[12] = {0};
 // (see globals.h) to DWORD lvalues at the correct offsets within this buffer.
 char     g_BoneVertexBuf[32 * 15000 * 12] = {0};  // 5,760,000 bytes
 char     lpString_05826bfc[0x50] = {0};
-char     lpString_05826cc0[0x50] = {0};
-char     lpString_05826cc9[0x50] = {0};
 
 // DAT_07e919bc, DAT_07abf5dc, DAT_07abf5d8, FrustrumY/228 — defined above
 
@@ -1242,7 +1210,6 @@ int      g_iNumLineMessageBoxCustom = 0;   // IDA: g_iNumLineMessageBoxCustom (0
 char     g_lpszMessageBoxCustom[7][0x26] = {};
 // DAT_07d566d0 (fallback char name string) es GlobalText[609] (ver el bloque de
 // alias al final de globals.h).
-char     s__d___s_005580b0[] = "%d %s";
 DWORD    DAT_005615dc  = 0;
 int      InputGold  = 0;
 DWORD    DAT_07ea9804  = 0;
@@ -1348,8 +1315,6 @@ DWORD    InputFrame  = 0;
 // `slot * 4` (slot clampeado a 0..9) y Chat.cpp la lee como `LPCSTR*`.
 char     DAT_07e11cec[10 * 4] = {0};
 // String constants
-char     lpString_00559d3c = 0;
-char     lpString_00559d40 = 0;
 char     DAT_00559d4c  = 0;
 char     DAT_00559d54  = 0;
 char     DAT_00559d5c  = 0;
@@ -1391,7 +1356,6 @@ BYTE     DAT_083a7af8[GUILD_MEMBER_TABLE_BYTES] = {0};
 char     param_2_07d59484  = 0;
 // DAT_07d5ba04 / DAT_07d5bfe0 son GlobalText[680] / [685] (ver el bloque de alias
 // al final de globals.h).
-char *   PTR_DAT_005618a0  = nullptr;
 char     param_2_005618a4  = 0;
 char     param_2_005618a8  = 0;
 char     param_2_005618b0  = 0;
@@ -1512,9 +1476,6 @@ float   _DAT_00552d00 = 0.001f;        // SLERP near-parallel epsilon
 // Effect pool — Effect_TickAll itera 200 slots × 0x1bc bytes.
 OBJECT  Effects[kEffectPoolSize] = {};   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
 // ── Monster_Data string literals ─────────────────────────────────────────────
-char    s_Data2_MonsterSetBase2_txt_00561530[] = "Data2/MonsterSetBase2.txt";
-char    s_Data2_Monster__0055e06c[] = "Data2/Monster/";
-char    s_swordbasic_smd_0055e07c[] = "swordbasic.smd";
 char    DAT_0055dff0 = 0;
 char    DAT_0055df70 = 0;
 char    DAT_0055dee0 = 0;
@@ -1533,9 +1494,6 @@ char    bBuxCode[3] = { (char)0xFC, (char)0xCF, (char)0xAB };
 char    TextParserTokenString[256] = {}; // DAT_07CF1EF0 — GetToken buffer (0x47A1F0)
 char    DAT_00559088 = 0;
 int     DAT_07d7807c = 0;
-char    s_Data_Monster__0055ddf8[] = "Data/Monster/";
-char    s_Monster_0055de08[] = "Monster";
-char    s_Monster__0055ddec[] = "Monster/";
 // ── Monster sound filename strings ───────────────────────────────────────────
 char    DAT_0055ddd4 = 0;  char    DAT_0055ddbc = 0;
 char    DAT_0055dda0 = 0;  char    DAT_0055dd84 = 0;
@@ -1601,10 +1559,6 @@ char    DAT_0055d114 = 0;  char    DAT_0055d0f8 = 0;
 char    DAT_0055d0dc = 0;  char    DAT_0055d0c0 = 0;
 char    DAT_0055d0a8 = 0;  char    DAT_0055d08c = 0;
 // ── Monster s_ named sound strings ───────────────────────────────────────────
-char    s_Monster_bv01_2_jpg_0055cfb8[] = "Monster/bv01_2.jpg";
-char    s_Monster_bv02_2_jpg_0055cfa4[] = "Monster/bv02_2.jpg";
-char    s_Monster_iui02_tga_0055cddc[] = "Monster/iui02.tga";
-char    s_Monster_iui03_tga_0055cdc8[] = "Monster/iui03.tga";
 
 // ── CreateEffect float constants ────────────────────────────────────────────
 float   _DAT_005524ec = 180.0f;
@@ -1671,7 +1625,6 @@ DWORD   DAT_0058443c   = 0;
 // ── Net_Connect globals ───────────────────────────────────────────────────────
 // IDA: First (0x055CA15C)
 DWORD   First   = 0;
-char    s_Failed_to_connect__00559688[] = "Failed to connect.";
 
 // ── Net_PacketSession globals ─────────────────────────────────────────────────
 // DAT_07ea8448 was a single DWORD; FILL_GRID(&DAT_07ea8448) and the
@@ -1698,7 +1651,6 @@ DWORD   DAT_07eaa164   = 0;
 char    DAT_00559b74[] = "rb";  // binary read mode string at 0x00559b74
 DWORD   DAT_00559b70   = 0;
 char    DAT_00559b50[64] = {};
-char    s__4d__4d_30__4d__4d__1_00559b58[] = "%4d/%4d[0] %4d/%4d[1]";
 
 // ── Scene_CharPreview globals ─────────────────────────────────────────────────
 char    DAT_07e9136a   = 0;  // picked item durability/option byte
@@ -1742,9 +1694,6 @@ char    DAT_005606e8[32]  = "background.smd";  // SMD basename, slot 0xa0 (stub)
 char    DAT_005606d0[32]  = "background2.smd"; // SMD basename, slot 0xa1 (stub)
 char    DAT_005607c8[32]  = "swordsman_face.smd"; // SMD basename, slot 0xad (stub)
 char    DAT_0056085c[32]  = "wizard_face.smd";    // SMD basename, slot 0xaa (stub)
-char    s_Logo_Webzenlogo_jpg_005606b0[]         = "Logo/Webzenlogo.jpg";
-char    s_Logo_Title_jpg_005606bc[]              = "Logo/Title.jpg";
-char    s_Interface_GFx_Interface_jpg_005607c4[] = "Interface/GFx/Interface.jpg";
 char    s_Interface_GFx_Interface2_jpg[]         = "Interface/GFx/Interface2.jpg";
 char    s_Data_Interface_jpg[]                   = "Data/Interface.jpg";
 char    s_Data_Interface2_jpg[]                  = "Data/Interface2.jpg";
@@ -1754,45 +1703,6 @@ char    s_main_bmd[]                             = "main.bmd";
 char    s_fairy_bmd[]                            = "fairy.bmd";
 
 // ── Scene_Resources strings ───────────────────────────────────────────────────
-char    s_Logo_0Account_new_tga_005607a8[]       = "Logo\\0Account_new.tga";
-char    s_Logo_0On_Botton_jpg_00560794[]         = "Logo\\0On_Botton.jpg";
-char    s_Logo_0On_Botton2_jpg_0056077c[]        = "Logo\\0On_Botton2.jpg";
-char    s_Logo_0Text_Box_jpg_00560768[]          = "Logo\\0Text_Box.jpg";
-char    s_Logo_0New_Account01_tga_00560750[]     = "Logo\\0New_Account01.tga";
-char    s_Logo_0New_Account02_tga_00560738[]     = "Logo\\0New_Account02.tga";
-char    s_Logo_0Box_jpg_00560728[]               = "Logo\\0Box.jpg";
-char    s_Interface_Progress_Back_jpg_0056070c[] = "Interface\\Progress_Back.jpg";
-char    s_Interface_Progress_jpg_005606f4[]      = "Interface\\Progress.jpg";
-char    s_Data2_Object1__0055f120[]              = "Data2\\Object1\\";
-char    s_ship_smd_0055ee54[]                    = "ship.smd";
-char    s_Data2_Logo__005606dc[]                 = "Data2\\Logo\\";
-char    s_mu_smd_005606c8[]                      = "mu.smd";
-char    s_sun_smd_005606b4[]                     = "sun.smd";
-char    s_Data_Object1__0055f360[]               = "Data\\Object1\\";
-char    s_Data_Logo__005606a0[]                  = "Data\\Logo\\";
-char    s_Object1__0055f354[]                    = "Object1\\";
-char    s_Logo__00560698[]                       = "Logo\\";
-char    s_Logo_Interface01_tga_00560a4c[]        = "Logo\\Interface01.tga";
-char    s_Logo_Interface02_tga_00560a34[]        = "Logo\\Interface02.tga";
-char    s_Logo_Interface03_tga_00560a1c[]        = "Logo\\Interface03.tga";
-char    s_Logo_Interface04_tga_00560a04[]        = "Logo\\Interface04.tga";
-char    s_Logo_New_Character201_tga_005609e8[]   = "Logo\\New_Character201.tga";
-char    s_Logo_New_Character202_jpg_005609cc[]   = "Logo\\New_Character202.jpg";
-char    s_Logo_Delete01_tga_005609b8[]           = "Logo\\Delete01.tga";
-char    s_Logo_Delete02_jpg_005609a4[]           = "Logo\\Delete02.jpg";
-char    s_Logo_Ok01_tga_00560994[]               = "Logo\\Ok01.tga";
-char    s_Logo_Ok02_jpg_00560984[]               = "Logo\\Ok02.jpg";
-char    s_Logo_New_Character01_tga_00560968[]    = "Logo\\New_Character01.tga";
-char    s_Logo_New_Character02_tga_0056094c[]    = "Logo\\New_Character02.tga";
-char    s_Logo_New_Character_Cancel_jpg_0056092c[] = "Logo\\New_Character_Cancel.jpg";
-char    s_Logo_New_Character_Ok_jpg_00560910[]   = "Logo\\New_Character_Ok.jpg";
-char    s_Logo_New_Character001_jpg_005608f4[]   = "Logo\\New_Character001.jpg";
-char    s_Logo_New_Character002_jpg_005608d8[]   = "Logo\\New_Character002.jpg";
-char    s_Logo_New_Character003_jpg_005608bc[]   = "Logo\\New_Character003.jpg";
-char    s_Logo_New_Character004_jpg_005608a0[]   = "Logo\\New_Character004.jpg";
-char    s_main_smd_00560894[]                    = "main.smd";
-char    s_warrior_smd_00560828[]                 = "warrior.smd";
-char    s_fairy_smd_0055c438[]                   = "fairy.smd";
 
 // ── Additional misc globals ───────────────────────────────────────────────────
 // DAT_07e016f0 — same address as _DAT_07e016f0 above; alias defined in globals.h
@@ -1848,11 +1758,7 @@ DWORD   DAT_00561740   = 0x20;      // " "
 DWORD   DAT_00561744   = 0xA1A1;    // "\xA1\xA1" (DBCS)
 DWORD   DAT_00561748   = 0x2E;      // "."
 DWORD   DAT_0056174c   = 0xA4A1;    // "\xA1\xA4" (DBCS)
-char    s_WEBZEN_0056176c[]  = "WEBZEN";
-char    s_WebZen_0056175c[]  = "WebZen";
-char    s_Webzen_00561764[]  = "Webzen";
 DWORD   DAT_00561750   = 0xADA1;    // "\xA1\xAD" (DBCS)
-char    s_Webzen_00561754[]  = "Webzen";
 
 // ── Chat.cpp missing globals ──────────────────────────────────────────────────
 char    DAT_07db8714    = 0;
@@ -1980,9 +1886,6 @@ DWORD   _DAT_0838b710 = 0;
 // _DAT_005528a8 already defined above (terrain: reuse same address)
 
 // ── Model loader format strings ───────────────────────────────────────────────
-char    s__s_bmd_0055a7f8[]    = "%s.bmd";
-char    s__s0_d_bmd_0055a7ec[] = "%s0%d.bmd";
-char    s__s_d_bmd_0055a7e0[]  = "%s%d.bmd";
 
 // ── Item/Skill/Gate data loader globals ──────────────────────────────────────
 BYTE*   DAT_07cf1ff0 = nullptr;    // Base de la tabla sombra de atributos de items.
@@ -2006,8 +1909,6 @@ DWORD   DAT_00b43000    = 0x00b43000;  // skill BMD checksum seed B
 // Filter.bmd / Dialog.bmd).
 char    DAT_00559bb4[3] = { (char)0xFC, (char)0xCF, (char)0xAB };
 // Error message format strings
-char    s__s___File_not_exist__00558094[] = "%s - File not exist.";
-char    s__s___File_corrupted__00559bd4[] = "%s - File corrupted.";
 // File open mode strings
 char    DAT_005597d4[] = "wb";  // binary write mode at 0x005597d4
 
@@ -2202,7 +2103,6 @@ DWORD  DAT_055c9b78       = 0;       // RefCount / tick counter
 
 int    PTR_LAB_00552460   = 0;
 int    PTR_LAB_005524e8   = 0;
-int    PTR_FUN_00552508   = 0;
 int    PTR_LAB_005527e4   = 0;
 int    PTR_LAB_005524b8   = 0;
 int    PTR_FUN_005524c0   = 0;

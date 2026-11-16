@@ -165,7 +165,6 @@ extern DWORD   FrustrumBoundMaxX_1;   // IDA: DAT_0055a774 (0x0055A774)
 extern DWORD   FrustrumBoundMaxY_1;   // IDA: DAT_0055a778 (0x0055A778)
 extern DWORD   FrustrumBoundMaxX_2;   // IDA: DAT_0055a77c (0x0055A77C)
 extern DWORD   FrustrumBoundMaxY_2;   // IDA: DAT_0055a780 (0x0055A780)
-extern char    s__s_file_not_found__0055a784[];  // "%s file not found" format string
 extern DWORD   DAT_0055a798;
 extern char    DAT_0055a79c[];  // "Data\\"  path prefix
 extern char    DAT_0055a7a4[];  // "Data2\\" path prefix
@@ -227,37 +226,9 @@ extern char    DAT_00561b70[]; // "OZJ" JPEG extension suffix
 extern char    DAT_00561ba8[];  // OpenTGA extension suffix used in non-Data2 path (e.g. ".tga")
 
 // Literales de string (datos de sólo lectura, etiquetas de Ghidra)
-extern char    s_Local_Webzenlogo_jpg_00561774[];
-extern char    s_Local_Everyone_jpg_0056178c[];
-extern char    s_Local_Loading01_jpg_00561a88[];
-extern char    s_Local_Loading02_jpg_00561a9c[];
-extern char    s_Local_Loading03_jpg_00561ab0[];
-extern char    s_connect_muonline_co_kr_005615b8[];
-extern char    s_Dialog_005595e0[];
-extern char    s_Hash_table_full______GetIndex_00558108[];
-extern char    s_Hash_table_full______Insert_005580e8[];
-extern char    s_Macro_Time_00559f30[];
-extern char    s___2d_00559f44[];
-extern char    s___2d___00559f3c[];
-extern char    s_____2d_00559f4c[];
-extern char    s__d__d_00559f00[];
-extern char    s__d__d_00559f1c[];
-extern char    s__s__d_00561a34[];
 extern char    lpString_00561a3c[64];   // server info line 1
 extern char    lpString_00561a58[64];   // server info line 2
 extern char    lpString_00561a68[64];   // server info line 3
-extern char    s__s__d_Non_PVP___s_0056192c[];
-extern char    s__s__d_Non_PVP___s_00561940[];
-extern char    s__s__d_Non_PVP___s_00561954[];
-extern char    s__s__d__s_0056192c[];
-extern char    s__s__d__s_00561940[];
-extern char    s__s__d__s_00561954[];
-extern char    s__s__d__s_00561968[];
-extern char    s__s__d__s_00561974[];
-extern char    s__s__d__s_00561980[];
-extern char    s__s__s_00561914[];
-extern char    s__s__s_0056191c[];
-extern char    s__s__s_00561924[];
 
 // ── Misc game globals (0x00583dxx – 0x00590xxx) ───────────────────────────────
 // DAT_00583d8c @ 0x00583D8C ES `g_csQuest` — el PUNTERO al objeto CSQuest, no
@@ -1013,7 +984,6 @@ extern byte    DAT_005618b8;       // item class name format ptr A
 extern byte    DAT_005618bc;       // item class name format ptr B
 extern byte    DAT_005618c0;       // item class name format ptr C
 extern byte    DAT_005618c4;       // item class name format ptr D
-extern char    s____s___005618c8[];// list entry format string (" %s " etc.)
 
 // ── Entity / animation tick globals ───────────────────────────────────────────
 extern float   WorldTime; // IDA: WorldTime (0x05826E08)
@@ -1022,8 +992,6 @@ extern char    SoccerObserver;   // SoccerObserver (IDA @0x05826D33) - lo escrib
                                // InitGame y el F3/23, y lo lee RenderCharacter.
                                // La etiqueta vieja ("guild name flag B") era falsa.
 extern char    lpString_05826bfc[0x50]; // player guild name A (wide->char cache)
-extern char    lpString_05826cc0[0x50]; // player guild name B
-extern char    lpString_05826cc9[0x50]; // player guild name C
 
 // DAT_07e919bc — base del array de info de guild (indexado por slot de party) — declarado arriba como DWORD
 // DAT_07abf5dc — player/entity slot count — declared above as DWORD
@@ -1265,8 +1233,6 @@ extern DWORD   InputFrame;           // char-index/step counter (draw-field loop
 extern char    DAT_07e11cec[10 * 4];   // 10 slots x 4 bytes; WinMain escribe con slot*4 (slot 0..9)
 
 // ── Chat string constants (displayed on login/cursor events) ──────────────────
-extern char    lpString_00559d3c;      // cursor/input prompt string A
-extern char    lpString_00559d40;      // cursor/input prompt string B (empty/null)
 extern char    DAT_00559d4c;           // player-list format: sender+space+msg fmt string
 extern char    DAT_00559d54;           // s__s___s: " %s - %s" style format string
 extern char    DAT_00559d5c;           // player-list alternate format string
@@ -1341,7 +1307,6 @@ extern BYTE    DAT_083a7af8[GUILD_MEMBER_TABLE_BYTES];
 extern char    param_2_07d59484;       // format string for current player name ("%s")
 // extern char    DAT_07d5ba04;           // column headers array (stride 300, ~5 entries, ends at 0x7d5bfe0)   // -> alias a GlobalText, ver el final del archivo
 // extern char    DAT_07d5bfe0;           // last column header entry   // -> alias a GlobalText, ver el final del archivo
-extern char *  PTR_DAT_005618a0;       // pointer to rank format string (e.g. "You: %d")
 extern char    param_2_005618a4;       // rank number format string ("%d.")
 extern char    param_2_005618a8;       // kills column format string ("%d")
 extern char    param_2_005618b0;       // deaths column format string ("%d")
@@ -1466,9 +1431,6 @@ extern float   _DAT_00552d00;  // SLERP near-parallel threshold (~1e-3)
 // ── Effect pool ──────────────────────────────────────────────────────────────
 extern OBJECT  Effects[kEffectPoolSize];   // IDA: unk_7B11670 (0x07B11670), 200 slots hasta 0x07B27150; nombre de MU 5.2
 // ── Monster_Data string literals ─────────────────────────────────────────────
-extern char    s_Data2_MonsterSetBase2_txt_00561530[];
-extern char    s_Data2_Monster__0055e06c[];  // "Data2/Monster/"
-extern char    s_swordbasic_smd_0055e07c[];  // "swordbasic.smd"
 extern char    DAT_0055dff0;
 extern char    DAT_0055df70;
 extern char    DAT_0055dee0;
@@ -1484,9 +1446,6 @@ extern char    TextParserTokenString[256]; // DAT_07CF1EF0 — TokenString outpu
                                    // tokenizer (Parse_NextToken, 0x50E2C0).
 extern char    DAT_00559088;   // sentinel "END" string base
 extern int     DAT_07d7807c;   // spawn slot index
-extern char    s_Data_Monster__0055ddf8[];  // "Data/Monster/"
-extern char    s_Monster_0055de08[];        // "Monster"
-extern char    s_Monster__0055ddec[];       // "Monster/"
 // ── Monster sound filename strings (DAT_0055d…) ──────────────────────────────
 extern char    DAT_0055ddd4;  extern char    DAT_0055ddbc;
 extern char    DAT_0055dda0;  extern char    DAT_0055dd84;
@@ -1552,10 +1511,6 @@ extern char    DAT_0055d114;  extern char    DAT_0055d0f8;
 extern char    DAT_0055d0dc;  extern char    DAT_0055d0c0;
 extern char    DAT_0055d0a8;  extern char    DAT_0055d08c;
 // ── Monster sound s_ named strings (0055cxxx range) ──────────────────────────
-extern char    s_Monster_bv01_2_jpg_0055cfb8[];
-extern char    s_Monster_bv02_2_jpg_0055cfa4[];
-extern char    s_Monster_iui02_tga_0055cddc[];
-extern char    s_Monster_iui03_tga_0055cdc8[];
 
 // ── CreateEffect float constants ────────────────────────────────────────────
 extern float   _DAT_005524ec;
@@ -1649,7 +1604,6 @@ extern DWORD   DAT_0058443c;   // DS3D state dword
 
 // ── Net_Connect globals ───────────────────────────────────────────────────────
 extern DWORD   First; // IDA: First (0x055CA15C)
-extern char    s_Failed_to_connect__00559688[]; // error string
 
 // ── Net_PacketSession globals ─────────────────────────────────────────────────
 // Char-select entry pools — IDA layout:
@@ -1687,7 +1641,6 @@ extern DWORD   DAT_07eaa164;
 extern char    DAT_00559b74[];  // "rb" fopen mode
 extern DWORD   DAT_00559b70;
 extern char    DAT_00559b50[];
-extern char    s__4d__4d_30__4d__4d__1_00559b58[]; // format string
 
 // ── Scene_CharPreview globals ─────────────────────────────────────────────────
 // IDA: pPickedItem.Level (0x07E91354) — el campo +4 del item levantado, no un
@@ -1724,9 +1677,6 @@ extern char    DAT_005606d0[32];    // SMD basename (stub)
 extern char    DAT_005607c8[32];    // SMD basename (stub)
 extern char    DAT_0056085c[32];    // SMD basename (stub)
 extern DWORD   DAT_00560694;    // Map_Load block-read descriptor (format/context for crt_fprintf)
-extern char    s_Logo_Webzenlogo_jpg_005606b0[];
-extern char    s_Logo_Title_jpg_005606bc[];
-extern char    s_Interface_GFx_Interface_jpg_005607c4[];
 extern char    s_Interface_GFx_Interface2_jpg[];
 extern char    s_Data_Interface_jpg[];
 extern char    s_Data_Interface2_jpg[];
@@ -1736,45 +1686,6 @@ extern char    s_main_bmd[];
 extern char    s_fairy_bmd[];
 
 // ── Scene_Resources strings ───────────────────────────────────────────────────
-extern char    s_Logo_0Account_new_tga_005607a8[];
-extern char    s_Logo_0On_Botton_jpg_00560794[];
-extern char    s_Logo_0On_Botton2_jpg_0056077c[];
-extern char    s_Logo_0Text_Box_jpg_00560768[];
-extern char    s_Logo_0New_Account01_tga_00560750[];
-extern char    s_Logo_0New_Account02_tga_00560738[];
-extern char    s_Logo_0Box_jpg_00560728[];
-extern char    s_Interface_Progress_Back_jpg_0056070c[];
-extern char    s_Interface_Progress_jpg_005606f4[];
-extern char    s_Data2_Object1__0055f120[];
-extern char    s_ship_smd_0055ee54[];
-extern char    s_Data2_Logo__005606dc[];
-extern char    s_mu_smd_005606c8[];
-extern char    s_sun_smd_005606b4[];
-extern char    s_Data_Object1__0055f360[];
-extern char    s_Data_Logo__005606a0[];
-extern char    s_Object1__0055f354[];
-extern char    s_Logo__00560698[];
-extern char    s_Logo_Interface01_tga_00560a4c[];
-extern char    s_Logo_Interface02_tga_00560a34[];
-extern char    s_Logo_Interface03_tga_00560a1c[];
-extern char    s_Logo_Interface04_tga_00560a04[];
-extern char    s_Logo_New_Character201_tga_005609e8[];
-extern char    s_Logo_New_Character202_jpg_005609cc[];
-extern char    s_Logo_Delete01_tga_005609b8[];
-extern char    s_Logo_Delete02_jpg_005609a4[];
-extern char    s_Logo_Ok01_tga_00560994[];
-extern char    s_Logo_Ok02_jpg_00560984[];
-extern char    s_Logo_New_Character01_tga_00560968[];
-extern char    s_Logo_New_Character02_tga_0056094c[];
-extern char    s_Logo_New_Character_Cancel_jpg_0056092c[];
-extern char    s_Logo_New_Character_Ok_jpg_00560910[];
-extern char    s_Logo_New_Character001_jpg_005608f4[];
-extern char    s_Logo_New_Character002_jpg_005608d8[];
-extern char    s_Logo_New_Character003_jpg_005608bc[];
-extern char    s_Logo_New_Character004_jpg_005608a0[];
-extern char    s_main_smd_00560894[];
-extern char    s_warrior_smd_00560828[];
-extern char    s_fairy_smd_0055c438[];
 
 // ── Entity_Spawn ──────────────────────────────────────────────────────────────
 // DAT_0838bc70 redeclarado como array de char (no DWORD)
@@ -1813,11 +1724,7 @@ extern DWORD   DAT_00561740;
 extern DWORD   DAT_00561744;
 extern DWORD   DAT_00561748;
 extern DWORD   DAT_0056174c;
-extern char    s_WEBZEN_0056176c[];
-extern char    s_WebZen_0056175c[];
-extern char    s_Webzen_00561764[];
 extern DWORD   DAT_00561750;
-extern char    s_Webzen_00561754[];
 
 // ── Chat.cpp missing globals ──────────────────────────────────────────────────
 extern char    DAT_07db8714;         // input field buffer byte +2
@@ -1877,9 +1784,6 @@ extern DWORD   _DAT_0838b710;  // terrain LOD scale (float bits)
 // _DAT_005528a8 ya declarado arriba (1/1000, de ms a s, misma dirección)
 
 // ── Model loader format strings ───────────────────────────────────────────────
-extern char    s__s_bmd_0055a7f8[];    // "%s.bmd"
-extern char    s__s0_d_bmd_0055a7ec[]; // "%s0%d.bmd"
-extern char    s__s_d_bmd_0055a7e0[];  // "%s%d.bmd"
 
 // ── Item/Skill/Gate data loader globals ──────────────────────────────────────
 extern BYTE*   DAT_07cf1ff0;       // Base de la tabla sombra de atributos de items.
@@ -1916,7 +1820,6 @@ static_assert(offsetof(DIALOG_SCRIPT, m_lpszAnswer)        == 0x180, "DIALOG_SCR
 #define DAT_07cf5760   (g_DialogScript[0].m_iReturnForAnswer[0])
 #define DAT_07cf5788   (g_DialogScript[0].m_lpszAnswer[0][0])
 // extern char    DAT_07d566d0;       // fallback char name string (no-char placeholder)   // -> alias a GlobalText, ver el final del archivo
-extern char    s__d___s_005580b0[];// "%d %s" format string for char-select display
 extern int     EditMonsterNumber;       // NPC name count  [IDA 0x07D78078]
 // DAT_07cf2000 / DAT_07cf2001: alias a MonsterScript (misma tabla 0x07CF2000).
 // Ver nota en globals.cpp.  &DAT_07cf2000 = base de la tabla; DAT_07cf2001 =
@@ -1927,8 +1830,6 @@ extern DWORD   DAT_01c5e200;       // item/skill BMD checksum seed A
 extern DWORD   DAT_00b43000;       // item/skill BMD checksum seed B
 extern char    DAT_00559bb4[3];    // XOR cipher key for BuxConvert_0 (0xFC,0xCF,0xAB)
 // Error message format strings
-extern char    s__s___File_not_exist__00558094[];  // "%s - File not exist."
-extern char    s__s___File_corrupted__00559bd4[];  // "%s - File corrupted."
 // File open modes
 extern char    DAT_005597d4[];  // "wb" (binary write mode for crt_fwrite callers)
 
@@ -2121,7 +2022,6 @@ extern DWORD   DAT_055c9b78;       // RefCount / tick counter
 
 extern int     PTR_LAB_00552460;   // vtable for FUN_00403310
 extern int     PTR_LAB_005524e8;   // vtable for ClothNode_SetVTable
-extern int     PTR_FUN_00552508;   // vtable for ClothBody_SetBaseVTable
 extern int     PTR_LAB_005527e4;   // vtable for FUN_0040f690
 extern int     PTR_LAB_005524b8;   // vtable for Quest_SetVTable
 extern int     PTR_FUN_005524c0;   // vtable for CWaveFile

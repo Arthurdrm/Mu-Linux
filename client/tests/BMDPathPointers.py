@@ -40,8 +40,10 @@ def harness(revision=None,native=False):
  source=read_source('src/render/BMD_Load.cpp',revision);body=function(source,'BMD__Open');signature=body[:body.index('{')+1];a=body.index('const char *path');b=body.index('char local_4c');decl='\n'.join(line for line in body[a:b].splitlines() if line.strip().startswith('const char *'))
  fragment=body[b:body.index('fseek(fp,')];receiver=signature+decl+'\n'+fragment+'}\n'
  globals_source=read_source('src/globals.cpp',revision);constants=[]
+ # Desde la T8l los tres formatos .bmd son literales en BMD_LegacyLoading.
  for name in ['DAT_005580ac','s__s_bmd_0055a7f8','s__s0_d_bmd_0055a7ec','s__s_d_bmd_0055a7e0']:
-  match=re.search(r'char\s+'+name+r'\[\]\s*=\s*"[^"\n]*";',globals_source);assert match;constants.append(match.group())
+  match=re.search(r'char\s+'+name+r'\[\]\s*=\s*"[^"\n]*";',globals_source);assert match or name.startswith('s_')
+  if match:constants.append(match.group())
  call='BMD__Open(0,path,name,0)' if 'const char' in signature else 'BMD__Open(0,static_cast<int>(reinterpret_cast<uintptr_t>(path)),static_cast<int>(reinterpret_cast<uintptr_t>(name)),0)'
  from LegacyModelLayout import VIEW
  view=VIEW

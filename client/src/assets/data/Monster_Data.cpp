@@ -25,7 +25,7 @@ void __cdecl Monster_LoadStartupData(void)
         Monster_LoadScriptTable();           // load monster script table
         DAT_0055a7c4 = 1;
         if (DAT_083a410c != '\0') {
-            Monster_ParseSetBase2(s_Data2_MonsterSetBase2_txt_00561530);  // load MonsterSetBase2.txt
+            Monster_ParseSetBase2("Data2/MonsterSetBase2.txt");  // load MonsterSetBase2.txt
         }
     }
     return;
@@ -182,9 +182,9 @@ void __cdecl OpenMonsterModel(int param_1)
   iVar1 = param_1 + 0x10e;
   iVar2 = Models + iVar1 * BMD_STRIDE;
   if (((DAT_0055a7c4 == '\0') || ((*(short *)(iVar2 + 0x26) < 1 && (*(short *)(iVar2 + 0x24) < 1))))
-     && (AccessModel(iVar1,s_Data_Monster__0055ddf8,s_Monster_0055de08,param_1 + 1),
+     && (AccessModel(iVar1,"Data/Monster/","Monster",param_1 + 1),
         *(short *)(iVar2 + 0x24) != 0)) {
-    OpenTexture(iVar1,s_Monster__0055ddec,0x2600,'\x01');
+    OpenTexture(iVar1,"Monster/",0x2600,'\x01');
     *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(4)) = 0x3e800000;
     *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x14)) = 0x3e4ccccd;
     *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3eae147b;
@@ -442,8 +442,8 @@ LAB_005099d1:
       return;
     case 0x2a:
       Model_SetAnimationSlots(iVar1,0x91,0x92,0x93,0x94,0x95);
-      OpenJPG(s_Monster_bv01_2_jpg_0055cfb8,0x56b,0x2601,0x2901,0,'\x01');
-      OpenJPG(s_Monster_bv02_2_jpg_0055cfa4,0x56c,0x2601,0x2901,0,'\x01');
+      OpenJPG("Monster/bv01_2.jpg",0x56b,0x2601,0x2901,0,'\x01');
+      OpenJPG("Monster/bv02_2.jpg",0x56c,0x2601,0x2901,0,'\x01');
       *(undefined4 *)(Models + BMD_STRIDE * 312 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
       return;
     case 0x2b:
@@ -483,8 +483,8 @@ LAB_005099d1:
       Model_SetAnimationSlots(iVar1,0xab,0xffff,0xac,0xac,0xad);
       return;
     case 0x34:
-      OpenTGA(s_Monster_iui02_tga_0055cddc,0x1ed,0x2600,0x2900,0,'\x01');
-      OpenTGA(s_Monster_iui03_tga_0055cdc8,0x1ef,0x2600,0x2900,0,'\x01');
+      OpenTGA("Monster/iui02.tga",0x1ed,0x2600,0x2900,0,'\x01');
+      OpenTGA("Monster/iui03.tga",0x1ef,0x2600,0x2900,0,'\x01');
       *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
       Model_SetAnimationSlots(iVar1,0xb4,0xb4,0xb5,0xb5,0xb6);
       return;

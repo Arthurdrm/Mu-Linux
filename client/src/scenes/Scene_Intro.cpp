@@ -152,8 +152,8 @@ void __cdecl Scene_Intro(HDC param_1)
     ClearInput(1);   // CharList_Init(1)
 
     // Load splash textures
-    OpenJPG(s_Local_Webzenlogo_jpg_00561774, 0xc, 0x2600, 0x2900, 0, '\x01');
-    OpenJPG(s_Local_Everyone_jpg_0056178c,   0xd, 0x2600, 0x2900, 0, '\x01');
+    OpenJPG("Local/Webzenlogo.jpg", 0xc, 0x2600, 0x2900, 0, '\x01');
+    OpenJPG("Local/Everyone.jpg",   0xd, 0x2600, 0x2900, 0, '\x01');
 
     FogEnable = 0;
     // Nota: el iTitle.wav (id 4) lo dispara el original con PlayBuffer(4,...)
@@ -257,7 +257,7 @@ void __cdecl Scene_Intro(HDC param_1)
             uVar14++;
         } while (uVar14 < DAT_055c9bd4);
     }
-    CErrorReport_Write(&DAT_055c9bf0, s_Hash_table_full______GetIndex_00558108);
+    CErrorReport_Write(&DAT_055c9bf0, "Hash table full!!! GetIndex");
 
 LAB_00513a36:
     pvVar5 = AntiTamper_HashNode();
@@ -303,7 +303,7 @@ LAB_00513a50:
             uStack_4++;
         } while (uStack_4 < DAT_055c9bd4);
     }
-    CErrorReport_Write(&DAT_055c9bf0, s_Hash_table_full______GetIndex_00558108);
+    CErrorReport_Write(&DAT_055c9bf0, "Hash table full!!! GetIndex");
 
 LAB_00513b4e:
     puVar1 = (undefined4*)&AsCharacter(iStack_10)->PositionY;

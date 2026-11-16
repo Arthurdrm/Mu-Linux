@@ -2,7 +2,7 @@
 // Texturas del inventario, la tienda, los botones y el escudo de guild:
 // [images] de Content/interface/textures.toml.
 #include "stdafx.h"
-#include "assets/data/TextureList.h"
+#include "assets/data/AssetList.h"
 #include "globals.h"
 #include "functions.h"
 

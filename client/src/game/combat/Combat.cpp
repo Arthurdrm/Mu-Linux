@@ -663,7 +663,7 @@ void __cdecl Combat_SendMovePathPacket(CHARACTER* character, const OBJECT* objec
     // IDA 00491C40, justo después del camino de envío por la red:
     // acá se activa la ruta generada localmente. Player_InputTick sólo la
     // avanza/interpola mientras este byte esté seteado.
-    if (ErrorMessage != 113)
+    if (ErrorMessage != MESSAGE_SERVER_LOST)
         AsCharacter(param_1)->Movement = 1;
 
     SendMove_CloseWindows97k();

@@ -314,7 +314,7 @@ bool COptionsMenu::UpdateMain()
         ConsumeClick();
         m_Page = PAGE_MAIN;
         ErrorMessage = NextErrorMessage;
-        NextErrorMessage = 0;
+        NextErrorMessage = MESSAGE_NONE;
     }
     return true;
 }

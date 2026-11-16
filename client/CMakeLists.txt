@@ -437,6 +437,7 @@ set(MU_HEADERS
     src/app/config/Config.h
     src/app/config/ServerConfig.h
     src/app/config/UserSettings.h
+    src/ui/DialogMessage.h
     src/ui/UIState.h
     src/ui/ChatTypes.h
     src/game/entity/EntityView.h

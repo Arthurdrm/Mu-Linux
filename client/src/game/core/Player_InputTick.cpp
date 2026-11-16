@@ -84,7 +84,7 @@ static void MouseOnWindow_Update(void)
     // El selector local de Chaos (ErrorMessage 143) es un modal de 213x210;
     // el original bloquea el click de mundo mientras está presente.  Sin este
     // gate, sus botones pueden atravesar hacia los paneles o el mapa.
-    if (ErrorMessage == 143 &&
+    if (ErrorMessage == MESSAGE_SELECT_CHAOS &&
         mx >= 213 && mx < 426 && my >= 120 && my < 330) {
         MouseOnWindow = 1;
         return;
@@ -93,7 +93,7 @@ static void MouseOnWindow_Update(void)
     // IDA: RenderErrorMessage dibuja los modales 126/152 desde (213,60)
     // hasta (426,124), incluidos el campo de Personal Code y sus botones.
     // Ese diálogo es modal: su click no puede seguir al recorrido de mundo.
-    if ((ErrorMessage == 126 || ErrorMessage == 152) &&
+    if ((ErrorMessage == MESSAGE_DELETE_GUILD || ErrorMessage == MESSAGE_LOCK_STORAGE) &&
         mx >= 213 && mx < 426 && my >= 60 && my < 124) {
         MouseOnWindow = 1;
         return;
@@ -246,8 +246,8 @@ void HUD_BottomBarButtons_HitTest(void)
     // existe en este arbol; GuildCreatorOpened cubre el mismo estado.)
     if (TradeOpened ||                      // TradeOpened
         GuildCreatorOpened ||                      // GuildCreatorOpened
-        ErrorMessage == 126 ||               // ErrorMessage: expulsar del guild
-        ErrorMessage == 152 ||
+        ErrorMessage == MESSAGE_DELETE_GUILD ||               // ErrorMessage: expulsar del guild
+        ErrorMessage == MESSAGE_LOCK_STORAGE ||
         _g_bEventChipDialogEnable ||
         ServerDivisionOpened ||                      // g_bServerDivisionEnable
         HUD_IsQuestPanelOpenRuntime())
@@ -483,8 +483,8 @@ static void HUD_HotkeyTick(void)
     // caminando, que son los caminos que mandan el 0x31.
     if (TradeOpened ||                      // TradeOpened
         GuildCreatorOpened ||                      // GuildCreatorOpened
-        ErrorMessage == 126 ||               // ErrorMessage: expulsar del guild
-        ErrorMessage == 152 ||
+        ErrorMessage == MESSAGE_DELETE_GUILD ||               // ErrorMessage: expulsar del guild
+        ErrorMessage == MESSAGE_LOCK_STORAGE ||
         _g_bEventChipDialogEnable ||         // Golden Archer / chip de evento
         ServerDivisionOpened ||                      // g_bServerDivisionEnable
         HUD_IsQuestPanelOpenRuntime())

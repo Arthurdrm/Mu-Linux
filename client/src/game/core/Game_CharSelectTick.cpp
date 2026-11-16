@@ -183,7 +183,7 @@ void Game_CharSelectTick(void)
         }
     }
 
-    if (ErrorMessage != 0)
+    if (ErrorMessage != MESSAGE_NONE)
         MouseOnWindow = 1;
 
     if (CameraTopViewEnabled == '\0')

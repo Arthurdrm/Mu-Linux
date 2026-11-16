@@ -223,11 +223,11 @@ void __cdecl SetErrorMessage(int param_1)
 
   uVar1 = NextErrorMessage;
   if (param_1 == 0) {
-    NextErrorMessage = 0;
+    NextErrorMessage = MESSAGE_NONE;
     ErrorMessage = uVar1;
     return;
   }
-  if (ErrorMessage != 0) {
+  if (ErrorMessage != MESSAGE_NONE) {
     NextErrorMessage = param_1;
     return;
   }

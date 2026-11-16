@@ -337,7 +337,7 @@ void Game_EnterWorldTick(void)
         {
             MouseLButtonPush = '\0';
             ErrorMessage = NextErrorMessage;
-            NextErrorMessage = 0;
+            NextErrorMessage = MESSAGE_NONE;
 
             // Find first free entity slot
             int slotFound = DAT_005616b0;
@@ -374,16 +374,16 @@ void Game_EnterWorldTick(void)
             if (lvl < 40) {
                 // Level too low error
                 if (flags & 0x12) {
-                    if (ErrorMessage == 0) ErrorMessage = 0x19; else NextErrorMessage = 0x19;
+                    if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_LOGIN_BLOCKED; else NextErrorMessage = MESSAGE_LOGIN_BLOCKED;
                 } else {
-                    if (ErrorMessage == 0) ErrorMessage = 0x72; else NextErrorMessage = 0x72;
+                    if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_DELETE_CHARACTER; else NextErrorMessage = MESSAGE_DELETE_CHARACTER;
                     ClearInput(1);
                     InputEnable = 1; InputNumber = 1;
                     InputTextMax = DAT_083a7acc;
                     InputTextHide[0] = 1;
                 }
             } else {
-                if (ErrorMessage == 0) ErrorMessage = 0x84; else NextErrorMessage = 0x84;
+                if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_DELETE_CHARACTER_WARNING; else NextErrorMessage = MESSAGE_DELETE_CHARACTER_WARNING;
             }
             PlayBuffer(0x19, 0, 0);
         }
@@ -406,7 +406,7 @@ void Game_EnterWorldTick(void)
                 if (i == SelectedCharacter) {
                     if (DAT_083a4299 != '\0') {
                         DAT_083a4299 = '\0';
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         confirmed = true;
                         selSlot   = i;
                         pendingB  = 0;
@@ -415,7 +415,7 @@ void Game_EnterWorldTick(void)
                     } else if (IsClickPushed()) {
                         // ── DIAGNOSTIC: capture state at slot-click trigger ──
                         MouseLButtonPush = '\0';
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         SelectedHero = i;
                         ErrorMessage = pendingB;
                         PlayBuffer(0x19, 0, 0);
@@ -441,9 +441,9 @@ void Game_EnterWorldTick(void)
             if (SelectedHero != -1) {
                 // v40 = 1 path (line 545 IDA): confirm flag from button trigger
                 if (hasFreeSlot && !confirmed) {
-                    if (ErrorMessage == 0 && DAT_055ca038 != '\0') {
+                    if (ErrorMessage == MESSAGE_NONE && DAT_055ca038 != '\0') {
                         DAT_055ca038 = '\0';
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         confirmed = true;
                         ErrorMessage = pendingB;
                         PlayBuffer(0x19, 0, 0);
@@ -459,7 +459,7 @@ void Game_EnterWorldTick(void)
                     IsClickPushed())
                 {
                     MouseLButtonPush = '\0';
-                    NextErrorMessage = 0;
+                    NextErrorMessage = MESSAGE_NONE;
                     ErrorMessage = pendingB;
                     PlayBuffer(0x19, 0, 0);
                     selectClicked = true;
@@ -476,7 +476,7 @@ void Game_EnterWorldTick(void)
                     LoginSubState = 0x19;
                     PlayBuffer(0x1b, 0, 0);
                 } else {
-                    if (ErrorMessage == 0) ErrorMessage = 0x85; else NextErrorMessage = 0x85;
+                    if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_BLOCKED_CHARACTER; else NextErrorMessage = MESSAGE_BLOCKED_CHARACTER;
                 }
             }
         }
@@ -563,16 +563,16 @@ void Game_EnterWorldTick(void)
                 // Validate username length
                 int ulen = (int)strlen((char*)InputText);
                 if (ulen < 4) {
-                    if (ErrorMessage == 0) ErrorMessage = 0x7a; else NextErrorMessage = 0x7a;
+                    if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_MIN_LENGTH; else NextErrorMessage = MESSAGE_MIN_LENGTH;
                 } else {
                     if (Chat_ValidateInputCommand() == '\0' && !CheckSpecialText((const BYTE*)InputText)) { // IDA: FUN_00406B30
                         DAT_083a7c18 = 0x1c;
                         ErrorMessage = NextErrorMessage;
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         CurrentProtocolState = 0x34;
                         Send_CharCreatePacket();   // F3/01 crear (no F3/03 select)
                     } else {
-                        if (ErrorMessage == 0) ErrorMessage = 0x73; else NextErrorMessage = 0x73;
+                        if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_RESTRICTED_WORDS; else NextErrorMessage = MESSAGE_RESTRICTED_WORDS;
                     }
                 }
             }
@@ -627,8 +627,8 @@ void Game_EnterWorldTick(void)
             PlayBuffer(0x1b, 0, 0);
             if (CurrentProtocolState == 0x3a) {
                 int code = CurrentProtocolState;
-                if (ErrorMessage == 0) { ErrorMessage = 0x3a; CurrentProtocolState = 0x33; }
-                else                   { NextErrorMessage = 0x3a; CurrentProtocolState = 0x33; }
+                if (ErrorMessage == MESSAGE_NONE) { ErrorMessage = MESSAGE_CHARACTER_DELETE_FAILED; CurrentProtocolState = 0x33; }
+                else                   { NextErrorMessage = MESSAGE_CHARACTER_DELETE_FAILED; CurrentProtocolState = 0x33; }
             }
         }
         break;
@@ -659,7 +659,7 @@ void Game_EnterWorldTick(void)
                 // Handle specific response codes
                 if (code == 0x36 || code == 0x37) {
                     int r = code;
-                    if (ErrorMessage == 0) { ErrorMessage = r; }
+                    if (ErrorMessage == MESSAGE_NONE) { ErrorMessage = r; }
                     else { NextErrorMessage = r; }
                 }
 
@@ -710,7 +710,7 @@ void Game_EnterWorldTick(void)
                 if (code == 0x36 || code == 0x37) {
                     int r = code;
                     if (CurrentProtocolState == 0) { NextErrorMessage = r; ErrorMessage = NextErrorMessage; }
-                    else if (ErrorMessage == 0) { ErrorMessage = r; }
+                    else if (ErrorMessage == MESSAGE_NONE) { ErrorMessage = r; }
                     else { NextErrorMessage = r; }
                 }
             } else if (DAT_083a7c18 == 0x15) {

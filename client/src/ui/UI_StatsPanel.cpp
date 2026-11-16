@@ -49,8 +49,8 @@ int RenderErrorMessage(void)
   gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_NORMAL));
   SetBackgroundTextColor = 0;
   m_dwTextColor = 0xffffffff;
-  if (ErrorMessage != 0) {
-    if (ErrorMessage == 0x6e) {
+  if (ErrorMessage != MESSAGE_NONE) {
+    if (ErrorMessage == MESSAGE_LOG_OUT) {
       if (SceneFlag == 5) {
         pCVar6 = (LPCSTR)0x5;
       }
@@ -133,25 +133,25 @@ int RenderErrorMessage(void)
       UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),uVar10,
                    (LPCSTR)GlobalText[384],(LPSIZE)0x0,'\0',0);
     }
-    else if (ErrorMessage == 0x96) {
+    else if (ErrorMessage == MESSAGE_OPTIONS) {
       // DESVIACION (DLL OptionsMenu, hook 0x0051B3CA): menú de opciones expandido
       // en lugar de los 4 botones del 0.97k (volver, ataque automático, susurros, cerrar).
       gOptionsMenu.Render();
     }
-    else if ((((ErrorMessage == 0x8b) || (ErrorMessage == 0x8e)) || (ErrorMessage == 0x8d)) ||
-            ((ErrorMessage == 0x8c || (ErrorMessage == 0x9a)))) {
+    else if ((((ErrorMessage == MESSAGE_CUSTOM) || (ErrorMessage == MESSAGE_DIALOG)) || (ErrorMessage == MESSAGE_DIALOG_INTERFACE)) ||
+            ((ErrorMessage == MESSAGE_DEVIL_SQUARE_RANK || (ErrorMessage == MESSAGE_BLOOD_CASTLE_RESULT)))) {
       local_d8 = 0x3c;
       GL_DrawTexture(0xfc,213.0,60.0,213.0,5.0,0.0,0.0,0.83203125,0.625,'\x01','\x01');
       local_dc = 0x41;
       iVar3 = 7;
       switch(ErrorMessage) {
-      case 0x8b:
-      case 0x8d:
-      case 0x9a:
+      case MESSAGE_CUSTOM:
+      case MESSAGE_DIALOG_INTERFACE:
+      case MESSAGE_BLOOD_CASTLE_RESULT:
 switchD_0051bea9_caseD_8b:
         iVar3 = 4;
         break;
-      case 0x8e:
+      case MESSAGE_DIALOG:
         iVar3 = ((g_iNumAnswer + g_iNumLineMessageBoxCustom) * 0x12 + 0x31) / 0x28;
         if (iVar3 < 9) {
           if (iVar3 < 4) goto switchD_0051bea9_caseD_8b;
@@ -185,7 +185,7 @@ switchD_0051bea9_caseD_8b:
         }
         piVar7 = piVar7 + 5;
       }
-      if (ErrorMessage == 0x8d) {
+      if (ErrorMessage == MESSAGE_DIALOG_INTERFACE) {
         // El render consulta el clic; sólo la lógica del diálogo debe consumirlo.
         GL_SetBlendSrcOver('\x01');
         Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
@@ -229,7 +229,7 @@ LAB_0051c13d:
         Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
       }
     }
-    else if (ErrorMessage == 0x8f) {
+    else if (ErrorMessage == MESSAGE_SELECT_CHAOS) {
       Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
       local_d8 = 0x78;
       GL_DrawTexture(0xfc,213.0,120.0,213.0,5.0,0.0,0.0,0.83203125,0.625,'\x01','\x01');
@@ -298,7 +298,7 @@ LAB_0051c13d:
       } while (iVar3 < 2);
       Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
     }
-    else if ((ErrorMessage == 0x97) || (ErrorMessage == 0x99)) {
+    else if ((ErrorMessage == MESSAGE_ITEM_CHECK) || (ErrorMessage == MESSAGE_USE_STATE)) {
       local_d8 = 0x64;
       GL_DrawTexture(0xfc,213.0,100.0,213.0,5.0,0.0,0.0,0.83203125,0.625,'\x01','\x01');
       local_dc = 0x69;
@@ -328,12 +328,12 @@ LAB_0051c13d:
     else {
       local_d8 = 0x3c;
       GL_DrawTexture(0xf0,213.0,60.0,213.0,64.0,0.0,0.0,0.83203125,1.0,'\x01','\x01');
-      if (ErrorMessage == 0x74) {
+      if (ErrorMessage == MESSAGE_INPUT_GOLD) {
         InputTextWidth = 100;
         UI_RenderInputField(0x116,0x62,0);
         InputTextWidth = 0x100;
       }
-      else if (((ErrorMessage == 0x72) || (ErrorMessage == 0x7e)) || (ErrorMessage == 0x98)) {
+      else if (((ErrorMessage == MESSAGE_DELETE_CHARACTER) || (ErrorMessage == MESSAGE_DELETE_GUILD)) || (ErrorMessage == MESSAGE_LOCK_STORAGE)) {
         InputTextWidth = 100;
         UI_RenderInputField(0xf3,0x62,0);
         InputTextWidth = 0x100;
@@ -353,8 +353,8 @@ LAB_0051c13d:
           GL_DrawTexture(0xf4,373.0,98.0,40.0,21.0,0.0,0.0,0.546875,0.65625,'\x01','\x01');
         }
       }
-      else if ((((ErrorMessage == 0x80) || (ErrorMessage == 0x77)) || (ErrorMessage == 0x78)) ||
-              (ErrorMessage == 0x79)) {
+      else if ((((ErrorMessage == MESSAGE_GUILD_WAR) || (ErrorMessage == MESSAGE_GUILD)) || (ErrorMessage == MESSAGE_PARTY)) ||
+              (ErrorMessage == MESSAGE_TRADE)) {
         if (((MouseX < 0xea) || (0x12f < MouseX)) ||
            ((MouseY < 0x62 || (0x76 < MouseY)))) {
           iVar3 = 0xf1;
@@ -384,42 +384,42 @@ LAB_0051c13d:
   pCVar2 = (LPCSTR)(uintptr_t)local_d8;
   pCVar6 = (LPCSTR)(uintptr_t)(local_d8 + 0xf);
   switch(ErrorMessage) {
-  case 0x15:
-  case 0x47:
+  case MESSAGE_LOGIN_WRONG_PASSWORD:
+  case MESSAGE_RECOVERY_WRONG_PASSWORD:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[407]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[407],iVar3,ptVar17);
     ppCVar11 = GlobalText[407];
     break;
-  case 0x16:
-  case 0x3f:
-  case 0x41:
-  case 0x45:
+  case MESSAGE_LOGIN_INVALID_ACCOUNT:
+  case MESSAGE_RECOVERY_INVALID_ACCOUNT:
+  case MESSAGE_RECOVERY_INVALID_ACCOUNT_2:
+  case MESSAGE_RECOVERY_INVALID_ACCOUNT_3:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[414]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[414],iVar3,ptVar17);
     ppCVar11 = GlobalText[414];
     break;
-  case 0x17:
+  case MESSAGE_LOGIN_ALREADY_CONNECTED:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[415]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[415],iVar3,ptVar17);
     ppCVar11 = GlobalText[415];
     break;
-  case 0x18:
+  case MESSAGE_LOGIN_SERVER_FULL:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[416]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[416],iVar3,ptVar17);
     ppCVar11 = GlobalText[416];
     break;
-  case 0x19:
+  case MESSAGE_LOGIN_BLOCKED:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[417]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[417],iVar3,ptVar17);
     ppCVar11 = GlobalText[417];
     break;
-  case 0x1a:
-  case 0x70:
+  case MESSAGE_LOGIN_VERSION:
+  case MESSAGE_VERSION:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[405]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[405],iVar3,ptVar17);
@@ -431,37 +431,37 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     ppCVar11 = GlobalText[406];
     break;
-  case 0x1b:
+  case MESSAGE_LOGIN_CONNECTION_ERROR:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[408]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[408],iVar3,ptVar17);
     ppCVar11 = GlobalText[408];
     break;
-  case 0x1c:
+  case MESSAGE_LOGIN_TOO_MANY_ATTEMPTS:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[409]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[409],iVar3,ptVar17);
     ppCVar11 = GlobalText[409];
     break;
-  case 0x1d:
+  case MESSAGE_LOGIN_SUBSCRIPTION_TERM:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[410]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[410],iVar3,ptVar17);
     ppCVar11 = GlobalText[410];
     break;
-  case 0x1e:
+  case MESSAGE_LOGIN_SUBSCRIPTION_TIME:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[411]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[411],iVar3,ptVar17);
     ppCVar11 = GlobalText[411];
     break;
-  case 0x1f:
+  case MESSAGE_LOGIN_IP_TERM:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[412]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[412],iVar3,ptVar17);
     ppCVar11 = GlobalText[412];
     break;
-  case 0x20:
+  case MESSAGE_LOGIN_IP_TIME:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[413]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[413],iVar3,ptVar17);
@@ -469,37 +469,37 @@ LAB_0051c13d:
     break;
   default:
     return ErrorMessage + -0x15;
-  case 0x22:
+  case MESSAGE_LOGIN_POINT_NO_DATES:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[597]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[597],iVar3,ptVar17);
     ppCVar11 = GlobalText[597];
     break;
-  case 0x23:
+  case MESSAGE_LOGIN_POINT_NO_POINTS:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[598]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[598],iVar3,ptVar17);
     ppCVar11 = GlobalText[598];
     break;
-  case 0x24:
+  case MESSAGE_LOGIN_IP_NOT_ALLOWED:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[599]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[599],iVar3,ptVar17);
     ppCVar11 = GlobalText[599];
     break;
-  case 0x25:
+  case MESSAGE_LOGIN_NO_BILLING:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[433]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[433],iVar3,ptVar17);
     ppCVar11 = GlobalText[433];
     break;
-  case 0x26:
+  case MESSAGE_LOGIN_AGE_RESTRICTED:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[435]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[435],iVar3,ptVar17);
     ppCVar11 = GlobalText[435];
     break;
-  case 0x36:
+  case MESSAGE_CHARACTER_INVALID_NAME:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[394]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[394],iVar3,ptVar17);
@@ -511,13 +511,13 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     ppCVar11 = GlobalText[395];
     goto LAB_0051ca70;
-  case 0x37:
+  case MESSAGE_CHARACTER_SLOTS_FULL:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[396]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[396],iVar3,ptVar17);
     ppCVar11 = GlobalText[396];
     goto LAB_0051ca70;
-  case 0x3a:
+  case MESSAGE_CHARACTER_DELETE_FAILED:
     if (DAT_05826d20 == 0) {
       ptVar17 = &local_e4;
       iVar3 = Platform::TextLength((LPCSTR)GlobalText[438]);
@@ -537,25 +537,25 @@ LAB_0051c13d:
       ppCVar11 = GlobalText[401];
     }
     goto LAB_0051ca70;
-  case 100:
+  case MESSAGE_INPUT_ID:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[403]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[403],iVar3,ptVar17);
     ppCVar11 = GlobalText[403];
     goto LAB_0051ca70;
-  case 0x65:
+  case MESSAGE_INPUT_PASSWORD:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[404]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[404],iVar3,ptVar17);
     ppCVar11 = GlobalText[404];
     goto LAB_0051ca70;
-  case 0x71:
+  case MESSAGE_SERVER_LOST:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[402]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[402],iVar3,ptVar17);
     ppCVar11 = GlobalText[402];
     goto LAB_0051ca70;
-  case 0x72:
+  case MESSAGE_DELETE_CHARACTER:
     m_dwTextColor = 0xff0000ff;
     // IDA 0x51C36C: sprintf(String, GlobalText[397], CharactersClient + 916*SelectedHero + 0x1C1).
     // GlobalText[397] es "Si deseas eliminar a %s," y el %s es el nombre del
@@ -574,7 +574,7 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     ppCVar11 = GlobalText[398];
     break;
-  case 0x73:
+  case MESSAGE_RESTRICTED_WORDS:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[392]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[392],iVar3,ptVar17);
@@ -586,7 +586,7 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     ppCVar11 = GlobalText[393];
     break;
-  case 0x74:
+  case MESSAGE_INPUT_GOLD:
     if (StorageGoldFlag == 0) {
       ptVar17 = &local_e4;
       iVar3 = Platform::TextLength((LPCSTR)GlobalText[420]);
@@ -606,19 +606,19 @@ LAB_0051c13d:
       ppCVar11 = GlobalText[422];
     }
     goto LAB_0051ca70;
-  case 0x75:
+  case MESSAGE_NOT_ENOUGH_GOLD:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[423]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[423],iVar3,ptVar17);
     ppCVar11 = GlobalText[423];
     goto LAB_0051ca70;
-  case 0x76:
+  case MESSAGE_OVERFLOW_GOLD:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[424]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[424],iVar3,ptVar17);
     ppCVar11 = GlobalText[424];
     goto LAB_0051ca70;
-  case 0x77:
+  case MESSAGE_GUILD:
     // IDA 0x51CD64: el indice que devuelve FindCharacterIndex indexa
     // CharactersClient y el nombre (+0x1C1) es el %s del formato
     // (GlobalText[418] = "%s").  El port descartaba el indice y no pasaba el
@@ -640,7 +640,7 @@ LAB_0051c13d:
     ppCVar11 = local_c8;
     pCVar6 = pCVar2 + 0x15;
     goto LAB_0051ca70;
-  case 0x78:
+  case MESSAGE_PARTY:
   {
     // 0051AF50 obtains the visible character slot from 0045AC80 before
     // expanding the localized invitation format.  The prior void stub lost
@@ -665,7 +665,7 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     goto LAB_0051ca70;
   }
-  case 0x79:
+  case MESSAGE_TRADE:
     // IDA: RenderErrorMessage 0x51C940 — solicitud entrante de Trade.
     // ProtocolCore guarda el nombre exacto de diez bytes en DAT_07EA9834;
     // GlobalText[418] aporta el formato localizado y GlobalText[419] la línea
@@ -685,19 +685,19 @@ LAB_0051c13d:
     ppCVar11 = local_c8;
     pCVar6 = pCVar2 + 0x1a;
     goto LAB_0051ca70;
-  case 0x7a:
+  case MESSAGE_MIN_LENGTH:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[390]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[390],iVar3,ptVar17);
     ppCVar11 = GlobalText[390];
     goto LAB_0051ca70;
-  case 0x7b:
+  case MESSAGE_SPECIAL_NAME:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[391]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[391],iVar3,ptVar17);
     ppCVar11 = GlobalText[391];
     goto LAB_0051ca70;
-  case 0x7e:
+  case MESSAGE_DELETE_GUILD:
     ptVar17 = &local_e4;
     m_dwTextColor = 0xff0000ff;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[427]);
@@ -710,13 +710,13 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     ppCVar11 = GlobalText[428];
     break;
-  case 0x7f:
+  case MESSAGE_NO_GUILD_MARK:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[426]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[426],iVar3,ptVar17);
     ppCVar11 = GlobalText[426];
     goto LAB_0051ca70;
-  case 0x80:
+  case MESSAGE_GUILD_WAR:
     // IDA: RenderErrorMessage 0x51CE0D — invitación a guerra de guild.
     crt_sprintf(local_c8, GlobalText[430], GuildWarName);
     ptVar17 = &local_e4;
@@ -731,7 +731,7 @@ LAB_0051c13d:
     ppCVar11 = local_c8;
     pCVar6 = pCVar2 + 0x15;
     break;
-  case 0x84:
+  case MESSAGE_DELETE_CHARACTER_WARNING:
     ptVar17 = &local_e4;
     m_dwTextColor = 0xff0000ff;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[399]);
@@ -744,47 +744,47 @@ LAB_0051c13d:
     pCVar6 = pCVar2 + 0x15;
     ppCVar11 = GlobalText[400];
     goto LAB_0051ca70;
-  case 0x85:
+  case MESSAGE_BLOCKED_CHARACTER:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[434]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[434],iVar3,ptVar17);
     ppCVar11 = GlobalText[434];
     break;
-  case 0x86:
+  case MESSAGE_STORAGE_PASSWORD_WRONG:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[440]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[440],iVar3,ptVar17);
     ppCVar11 = GlobalText[440];
     break;
-  case 0x87:
+  case MESSAGE_STORAGE_ALREADY_LOCKED:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[441]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[441],iVar3,ptVar17);
     ppCVar11 = GlobalText[441];
     break;
-  case 0x88:
+  case MESSAGE_STORAGE_PASSWORD_TOO_SIMPLE:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[442]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[442],iVar3,ptVar17);
     ppCVar11 = GlobalText[442];
     break;
-  case 0x89:
+  case MESSAGE_STORAGE_PASSWORD_NOT_MATCH:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[445]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[445],iVar3,ptVar17);
     ppCVar11 = GlobalText[445];
     break;
-  case 0x8a:
+  case MESSAGE_STORAGE_RESIDENT_WRONG:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[401]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[401],iVar3,ptVar17);
     ppCVar11 = GlobalText[401];
     break;
-  case 0x8b:
-  case 0x8d:
-  case 0x8e:
+  case MESSAGE_CUSTOM:
+  case MESSAGE_DIALOG_INTERFACE:
+  case MESSAGE_DIALOG:
     iVar3 = (((7 - g_iNumAnswer) - g_iNumLineMessageBoxCustom) * 0x12) / 2 + 0x4c;
-    if ((ErrorMessage == 0x8e) && (iVar3 < 0x46)) {
+    if ((ErrorMessage == MESSAGE_DIALOG) && (iVar3 < 0x46)) {
       iVar3 = 0x46;
     }
     local_dc = 0;
@@ -805,7 +805,7 @@ LAB_0051c13d:
     if (MouseY - iVar3 < 0) {
       local_d4 = -NAN;
     }
-    if ((ErrorMessage == 0x8e) && (local_dc = 0, 0 < g_iNumAnswer)) {
+    if ((ErrorMessage == MESSAGE_DIALOG) && (local_dc = 0, 0 < g_iNumAnswer)) {
       const char* answer = (const char*)g_lpszDialogAnswer;
       do {
         if (((int)local_d4 == (int)local_dc) &&
@@ -836,10 +836,10 @@ LAB_0051c13d:
     }
     Gfx::Color3f(1.0f, 1.0f, 1.0f);  // 0x3f800000 = bits de 1.0f
     return 0;
-  case 0x8c:
+  case MESSAGE_DEVIL_SQUARE_RANK:
     iVar3 = RenderMatchScore();
     return iVar3;
-  case 0x8f:
+  case MESSAGE_SELECT_CHAOS:
     m_dwTextColor = 0xff0080ff;
     gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_BOLD));
     ptVar17 = &local_e4;
@@ -847,23 +847,23 @@ LAB_0051c13d:
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[734],iVar3,ptVar17);
     ppCVar11 = GlobalText[734];
     break;
-  case 0x90:
+  case MESSAGE_SERVER_IMMIGRATION_RESIDENT:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[401]);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[401],iVar3,ptVar17);
     ppCVar11 = GlobalText[401];
     break;
-  case 0x91:
+  case MESSAGE_SERVER_IMMIGRATION_DB:
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)&szServerMigrationError);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)&szServerMigrationError,iVar3,ptVar17);
     ppCVar11 = szServerMigrationError;
     break;
-  case 0x97:
-  case 0x99:
+  case MESSAGE_ITEM_CHECK:
+  case MESSAGE_USE_STATE:
     local_dc = local_d8 + 0x1e;
     local_d8 = 0x15e;
-    if (ErrorMessage == 0x99) goto LAB_0051d371;
+    if (ErrorMessage == MESSAGE_USE_STATE) goto LAB_0051d371;
     if (DAT_07eaa13c != 2) {
       if (DAT_07eaa13c != 3) {
         if (DAT_07eaa13c != 4) goto LAB_0051d371;
@@ -929,7 +929,7 @@ LAB_0051d3cf:
         return g_iNumLineMessageBoxCustom;
       }
     } while( true );
-  case 0x98:
+  case MESSAGE_LOCK_STORAGE:
     ptVar17 = &local_e4;
     m_dwTextColor = 0xff0000ff;
     iVar3 = Platform::TextLength((LPCSTR)GlobalText[443]);
@@ -945,7 +945,7 @@ LAB_0051ca70:
     uVar9 = UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)pCVar6,
                          (LPCSTR)ppCVar11,(LPSIZE)0x0,'\0',0);
     return (int)uVar9;
-  case 0x9a:
+  case MESSAGE_BLOOD_CASTLE_RESULT:
     uVar9 = GuildOverview_Render();
     return (int)uVar9;
   }

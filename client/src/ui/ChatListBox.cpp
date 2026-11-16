@@ -2033,7 +2033,7 @@ static int __fastcall GuildLB_perFrameInput(DWORD* self)
                         MouseLButtonPush = 0;
                         PlayBuffer(25, 0, 0);                 // PlayBuffer(25)
                         int v9 = ((FnInt)vt[19])(self) - (int)self[34];
-                        ErrorMessage     = 126;   // ErrorMessage
+                        ErrorMessage     = MESSAGE_DELETE_GUILD;   // ErrorMessage
                         dword_5615E4     = v9 - v3 - 1;
                         ClearInput(0);                        // ClearInput(0)
                         InputEnable      = 0;

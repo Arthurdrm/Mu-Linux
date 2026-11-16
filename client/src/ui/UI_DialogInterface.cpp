@@ -39,9 +39,9 @@ void __cdecl CreateDialogInterface(int a1, int a2)
     DAT_083a42f8[3] = 70;
     DAT_083a42f8[4] = 21;
 
-    if (ErrorMessage != 0) {
-        NextErrorMessage = 141;
+    if (ErrorMessage != MESSAGE_NONE) {
+        NextErrorMessage = MESSAGE_DIALOG_INTERFACE;
     } else {
-        ErrorMessage = 141;
+        ErrorMessage = MESSAGE_DIALOG_INTERFACE;
     }
 }

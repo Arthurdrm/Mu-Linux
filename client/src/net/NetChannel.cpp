@@ -155,7 +155,7 @@ bool Receive(const unsigned char* raw, int size)
             }
             // El server no habla este protocolo: mismo cartel que la versión
             // incorrecta, que al confirmarlo cierra el cliente.
-            SetErrorMessage(0x1a);
+            SetErrorMessage(MESSAGE_LOGIN_VERSION);
         } else if (why == SecureChannel::Failure::Untrusted || why == SecureChannel::Failure::BadSignature) {
             Platform::GetWindow().ShowError(gClientText.Get(ClientTextId::ServerKeyMismatch), "Mu Online", true, true);
             gWindow.RequestCloseApplication();

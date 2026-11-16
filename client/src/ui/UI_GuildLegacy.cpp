@@ -170,18 +170,18 @@ void __cdecl CreateOkMessageBox(char *msg)
     DAT_083a42f8[2] = 0x8c;
     DAT_083a42f8[3] = 0x46;
     DAT_083a42f8[4] = 0x15;
-    if (ErrorMessage != 0)
-        NextErrorMessage = 0x8b;
+    if (ErrorMessage != MESSAGE_NONE)
+        NextErrorMessage = MESSAGE_CUSTOM;
     else
-        ErrorMessage = 0x8b;
+        ErrorMessage = MESSAGE_CUSTOM;
 }
 
 // GuildMemberList_Update @ 0x0051D9E0 — GuildMemberList_Update
 // Sets UI state 0x8c, stores count/param2, copies menu descriptor and member list data.
 void __cdecl GuildMemberList_Update(int count, int p2, void *data)
 {
-    if (ErrorMessage == 0) ErrorMessage = 0x8c;
-    else                   NextErrorMessage = 0x8c;
+    if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_DEVIL_SQUARE_RANK;
+    else                   NextErrorMessage = MESSAGE_DEVIL_SQUARE_RANK;
     DAT_083a7c34 = (DWORD)p2;
     DAT_083a7c30 = count;
     // Copy menu descriptor: 5 DWORDs
@@ -205,8 +205,8 @@ void __cdecl GuildMemberList_Update(int count, int p2, void *data)
 // Sets UI state 0x9a, stores param_1 as member count, copies 5-entry menu desc + 6 DWORDs data.
 void __cdecl GuildMemberList_Add(int p1, void *data)
 {
-    if (ErrorMessage == 0) ErrorMessage = 0x9a;
-    else                   NextErrorMessage = 0x9a;
+    if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_BLOOD_CASTLE_RESULT;
+    else                   NextErrorMessage = MESSAGE_BLOOD_CASTLE_RESULT;
     DAT_083a7c30 = (int)(DWORD)p1;
     DWORD desc[5] = { 1, 0x47, 0x82, 0x46, 0x15 };
     for (int i = 0; i < 5; i++) DAT_083a42f8[i] = desc[i];
@@ -256,8 +256,8 @@ int __cdecl ItemList_Select(int param_1) {
     }
 
     // IDA: ErrorMessage = 142, o NextErrorMessage si ya hay un cartel arriba.
-    if (ErrorMessage != 0) NextErrorMessage = 142;
-    else                   ErrorMessage = 142;
+    if (ErrorMessage != MESSAGE_NONE) NextErrorMessage = MESSAGE_DIALOG;
+    else                   ErrorMessage = MESSAGE_DIALOG;
     return 1;
 }
 // CServerSelWin_UpdateWhileActive — implemented in src/scenes/Scene_ServerSelect_Input.cpp

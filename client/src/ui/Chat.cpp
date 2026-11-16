@@ -594,8 +594,8 @@ void Chat_TickPresentation() {
         if (GuildCreatorOpened && g_iKeyPadEnable && index==0) ++cursors;
         if (GoldenArcherOpenType==3 && index==0) ++cursors;
     }
-    if (index==0 && (ErrorMessage==0x74 || ErrorMessage==0x72 ||
-        ErrorMessage==0x7e || ErrorMessage==0x98)) ++cursors;
+    if (index==0 && (ErrorMessage==MESSAGE_INPUT_GOLD || ErrorMessage==MESSAGE_DELETE_CHARACTER ||
+        ErrorMessage==MESSAGE_DELETE_GUILD || ErrorMessage==MESSAGE_LOCK_STORAGE)) ++cursors;
     InputFrame+=cursors;
     if (SceneFlag == 5 && !gUserSettings.GetAntilag(ANTILAG_INTERFACE))
         ChatListBox_TickPresentation();

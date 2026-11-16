@@ -477,7 +477,7 @@ void __cdecl Chat_InputTick(void)
         if ((bVar4 == 0) &&
             (GuildCreatorOpened == '\0') &&
             (GuildInputEnable == '\0') &&
-            (ErrorMessage != 0x7e) && (ErrorMessage != 0x98) &&
+            (ErrorMessage != MESSAGE_DELETE_GUILD) && (ErrorMessage != MESSAGE_LOCK_STORAGE) &&
             (GoldenArcherOpenType == 0) &&
             (*(char *)((uintptr_t)g_csQuest + 0x1c87f) == '\0') &&
             (ServerDivisionOpened == '\0'))

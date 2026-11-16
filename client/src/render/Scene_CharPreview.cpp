@@ -15,12 +15,12 @@ void RenderInfomation3D(void)
   byte option1;
   uint level;
 
-  if (ErrorMessage == 0x97) {
+  if (ErrorMessage == MESSAGE_ITEM_CHECK) {
     if (DAT_07eaa13c != 1) {
       return;
     }
   }
-  else if (ErrorMessage != 0x99) {
+  else if (ErrorMessage != MESSAGE_USE_STATE) {
     return;
   }
 
@@ -41,7 +41,7 @@ void RenderInfomation3D(void)
   level = DAT_07e91354;
   itemType = *(short*)pPickedItem;
   option1 = DAT_07e9136b;
-  if (ErrorMessage == 0x99) {
+  if (ErrorMessage == MESSAGE_USE_STATE) {
     level = DAT_07ea5244;
     itemType = *(short*)DAT_07ea5240;
     option1 = DAT_07ea525b;

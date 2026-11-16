@@ -193,7 +193,7 @@ void CServerSelWin_UpdateWhileActive(void)
 
                         DAT_083a7c44 = 0x32;
                         ErrorMessage = NextErrorMessage;
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         DAT_083a7ac8 = Platform::GetTimer().Ticks();
                         DAT_083a4320 = 0;
 
@@ -232,8 +232,8 @@ void CServerSelWin_UpdateWhileActive(void)
 
                     } else if (ping_ok) {
                         // Already has cooldown — flash counters
-                        if (ErrorMessage == 0) ErrorMessage = 0x18;
-                        else                    NextErrorMessage = 0x18;
+                        if (ErrorMessage == MESSAGE_NONE) ErrorMessage = MESSAGE_LOGIN_SERVER_FULL;
+                        else                    NextErrorMessage = MESSAGE_LOGIN_SERVER_FULL;
                     }
                 }
             }

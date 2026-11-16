@@ -421,6 +421,7 @@
 #include "assets/data/ContentCatalog.h"
 #include "game/item/Item_Equip.h"
 #include "game/combat/Combat.h"
+#include "scenes/WorldObject_Behavior.h"
 #include "net/Net.h"
 #include "globals.h"
 #include "functions.h"
@@ -2316,43 +2317,10 @@ void __cdecl Action(intptr_t c, intptr_t o)
         bool v309 = false;
         bool overrideFacing = false;
 
-        switch (worldIndex) {
-        case 0:  // Lorencia
-            switch (TileSub) {
-            case 6: case 146:                                  v307 = true; break;
-            case 133:                       overrideFacing=true; v309 = true; break;
-            case 145:                       overrideFacing=true; v307 = true; break;
-            }
-            break;
-        case 1:  // Dungeon
-            switch (TileSub) {
-            case 59:                                            v307 = true; break;
-            case 60:                        overrideFacing=true; v309 = true; break;
-            }
-            break;
-        case 2:  // Devias
-            switch (TileSub) {
-            case 22: case 55: case 25:      overrideFacing=true; v307 = true; break;
-            case 40:                        overrideFacing=true; v307 = true; break;
-            case 45: case 73:                                   v307 = true; break;
-            case 91:                        overrideFacing=true; v309 = true; break;
-            }
-            break;
-        case 3:  // Noria
-            // El decompile cierra el bloque de mundos con
-            //     if (World != 3) { if (World == 7) {...}
-            //                       if (World != 8 || tile != 78) { LABEL_367: ... } }
-            //     if (tile == 8)  goto LABEL_392;   // v307
-            //     if (tile != 38) goto LABEL_367;
-            //     <SetAction 137/138 + accion 110>
-            // o sea la cola compartida se alcanza con World == 3 (no es la "entrada a la
-            // cueva de Lost Tower" de World 8).  El source de MU 5.2 lo confirma
-            // termino por termino (ZzzInterface.cpp, MOVEMENT_OPERATE):
-            //     WD_3NORIA:  case 8: Sit;  case 38: Healing + facing
-            // y el "Healing" del 0.97k es la pose de flotar sobre los orbes de
-            // Noria.
-            if (TileSub == 8) {                                 v307 = true; }
-            else if (TileSub == 38) {
+        // Objetos interactuables: WorldObject_Behavior.cpp (kOperable), la misma
+        // tabla con la que CreateObject los registra en Operates.
+        if (const OperableObject* op = WorldObject_FindOperable(worldIndex, TileSub)) {
+            if (op->Pose == OperatePose::Healing) {
                 // Orbe de Noria: flotar (PLAYER_HEALING1 / _FEMALE1).
                 *(float*)(o + 36) = *(float*)&_DAT_07e118e4;
                 int act = ((AsCharacter(c)->Class & 7) == 2) ? 138 : 137;
@@ -2368,22 +2336,9 @@ void __cdecl Action(intptr_t c, intptr_t o)
                 AsCharacter(c)->PathNum = 0;
                 return;
             }
-            break;
-        case 7:  // Atlans
-            if (TileSub == 39) {            overrideFacing=true; v309 = true; }
-            break;
-        case 8:  // Tarkan
-            // El tile 8 que este case tenia es de Noria (ver el case 3): la cola
-            // compartida no es alcanzable con World == 8 salvo por el tile 78, y
-            // ahi `tile == 8` es falso.  Queda solo el 78.
-            //
-            // DESVIACION DOCUMENTADA: para World 8 / tile 78 el decompile termina
-            // cayendo igual en LABEL_367 (la cola prueba 8 y 38, y 78 no es
-            // ninguno), o sea seria un no-op y el `if (World != 8 || tile != 78)`
-            // quedaria sin proposito -- huele a plegado de Hex-Rays.  MU 5.2 tiene
-            // `WD_8TARKAN: case 78: Sit`, asi que se mantiene el Sit.
-            if (TileSub == 78) {                                v307 = true; }
-            break;
+            overrideFacing = op->Facing;
+            v307 = op->Pose == OperatePose::Sit;
+            v309 = op->Pose == OperatePose::Pose;
         }
 
         if (overrideFacing) {

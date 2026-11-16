@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "game/core/RenderFxSnapshots.h"
 #include "scenes/ObjectRegistry.h"
+#include "scenes/WorldObject_Behavior.h"
 #include "platform/IFileSystem.h"
 #include "globals.h"
 #include "functions.h"
@@ -142,95 +143,9 @@ void* __cdecl CreateObject(int param_1, float* param_2, float* param_3, float pa
         }
     }
 
-    // game-substate overrides; some cases return directly (skipping Entity_InitRenderState),
-    // others call it and return; fall-through also calls it.
-    switch (gMapManager.GetCurrentMap()) {
-    case MAP_LORENCIA:
-        switch (param_1) {
-        default: goto lbl_skip_init;
-        case 6: case 0x91: case 0x92: break;
-        case 0x34: object.BlendMesh=1; return puVar3;
-        case 0x3b: SceneObject_StoreFloatBits(object.Velocity, 0); return puVar3;
-        case 0x50: SceneObject_StoreFloatBits(object.CollisionRange, 0xc2480000); return puVar3;
-        case 0x5a: case 0x96: object.BlendMesh=1; [[fallthrough]];
-        case 0x60: case 0x61: SceneObject_StoreFloatBits(object.Velocity, 0x3e99999a); return puVar3;
-        case 0x62: case 0x77: object.BlendMesh=2; return puVar3;
-        case 0x69: object.BlendMesh=3; return puVar3;
-        case 0x75: case 0x7a: object.BlendMesh=4; return puVar3;
-        case 0x76: object.BlendMesh=8; return puVar3;
-        case 0x85:
-            Entity_InitRenderState(puVar3);
-            SceneObject_StoreFloatBits(object.BoundingBoxMax[0], 0x42200000); SceneObject_StoreFloatBits(object.BoundingBoxMax[1], 0x42200000); SceneObject_StoreFloatBits(object.BoundingBoxMax[2], 0x43200000);
-            object.HiddenMesh=-2; return puVar3;
-        }
-        break;
-    case MAP_DUNGEON:
-        if (param_1==0x3b) break;
-        if (param_1==0x3c) {
-            Entity_InitRenderState(puVar3);
-            SceneObject_StoreFloatBits(object.BoundingBoxMax[0], 0x42200000); SceneObject_StoreFloatBits(object.BoundingBoxMax[1], 0x42200000); SceneObject_StoreFloatBits(object.BoundingBoxMax[2], 0x43200000);
-            object.HiddenMesh=-2;
-        }
-        return puVar3;
-    case MAP_DEVIAS:
-        switch (param_1) {
-        default: goto lbl_skip_init;
-        case 0x13: case 0x5c: case 0x5d: object.BlendMesh=0; return puVar3;
-        case 0x14: case 0x41: case 0x56: case 0x58:
-            // Puertas de Devias (20/65/86/88).  Guarda el estado de REPOSO que
-            // usa la animacion de apertura de `sub_4FDC00` case World 2:
-            //   HeadAngle[0..2]       (+40,+44,+48) = Angle[0..2]
-            //   HeadTargetAngle[0..2] (+52,+56,+60) = Position[0..2]
-            // y normaliza el giro:  Angle[2] = HeadAngle[2] = (int)Angle[2] % 360.
-            // El `% 360` es sobre el VALOR truncado, no sobre los bits del float (IDA:
-            // `(std::int64_t)*((float *)v6 + 9) % 360`); el tick compara HeadAngle[2] con
-            // 90/270/0/180.
-            memcpy(object.HeadAngle, object.Angle, sizeof(object.HeadAngle));
-            memcpy(object.HeadTargetAngle, object.Position, sizeof(object.HeadTargetAngle));
-            {
-                const float normalized = (float)(long long)(((long long)object.Angle[2]) % 360);
-                object.Angle[2] = object.HeadAngle[2] = normalized;
-            }
-            return puVar3;
-        case 0x16: case 0x19: case 0x28: case 0x2d: case 0x37: case 0x49: break;
-        case 0x36: case 0x38: object.BlendMesh=1; return puVar3;
-        case 0x4e: object.BlendMesh=3; return puVar3;
-        case 0x5b:
-            Entity_InitRenderState(puVar3);
-            SceneObject_StoreFloatBits(object.BoundingBoxMax[0], 0x42200000); SceneObject_StoreFloatBits(object.BoundingBoxMax[1], 0x42200000); SceneObject_StoreFloatBits(object.BoundingBoxMax[2], 0x43200000);
-            object.HiddenMesh=-2; return puVar3;
-        case 100: object.HiddenMesh=-2; return puVar3;
-        }
-        // IDA cierra el case 2 con `break` (0x4FF5A0 L292), y esa salida del switch
-        // exterior es la que llega al `sub_4FF580` del final -- el LABEL_43 del
-        // decompile, o sea el REGISTRO del objeto en la lista `Operates` (los tipos
-        // 22/25/40/45/55/73 de Devias tienen que quedar clickeables). No poner
-        // `[[fallthrough]]`.
-        break;
-    case MAP_NORIA:
-        switch (param_1) {
-        default: goto lbl_skip_init;
-        case 1: object.BlendMesh=1; return puVar3;
-        case 8: break;
-        case 9: object.BlendMesh=3; return puVar3;
-        case 0x11: case 0x13: case 0x25: object.BlendMesh=0; return puVar3;
-        case 0x12: object.BlendMesh=2; return puVar3;
-        case 0x26: Entity_InitRenderState(puVar3); object.HiddenMesh=-2; return puVar3;
-        }
-        // Idem: IDA cierra el case 3 con `break` (L292), así el tipo 8 de Noria
-        // (sentarse) llega al registro.
-        break;
-    default:
-        goto lbl_skip_init;
-    case MAP_ATLANS:
-        if (param_1==0x27) { Entity_InitRenderState(puVar3); object.HiddenMesh=-2; return puVar3; }
-        return puVar3;
-    case MAP_TARKAN:
-        if (param_1==0x4e) { Entity_InitRenderState(puVar3); goto lbl_skip_init; }
-        return puVar3;
-    }
-    Entity_InitRenderState(puVar3);
-lbl_skip_init:
+    // Valores por mapa y tipo, y el registro de los objetos interactuables en
+    // Operates: WorldObject_Behavior.cpp (S13).
+    WorldObject_ApplyMapDefaults(object, puVar3, gMapManager.GetCurrentMap(), param_1);
     return puVar3;
 }
 // IDA: DeleteBug (0x004FFFA0)

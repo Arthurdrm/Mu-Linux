@@ -12,6 +12,8 @@
 #include <array>
 #include "globals.h"
 #include "functions.h"
+#include <cstring>
+#include "game/entity/EntityTypes.h"
 #include "scenes/WorldObject_Behavior.h"
 
 extern void __cdecl Effect_PhysicsTick(std::uintptr_t Object); // Efectos del mapa 4
@@ -367,5 +369,133 @@ void WorldObject_PerMapTick(std::uintptr_t o)
         break;
     default:
         break;
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Creación: valores iniciales por mapa y tipo (CreateObject 0x004FF5A0)
+// ═════════════════════════════════════════════════════════════════════════════
+
+namespace {
+
+using P = OperatePose;
+constexpr OperableObject kOperable[] = {
+    // Lorencia
+    { MAP_LORENCIA,   6,   P::Sit,     false, false, false },
+    { MAP_LORENCIA, 145,   P::Sit,     true,  false, false },
+    { MAP_LORENCIA, 146,   P::Sit,     false, false, false },
+    { MAP_LORENCIA, 133,   P::Pose,    true,  true,  true  },
+    // Dungeon
+    { MAP_DUNGEON,   59,   P::Sit,     false, false, false },
+    { MAP_DUNGEON,   60,   P::Pose,    true,  true,  true  },
+    // Devias
+    { MAP_DEVIAS,    22,   P::Sit,     true,  false, false },
+    { MAP_DEVIAS,    25,   P::Sit,     true,  false, false },
+    { MAP_DEVIAS,    40,   P::Sit,     true,  false, false },
+    { MAP_DEVIAS,    45,   P::Sit,     false, false, false },
+    { MAP_DEVIAS,    55,   P::Sit,     true,  false, false },
+    { MAP_DEVIAS,    73,   P::Sit,     false, false, false },
+    { MAP_DEVIAS,    91,   P::Pose,    true,  true,  true  },
+    // Noria: 38 son los orbes sobre los que se flota.
+    { MAP_NORIA,      8,   P::Sit,     false, false, false },
+    { MAP_NORIA,     38,   P::Healing, true,  false, true  },
+    // Atlans
+    { MAP_ATLANS,    39,   P::Pose,    true,  false, true  },
+    // Tarkan.  En el decompile el 78 cae en una cola que no lo atiende (huele a
+    // plegado de Hex-Rays); MU 5.2 tiene `WD_8TARKAN: case 78: Sit`.
+    { MAP_TARKAN,    78,   P::Sit,     false, false, false },
+};
+
+// Lo que CreateObject fija para objetos que no se registran.  Velocity y
+// CollisionRange se guardan como bits del binario.
+struct MapObjectInit {
+    short Map;
+    short Type;
+    signed char BlendMesh;       // -1 = no se toca
+    bool HideMesh;
+    bool SetVelocity;
+    std::uint32_t VelocityBits;
+    bool SetCollision;
+    std::uint32_t CollisionBits;
+};
+constexpr MapObjectInit kMapObjectInit[] = {
+    // Lorencia
+    { MAP_LORENCIA, 0x34, 1, false, false, 0, false, 0 },
+    { MAP_LORENCIA, 0x3b, -1, false, true, 0, false, 0 },
+    { MAP_LORENCIA, 0x50, -1, false, false, 0, true, 0xc2480000 },   // -50.0
+    { MAP_LORENCIA, 0x5a, 1, false, true, 0x3e99999a, false, 0 },    // 0.3
+    { MAP_LORENCIA, 0x96, 1, false, true, 0x3e99999a, false, 0 },
+    { MAP_LORENCIA, 0x60, -1, false, true, 0x3e99999a, false, 0 },
+    { MAP_LORENCIA, 0x61, -1, false, true, 0x3e99999a, false, 0 },
+    { MAP_LORENCIA, 0x62, 2, false, false, 0, false, 0 },
+    { MAP_LORENCIA, 0x77, 2, false, false, 0, false, 0 },
+    { MAP_LORENCIA, 0x69, 3, false, false, 0, false, 0 },
+    { MAP_LORENCIA, 0x75, 4, false, false, 0, false, 0 },
+    { MAP_LORENCIA, 0x7a, 4, false, false, 0, false, 0 },
+    { MAP_LORENCIA, 0x76, 8, false, false, 0, false, 0 },
+    // Devias
+    { MAP_DEVIAS, 0x13, 0, false, false, 0, false, 0 },
+    { MAP_DEVIAS, 0x5c, 0, false, false, 0, false, 0 },
+    { MAP_DEVIAS, 0x5d, 0, false, false, 0, false, 0 },
+    { MAP_DEVIAS, 0x36, 1, false, false, 0, false, 0 },
+    { MAP_DEVIAS, 0x38, 1, false, false, 0, false, 0 },
+    { MAP_DEVIAS, 0x4e, 3, false, false, 0, false, 0 },
+    { MAP_DEVIAS, 100, -1, true, false, 0, false, 0 },
+    // Noria
+    { MAP_NORIA, 1, 1, false, false, 0, false, 0 },
+    { MAP_NORIA, 9, 3, false, false, 0, false, 0 },
+    { MAP_NORIA, 0x11, 0, false, false, 0, false, 0 },
+    { MAP_NORIA, 0x13, 0, false, false, 0, false, 0 },
+    { MAP_NORIA, 0x25, 0, false, false, 0, false, 0 },
+    { MAP_NORIA, 0x12, 2, false, false, 0, false, 0 },
+};
+
+void StoreBits(float& value, std::uint32_t bits) { memcpy(&value, &bits, sizeof(value)); }
+
+} // namespace
+
+const OperableObject* WorldObject_FindOperable(int map, int type)
+{
+    for (const OperableObject& row : kOperable)
+        if (row.Map == map && row.Type == type) return &row;
+    return nullptr;
+}
+
+void WorldObject_ApplyMapDefaults(OBJECT& object, void* node, int map, int type)
+{
+    if (const OperableObject* op = WorldObject_FindOperable(map, type)) {
+        Entity_InitRenderState(node);   // sub_4FF580: lista Operates
+        if (op->BigBox) {
+            StoreBits(object.BoundingBoxMax[0], 0x42200000);   // 40
+            StoreBits(object.BoundingBoxMax[1], 0x42200000);
+            StoreBits(object.BoundingBoxMax[2], 0x43200000);   // 160
+        }
+        if (op->HideMesh) object.HiddenMesh = -2;
+        return;
+    }
+
+    // Puertas de Devias (20/65/86/88).  Guarda el estado de REPOSO que usa la
+    // animación de apertura de DeviasDoor:
+    //   HeadAngle[0..2]       (+40,+44,+48) = Angle[0..2]
+    //   HeadTargetAngle[0..2] (+52,+56,+60) = Position[0..2]
+    // y normaliza el giro:  Angle[2] = HeadAngle[2] = (int)Angle[2] % 360.
+    // El `% 360` es sobre el VALOR truncado, no sobre los bits del float (IDA:
+    // `(std::int64_t)*((float *)v6 + 9) % 360`); el tick compara HeadAngle[2] con
+    // 90/270/0/180.
+    if (map == MAP_DEVIAS && (type == 0x14 || type == 0x41 || type == 0x56 || type == 0x58)) {
+        memcpy(object.HeadAngle, object.Angle, sizeof(object.HeadAngle));
+        memcpy(object.HeadTargetAngle, object.Position, sizeof(object.HeadTargetAngle));
+        const float normalized = (float)(long long)(((long long)object.Angle[2]) % 360);
+        object.Angle[2] = object.HeadAngle[2] = normalized;
+        return;
+    }
+
+    for (const MapObjectInit& row : kMapObjectInit) {
+        if (row.Map != map || row.Type != type) continue;
+        if (row.BlendMesh >= 0) object.BlendMesh = row.BlendMesh;
+        if (row.HideMesh) object.HiddenMesh = -2;
+        if (row.SetVelocity) StoreBits(object.Velocity, row.VelocityBits);
+        if (row.SetCollision) StoreBits(object.CollisionRange, row.CollisionBits);
+        return;
     }
 }

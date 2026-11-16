@@ -286,8 +286,6 @@ char     s__s__d_00561a34[]                 = "%s %d";
 // Scene_CharSelect "account-blocked" warning lines. La tabla original de
 // strings del 0.97k está stripped (ambos quedan todo-ceros en el PE), así que
 // fijamos literales razonables en inglés para que el render muestre algo.
-char     lpString_07d49c14[128]             = "Account is blocked.";
-char     lpString_07d49d40[128]             = "Please contact the operator.";
 char     lpString_00561a3c[64]              = {};  // server info line 1
 char     lpString_00561a58[64]              = {};  // server info line 2
 char     lpString_00561a68[64]              = {};  // server info line 3
@@ -577,7 +575,6 @@ char     g_BoneScratch[200 * 0x30] = {0};   // = 0x2580 (BoneTransform[200][3][4
 // 0x580 = el spacing del original hasta el array 0x07abf5d0; los campos se
 // acceden por macros (ver globals.h).
 char     CharacterView[0x580] = {0};  // IDA: CharacterView (0x07ABF050)
-char     DAT_07d2b494[9000] = {};  // class name table (stride 300, 30 slots) — símbolo aparte
 std::uintptr_t CharactersClient = 0; // IDA: DAT_07abf5d0 (0x07ABF5D0)
 int      DAT_07abf5d4  = 0;
 char    *Hero  = NULL; // IDA: DAT_07abf5d8 (0x07ABF5D8)
@@ -655,12 +652,9 @@ int      g_WorldLoading         = 0;   // >0 mientras corre OpenWorld (ver WinMa
 // 0.97k está stripped: get_xrefs_to en Ghidra confirma que NADA escribe estos
 // buffers en el binario (se renderizan vacíos). Rellenamos con defaults
 // sensatos para que el panel muestre botones/texto legible.
-char     lpString_07d4aed4[128] = "OK";          // botón OK del panel de credenciales
-char     lpString_07d4b000[128] = "Exit";        // botón Exit/Cancel del panel
 // DAT_07d4b708 (char name format string), DAT_07d4b12c / DAT_07d4b258 / DAT_07d4b384
 // (líneas de versión) son GlobalText[459] / [454] / [455] / [456] (ver el bloque de
 // alias al final de globals.h).
-char     lpString_07d4c518[128] = "Connecting...";
 DWORD    DAT_07e127f8  = 0;
 // El pool de items en el suelo es de 1000 entradas × 0x204 bytes (≈504 KB).
 // El slot base es DAT_07e12840 + key*0x204; CreateItem escribe active@ip+72,
@@ -1085,7 +1079,6 @@ char     lpData_055c9ba0[12] = {0};
 
 // DAT_07d4c3ec / DAT_07d4c644 / DAT_07d4c770 son GlobalText[470] / [472] / [473]
 // (ver el bloque de alias al final de globals.h).
-DWORD    DAT_07d52c38  = 0;
 // DAT_07d530e8 / DAT_07d53214 son GlobalText[563] / [564] (ver el bloque de alias
 // al final de globals.h).
 
@@ -1256,7 +1249,6 @@ DWORD    DAT_07ea9804  = 0;
 DWORD    DAT_07ea9808  = 0;
 DWORD    DAT_07ea980c  = 0;
 char     DAT_00559f5e  = 0;
-DWORD    DAT_07d552e4  = 0;
 DWORD    m_nMyTradeWait  = 0;
 DWORD    StorageGoldFlag  = 0;
 DWORD    DAT_07eaa148  = 0;
@@ -1291,7 +1283,6 @@ char     MacroText[10 * 0x100] = {};
 char     DAT_005592dc  = 0;
 DWORD    DAT_005592d8  = 0;
 DWORD    DAT_005592d4  = 0;
-char     DAT_07d5391c  = 0;
 // DAT_07d3d284 / DAT_07d3d3b0 / DAT_07d3cdd4 son GlobalText[264] / [265] / [260].
 // Chat command parser name buffers (Chat_ValidateCommandName): DAT_07d3cb7c /
 // DAT_07d3cca8 / DAT_07d3c924 / DAT_07d3c6cc / DAT_07d3bfc4 / DAT_07d3c0f0 /
@@ -1405,10 +1396,6 @@ char     param_2_005618a4  = 0;
 char     param_2_005618a8  = 0;
 char     param_2_005618b0  = 0;
 char     param_2_005618b4  = 0;
-char     lpString_07d68bc8[300] = {};
-char     lpString_07d68cf4[300] = {};
-char     lpString_07d68970[300] = {};
-char     lpString_07d68a9c[300] = {};
 char     param_2_07d68e20  = 0;
 char     param_2_07d68f4c  = 0;
 char     param_2_07d69078  = 0;
@@ -1471,18 +1458,7 @@ char     m_bWhisperSound  = 0;
 // `&DAT_07d29d24 + i * 300` y sus dos lectores usan índices ~601-607 (nombres
 // de clase).
 // DAT_07d46e60 es GlobalText[397] (ver el bloque de alias al final de globals.h).
-char     DAT_07d486fc[300] = {};
-char     DAT_07d48828  = 0;
-char     DAT_07d48f30[300] = {};
 // DAT_07d493e0 es GlobalText[429] (ver el bloque de alias al final de globals.h).
-char     DAT_07d4950c  = 0;
-char     DAT_07d49638  = 0;
-char     DAT_07d49764  = 0;
-char     DAT_07d5fa78  = 0;
-char     DAT_07d698ac  = 0;
-char     DAT_07d699d8  = 0;
-char     DAT_07d69b04  = 0;
-char     DAT_07d69c30  = 0;
 // DAT_083a4304 — ahora macro dentro de DAT_083a42f8 (dialog button rects)
 char     g_lpszDialogAnswer[10][1][38] = {};  // IDA: g_lpszDialogAnswer (0x083A4348) - 10 x 38 = 380
 // DAT_083a7c08 — defined above (DWORD)
@@ -1515,62 +1491,6 @@ char     lpString_0056186c[32] = {};
 //   07d46050 → button {3/2/1} ingame/charsel/login (Y variable) + título 0x96 = "Opciones"
 //   07d45f24 → SIEMPRE último (final Y=0x7d/0x9b/0xb9)    = "Cancelar"
 //   07d463d4 → estado 0x96 slot 3 (Y=0x7d)                = "Cancelar" (close submenu)
-char     lpString_07d45ba0[300] = "Salir del juego";         // 0x6e btn 0 (Exit)
-char     lpString_07d45ccc[300] = "Ir a otro servidor";      // 0x6e btn 1 ingame/charsel
-char     lpString_07d45df8[300] = "Ir a otro personaje";     // 0x6e btn 2 ingame
-char     lpString_07d45f24[300] = "Cancelar";                // 0x6e último (Close)
-char     lpString_07d46050[300] = "Opciones";                // 0x6e btn Options + título 0x96
-char     lpString_07d463d4[300] = "Cancelar";                // 0x96 submenu close
-char     lpString_07d4662c[300] = {};
-char     lpString_07d46758[300] = {};
-char     lpString_07d46884[300] = {};
-char     lpString_07d469b0[300] = {};
-char     lpString_07d46adc[300] = {};
-char     lpString_07d46c08[300] = {};
-char     lpString_07d46d34[300] = {};
-char     lpString_07d46f8c[300] = {};
-char     lpString_07d470b8[300] = {};
-char     lpString_07d471e4[300] = {};
-char     lpString_07d47310[300] = {};
-char     lpString_07d4743c[300] = {};
-char     lpString_07d47568[300] = {};
-char     lpString_07d47694[300] = {};
-char     lpString_07d477c0[300] = {};
-char     lpString_07d478ec[300] = {};
-char     lpString_07d47a18[300] = {};
-char     lpString_07d47b44[300] = {};
-char     lpString_07d47c70[300] = {};
-char     lpString_07d47d9c[300] = {};
-char     lpString_07d47ec8[300] = {};
-char     lpString_07d47ff4[300] = {};
-char     lpString_07d48120[300] = {};
-char     lpString_07d4824c[300] = {};
-char     lpString_07d48378[300] = {};
-char     lpString_07d484a4[300] = {};
-char     lpString_07d485d0[300] = {};
-char     lpString_07d48954[300] = {};
-char     lpString_07d48a80[300] = {};
-char     lpString_07d48bac[300] = {};
-char     lpString_07d48cd8[300] = {};
-char     lpString_07d48e04[300] = {};
-char     lpString_07d4905c[300] = {};
-char     lpString_07d49188[300] = {};
-char     lpString_07d492b4[300] = {};
-char     lpString_07d49890[300] = {};
-char     lpString_07d499bc[300] = {};
-char     lpString_07d49ae8[300] = {};
-char     lpString_07d49e6c[300] = {};
-char     lpString_07d49f98[300] = {};
-char     lpString_07d4a0c4[300] = {};
-char     lpString_07d4a1f0[300] = {};
-char     lpString_07d4a31c[300] = {};
-char     lpString_07d4a448[300] = {};
-char     lpString_07d4a574[300] = {};
-char     lpString_07d4a6a0[300] = {};
-char     lpString_07d558c0[300] = {};
-char     lpString_07d559ec[300] = {};
-char     lpString_07d55b18[300] = {};
-char     lpString_07d5f94c[300] = {};
 
 // ── GL_State cached state ─────────────────────────────────────────────────────
 int     AlphaBlendType = 0;   // IDA: AlphaBlendType (0x083A412C)
@@ -1919,7 +1839,6 @@ float   DAT_00590afc   = 0.0f;  // cloth wind Z (flt_590AFC; el binario nunca lo
 float   _DAT_00559068  = 9.8f;      // gravedad   (flt_559068, leído del binario)
 float   _DAT_0055906c  = 0.0025f;   // dt fijo    (flt_55906C, leído del binario)
 DWORD   lpData_055ca044 = 0;
-char   *lpText_07d63aec = NULL;
 // Strings reservados de sub_513570 (name-filter). En el binario original son
 // patrones bloqueados (espacio, DBCS coreano, punto). No dejarlos en 0: con string
 // vacío FindText(nombre,"") devuelve 1 y TODO nombre se rechaza con "palabras
@@ -2237,7 +2156,6 @@ short  ObjectSelect_PriorAction       = 0;            // item render: state flag
 // ── Filter / name-filter system globals ──────────────────────────────────────
 DWORD  DAT_007cfa00       = 0x007cfa00;  // word-filter BMD checksum seed (literal)
 DWORD  DAT_00578200       = 0x00578200;  // name-filter BMD checksum seed (literal)
-char   lpText_07d2aa08[256] = {};  // fatal-error message string (shown by ExitProgram)
 
 // ── BuxConvert_1 XOR key and misc ───────────────────────────────────────────────
 BYTE   DAT_0055a76c       = 1;    // unk_55A76C — gate de la 2da pasada del terreno
@@ -2443,7 +2361,6 @@ char   DAT_07e11df4       = 0;
 char   DAT_07e11df8       = 0;
 char   DAT_07e11dec       = 0;
 char   DAT_07e11df0       = 0;
-char   DAT_07d3c348       = 0;
 
 // Skill selection
 char   DAT_07d78098       = 0;

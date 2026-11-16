@@ -80,8 +80,8 @@
 // ── WARNING TEXT (m_bAccountBlockItem != '\0') ──────────────────────────────────────
 //
 //   color = 0x80ffff00 (yellow)
-//   DrawText_Centered(0x140, 0x14a, lpString_07d49c14)   // "Cannot create..."
-//   DrawText_Centered(0x140, 0x15c, lpString_07d49d40)
+//   DrawText_Centered(0x140, 0x14a, GlobalText[436])   // "Cannot create..."
+//   DrawText_Centered(0x140, 0x15c, GlobalText[437])
 //
 // ── SERVER INFO (bottom right, color 0xff67bfdf) ────────────────────────────
 //
@@ -98,7 +98,7 @@
 //   Botón Cancel (tex 0x19 @ 335, iVar9+0x15d, 72×21)
 //   Class shadow/highlight si DAT_07abf20c & 0xff == 0: glColor4f(0,0,0,0.3)
 //   DrawText(0x11d, iVar9+0xb4, 0) si server seleccionado
-//   DrawText_ClassLine(0x11d, iVar9+200, DAT_07d2b494 + class*300)
+//   DrawText_ClassLine(0x11d, iVar9+200, GlobalText[20 + class])
 //
 // ── RENDER CHAR PREVIEW (panel create, iVar9 >= 0) ───────────────────────────
 //
@@ -157,7 +157,7 @@
 //   _DAT_07abf138..140 — RGB color del preview local
 //   _DAT_007abf060..068 — camera offset
 //   DAT_005616a8   — posición X botones left/right
-//   DAT_07d2b494   — tabla de nombres de clase (stride 300 bytes)
+//   GlobalText[20..26] — nombres de clase (Text.bmd)
 //
 // ── FUNCIÓN CROSS-REFERENCE ───────────────────────────────────────────────────
 //
@@ -433,14 +433,14 @@ int Scene_CharSelect(void)
         if (m_bAccountBlockItem != '\0') {
             SetBackgroundTextColor = 0x80ffff00; m_dwTextColor = 0xff000000;
             gFont.SelectFont((HDC)(uintptr_t)gFont.GetTextDC(), (HGDIOBJ)gFont.GetFont(FONT_NORMAL));
-            iVar9 = Platform::TextLength((LPCSTR)lpString_07d49c14);
-            gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)lpString_07d49c14, iVar9, &tStack_68);
+            iVar9 = Platform::TextLength((LPCSTR)GlobalText[436]);
+            gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)GlobalText[436], iVar9, &tStack_68);
             UI_RenderText(0x140 - ((uint)(tStack_68.cx * 0x280) / gWindow.GetWidth() >> 1), 0x14a,
-                         (LPCSTR)lpString_07d49c14, (LPSIZE)0x0, '\0', 0);
-            iVar9 = Platform::TextLength((LPCSTR)lpString_07d49d40);
-            gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)lpString_07d49d40, iVar9, &tStack_68);
+                         (LPCSTR)GlobalText[436], (LPSIZE)0x0, '\0', 0);
+            iVar9 = Platform::TextLength((LPCSTR)GlobalText[437]);
+            gFont.MeasureText((HDC)(uintptr_t)gFont.GetTextDC(), (LPCSTR)GlobalText[437], iVar9, &tStack_68);
             UI_RenderText(0x140 - ((uint)(tStack_68.cx * 0x280) / gWindow.GetWidth() >> 1), 0x15c,
-                         (LPCSTR)lpString_07d49d40, (LPSIZE)0x0, '\0', 0);
+                         (LPCSTR)GlobalText[437], (LPSIZE)0x0, '\0', 0);
         }
 
         // ── Server info text (bottom right, blue) ─────────────────────────────
@@ -549,7 +549,7 @@ int Scene_CharSelect(void)
             // con signo, `-1 < DAT_005616b0` sería siempre falso.
             if ((int)DAT_005616b0 >= 0)
                 UI_RenderInputField(0x11d, iVar9 + 0xb4, 0);
-            UI_RenderText(0x11d, iVar9 + 200, DAT_07d2b494 + (DAT_07abf20c & 0xff) * 300, (LPSIZE)0x0, '\0', 0);
+            UI_RenderText(0x11d, iVar9 + 200, GlobalText[20 + (DAT_07abf20c & 0xff)], (LPSIZE)0x0, '\0', 0);
 
             GL_End2D();
             GL_PopMatrixAll();

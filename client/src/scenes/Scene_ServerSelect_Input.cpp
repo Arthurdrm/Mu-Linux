@@ -226,7 +226,7 @@ void CServerSelWin_UpdateWhileActive(void)
 
                         // IDA 0x0051E7E0 L315-316 (CServerSelWin): these are
                         // GlobalText[470]/[471], not the standalone buffers
-                        // DAT_07d4c3ec / lpString_07d4c518 that Ghidra split.
+                        // DAT_07d4c3ec / GlobalText[471] that Ghidra split.
                         UIChatLogWindow_AddText(DAT_083a7c64, GlobalText[470], 1);
                         UIChatLogWindow_AddText((const char*)&DAT_083a7c68, GlobalText[471], 1);
 

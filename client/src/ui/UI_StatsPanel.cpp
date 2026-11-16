@@ -78,60 +78,60 @@ int RenderErrorMessage(void)
       }
       GL_SetBlendSrcOver('\x01');
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d45ba0);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45ba0,iVar3,ptVar17);
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[381]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[381],iVar3,ptVar17);
       UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x41,
-                   (LPCSTR)lpString_07d45ba0,(LPSIZE)0x0,'\0',0);
+                   (LPCSTR)GlobalText[381],(LPSIZE)0x0,'\0',0);
       if (SceneFlag == 5) {
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d45ccc);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45ccc,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[382]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[382],iVar3,ptVar17);
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x5f,
-                     (LPCSTR)lpString_07d45ccc,(LPSIZE)0x0,'\0',0);
+                     (LPCSTR)GlobalText[382],(LPSIZE)0x0,'\0',0);
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d45df8);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45df8,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[383]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[383],iVar3,ptVar17);
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x7d,
-                     (LPCSTR)lpString_07d45df8,(LPSIZE)0x0,'\0',0);
+                     (LPCSTR)GlobalText[383],(LPSIZE)0x0,'\0',0);
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d46050);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46050,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[385]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[385],iVar3,ptVar17);
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x9b,
-                     (LPCSTR)lpString_07d46050,(LPSIZE)0x0,'\0',0);
+                     (LPCSTR)GlobalText[385],(LPSIZE)0x0,'\0',0);
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d45f24);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45f24,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[384]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[384],iVar3,ptVar17);
         uVar10 = 0xb9;
       }
       else if (SceneFlag == 4) {
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d45ccc);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45ccc,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[382]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[382],iVar3,ptVar17);
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x5f,
-                     (LPCSTR)lpString_07d45ccc,(LPSIZE)0x0,'\0',0);
+                     (LPCSTR)GlobalText[382],(LPSIZE)0x0,'\0',0);
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d46050);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46050,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[385]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[385],iVar3,ptVar17);
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x7d,
-                     (LPCSTR)lpString_07d46050,(LPSIZE)0x0,'\0',0);
+                     (LPCSTR)GlobalText[385],(LPSIZE)0x0,'\0',0);
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d45f24);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45f24,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[384]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[384],iVar3,ptVar17);
         uVar10 = 0x9b;
       }
       else {
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d46050);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46050,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[385]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[385],iVar3,ptVar17);
         UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),0x5f,
-                     (LPCSTR)lpString_07d46050,(LPSIZE)0x0,'\0',0);
+                     (LPCSTR)GlobalText[385],(LPSIZE)0x0,'\0',0);
         ptVar17 = &local_e4;
-        iVar3 = Platform::TextLength((LPCSTR)lpString_07d45f24);
-        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d45f24,iVar3,ptVar17);
+        iVar3 = Platform::TextLength((LPCSTR)GlobalText[384]);
+        gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[384],iVar3,ptVar17);
         uVar10 = 0x7d;
       }
       UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),uVar10,
-                   (LPCSTR)lpString_07d45f24,(LPSIZE)0x0,'\0',0);
+                   (LPCSTR)GlobalText[384],(LPSIZE)0x0,'\0',0);
     }
     else if (ErrorMessage == 0x96) {
       // DESVIACION (DLL OptionsMenu, hook 0x0051B3CA): menú de opciones expandido
@@ -387,173 +387,173 @@ LAB_0051c13d:
   case 0x15:
   case 0x47:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47a18);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47a18,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47a18;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[407]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[407],iVar3,ptVar17);
+    ppCVar11 = GlobalText[407];
     break;
   case 0x16:
   case 0x3f:
   case 0x41:
   case 0x45:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4824c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4824c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4824c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[414]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[414],iVar3,ptVar17);
+    ppCVar11 = GlobalText[414];
     break;
   case 0x17:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d48378);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48378,iVar3,ptVar17);
-    ppCVar11 = lpString_07d48378;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[415]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[415],iVar3,ptVar17);
+    ppCVar11 = GlobalText[415];
     break;
   case 0x18:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d484a4);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d484a4,iVar3,ptVar17);
-    ppCVar11 = lpString_07d484a4;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[416]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[416],iVar3,ptVar17);
+    ppCVar11 = GlobalText[416];
     break;
   case 0x19:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d485d0);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d485d0,iVar3,ptVar17);
-    ppCVar11 = lpString_07d485d0;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[417]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[417],iVar3,ptVar17);
+    ppCVar11 = GlobalText[417];
     break;
   case 0x1a:
   case 0x70:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d477c0);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d477c0,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[405]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[405],iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
-                 (LPCSTR)lpString_07d477c0,(LPSIZE)0x0,'\0',0);
+                 (LPCSTR)GlobalText[405],(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d478ec);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d478ec,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[406]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[406],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d478ec;
+    ppCVar11 = GlobalText[406];
     break;
   case 0x1b:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47b44);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47b44,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47b44;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[408]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[408],iVar3,ptVar17);
+    ppCVar11 = GlobalText[408];
     break;
   case 0x1c:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47c70);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47c70,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47c70;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[409]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[409],iVar3,ptVar17);
+    ppCVar11 = GlobalText[409];
     break;
   case 0x1d:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47d9c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47d9c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47d9c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[410]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[410],iVar3,ptVar17);
+    ppCVar11 = GlobalText[410];
     break;
   case 0x1e:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47ec8);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47ec8,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47ec8;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[411]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[411],iVar3,ptVar17);
+    ppCVar11 = GlobalText[411];
     break;
   case 0x1f:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47ff4);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47ff4,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47ff4;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[412]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[412],iVar3,ptVar17);
+    ppCVar11 = GlobalText[412];
     break;
   case 0x20:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d48120);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48120,iVar3,ptVar17);
-    ppCVar11 = lpString_07d48120;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[413]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[413],iVar3,ptVar17);
+    ppCVar11 = GlobalText[413];
     break;
   default:
     return ErrorMessage + -0x15;
   case 0x22:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d558c0);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d558c0,iVar3,ptVar17);
-    ppCVar11 = lpString_07d558c0;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[597]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[597],iVar3,ptVar17);
+    ppCVar11 = GlobalText[597];
     break;
   case 0x23:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d559ec);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d559ec,iVar3,ptVar17);
-    ppCVar11 = lpString_07d559ec;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[598]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[598],iVar3,ptVar17);
+    ppCVar11 = GlobalText[598];
     break;
   case 0x24:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d55b18);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d55b18,iVar3,ptVar17);
-    ppCVar11 = lpString_07d55b18;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[599]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[599],iVar3,ptVar17);
+    ppCVar11 = GlobalText[599];
     break;
   case 0x25:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d49890);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d49890,iVar3,ptVar17);
-    ppCVar11 = lpString_07d49890;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[433]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[433],iVar3,ptVar17);
+    ppCVar11 = GlobalText[433];
     break;
   case 0x26:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d49ae8);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d49ae8,iVar3,ptVar17);
-    ppCVar11 = lpString_07d49ae8;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[435]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[435],iVar3,ptVar17);
+    ppCVar11 = GlobalText[435];
     break;
   case 0x36:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d46adc);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46adc,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[394]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[394],iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
-                 (LPCSTR)lpString_07d46adc,(LPSIZE)0x0,'\0',0);
+                 (LPCSTR)GlobalText[394],(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d46c08);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46c08,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[395]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[395],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d46c08;
+    ppCVar11 = GlobalText[395];
     goto LAB_0051ca70;
   case 0x37:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d46d34);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46d34,iVar3,ptVar17);
-    ppCVar11 = lpString_07d46d34;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[396]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[396],iVar3,ptVar17);
+    ppCVar11 = GlobalText[396];
     goto LAB_0051ca70;
   case 0x3a:
     if (DAT_05826d20 == 0) {
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d49e6c);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d49e6c,iVar3,ptVar17);
-      ppCVar11 = lpString_07d49e6c;
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[438]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[438],iVar3,ptVar17);
+      ppCVar11 = GlobalText[438];
     }
     else if (DAT_05826d20 == 3) {
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d49f98);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d49f98,iVar3,ptVar17);
-      ppCVar11 = lpString_07d49f98;
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[439]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[439],iVar3,ptVar17);
+      ppCVar11 = GlobalText[439];
     }
     else {
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d47310);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47310,iVar3,ptVar17);
-      ppCVar11 = lpString_07d47310;
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[401]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[401],iVar3,ptVar17);
+      ppCVar11 = GlobalText[401];
     }
     goto LAB_0051ca70;
   case 100:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47568);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47568,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47568;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[403]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[403],iVar3,ptVar17);
+    ppCVar11 = GlobalText[403];
     goto LAB_0051ca70;
   case 0x65:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47694);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47694,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47694;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[404]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[404],iVar3,ptVar17);
+    ppCVar11 = GlobalText[404];
     goto LAB_0051ca70;
   case 0x71:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4743c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4743c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4743c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[402]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[402],iVar3,ptVar17);
+    ppCVar11 = GlobalText[402];
     goto LAB_0051ca70;
   case 0x72:
     m_dwTextColor = 0xff0000ff;
@@ -569,54 +569,54 @@ LAB_0051c13d:
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
                  (LPCSTR)local_c8,(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d46f8c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46f8c,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[398]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[398],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d46f8c;
+    ppCVar11 = GlobalText[398];
     break;
   case 0x73:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d46884);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46884,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[392]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[392],iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
-                 (LPCSTR)lpString_07d46884,(LPSIZE)0x0,'\0',0);
+                 (LPCSTR)GlobalText[392],(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d469b0);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d469b0,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[393]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[393],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d469b0;
+    ppCVar11 = GlobalText[393];
     break;
   case 0x74:
     if (StorageGoldFlag == 0) {
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d48954);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48954,iVar3,ptVar17);
-      ppCVar11 = lpString_07d48954;
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[420]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[420],iVar3,ptVar17);
+      ppCVar11 = GlobalText[420];
     }
     else if (StorageGoldFlag == 1) {
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d48a80);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48a80,iVar3,ptVar17);
-      ppCVar11 = lpString_07d48a80;
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[421]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[421],iVar3,ptVar17);
+      ppCVar11 = GlobalText[421];
     }
     else {
       ptVar17 = &local_e4;
-      iVar3 = Platform::TextLength((LPCSTR)lpString_07d48bac);
-      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48bac,iVar3,ptVar17);
-      ppCVar11 = lpString_07d48bac;
+      iVar3 = Platform::TextLength((LPCSTR)GlobalText[422]);
+      gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[422],iVar3,ptVar17);
+      ppCVar11 = GlobalText[422];
     }
     goto LAB_0051ca70;
   case 0x75:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d48cd8);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48cd8,iVar3,ptVar17);
-    ppCVar11 = lpString_07d48cd8;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[423]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[423],iVar3,ptVar17);
+    ppCVar11 = GlobalText[423];
     goto LAB_0051ca70;
   case 0x76:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d48e04);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d48e04,iVar3,ptVar17);
-    ppCVar11 = lpString_07d48e04;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[424]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[424],iVar3,ptVar17);
+    ppCVar11 = GlobalText[424];
     goto LAB_0051ca70;
   case 0x77:
     // IDA 0x51CD64: el indice que devuelve FindCharacterIndex indexa
@@ -625,7 +625,7 @@ LAB_0051c13d:
     // argumento -> AV de lectura dentro de ucrtbase.
     {
     int nameIdx = FindCharacterIndex(GuildPlayerKey);
-    crt_sprintf(local_c8,(const char *)DAT_07d486fc,
+    crt_sprintf(local_c8,(const char *)GlobalText[418],
                 EntityName::Get(CharactersClient + CHARACTER_STRIDE * nameIdx));
     }
     ptVar17 = &local_e4;
@@ -650,14 +650,14 @@ LAB_0051c13d:
         ? EntityName::Get(CharactersClient + characterIndex * CHARACTER_STRIDE)
         : "";
     Platform::TextFormatTruncated(local_c8, sizeof(local_c8), Platform::TruncateText,
-                (const char*)&DAT_07d486fc, inviterName);
+                (const char*)&GlobalText[418], inviterName);
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)local_c8);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)local_c8,iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
                  (LPCSTR)local_c8,(LPSIZE)0x0,'\0',0);
     Platform::TextFormatTruncated(local_c8, sizeof(local_c8), Platform::TruncateText,
-                (const char*)&DAT_07d48f30, inviterName);
+                (const char*)&GlobalText[425], inviterName);
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)local_c8);
     gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)local_c8,iVar3,ptVar17);
@@ -670,7 +670,7 @@ LAB_0051c13d:
     // ProtocolCore guarda el nombre exacto de diez bytes en DAT_07EA9834;
     // GlobalText[418] aporta el formato localizado y GlobalText[419] la línea
     // de confirmación. ErrorMessage 128 es guerra de guild, no Trade.
-    crt_sprintf(local_c8, (const char*)DAT_07d486fc, DAT_07ea9834);
+    crt_sprintf(local_c8, (const char*)GlobalText[418], DAT_07ea9834);
     gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_BIG));
     ptVar17 = &local_e4;
     iVar3 = Platform::TextLength((LPCSTR)local_c8);
@@ -687,34 +687,34 @@ LAB_0051c13d:
     goto LAB_0051ca70;
   case 0x7a:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4662c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4662c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4662c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[390]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[390],iVar3,ptVar17);
+    ppCVar11 = GlobalText[390];
     goto LAB_0051ca70;
   case 0x7b:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d46758);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d46758,iVar3,ptVar17);
-    ppCVar11 = lpString_07d46758;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[391]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[391],iVar3,ptVar17);
+    ppCVar11 = GlobalText[391];
     goto LAB_0051ca70;
   case 0x7e:
     ptVar17 = &local_e4;
     m_dwTextColor = 0xff0000ff;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d49188);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d49188,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[427]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[427],iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
-                 (LPCSTR)lpString_07d49188,(LPSIZE)0x0,'\0',0);
+                 (LPCSTR)GlobalText[427],(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d492b4);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d492b4,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[428]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[428],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d492b4;
+    ppCVar11 = GlobalText[428];
     break;
   case 0x7f:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4905c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4905c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4905c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[426]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[426],iVar3,ptVar17);
+    ppCVar11 = GlobalText[426];
     goto LAB_0051ca70;
   case 0x80:
     // IDA: RenderErrorMessage 0x51CE0D — invitación a guerra de guild.
@@ -734,51 +734,51 @@ LAB_0051c13d:
   case 0x84:
     ptVar17 = &local_e4;
     m_dwTextColor = 0xff0000ff;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d470b8);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d470b8,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[399]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[399],iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
-                 (LPCSTR)lpString_07d470b8,(LPSIZE)0x0,'\0',0);
+                 (LPCSTR)GlobalText[399],(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d471e4);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d471e4,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[400]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[400],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d471e4;
+    ppCVar11 = GlobalText[400];
     goto LAB_0051ca70;
   case 0x85:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d499bc);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d499bc,iVar3,ptVar17);
-    ppCVar11 = lpString_07d499bc;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[434]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[434],iVar3,ptVar17);
+    ppCVar11 = GlobalText[434];
     break;
   case 0x86:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a0c4);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a0c4,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4a0c4;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[440]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[440],iVar3,ptVar17);
+    ppCVar11 = GlobalText[440];
     break;
   case 0x87:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a1f0);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a1f0,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4a1f0;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[441]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[441],iVar3,ptVar17);
+    ppCVar11 = GlobalText[441];
     break;
   case 0x88:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a31c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a31c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4a31c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[442]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[442],iVar3,ptVar17);
+    ppCVar11 = GlobalText[442];
     break;
   case 0x89:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a6a0);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a6a0,iVar3,ptVar17);
-    ppCVar11 = lpString_07d4a6a0;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[445]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[445],iVar3,ptVar17);
+    ppCVar11 = GlobalText[445];
     break;
   case 0x8a:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47310);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47310,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47310;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[401]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[401],iVar3,ptVar17);
+    ppCVar11 = GlobalText[401];
     break;
   case 0x8b:
   case 0x8d:
@@ -843,15 +843,15 @@ LAB_0051c13d:
     m_dwTextColor = 0xff0080ff;
     gFont.SelectFont(gFont.GetTextDC(),(HGDIOBJ)gFont.GetFont(FONT_BOLD));
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d5f94c);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d5f94c,iVar3,ptVar17);
-    ppCVar11 = lpString_07d5f94c;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[734]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[734],iVar3,ptVar17);
+    ppCVar11 = GlobalText[734];
     break;
   case 0x90:
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d47310);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d47310,iVar3,ptVar17);
-    ppCVar11 = lpString_07d47310;
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[401]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[401],iVar3,ptVar17);
+    ppCVar11 = GlobalText[401];
     break;
   case 0x91:
     ptVar17 = &local_e4;
@@ -932,15 +932,15 @@ LAB_0051d3cf:
   case 0x98:
     ptVar17 = &local_e4;
     m_dwTextColor = 0xff0000ff;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a448);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a448,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[443]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[443],iVar3,ptVar17);
     UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)(pCVar2 + 9),
-                 (LPCSTR)lpString_07d4a448,(LPSIZE)0x0,'\0',0);
+                 (LPCSTR)GlobalText[443],(LPSIZE)0x0,'\0',0);
     ptVar17 = &local_e4;
-    iVar3 = Platform::TextLength((LPCSTR)lpString_07d4a574);
-    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)lpString_07d4a574,iVar3,ptVar17);
+    iVar3 = Platform::TextLength((LPCSTR)GlobalText[444]);
+    gFont.MeasureText(gFont.GetTextDC(),(LPCSTR)GlobalText[444],iVar3,ptVar17);
     pCVar6 = pCVar2 + 0x15;
-    ppCVar11 = lpString_07d4a574;
+    ppCVar11 = GlobalText[444];
 LAB_0051ca70:
     uVar9 = UI_RenderText(0x140 - ((uint)(local_e4.cx * 0x280) / gWindow.GetWidth() >> 1),(unsigned int)(uintptr_t)pCVar6,
                          (LPCSTR)ppCVar11,(LPSIZE)0x0,'\0',0);

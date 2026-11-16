@@ -24,8 +24,8 @@ void __cdecl Model_LoadPlayerAndItemMeshes(void)
     // La base ya no cambia: invalidar explícitamente snapshots de la carga anterior.
     RenderDerivedState_Cancel();Skinning::Invalidate();
     ResourceTables::ResetModels();
-    DAT_06f42a58=ResourceTables::ModelBase();
-    Models = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
+    ModelsDump=ResourceTables::ModelBase();
+    Models = reinterpret_cast<std::uintptr_t>(ModelsDump);
 
     // ── Korean-locale SMD animations (skipped in compressed-asset mode) ──────
     if (DAT_0055a7c4 == '\0') {

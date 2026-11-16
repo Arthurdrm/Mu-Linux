@@ -176,10 +176,10 @@ void __cdecl OpenObjectsEnc(const char *path) {
 }
 
 // OpenTerrainLight @ 0x004F7250 — Terrain_LoadLight(path)
-// Loads TerrainLight.jpg into DAT_07eeb238 (RGB float buffer, 256x256x3),
+// Loads TerrainLight.jpg into TerrainLight (RGB float buffer, 256x256x3),
 // then processes via FUN_004f70b0 / FUN_004f71c0.
 void __cdecl OpenTerrainLight(const char *path) {
-    OpenJpegBuffer((char*)path, DAT_07eeb238);
+    OpenJpegBuffer((char*)path, TerrainLight);
     CreateTerrainNormal(); // FUN_004f70b0 (IDA)
     CreateTerrainLight(); // IDA: CreateTerrainLight (0x004F71C0)
 }
@@ -187,7 +187,7 @@ void __cdecl OpenTerrainLight(const char *path) {
 // CreateTerrain @ 0x004F7270 — Terrain_LoadHeight(path)
 // Sets flag, loads height bitmap, flushes.
 void __cdecl CreateTerrain(const char *path) {
-    DAT_0839bc84 = 1;
+    ActiveTerrain = 1;
     OpenTerrainHeight((char*)path); // FUN_004f7290 (IDA)
     Terrain_SetupCulling();
 }

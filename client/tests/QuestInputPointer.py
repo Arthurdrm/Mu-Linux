@@ -129,6 +129,9 @@ def harness(revision=None):
         if name == "DAT_07d78094" and not re.search(r"\bDAT_07d78094\s*;", header):
             name = "MouseOnWindow"
             prefix += "\n#define DAT_07d78094 MouseOnWindow\n"
+        # DAT_005615dc paso a ser g_iCurrentDialogScript (T8n).
+        if name == "DAT_005615dc" and not re.search(r"\bDAT_005615dc\s*;", header):
+            name = "g_iCurrentDialogScript"
         if name == "DAT_083a7c0c" and not re.search(r"\bDAT_083a7c0c\s*;", header):
             name = "g_iNumAnswer"
             prefix += "\n#define DAT_083a7c0c g_iNumAnswer\n"
@@ -137,7 +140,8 @@ def harness(revision=None):
     prefix += re.search(r"^DWORD\s+DAT_07cf5608\[[^;]+;", definitions, re.M).group()
     aliases=header+read_source("src/structs.h",revision)
     for name in ("g_DialogScript","g_iCurrentDialogScript"):
-        prefix += "\n"+re.search(rf"^#define\s+{name}\s+[^\n]+",aliases,re.M).group()+"\n"
+        match = re.search(rf"^#define\s+{name}\s+[^\n]+",aliases,re.M)
+        if match: prefix += "\n"+match.group()+"\n"
     prefix += SERVICES + function(header,"IsClickPushed")
     scene=read_source("src/scenes/Scene_CharSelect_Nav.cpp",revision)
     prefix += function(scene,"CSQuest_CheckRequestCondition")

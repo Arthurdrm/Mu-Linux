@@ -24,7 +24,7 @@
 //   MoveSceneFrame  — anti-tamper tick counter
 //   DAT_055ca018  — socket error flag (abort if set)
 //   DAT_083a42ec  — screenshot mode toggle (Print Screen)
-//   DAT_083a7c48  — connection check enable
+//   EnableSocket  — connection check enable
 //   DAT_083a7c58  — disconnect dialog shown flag
 //   HeroTile  — world/map type
 //   RainCurrent  — BGM track 1 enable flag
@@ -258,7 +258,7 @@ void __cdecl Game_MainLoop(HDC param_1)
         // IDA 0x525D40 L308:
         //   sprintf(GrabFileName, "Screen(%02d_%02d-%02d_%02d)-%04d.jpg",
         //           st.wMonth, st.wDay, st.wHour, st.wMinute, GrabScreen);
-        // GrabScreen (DAT_083a42f0) lo incrementa SaveScreen modulo 10000.
+        // GrabScreen (GrabScreen) lo incrementa SaveScreen modulo 10000.
         //
         // DESVIACION DELIBERADA (pedido del usuario): el binario
         // guarda en la RAIZ del cliente -- GrabFileName no lleva ruta.  Para
@@ -288,7 +288,7 @@ void __cdecl Game_MainLoop(HDC param_1)
 #endif
         crt_sprintf((char*)&GrabFileName, "%sScreen(%02d_%02d-%02d_%02d)-%04d.jpg",
                     shotDir, (int)st.wMonth, (int)st.wDay, (int)st.wHour,
-                    (int)st.wMinute, (int)DAT_083a42f0);
+                    (int)st.wMinute, (int)GrabScreen);
     }
     // IDA L309: sprintf(strText, GlobalText[459], GrabFileName).
     // GlobalText[459] es "%s: La captura fue guardada." -- lleva un %s con el

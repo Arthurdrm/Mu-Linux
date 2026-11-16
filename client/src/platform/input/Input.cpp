@@ -178,8 +178,8 @@ uint Key_IsJustPressed(int vk);
 //   ImmGetContext(g_hWnd) → hIMC
 //   ImmGetConversionStatus(hIMC, &conversion, &sentence)
 //   Si hay estado IME activo (conversion != 0 || sentence != 0):
-//     Si (save_mask & 1): DAT_07e11d94 = conversion
-//     Si (save_mask & 2): DAT_00559cd8 = sentence
+//     Si (save_mask & 1): g_dwOldConv = conversion
+//     Si (save_mask & 2): g_dwOldSent = sentence
 //     Si clear_mode != 0: ImmSetConversionStatus(hIMC, 0, 0)  — limpiar
 //     Retorna 1 (había estado)
 //   ImmReleaseContext(g_hWnd, hIMC)
@@ -298,7 +298,7 @@ void __cdecl ClearInput(int param_1)
   undefined4 *puVar3;
 
   InputIndex = 0;
-  DAT_00559c90 = 0xffffffff;
+  InputResidentNumber = 0xffffffff;
   iVar2 = 0;
   do {
     if ((iVar2 != 1) || (param_1 != 0)) {

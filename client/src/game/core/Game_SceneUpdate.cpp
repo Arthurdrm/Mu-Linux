@@ -157,7 +157,7 @@ int Game_SceneUpdate(void)
         // state/UI globals are initialized here.
         // CreateSocket(PTR_s_connect_muonline_co_kr_005615b8,
         //              (unsigned)(0 | (g_ServerPort)));
-        DAT_083a7c48 = 1;
+        EnableSocket = 1;
         ServerListCount = 0;
 
         // ── Flujo ConnectServer ──────────────────────────────────
@@ -754,7 +754,7 @@ state_fail_common:
                 PlayBuffer(0x1b, 0, 0);
                 ClearInput(1);
                 InputNumber = 2;
-                DAT_00559c90 = 1;
+                InputResidentNumber = 1;
                 InputTextMax = 0x1e;
                 _DAT_00559c98 = 0xe;
                 InputTextHide[1] = 2;

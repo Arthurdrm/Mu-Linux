@@ -1514,10 +1514,10 @@ void __cdecl Player_ProcessInput(void)
                         // (RenderTerrain) hace la conversión interna con _DAT_005524f0. Cast directo a
                         // int, sin dividir por 100.
                         float pickWX = *(float*)&SelectXF;
-                        float pickWY = *(float*)&DAT_080ab28c;
+                        float pickWY = *(float*)&SelectYF;
                         TargetX = (DWORD)(int)pickWX;
                         TargetY = (DWORD)(int)pickWY;
-                        // DAT_07e11d64 es `DontMove` (0x07E11D64 en el binario), NO un
+                        // DontMove es `DontMove` (0x07E11D64 en el binario), NO un
                         // "walkable": es COSMETICO, sólo elige el sprite del cursor
                         // (10 = prohibido / 3 = mover) en el render del puntero. No
                         // bloquea nada, ni acá ni en el original — que también lo usa
@@ -1535,9 +1535,9 @@ void __cdecl Player_ProcessInput(void)
                         int terrIdx = TargetX + TargetY * 0x100;
                         unsigned char terrAttr = ((unsigned char*)&DAT_0838bc70)[terrIdx];
                         if (terrAttr < 8 || (terrAttr & 0x20) == 0x20)
-                            DAT_07e11d64 = 0;   // DontMove = false
+                            DontMove = 0;   // DontMove = false
                         else
-                            DAT_07e11d64 = 1;   // DontMove = true
+                            DontMove = 1;   // DontMove = true
 
                         // La rama de piso de 004ACEF0 no rechaza una animación de
                         // acción/ataque activa. Resuelve el click sobre el terreno

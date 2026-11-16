@@ -216,7 +216,7 @@ void __cdecl GuildMemberList_Add(int p1, void *data)
 
 // ItemList_Select @ 0x0051D840 — ItemList_Select(slot)
 // Selects character slot `slot` for the in-game item/skill list display.
-// Sets DAT_005615dc, populates DAT_083a4324 and skill/item display arrays,
+// Sets g_iCurrentDialogScript, populates DAT_083a4324 and skill/item display arrays,
 // then transitions UI state to 0x8e.
 // Port fiel de sub_51D840: arma el cuadro de dialogo desde g_DialogScript[a1]
 // (DIALOG_SCRIPT en globals.h) igual que CSQuest::ShowDialogText, mas el

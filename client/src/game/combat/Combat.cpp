@@ -101,7 +101,7 @@
 //     // Dispatch por subtipo:
 //     switch (attack_sub):
 //       1: Entity_MeleeAttackStart(entity)
-//              + slot-buffer management (max 9 slots, DAT_07e11db4)
+//              + slot-buffer management (max 9 slots, DebugTextCount)
 //       2: anim = (attack_type==4) ? 0x87 : 0x85  — Entity_SetAnimation
 //       3: anim = (attack_type==4) ? 0x8C : 0x8B  — Entity_SetAnimation
 //       4: anim = (attack_type==4) ? 0x8A : 0x89  — Entity_SetAnimation

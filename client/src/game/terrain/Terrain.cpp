@@ -37,11 +37,11 @@
 //   BackTerrainHeight     | 0x80CB2CC  | float[65536]   | altura por tile (de TerrainHeight)
 //   DAT_0838b800     | 0x838B800  | uint[270]      | paleta de texturas (IDs de OZJ)
 //   DAT_07feb288     | 0x7FEB288  | float[3×65536] | normales por tile (XYZ)
-//   DAT_07eeb238     | 0x7EEB238  | float[]        | datos de luz/color ambiental
+//   TerrainLight     | 0x7EEB238  | float[]        | datos de luz/color ambiental
 //   DAT_0828b608     | 0x828B608  | float[3×65536] | color iluminado por tile
 //   DAT_081cb608     | 0x81CB608  | float[3×?]     | colores tiles visibles (viewport)
 //   TerrainGrassWind     | 0x7EAB200  | float[65536]   | offset de ola de agua por tile
-//   DAT_0810b2cc     | 0x810B2CC  | float[65536]   | ruido aleatorio por tile (init)
+//   TerrainGrassTexture     | 0x810B2CC  | float[65536]   | ruido aleatorio por tile (init)
 //   DAT_081cb2ed     | 0x81CB2ED  | byte[?*8]      | array de objetos de terreno
 //   DAT_083a021c     | 0x83A021C  | ptr[]          | display list de tiles visibles
 //   TerrainIndex1     | 0x7EAB1EC  | uint           | índice tile esquina TL (actual)
@@ -93,9 +93,9 @@
 //       TerrainMappingLayer1[i] = 0               // attrib1 = 0 (sin textura)
 //       TerrainMappingLayer2[i] = 0xFF            // attrib2 = 0xFF (por defecto)
 //       TerrainMappingAlpha[i] = 0.0f           // height = nivel cero
-//       DAT_0810b2cc[i+1] = (rand() & 3) * DAT_005528dc  // ruido aleatorio
+//       TerrainGrassTexture[i+1] = (rand() & 3) * DAT_005528dc  // ruido aleatorio
 //
-//   Nota: DAT_0810b2cc se inicializa con 0..3 * scale → variación de textura.
+//   Nota: TerrainGrassTexture se inicializa con 0..3 * scale → variación de textura.
 //
 // ── TERRAIN_LOAD (0x004f6f90) ─────────────────────────────────────────────────
 //
@@ -178,11 +178,11 @@
 //       light = clamp(light, DAT_00552580, DAT_0055256c)  // [0.0, 1.0]
 //
 //       // Multiplica por color del canal de luz
-//       DAT_0828b608[i*3+0] = light * DAT_07eeb238[i*3+0]  // R
-//       DAT_0828b608[i*3+1] = light * DAT_07eeb238[i*3+1]  // G
-//       DAT_0828b608[i*3+2] = light * DAT_07eeb238[i*3+2]  // B
+//       DAT_0828b608[i*3+0] = light * TerrainLight[i*3+0]  // R
+//       DAT_0828b608[i*3+1] = light * TerrainLight[i*3+1]  // G
+//       DAT_0828b608[i*3+2] = light * TerrainLight[i*3+2]  // B
 //
-//   Input: DAT_07feb288 (normales), DAT_07eeb238 (color/dirección de luz)
+//   Input: DAT_07feb288 (normales), TerrainLight (color/dirección de luz)
 //   Output: DAT_0828b608 (color iluminado por tile)
 //
 // ── TERRAIN_FRAMEUPDATE (0x004f95e0) ──────────────────────────────────────────
@@ -238,7 +238,7 @@
 //
 //     Si TerrainFlag == 2 (agua):
 //       Si las 4 alturas del tile <= DAT_00552580 (= bajo el agua):
-//         Si DAT_0814b2dc == 0 && no PvP sub-estado:
+//         Si CurrentLayer == 0 && no PvP sub-estado:
 //           texture_id = TerrainMappingLayer1[tile_idx] + 0x32  // textura de agua
 //           GL_BindTextureSlot(texture_id)
 //           glTexCoord2f(uv_x, ...)
@@ -349,7 +349,7 @@
 //   DAT_00552504  — 0.5f (medio tile, offset de centro)
 //   DAT_00552b70  — height_scale1 (para .att): altura en unidades mundo
 //   DAT_005528f0  — height_scale2 (para TerrainHeight)
-//   DAT_005528dc  — scale_noise (para ruido random, DAT_0810b2cc)
+//   DAT_005528dc  — scale_noise (para ruido random, TerrainGrassTexture)
 //   DAT_00552cb0  — scale_objects (para objetos estáticos)
 //   DAT_00552488  — water_amplitude (amplitud de olas sinusoidales)
 //   DAT_00552660  — water_freq (frecuencia de ola, modo normal)
@@ -360,7 +360,7 @@
 //   DAT_0055a7a4  — fixed_path (ruta fija cuando no comprimido)
 //   DAT_0055a79c  — world_path_prefix (ej "World1/")
 //   DAT_0055a798  — file_suffix (extensión de archivo)
-//   DAT_0814b2dc  — disable_water_rendering flag
+//   CurrentLayer  — disable_water_rendering flag
 //   EnableEvent  — fast_day_cycle flag (0=normal 720s, 1=rápido 36s)
 //   DAT_0839bc86  — wireframe_mode flag
 //   TerrainFlag  — tile_render_mode (2=agua surface)
@@ -404,7 +404,7 @@
 //   TerrainMappingLayer1[i] = 0     (TileTex1 byte)
 //   TerrainMappingLayer2[i] = 0xFF  (TileTex2 byte)
 //   TerrainMappingAlpha[i] = 0.0f  (TerrainHeight)
-//   DAT_0810b2cc[i] = (rand() & 3) * scale  (TerrainNoise per-tile UV jitter)
+//   TerrainGrassTexture[i] = (rand() & 3) * scale  (TerrainNoise per-tile UV jitter)
 // IDA: FUN_004F6C60
 void __cdecl Terrain_Clear(void) {
     for (int i = 0; i < 0x10000; ++i) {
@@ -412,7 +412,7 @@ void __cdecl Terrain_Clear(void) {
         TerrainMappingLayer2[i] = 0xff;
         TerrainMappingAlpha[i] = 0.0f;
         unsigned int uVar1 = (unsigned int)rand() & 3u;     // 0..3
-        DAT_0810b2cc[i]   = (float)(int)uVar1 * 0.25f;
+        TerrainGrassTexture[i]   = (float)(int)uVar1 * 0.25f;
     }
 }
 
@@ -453,7 +453,7 @@ void __cdecl CreateTerrainNormal(void) {
 }
 
 // IDA: CreateTerrainLight (0x004F71C0)
-// by lightmap (DAT_07eeb238) and clamps into DAT_0828b608.
+// by lightmap (TerrainLight) and clamps into DAT_0828b608.
 // IDA: FUN_004F71C0
 void __cdecl CreateTerrainLight(void) {
     int iVar4 = 0;
@@ -474,7 +474,7 @@ void __cdecl CreateTerrainLight(void) {
             do {
                 iVar4 = iVar3 + 4;
                 iVar5--;
-                *(float*)((char*)&BackTerrainLight + iVar3) = fVar2 * *(float*)((char*)&DAT_07eeb238 + iVar3);
+                *(float*)((char*)&BackTerrainLight + iVar3) = fVar2 * *(float*)((char*)&TerrainLight + iVar3);
                 iVar3 = iVar4;
             } while (iVar5 != 0);
             iVar6--;

@@ -691,8 +691,8 @@ int main(int, char**)
     // login deferencian DAT_05828d58 + etype*0xbc + offset y crashean si es NULL.
     // Alocamos un fallback en cero, grande como para etype hasta ~0x300.
     if (Models == 0) {
-        DAT_06f42a58=ResourceTables::ModelBase();
-        Models = reinterpret_cast<std::uintptr_t>(DAT_06f42a58);
+        ModelsDump=ResourceTables::ModelBase();
+        Models = reinterpret_cast<std::uintptr_t>(ModelsDump);
     }
 
     // Los nombres de clase son GlobalText[20..26] (Text.bmd); el port tenía una

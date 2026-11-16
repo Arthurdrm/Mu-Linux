@@ -343,6 +343,7 @@ set(MU_SOURCES
     src/render/Font_Layout.cpp
     src/game/monster/Monster.cpp
     src/game/monster/MonsterSpawnTable.cpp
+    src/assets/data/TextureList.cpp
     src/assets/model/MonsterModelTable.cpp
     src/assets/model/NpcModelTable.cpp
     src/render/InventoryPoseTable.cpp
@@ -534,6 +535,7 @@ set(MU_HEADERS
     src/audio/SoundTable.h
     src/game/monster/MonsterSpawnTable.h
     src/assets/data/TomlLines.h
+    src/assets/data/TextureList.h
     src/assets/model/MonsterModelTable.h
     src/assets/model/NpcModelTable.h
     src/render/InventoryPoseTable.h

@@ -228,6 +228,7 @@
     <ClInclude Include="src\audio\SoundTable.h" />
     <ClInclude Include="src\game\monster\MonsterSpawnTable.h" />
     <ClInclude Include="src\assets\data\TomlLines.h" />
+    <ClInclude Include="src\assets\data\TextureList.h" />
     <ClInclude Include="src\assets\model\MonsterModelTable.h" />
     <ClInclude Include="src\assets\model\NpcModelTable.h" />
     <ClInclude Include="src\render\InventoryPoseTable.h" />
@@ -633,6 +634,7 @@
     <ClCompile Include="src\render\Font_Layout.cpp" />
     <ClCompile Include="src\game\monster\Monster.cpp" />
     <ClCompile Include="src\game\monster\MonsterSpawnTable.cpp" />
+    <ClCompile Include="src\assets\data\TextureList.cpp" />
     <ClCompile Include="src\assets\model\MonsterModelTable.cpp" />
     <ClCompile Include="src\assets\model\NpcModelTable.cpp" />
     <ClCompile Include="src\render\InventoryPoseTable.cpp" />

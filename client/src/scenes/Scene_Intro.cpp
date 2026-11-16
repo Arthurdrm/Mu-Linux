@@ -116,6 +116,7 @@
 //   CErrorReport_Write  → Log(hashtable, msg)
 
 #include "stdafx.h"
+#include "assets/data/TextureList.h"
 #include "render/Gfx.h"
 #include "scenes/Scene_Intro.h"
 
@@ -152,8 +153,7 @@ void __cdecl Scene_Intro(HDC param_1)
     ClearInput(1);   // CharList_Init(1)
 
     // Load splash textures
-    OpenJPG("Local/Webzenlogo.jpg", 0xc, 0x2600, 0x2900, 0, '\x01');
-    OpenJPG("Local/Everyone.jpg",   0xd, 0x2600, 0x2900, 0, '\x01');
+    TextureList_Load("intro");   // Content/interface/textures.toml [intro]
 
     FogEnable = 0;
     // Nota: el iTitle.wav (id 4) lo dispara el original con PlayBuffer(4,...)

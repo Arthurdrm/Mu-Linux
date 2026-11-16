@@ -58,6 +58,7 @@
 //   ClearInput  → CharList_Init(mode)
 
 #include "stdafx.h"
+#include "assets/data/TextureList.h"
 #include "render/Gfx.h"
 #include "scenes/Scene_Loading.h"
 
@@ -70,9 +71,7 @@ void __cdecl Scene_Loading(HDC param_1)
     // Load textures once (guarded by init flag)
     if (InitLoading == '\0') {
         InitLoading = '\x01';
-        OpenJPG("Local/Loading01.jpg", 0x1e, 0x2600, 0x2900, 0, '\x01');
-        OpenJPG("Local/Loading02.jpg", 0x1f, 0x2600, 0x2900, 0, '\x01');
-        OpenJPG("Local/Loading03.jpg", 0x20, 0x2600, 0x2900, 0, '\x01');
+        TextureList_Load("loading");   // Content/interface/textures.toml [loading]
     }
 
     FogEnable = 0;

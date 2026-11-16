@@ -7,6 +7,7 @@
 // IDA: ReleaseCharacterSceneData (0x005102C0)
 
 #include "stdafx.h"
+#include "assets/data/TextureList.h"
 #include "render/MeshDraw.h"
 #include <vector>
 #include <algorithm>
@@ -57,15 +58,7 @@ void Scene_LoadAccountResources(void)
   int iVar1;
   int iVar2;
 
-  OpenTGA("Logo\\0Account_new.tga",0xc,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\0On_Botton.jpg",0xd,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\0On_Botton2.jpg",0xe,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\0Text_Box.jpg",0xf,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\0New_Account01.tga",0x10,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\0New_Account02.tga",0x11,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\0Box.jpg",0x12,0x2600,0x2900,0,'\x01');
-  OpenJPG("Interface\\Progress_Back.jpg",0x13,0x2600,0x2900,0,'\x01');
-  OpenJPG("Interface\\Progress.jpg",0x14,0x2600,0x2900,0,'\x01');
+  TextureList_Load("account");   // Content/interface/textures.toml [account]
   AccessModel(0x3c,"Data\\Object1\\",(const char*)&DAT_0055e834,1);
   iVar2 = 0xa0;
   do {
@@ -95,24 +88,7 @@ void Scene_LoadCharSelectResources(void)
   int iVar1;
   intptr_t iVar2;
 
-  OpenTGA("Logo\\Interface01.tga",0xc,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\Interface02.tga",0xd,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\Interface03.tga",0xe,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\Interface04.tga",0xf,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\New_Character201.tga",0x10,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character202.jpg",0x11,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\Delete01.tga",0x12,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\Delete02.jpg",0x13,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\Ok01.tga",0x14,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\Ok02.jpg",0x15,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\New_Character01.tga",0x16,0x2600,0x2900,0,'\x01');
-  OpenTGA("Logo\\New_Character02.tga",0x17,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character_Cancel.jpg",0x18,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character_Ok.jpg",0x19,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character001.jpg",0x1a,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character002.jpg",0x1b,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character003.jpg",0x1c,0x2600,0x2900,0,'\x01');
-  OpenJPG("Logo\\New_Character004.jpg",0x1d,0x2600,0x2900,0,'\x01');
+  TextureList_Load("char_select");   // Content/interface/textures.toml [char_select]
   // El diorama clásico termina en los bordes del encuadre 4:3. La variante
   // amplia agrega suelo y bosque lateral para el viewport real del mundo.
   AccessModel(0xa4,SelectBackdropPath(),(const char*)&DAT_005606ac,5);

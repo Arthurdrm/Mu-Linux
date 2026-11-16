@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "ConnectServer.h"
 #include "MiniDump.h"
+#include "SecureLink.h"
 #include "ServerDisplayer.h"
 #include "ServerList.h"
 #include "SocketManager.h"
@@ -51,6 +52,9 @@ int main()
 		WORD ConnectServerPortUDP = GetPrivateProfileInt("ConnectServerInfo", "ConnectServerPortUDP", 55557, ".\\ConnectServer.ini");
 
 		MaxIpConnection = GetPrivateProfileInt("ConnectServerInfo", "MaxIpConnection", 0, ".\\ConnectServer.ini");
+
+		// La clave del canal cifrado (la genera el GameServer en Data/Keys).
+		gSecureLink.Refresh();
 
 		if (gSocketManager.Start(ConnectServerPortTCP) != 0)
 		{
@@ -235,6 +239,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				case TIMER_1000:
 				{
 					gServerList.MainProc();
+
+					gSecureLink.Refresh();
 
 					break;
 				}

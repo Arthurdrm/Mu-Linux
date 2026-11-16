@@ -406,7 +406,6 @@ set(MU_SOURCES
     src/scenes/Scene_ObjectInteraction.cpp
     src/scenes/Scene_ObjectUpdate.cpp
     src/scenes/WorldObject_Behavior.cpp
-    src/scenes/WorldObject_Behavior.h
     src/render/BMD_SkinUpdate.cpp
     src/app/debug/Benchmark.cpp
 )
@@ -441,6 +440,7 @@ set(MU_HEADERS
     src/app/config/ServerConfig.h
     src/app/config/UserSettings.h
     src/game/entity/CharacterVisual_Models.h
+    src/scenes/WorldObject_Behavior.h
     src/ui/DialogMessage.h
     src/ui/UIState.h
     src/ui/ChatTypes.h

@@ -477,7 +477,7 @@ int Game_SceneUpdate(void)
                     MouseLButtonPush = '\0';
                     InputIndex = (unsigned)i;
                     ErrorMessage = NextErrorMessage;
-                    NextErrorMessage = 0;
+                    NextErrorMessage = MESSAGE_NONE;
                 }
             }
         }
@@ -506,29 +506,29 @@ int Game_SceneUpdate(void)
         if (loginTrigger && CurrentProtocolState != 0) {
             // Reset slot selection
             ErrorMessage = NextErrorMessage;
-            NextErrorMessage = 0;
+            NextErrorMessage = MESSAGE_NONE;
             PlayBuffer(0x19, 0, 0);
 
             // Check username empty
             int ulen = (int)strlen((char*)InputText);
             if (ulen == 0) {
                 // No username: set slot error
-                if (ErrorMessage == 0) { ErrorMessage = 100; }
-                else                   { NextErrorMessage = 100; }
+                if (ErrorMessage == MESSAGE_NONE) { ErrorMessage = MESSAGE_INPUT_ID; }
+                else                   { NextErrorMessage = MESSAGE_INPUT_ID; }
                 InputIndex = 0;
                 DAT_005616a0 = 1;
             } else {
                 int plen = (int)strlen((char*)DAT_07db8810);
                 if (plen == 0) {
-                    if (ErrorMessage == 0) { ErrorMessage = 0x65; }
-                    else                   { NextErrorMessage = 0x65; }
+                    if (ErrorMessage == MESSAGE_NONE) { ErrorMessage = MESSAGE_INPUT_PASSWORD; }
+                    else                   { NextErrorMessage = MESSAGE_INPUT_PASSWORD; }
                     InputIndex = 1;
                     DAT_005616a0 = 1;
                 }
             }
 
         // Login packet send — ONLY when user actually pressed login.
-        if (ErrorMessage == 0) {
+        if (ErrorMessage == MESSAGE_NONE) {
             int code = CurrentProtocolState;
             bool validCode = (code == 2 || code == 0xb || code == 0xc || code == 0xd ||
                               (code > 0x14 && code < 0x22));
@@ -621,7 +621,7 @@ int Game_SceneUpdate(void)
             CErrorReport_Write(&DAT_055c9bf0, "> Login Scene - Exit");
             MouseLButtonPush = '\0';
             ErrorMessage = NextErrorMessage;
-            NextErrorMessage = 0;
+            NextErrorMessage = MESSAGE_NONE;
             PlayBuffer(0x19, 0, 0);
             LoginSubState = 3;
             DAT_083a7c18 = 0x1d;
@@ -674,7 +674,7 @@ LAB_00520fd8:
                 InputIndex = 0;
                 InputNumber = 2;
                 if (respCode == 0) {
-                    NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
+                    NextErrorMessage = MESSAGE_NONE; CurrentProtocolState = 2; ErrorMessage = slotB;
                 } else if (slotA == 0) {
                     CurrentProtocolState = 2; ErrorMessage = respCode;
                 } else {
@@ -689,7 +689,7 @@ LAB_00520fd8:
                 } else {
                     InputIndex = 0;
                     if (respCode == 0) {
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         goto state_fail_common;
                     }
                 }
@@ -737,7 +737,7 @@ state_fail_common:
                     InputIndex = 0;
                     if (respCode == 0) {
                         LoginSubState = 2;
-                        NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
+                        NextErrorMessage = MESSAGE_NONE; CurrentProtocolState = 2; ErrorMessage = slotB;
                         break;
                     }
                 }
@@ -762,14 +762,14 @@ state_fail_common:
 
             case 0x3d: // 0x3f
                 if (respCode != 0) goto state_alt_error;
-                LoginSubState = 2; NextErrorMessage = 0; CurrentProtocolState = 2; ErrorMessage = slotB;
+                LoginSubState = 2; NextErrorMessage = MESSAGE_NONE; CurrentProtocolState = 2; ErrorMessage = slotB;
                 break;
 
             // Success variants 0x40-0x47
             case 0x3e: case 0x3f: case 0x40: case 0x41:
             case 0x42: case 0x43: case 0x44: case 0x45:
                 if (respCode == 0) {
-                    NextErrorMessage = 0;
+                    NextErrorMessage = MESSAGE_NONE;
                 } else {
                     int r = respCode;
                     if (slotA != 0) { NextErrorMessage = respCode; r = slotA; }

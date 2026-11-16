@@ -2,10 +2,10 @@
 """Clics de paginación: render real de flechas y rama modal real, con renders entre ticks."""
 import argparse,tempfile
 from pathlib import Path
-from SceneObjectPointer import read_source,build_and_run
+from SceneObjectPointer import read_source,build_and_run,dialog_messages,index_any
 
-def block(source,needle):
-    start=source.index(needle);brace=source.index('{',start);end=brace+1;depth=1
+def block(source,needles):
+    start=index_any(source,needles);brace=source.index('{',start);end=brace+1;depth=1
     while depth:
         depth+=(source[end]=='{')-(source[end]=='}');end+=1
     return source[start:end]
@@ -47,10 +47,10 @@ int main(){unsigned cases=0;
 }
 '''
 def harness():
-    render=block(read_source('src/ui/UI_StatsPanel.cpp'),'if (ErrorMessage == 0x8d)')
-    source=read_source('src/ui/UI_InGameMenu.cpp');start=source.index('    case 0x8b:');end=source.index('    // ── State 142',start)
+    render=block(read_source('src/ui/UI_StatsPanel.cpp'),('if (ErrorMessage == 0x8d)','if (ErrorMessage == MESSAGE_DIALOG_INTERFACE)'))
+    source=read_source('src/ui/UI_InGameMenu.cpp');start=index_any(source,('    case 0x8b:','    case MESSAGE_CUSTOM:'));end=source.index('    // ── State 142',start)
     tick='void Tick(){int state=ErrorMessage,mouseX=MouseX,mouseY=MouseY;switch(state){'+source[start:end]+'}}'
-    return PRE+'void Draw(){unsigned uVar10,uVar15,uVar16;'+render+'}'+tick+MAIN
+    return PRE+dialog_messages()+'void Draw(){unsigned uVar10,uVar15,uVar16;'+render+'}'+tick+MAIN
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--architecture',choices=('Win32','x64'),default='x64');p.add_argument('--generator');a=p.parse_args()
     with tempfile.TemporaryDirectory(prefix='mu-dialog-click-')as t:print(build_and_run(Path(t)/'current',harness(),a),end='')

@@ -52,7 +52,7 @@ void __cdecl Cursor_Render(void) {
     };
 
     // Error message o diálogo bloqueante → arrow
-    if (DAT_07eaa14c != 0 || ErrorMessage != 0) { draw_arrow(); return; }
+    if (DAT_07eaa14c != 0 || ErrorMessage != MESSAGE_NONE) { draw_arrow(); return; }
 
     // SelectedItem (hover sobre ítem en el piso)
     if (SelectedItem != -1) {

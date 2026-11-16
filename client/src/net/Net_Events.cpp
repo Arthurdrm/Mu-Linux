@@ -184,6 +184,6 @@ void Recv_DevilSquareRank(BYTE* Msg, int Size)
 void Recv_ServerImmigration(BYTE* Msg, int Size)
 {
     if (Size < 4) return;
-    if (Msg[3] == 0)      SetErrorMessage(144);
-    else if (Msg[3] == 1) SetErrorMessage(145);
+    if (Msg[3] == 0)      SetErrorMessage(MESSAGE_SERVER_IMMIGRATION_RESIDENT);
+    else if (Msg[3] == 1) SetErrorMessage(MESSAGE_SERVER_IMMIGRATION_DB);
 }

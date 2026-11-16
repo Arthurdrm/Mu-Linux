@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 import tempfile
 from GatePointer import PREAMBLE
-from SceneObjectPointer import build_and_run, function, read_source
+from SceneObjectPointer import build_and_run, function, read_source, dialog_messages
 
 SERVICES=r'''
 #include <algorithm>
@@ -67,7 +67,7 @@ def server_structs(revision=None):
 
 
 def harness(revision=None):
-    return PREAMBLE.split('char DAT_00559bb4',1)[0].replace('0x10000','0x20000')+SERVICES.replace('STRUCTS',server_structs(revision))+function(read_source('src/scenes/Scene_ServerSelect_Input.cpp',revision),'CServerSelWin_UpdateWhileActive')+MAIN
+    return PREAMBLE.split('char DAT_00559bb4',1)[0].replace('0x10000','0x20000')+dialog_messages(revision)+SERVICES.replace('STRUCTS',server_structs(revision))+function(read_source('src/scenes/Scene_ServerSelect_Input.cpp',revision),'CServerSelWin_UpdateWhileActive')+MAIN
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--architecture',choices=('Win32','x64'),default='x64');parser.add_argument('--generator');parser.add_argument('--reference-ref');args=parser.parse_args()

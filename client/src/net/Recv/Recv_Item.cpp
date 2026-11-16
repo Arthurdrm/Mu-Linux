@@ -406,7 +406,7 @@ void NetRecv_30(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             MixState = 0;     // MixState = 0
             for (int i = 0; i < 4; i++)
                 DAT_0055a3e8[i] = Msg[4 + i];
-            SetErrorMessage(143);
+            SetErrorMessage(MESSAGE_SELECT_CHAOS);
             break;
         case 4:  // Event window (type 0)
             EventType = 0;
@@ -745,9 +745,9 @@ void NetRecv_83(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             DAT_00559f5f = 1;
             DAT_07eaa148 = 0;
             break;
-        case 10: SetErrorMessage(134); break;   // PIN incorrecto
-        case 11: SetErrorMessage(135); break;   // ya tenia candado
-        case 13: SetErrorMessage(138); break;   // codigo personal invalido
+        case 10: SetErrorMessage(MESSAGE_STORAGE_PASSWORD_WRONG); break;   // PIN incorrecto
+        case 11: SetErrorMessage(MESSAGE_STORAGE_ALREADY_LOCKED); break;   // ya tenia candado
+        case 13: SetErrorMessage(MESSAGE_STORAGE_RESIDENT_WRONG); break;   // codigo personal invalido
         case 12:
             // IDA ReceiveStorageStatus (0x434450): PIN aceptado.  Si
             // habia una accion esperando el PIN (la arma el drop o el
@@ -835,8 +835,8 @@ void NetRecv_87(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     pPickedItemKey = 0;
     // The category selector is client-local (unlike the original
     // box lifecycle), so dismiss it if a close ACK races it.
-    if (ErrorMessage == 143) {
-        SetErrorMessage(0);
+    if (ErrorMessage == MESSAGE_SELECT_CHAOS) {
+        SetErrorMessage(MESSAGE_NONE);
     }
 }
 

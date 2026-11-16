@@ -293,7 +293,7 @@ void __cdecl ShowCheckBox(int num, int index, int message)
 
     if (message != 0) {
         // Mostrar este mensaje — encolarlo si ya hay otro diálogo arriba.
-        if (ErrorMessage != 0) {
+        if (ErrorMessage != MESSAGE_NONE) {
             NextErrorMessage = (DWORD)message;
         } else {
             ErrorMessage = (DWORD)message;
@@ -301,7 +301,7 @@ void __cdecl ShowCheckBox(int num, int index, int message)
     } else {
         // message==0: desencola (descarta el actual y muestra el siguiente)
         ErrorMessage     = NextErrorMessage;
-        NextErrorMessage = 0;
+        NextErrorMessage = MESSAGE_NONE;
     }
 }
 

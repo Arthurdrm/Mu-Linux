@@ -149,7 +149,7 @@ void __cdecl GuildCreator_HitTest(void) {
             if (g_iKeyPadEnable) {
                 if (Chat_ValidateInputCommand()) {
                     // nombre invalido / vacio
-                    SetErrorMessage(115);
+                    SetErrorMessage(MESSAGE_RESTRICTED_WORDS);
                 } else {
                     // Empaquetado de la marca, fiel a IDA L180-193: 64 celdas de la
                     // grilla 8x8 -> 32 bytes, celda PAR en el nibble alto e IMPAR en el
@@ -164,7 +164,7 @@ void __cdecl GuildCreator_HitTest(void) {
                         if (v) any = true;
                     }
                     if (!any) {
-                        SetErrorMessage(127);
+                        SetErrorMessage(MESSAGE_NO_GUILD_MARK);
                         PlayBuffer(25, 0, 0);
                     } else {
                         // IDA: strcpy(&dword_7EA51EC, InputText[0])
@@ -871,7 +871,7 @@ void __cdecl Warehouse_HitTest(void) {
 
     switch (iVar6) {
     case 0:
-        SetErrorMessage(0x74);
+        SetErrorMessage(MESSAGE_INPUT_GOLD);
         ClearInput(0);
         InputGold = 0;
         StorageGoldFlag = 0;
@@ -882,7 +882,7 @@ void __cdecl Warehouse_HitTest(void) {
         GoldInputEnable = 1;
         break;
     case 1:
-        SetErrorMessage(0x74);
+        SetErrorMessage(MESSAGE_INPUT_GOLD);
         ClearInput(0);
         InputGold = 0;
         // DESVIACION (fix del DLL, Patchs.cpp 0x004EB6FE): extracción de Zen con diez dígitos.
@@ -934,7 +934,7 @@ void __cdecl Trade_InputTick(void) {
         (int)MouseY < (int)(TradeInventoryStartY + 0x19e) &&
         IsClickPushed()) {
         MouseLButtonPush = '\0';
-        SetErrorMessage(0x74);
+        SetErrorMessage(MESSAGE_INPUT_GOLD);
         ClearInput(0);
         // DESVIACION (fix del DLL, Patchs.cpp 0x004EB8C7): oferta de Zen con diez dígitos.
         InputTextMax = 10;

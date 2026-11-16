@@ -30,6 +30,25 @@ def optional_definition(match):
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def dialog_messages(revision=None):
+    # S16: los estados de ErrorMessage son el enum DialogMessage.  Las
+    # revisiones anteriores no tienen el header y usan los literales.
+    try:
+        text = read_source("src/ui/DialogMessage.h", revision)
+    except Exception:
+        return ""
+    return text.replace("#pragma once", "") + "\n"
+
+
+def index_any(source, needles, start=0):
+    # La primera de las variantes que aparezca: literal (revisión vieja) o nombre.
+    for needle in needles:
+        i = source.find(needle, start)
+        if i >= 0:
+            return i
+    raise ValueError(f"no aparece ninguna de {needles}")
+
+
 def read_source(path, revision=None):
     if revision:
         from source_paths import show   # E3: prueba la ruta vieja si se movió

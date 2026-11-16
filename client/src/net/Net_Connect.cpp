@@ -71,7 +71,7 @@ void __cdecl CreateSocket(const char *param_1,unsigned int param_2)
     DbgLogPublic("NET: CreateSocket CONNECT FAILED → abort/SetErrorMessage(0x71)");
     CErrorReport_Write(&DAT_055c9bf0,"Failed to connect.");
     CErrorReport_WriteCurrentTime(1); // IDA: FUN_004055A0
-    SetErrorMessage(0x71);
+    SetErrorMessage(MESSAGE_SERVER_LOST);
     // Original-client behaviour: the server can't be reached (no listener,
     // wrong IP/port, firewall) → pop a modal dialog and terminate.  Previous
     // build silently carried on and the player saw nothing.  Same rationale

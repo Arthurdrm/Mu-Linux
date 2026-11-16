@@ -23,7 +23,7 @@ void NetRecv_40(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // esta clave al nombre del personaje para el prompt.
     if (Size < 5) return;
     PartyKey = (Msg[3] << 8) | Msg[4];
-    SetErrorMessage(120);
+    SetErrorMessage(MESSAGE_PARTY);
 }
 
 // 0x41
@@ -35,7 +35,7 @@ void NetRecv_41(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     static const int textIndex[] = { 497, 498, 499, 500, 501, 535 };
     if (Msg[3] < _countof(textIndex))
         UIChatLogWindow_AddText(nullptr, GlobalText[textIndex[Msg[3]]], 2);
-    SetErrorMessage(0);
+    SetErrorMessage(MESSAGE_NONE);
 }
 
 // 0x42

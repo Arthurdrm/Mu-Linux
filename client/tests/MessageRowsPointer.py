@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import tempfile
 from GatePointer import PREAMBLE
-from SceneObjectPointer import build_and_run, read_source
+from SceneObjectPointer import build_and_run, read_source, dialog_messages, index_any
 SERVICES=r'''
 #ifndef _WIN32
 using LPCSTR=const char*;using HGDIOBJ=void*;
@@ -39,8 +39,8 @@ std::uint64_t Run(BYTE* memory){table=reinterpret_cast<char*>(memory+16);std::ui
 int main(){auto* low=static_cast<BYTE*>(Reserve(0x26000000u));Require(low);const auto expected=Run(low);if(sizeof(void*)>4){auto* high=static_cast<BYTE*>(Reserve(std::uint64_t(0x126000000ull)));Require(high);std::memset(low,0x7b,298);Require(Run(high)==expected);for(unsigned i=0;i<298;++i)Require(low[i]==0x7b);std::puts("tabla de texto alta; filas/colores/posiciones32 iguales y alias bajo intacto");}std::printf("Message rows: 30720 consultas, punteros/orden/coords %016llx\n",static_cast<unsigned long long>(expected));}
 '''
 def harness(revision=None):
- source=read_source('src/ui/UI_StatsPanel.cpp',revision);start=source.index('LAB_0051d371:');end=source.index('  case 0x98:',start);block=source[start:end]
- return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES.replace('BLOCK',block)+MAIN
+ source=read_source('src/ui/UI_StatsPanel.cpp',revision);start=source.index('LAB_0051d371:');end=index_any(source,('  case 0x98:','  case MESSAGE_LOCK_STORAGE:'),start);block=source[start:end]
+ return PREAMBLE.split('char DAT_00559bb4',1)[0]+dialog_messages(revision)+SERVICES.replace('BLOCK',block)+MAIN
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--architecture',choices=('Win32','x64'),default='x64');parser.add_argument('--generator');parser.add_argument('--reference-ref');args=parser.parse_args()
  if args.reference_ref and (os.name!='nt' or args.architecture!='Win32'):parser.error('Referencia sólo en Windows x86')

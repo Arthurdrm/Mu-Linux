@@ -614,8 +614,8 @@ extern "C" BOOL ChaosBoxRequestClose(void) {
     // ErrorMessage=143 is the local Chaos category selector layered over the
     // server-owned box.  It must not outlive a valid Chaos close request.
     // SetErrorMessage(0) pops only this layer and preserves any queued dialog.
-    if (ErrorMessage == 143) {
-        SetErrorMessage(0);
+    if (ErrorMessage == MESSAGE_SELECT_CHAOS) {
+        SetErrorMessage(MESSAGE_NONE);
     }
 
     s_ChaosBoxClosePending = TRUE;

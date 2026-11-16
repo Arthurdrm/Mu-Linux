@@ -1179,7 +1179,7 @@ void __fastcall CSQuest_ShowDialogText(int param_1)
         { *pbVar9++ = *pbVar6++; }
     }
 
-    SetErrorMessage(0);
+    SetErrorMessage(MESSAGE_NONE);
 }
 
 // Declaraciones adelantadas de los helpers definidos más abajo en este archivo

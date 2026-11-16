@@ -71,11 +71,11 @@ void UpdateWindowsMouse(void)
   gMiniMap.UpdateMouse();
   // DESVIACION (DLL Interface.cpp): captura el mouse del menú M.
   gMoveList.UpdateMouse();
-  if (ErrorMessage == 0x6e) {
+  if (ErrorMessage == MESSAGE_LOG_OUT) {
     return;
   }
   uVar1 = SecondPassword_Handler();
-  if (((((char)uVar1 != '\0') || (ErrorMessage != 0)) || (DAT_055c9b7c != 0)) || (DAT_055c9b80 != 0)
+  if (((((char)uVar1 != '\0') || (ErrorMessage != MESSAGE_NONE)) || (DAT_055c9b7c != 0)) || (DAT_055c9b80 != 0)
      ) {
     if (DAT_055c9b7c != *(int *)(DAT_055c9ff4 + 0x1c)) {
       return;

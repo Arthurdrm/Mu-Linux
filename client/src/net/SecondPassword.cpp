@@ -225,7 +225,7 @@ unsigned int __cdecl SecondPassword_Handler(void)
                             && DAT_07ea9814[1] == DAT_07ea9814[2]
                             && DAT_07ea9814[2] == DAT_07ea9814[3]) {
                 memset(DAT_07ea9814, 0, sizeof(DAT_07ea9814));
-                SetErrorMessage(136);
+                SetErrorMessage(MESSAGE_STORAGE_PASSWORD_TOO_SIMPLE);
             } else {
                 const int mode = (int)DAT_07eaa14c;
                 DAT_07eaa14c = 0;
@@ -243,7 +243,7 @@ unsigned int __cdecl SecondPassword_Handler(void)
                         *(unsigned short*)&DAT_07eaa150 = pw;   // conserva el BYTE 2 (reparar)
                         DAT_07eaa14c = 2;                       // ahora el codigo personal
                     } else {
-                        SetErrorMessage(137);                   // no coinciden
+                        SetErrorMessage(MESSAGE_STORAGE_PASSWORD_NOT_MATCH);                   // no coinciden
                     }
                 } else if (mode == 6) {
                     const BYTE closePkt[3] = { 0xC1, 0x03, 0x31 };

@@ -758,6 +758,8 @@ extern int     LoginSubState; // IDA: DAT_083a7c14 (0x083A7C14)
 extern DWORD   DAT_083a7c18;
 extern DWORD   DAT_083a7c1c;
 extern DWORD   DAT_083a7c20;
+// Valores de ErrorMessage / NextErrorMessage: enum DialogMessage.
+#include "ui/DialogMessage.h"
 extern DWORD   ErrorMessage;  // IDA: ErrorMessage (0x083A7C24) - secondary in-game UI state machine
 extern DWORD   NextErrorMessage;  // IDA: NextErrorMessage (0x083A7C28) - queued next UI state (applied at end of tick)
 // Chaos Machine category selected by the local ErrorMessage=143 modal:

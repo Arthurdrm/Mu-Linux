@@ -134,8 +134,8 @@ void CNetwork::OnSocketEvent(WORD evt, WORD err)
             CurrentProtocolState = 0;
             LoginSubState = 0;
             DAT_083a7c44 = 0;
-            ErrorMessage = 0;
-            NextErrorMessage = 0;
+            ErrorMessage = MESSAGE_NONE;
+            NextErrorMessage = MESSAGE_NONE;
             ServerSelectHi = -1;
             ServerSelectLo = -1;
             if (m_HasConnectServer) {

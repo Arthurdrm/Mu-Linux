@@ -245,7 +245,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
             // ErrorMessage 126/152 está capturando un Personal Code; en esos
             // casos el input no puede abrir ni enviar chat.
             const bool guildDeleteCodeDialog =
-                ErrorMessage == 126 || ErrorMessage == 152;
+                ErrorMessage == MESSAGE_DELETE_GUILD || ErrorMessage == MESSAGE_LOCK_STORAGE;
             if (SceneFlag == 5 && GuildInputEnable == 0 && !guildDeleteCodeDialog) {
                 bool empty = (lens[slot] == 0);
                 if (empty) {
@@ -316,7 +316,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
         // (el diálogo de zen del baúl abre con InputEnable=0 + GoldInputEnable=1,
         // sub_4EB5D0) y con GoldInputEnable sólo se aceptan dígitos '0'..'9'.
         const bool guildDeleteCodeDialog =
-            ErrorMessage == 126 || ErrorMessage == 152;
+            ErrorMessage == MESSAGE_DELETE_GUILD || ErrorMessage == MESSAGE_LOCK_STORAGE;
         if (InputEnable || GoldInputEnable || GuildInputEnable || guildDeleteCodeDialog) {
             // DESVIACION (Fase 4): Ctrl+V pega el portapapeles carácter por
             // carácter, con los mismos filtros y topes que el tipeo.

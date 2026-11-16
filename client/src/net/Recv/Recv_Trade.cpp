@@ -35,7 +35,7 @@ void ReceiveTradeExit97k(const BYTE* Msg, int Size)
         UIChatLogWindow_AddText(nullptr, GlobalText[495], 2);
     } else if (state == 3) {
         UIChatLogWindow_AddText(nullptr, GlobalText[496], 2);
-        SetErrorMessage(0);
+        SetErrorMessage(MESSAGE_NONE);
     }
     // ReceiveTradeExit (IDA 0x4337F0) solo maneja los estados 0, 2 y 3.  Un
     // `state == 4` con GlobalText[2108] seria de una version posterior (indice
@@ -59,8 +59,8 @@ void ReceiveTradeExit97k(const BYTE* Msg, int Size)
     InventoryOpened = 0;   // InventoryOpened (IDA ReceiveTradeExit: cierra el inventario)
     CloseInventoryRelatedWindows();
 
-    if (ErrorMessage == 116) {
-        SetErrorMessage(0);
+    if (ErrorMessage == MESSAGE_INPUT_GOLD) {
+        SetErrorMessage(MESSAGE_NONE);
         ClearInput(0);
         _InputTextMaxArr[0] = 42;
         InputNumber = 2;
@@ -76,7 +76,7 @@ void NetRecv_36(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // MuEmu conserva ese nombre, aunque use C3 en la notificación al destinatario.
     if (Size < 3 + (int)NetText::CharacterNameSize) return;
     NetText::FromServer(DAT_07ea9834, sizeof(DAT_07ea9834), Msg + 3, NetText::CharacterNameSize);
-    SetErrorMessage(121);
+    SetErrorMessage(MESSAGE_TRADE);
     NetLog("NET: -> 0x36 TradeRequest name=%s", DAT_07ea9834);
 }
 

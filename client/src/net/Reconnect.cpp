@@ -83,7 +83,7 @@ bool CReconnect::OnConnectionLost()
 void CReconnect::GiveUp()
 {
     m_Status = STATUS_DISCONNECT;
-    ErrorMessage = 0;   // ErrorMessage
+    ErrorMessage = MESSAGE_NONE;   // ErrorMessage
     if (Platform::GetSocket().IsOpen(SocketClientSocket)) {
         Platform::GetSocket().Close((SOCKET)SocketClientSocket);
         SocketClientSocket = static_cast<SOCKET>(Platform::InvalidSocket);
@@ -177,7 +177,7 @@ void CReconnect::OnCharacterInfo()
 {
     if (m_Status != STATUS_RECONNECT) return;
     m_Status = STATUS_NONE;
-    ErrorMessage = 0;   // ErrorMessage
+    ErrorMessage = MESSAGE_NONE;   // ErrorMessage
     DbgLogPublic("Reconnect: de vuelta en el juego");
 }
 

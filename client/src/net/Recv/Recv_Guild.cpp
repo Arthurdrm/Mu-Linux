@@ -146,7 +146,7 @@ void ReceiveDeclareWar97k(const BYTE* packet, int size)
     NetText::FromServer(GuildWarName, sizeof(message.GuildName) + 1, message.GuildName, sizeof(message.GuildName));
     // DESVIACION DLL: GCGuildWarDeclareRecv asigna ambos tipos, sin heredar soccer.
     EnableSoccer = (message.type == 1);
-    SetErrorMessage(128);
+    SetErrorMessage(MESSAGE_GUILD_WAR);
 }
 
 void ReceiveDeclareWarResult97k(const BYTE* packet, int size)
@@ -298,7 +298,7 @@ void NetRecv_50(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // C1:41 de party. Mantener este estado aislado de los pedidos de party.
     if (Size < 5) return;
     GuildPlayerKey = (DWORD)((Msg[3] << 8) | Msg[4]);
-    SetErrorMessage(119);
+    SetErrorMessage(MESSAGE_GUILD);
     NetLog("NET: -> 0x50 GuildRequest inviter=%u",
            (unsigned)GuildPlayerKey);
 }
@@ -313,7 +313,7 @@ void NetRecv_51(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     const BYTE result = Msg[3];
     if (result < _countof(textIndex))
         UIChatLogWindow_AddText(nullptr, GlobalText[textIndex[result]], 2);
-    SetErrorMessage(0);
+    SetErrorMessage(MESSAGE_NONE);
     NetLog("NET: -> 0x51 GuildResult result=%u", (unsigned)result);
 }
 

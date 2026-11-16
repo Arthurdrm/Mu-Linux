@@ -476,7 +476,7 @@ void Guild_SetTargetPos(BYTE* pkt)
 void Guild_JoinToggle(BYTE* pkt)
 {
     if (pkt[3] == 0)
-        SetErrorMessage(0x90);
+        SetErrorMessage(MESSAGE_SERVER_IMMIGRATION_RESIDENT);
     else if (pkt[3] == 1)
-        SetErrorMessage(0x91);
+        SetErrorMessage(MESSAGE_SERVER_IMMIGRATION_DB);
 }

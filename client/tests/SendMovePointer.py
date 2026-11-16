@@ -6,7 +6,7 @@ import sys
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from legacy_fields import lower, lower_names
 from GatePointer import PREAMBLE
-from SceneObjectPointer import build_and_run,function,read_source
+from SceneObjectPointer import build_and_run,function,read_source,dialog_messages
 SERVICES=r'''
 using std::uintptr_t;
 #pragma pack(push,1)
@@ -51,7 +51,7 @@ int main(){for(int i=0;i<32;++i)CNetwork::XorKey[i]=BYTE(i*53+19);auto* low=stat
 def harness(revision=None):
  body=lower_names(function(read_source('src/game/combat/Combat.cpp',revision),'Combat_SendMovePathPacket'))
  call='Combat_SendMovePathPacket(reinterpret_cast<CHARACTER*>(actor),reinterpret_cast<OBJECT*>(object))' if not revision else 'Combat_SendMovePathPacket(static_cast<int>(reinterpret_cast<uintptr_t>(actor)),static_cast<int>(reinterpret_cast<uintptr_t>(object)))'
- return PREAMBLE.split('char DAT_00559bb4',1)[0]+SERVICES+body+'\nvoid Invoke(BYTE* actor,BYTE* object){'+call+';}\n'+MAIN
+ return PREAMBLE.split('char DAT_00559bb4',1)[0]+dialog_messages(revision)+SERVICES+body+'\nvoid Invoke(BYTE* actor,BYTE* object){'+call+';}\n'+MAIN
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--architecture',choices=('Win32','x64'),default='x64');p.add_argument('--generator');p.add_argument('--reference-ref');args=p.parse_args()

@@ -131,12 +131,12 @@ void __cdecl UI_InGameMenu(void)
     int escHit = PressKey(27);  // PressKey(27)
     if (escHit && !EquipmentItem) {            // EquipmentItem
         if (ErrorMessage) {                   // ErrorMessage
-            if (ErrorMessage == 110 || ErrorMessage == 150) {
+            if (ErrorMessage == MESSAGE_LOG_OUT || ErrorMessage == MESSAGE_OPTIONS) {
                 ErrorMessage = NextErrorMessage;  // ErrorMessage = NextErrorMessage
-                NextErrorMessage = 0;
+                NextErrorMessage = MESSAGE_NONE;
             }
         } else {
-            ErrorMessage = 110;
+            ErrorMessage = MESSAGE_LOG_OUT;
             if ((int)pPickedItemKey > 0) Item_ReturnPickedItem();
         }
         state = ErrorMessage;
@@ -181,10 +181,10 @@ void __cdecl UI_InGameMenu(void)
     // cartel y SOLO hace SendMessageA(WM_DESTROY) cuando hacés click en el botón
     // OK (rect 284-354 × 98-119) — no cierra directo. El cartel persiste hasta
     // el click.
-    case 0x1a:
-    case 0x1c:
-    case 0x70:
-    case 0x71:
+    case MESSAGE_LOGIN_VERSION:
+    case MESSAGE_LOGIN_TOO_MANY_ATTEMPTS:
+    case MESSAGE_VERSION:
+    case MESSAGE_SERVER_LOST:
     {
         // OK vía click en el botón (284-354 × 98-119) O tecla Enter
         // (DAT_055ca038). Consumimos el flag de Enter para que el login-trigger
@@ -197,7 +197,7 @@ void __cdecl UI_InGameMenu(void)
             DAT_055ca038 = '\0';                     // consume Enter
             gWindow.RequestCloseApplication();  // cierra el cliente
             ErrorMessage = NextErrorMessage;             // ErrorMessage = NextErrorMessage
-            NextErrorMessage = 0;
+            NextErrorMessage = MESSAGE_NONE;
         }
         return;   // persiste hasta OK (click o Enter)
     }
@@ -214,7 +214,7 @@ void __cdecl UI_InGameMenu(void)
     // según g_GameState — case 0 siempre Exit, case 1 Options(login)|JoinServer(cs/in),
     // case 2 Close(login)|Options(cs)|JoinChar(in), case 3 Close(cs)|Options(in),
     // case 4 Close(in).
-    case 0x6e:
+    case MESSAGE_LOG_OUT:
     {
         if (mouseX >= gWindow.PanelOrigin(Ui::Menu) - 1 && mouseX < gWindow.PanelOrigin(Ui::Menu) + Ui::Menu.width && IsClickPushed())
         {
@@ -305,7 +305,7 @@ void __cdecl UI_InGameMenu(void)
                             }
                         } else if (SceneFlag == 2) {
                             // Login: case 1 = Options
-                            NextErrorMessage = 0x96;
+                            NextErrorMessage = MESSAGE_OPTIONS;
                         }
                     }
                     break;
@@ -340,20 +340,20 @@ void __cdecl UI_InGameMenu(void)
                             // que Recv_LogOut maneje todo cuando llegue el ack.
                         } else if (SceneFlag == 4) {
                             // Char-select: case 2 = Options
-                            NextErrorMessage = 0x96;
+                            NextErrorMessage = MESSAGE_OPTIONS;
                         } else {
                             // Login: case 2 = Close
-                            NextErrorMessage = 0;
+                            NextErrorMessage = MESSAGE_NONE;
                         }
                     }
                     break;
 
                     case 3:  // Opciones → abre submenú 0x96
-                        NextErrorMessage = 0x96;
+                        NextErrorMessage = MESSAGE_OPTIONS;
                         break;
 
                     case 4:  // Cancelar → cerrar menú
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         break;
                     }
                     goto tail;
@@ -369,7 +369,7 @@ void __cdecl UI_InGameMenu(void)
     // nivel < 40, con InputText[0] capturando el codigo personal.
     // IDA UI_InGameMenu L1383: el 114 comparte el gate de 126/152 (LABEL_494),
     // Si = [323,363) -> sub_513C10; No = [373,413) o Esc -> L2183.
-    case 0x72:
+    case MESSAGE_DELETE_CHARACTER:
     {
         const bool yes = mouseX >= 323 && mouseX < 363 &&
                          mouseY >= 98 && mouseY < 119 && IsClickPushed();
@@ -422,7 +422,7 @@ void __cdecl UI_InGameMenu(void)
     //   1 = sacar zen del baúl         (sub_4EB5D0 case 1)
     //   2 = poner zen en el trade      (sub_4EB7F0)
     // Warehouse: C1:81 [type][money:4]. Trade: C1:3A [padding][money:4].
-    case 0x74:
+    case MESSAGE_INPUT_GOLD:
     {
         bool enterHit = (DAT_055ca038 != '\0');
         if (!enterHit) return;          // el cartel persiste hasta Enter
@@ -436,8 +436,8 @@ void __cdecl UI_InGameMenu(void)
             (unsigned long long)gold > (unsigned long long)m_nMyTradeGold +
                 *(DWORD*)((BYTE*)CharacterMachine + 1352);
         if (invalidGold || insufficientTradeGold) {
-            ErrorMessage = invalidGold ? 118 : 117;
-            NextErrorMessage = 0;
+            ErrorMessage = invalidGold ? MESSAGE_OVERFLOW_GOLD : MESSAGE_NOT_ENOUGH_GOLD;
+            NextErrorMessage = MESSAGE_NONE;
             ClearInput(0);
             Input_SetLimit(0, (int)NetText::ChatMessageSize - 1, 42);   // InputTextMax[0]
             InputNumber = 2;           // InputNumber
@@ -493,7 +493,7 @@ void __cdecl UI_InGameMenu(void)
     // Guild invitation (ProtocolCore 0x50 -> ErrorMessage 119). The source
     // client emits PMSG_GUILD_RESULT_RECV C1:51 with the original inviter key.
     // Button geometry is the standard two-button dialog: left=yes, right=no.
-    case 0x77:
+    case MESSAGE_GUILD:
     {
         const bool yes = mouseX >= 234 && mouseX < 304 &&
                          mouseY >= 98 && mouseY < 119 && IsClickPushed();
@@ -517,7 +517,7 @@ void __cdecl UI_InGameMenu(void)
     }
 
     // ── 121 — responder una solicitud de Trade ────────────────────────────
-    case 0x79:
+    case MESSAGE_TRADE:
     {
         // IDA: ProtocolCore 0x43B32D abre ErrorMessage 121 y RenderErrorMessage
         // 0x51C940 usa DAT_07EA9834 para el texto visible. MuEmu conserva el
@@ -560,7 +560,7 @@ void __cdecl UI_InGameMenu(void)
     // El original hace el XOR en dos pasadas porque appendea el PersonalCode
     // después; como la cadena es secuencial y los rangos son disjuntos y
     // contiguos, una sola pasada da el mismo resultado.
-    case 0x7e:
+    case MESSAGE_DELETE_GUILD:
     {
         // Gate de botones.  IDA L2142-2168: para ErrorMessage 126 y 152 los dos
         // botones NO están en el rect estándar (234/334) sino corridos:
@@ -607,10 +607,10 @@ void __cdecl UI_InGameMenu(void)
     // 140, 141 (CreateDialogInterface, con paginas) y 154.  No cerrarlos con un
     // `goto tail` incondicional: `tail` hace ErrorMessage = NextErrorMessage y el
     // cartel se cerraria en el primer frame.
-    case 0x8b:
-    case 0x8c:
-    case 0x8d:
-    case 0x9a:
+    case MESSAGE_CUSTOM:
+    case MESSAGE_DEVIL_SQUARE_RANK:
+    case MESSAGE_DIALOG_INTERFACE:
+    case MESSAGE_BLOOD_CASTLE_RESULT:
     {
         // Hover de los dos botones de DAT_083a42f8 (5 ints: estado, x, y, w, h).
         int  clicked = -1;
@@ -633,7 +633,7 @@ void __cdecl UI_InGameMenu(void)
         }
         MouseLButtonPush = push ? 1 : 0;                     // MouseLButtonPush
 
-        if (state == 0x8d) {
+        if (state == MESSAGE_DIALOG_INTERFACE) {
             int page = -1;
             if (mouseX >= 249 && mouseY >= 202 && mouseX <= 264 && mouseY <= 222 && MouseLButtonPush) {
                 page = (int)(signed char)(BYTE)DAT_083a7c08 - 1;
@@ -661,7 +661,7 @@ void __cdecl UI_InGameMenu(void)
         }
         MouseUpdateTimeMax = 6;                                // MouseUpdateTimeMax
         ErrorMessage = NextErrorMessage;                     // ErrorMessage = NextErrorMessage
-        NextErrorMessage = 0;
+        NextErrorMessage = MESSAGE_NONE;
         MouseUpdateTime = 0;                                // MouseUpdateTime
         PlayBuffer(0x19, 0, 0);
         return;
@@ -678,7 +678,7 @@ void __cdecl UI_InGameMenu(void)
     //   v351 = v350 + 18 * g_iNumLineMessageBoxCustom;
     //   answer_idx = (mouseY - v351) / 18 if mouseY in [v351..v351+18*g_iNumAnswer)
     //   AND |556 - mouseX| <= 106 AND clicked.
-    case 0x8e:
+    case MESSAGE_DIALOG:
     {
         if (!IsClickPushed()) goto tail;
         int numAnswer = g_iNumAnswer;
@@ -712,11 +712,11 @@ void __cdecl UI_InGameMenu(void)
 
                     if (link < 0) {
                         int prev = (int)NextErrorMessage;      // NextErrorMessage
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         ErrorMessage = (DWORD)prev;        // ErrorMessage
                     } else {
                         ErrorMessage = NextErrorMessage;
-                        NextErrorMessage = 0;
+                        NextErrorMessage = MESSAGE_NONE;
                         ItemList_Select(link);
                     }
                 }
@@ -732,7 +732,7 @@ void __cdecl UI_InGameMenu(void)
     // paquete ni decide una receta; sólo guarda la categoría elegida en
     // DAT_083a7c2c (0=general, 1=arma chaos) y cierra el modal.  La receta
     // efectiva se sigue derivando de la Chaos Box en Inventory_DropDispatch.
-    case 0x8f:
+    case MESSAGE_SELECT_CHAOS:
     {
         if (!IsClickPushed()) return;
 
@@ -746,7 +746,7 @@ void __cdecl UI_InGameMenu(void)
         MouseLButtonPush = 0;
         DAT_083a7c2c = (DWORD)choice;
         ErrorMessage = NextErrorMessage;
-        NextErrorMessage = 0;
+        NextErrorMessage = MESSAGE_NONE;
         MouseUpdateTime = 0;
         MouseUpdateTimeMax = 6;
         PlayBuffer(0x19, 0, 0);
@@ -757,7 +757,7 @@ void __cdecl UI_InGameMenu(void)
     // IDA 0x00514310 case 150: 4 botones (volver, ataque automático, susurros,
     // cerrar).  DESVIACION (DLL OptionsMenu, hook 0x00515954): lo atiende el menú
     // expandido; un click fuera de él se descarta, como hacía el DLL.
-    case 0x96:
+    case MESSAGE_OPTIONS:
         if (!gOptionsMenu.UpdateMouse()) {
             MouseLButton = 0;   // MouseLButton
             MouseLButtonPush = 0;   // MouseLButtonPush
@@ -772,7 +772,7 @@ void __cdecl UI_InGameMenu(void)
     // Yes=btn0 id1, No=btn1 id3, render en +213/+100) y seteo de
     // DAT_00559f5e = 1 (Yes) / 2 (No), que el drop-dispatcher
     // (Inventory_DropDispatch) consume para enviar/cancelar el sell.
-    case 0x97:
+    case MESSAGE_ITEM_CHECK:
     {
         int clickResult[2] = { -1, -1 };
         int* rect = (int*)&DAT_083a42f8;     // &id del botón 0
@@ -792,7 +792,7 @@ void __cdecl UI_InGameMenu(void)
         if (clickResult[0] == 0 || clickResult[1] == 1) {
             DAT_00559f5e = (clickResult[1] == 1) ? (char)2 : (char)1;  // No=2, Yes=1
             ErrorMessage = NextErrorMessage;     // ErrorMessage = NextErrorMessage
-            NextErrorMessage = 0;
+            NextErrorMessage = MESSAGE_NONE;
             PlayBuffer(0x19, 0, 0);        // PlayBuffer(25)
         }
         return;
@@ -802,7 +802,7 @@ void __cdecl UI_InGameMenu(void)
     // Party invitation (ErrorMessage 120).  UI_InGameMenu @ 00514310
     // sends C3(C1:06:41:01:key) for the primary button and the plain
     // C1:06:41:00:key form when Escape/secondary cancel is used.
-    case 120:
+    case MESSAGE_PARTY:
     {
         const bool accept = mouseX >= 234 && mouseX < 304 &&
                             mouseY >= 98  && mouseY < 119 && IsClickPushed();
@@ -827,7 +827,7 @@ void __cdecl UI_InGameMenu(void)
 
         MouseLButtonPush = 0;
         ErrorMessage = NextErrorMessage;
-        NextErrorMessage = 0;
+        NextErrorMessage = MESSAGE_NONE;
         PlayBuffer(0x19, 0, 0);
         return;
     }
@@ -836,7 +836,7 @@ void __cdecl UI_InGameMenu(void)
     // C1:04:61:01 or C1:04:61:00 and then clears the local pending-war state.
     // MuEmu receives this as PMSG_GUILD_WAR_REQUEST_RESULT_RECV; its packet
     // policy marks opcode 0x61 as Encrypt=0, so this must stay on the C1 path.
-    case 128:
+    case MESSAGE_GUILD_WAR:
     {
         const bool accept = mouseX >= 234 && mouseX < 304 &&
                             mouseY >= 98  && mouseY < 119 && IsClickPushed();
@@ -860,7 +860,7 @@ void __cdecl UI_InGameMenu(void)
     // [C1][16][83][type=1][WORD password][PersonalCode:10] (MuEmu Warehouse.h:19)
     // con password = atoi(dword_7EA9814); despues limpia InputText[0].
     // No = [373,413) o Esc -> solo limpia el input (L2706).
-    case 0x98:
+    case MESSAGE_LOCK_STORAGE:
     {
         const bool yes = mouseX >= 323 && mouseX < 363 &&
                          mouseY >= 98 && mouseY < 119 && IsClickPushed();
@@ -896,7 +896,7 @@ void __cdecl UI_InGameMenu(void)
     //
     // Lo abre `InventoryGrid_Tick` con ShowCheckBox(1, 376, 153) al hacer click
     // derecho sobre el item 431 (Fruit) con Level >= 10.
-    case 0x99:
+    case MESSAGE_USE_STATE:
     {
         // Los descriptores de los botones viven en DAT_083a42f8: 2 entradas de
         // 5 ints ([0]=bitmapId [1]=x [2]=y [3]=w [4]=h) que ShowCheckBox llena
@@ -990,7 +990,7 @@ void __cdecl UI_InGameMenu(void)
                 DAT_055ca038 = '\0';  // consume Enter
                 // IDA L1786 `case 144`: igual que el default, mas sub_4E9250(6)
                 // (re-baraja el teclado del segundo password, modo 6).
-                if (state == 0x90)
+                if (state == MESSAGE_SERVER_IMMIGRATION_RESIDENT)
                     SecondPassword_Shuffle(6);
                 goto tail;            // dismiss: shift ErrorMessage + PlayBuffer(25)
             }
@@ -1010,7 +1010,7 @@ void __cdecl UI_InGameMenu(void)
         //  switch los resuelve y sale por `tail`.  Ademas mandaban paquetes que
         //  no son los del binario: 0x36 para el 119 y 0x30 para el 121.)
 
-        case 0x7e:
+        case MESSAGE_DELETE_GUILD:
             memset(InputText, 0, 0x100);
             InputLength[0] = 0;
             // IDA consume MouseLButtonPush al cancelar. Estos dos latches son
@@ -1029,7 +1029,7 @@ tail:
     // ── Apply queued state transition ────────────────────────────────────
     // Pattern: ErrorMessage = NextErrorMessage; NextErrorMessage = 0
     ErrorMessage  = NextErrorMessage;
-    NextErrorMessage  = 0;
+    NextErrorMessage  = MESSAGE_NONE;
     MouseUpdateTime  = 0;
     MouseUpdateTimeMax  = 6;
     PlayBuffer(0x19, 0, 0);

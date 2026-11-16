@@ -48,7 +48,7 @@ void Recv_JoinServer(const BYTE* Msg, int Size)
     if (Msg[4] == 1 && serverProtocol != MU_PROTOCOL_VERSION) {
         NetLog("NET:    JoinServer: el server usa el protocolo %d y el cliente el %d, no se hace login",
                serverProtocol, (int)MU_PROTOCOL_VERSION);
-        SetErrorMessage(0x1a);
+        SetErrorMessage(MESSAGE_LOGIN_VERSION);
         return;
     }
     if (Msg[4] == 1) {
@@ -76,7 +76,7 @@ void Recv_JoinServer(const BYTE* Msg, int Size)
         gReconnect.OnJoinServer();   // DESVIACION: la reconexión reenvía el login
     } else {
         NetLog("NET:    JoinServer FAIL code=%d → SetErrorMessage(113)", Msg[4]);
-        SetErrorMessage(113);        // "Connecting error"
+        SetErrorMessage(MESSAGE_SERVER_LOST);        // "Connecting error"
     }
     // Version sanity: bytes 7..11 deben ser Version[i]-i-1. No bloqueante.
 }
@@ -91,24 +91,24 @@ void Recv_LoginResult(const BYTE* Msg)
     if (gReconnect.OnLoginResult(Msg[4])) return;
     DWORD state;
     switch (Msg[4]) {
-        case 0x00: state = 21; break;
+        case 0x00: state = MESSAGE_LOGIN_WRONG_PASSWORD; break;
         case 0x01: state = 20; break;   // LogIn success → LogIn=2, CheckHack
-        case 0x02: state = 22; break;
-        case 0x03: state = 23; break;
-        case 0x04: state = 24; break;
-        case 0x05: state = 25; break;
-        case 0x06: state = 26; break;   // version mismatch
-        case 0x08: state = 28; break;
-        case 0x09: state = 37; break;
-        case 0x0A: state = 29; break;
-        case 0x0B: state = 30; break;
-        case 0x0C: state = 31; break;
-        case 0x0D: state = 32; break;
-        case 0x11: state = 38; break;
-        case 0xC0: case 0xD0: state = 34; break;
-        case 0xC1: case 0xD1: state = 35; break;
-        case 0xC2: case 0xD2: state = 36; break;
-        default:   state = 27; break;
+        case 0x02: state = MESSAGE_LOGIN_INVALID_ACCOUNT; break;
+        case 0x03: state = MESSAGE_LOGIN_ALREADY_CONNECTED; break;
+        case 0x04: state = MESSAGE_LOGIN_SERVER_FULL; break;
+        case 0x05: state = MESSAGE_LOGIN_BLOCKED; break;
+        case 0x06: state = MESSAGE_LOGIN_VERSION; break;   // version mismatch
+        case 0x08: state = MESSAGE_LOGIN_TOO_MANY_ATTEMPTS; break;
+        case 0x09: state = MESSAGE_LOGIN_NO_BILLING; break;
+        case 0x0A: state = MESSAGE_LOGIN_SUBSCRIPTION_TERM; break;
+        case 0x0B: state = MESSAGE_LOGIN_SUBSCRIPTION_TIME; break;
+        case 0x0C: state = MESSAGE_LOGIN_IP_TERM; break;
+        case 0x0D: state = MESSAGE_LOGIN_IP_TIME; break;
+        case 0x11: state = MESSAGE_LOGIN_AGE_RESTRICTED; break;
+        case 0xC0: case 0xD0: state = MESSAGE_LOGIN_POINT_NO_DATES; break;
+        case 0xC1: case 0xD1: state = MESSAGE_LOGIN_POINT_NO_POINTS; break;
+        case 0xC2: case 0xD2: state = MESSAGE_LOGIN_IP_NOT_ALLOWED; break;
+        default:   state = MESSAGE_LOGIN_CONNECTION_ERROR; break;
     }
     CurrentProtocolState = state;
     LoginSubState = 3;

@@ -168,9 +168,7 @@ tests/SpecialObjectPointer.py --generator Ninja
 tests/AmbientHeroPointer.py --generator Ninja
 tests/AmbientFishPointer.py --generator Ninja
 tests/EquipmentOwnerPointer.py --generator Ninja
-tests/SceneAnimationGuardPointer.py --generator Ninja
-tests/SceneTypeSelectors.py --generator Ninja
-tests/SceneNumericRemainders.py --generator Ninja
+tests/SpawnEffectsReplay.py --generator Ninja
 tests/SendMovePointer.py --generator Ninja
 tests/BMDPathPointers.py --generator Ninja
 tests/HashBackingPointers.py --generator Ninja

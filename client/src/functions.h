@@ -511,7 +511,7 @@ void  __cdecl Draw_RenderObject(void *, int, int, char); // Entity_SetupGL
 
 // ── Entity render pipeline ────────────────────────────────────────────────────
 void Entity_PrepareRender(void *entity, int slot, int flag, char mode);  // IDA: Entity_PrepareRender (0x004FC030) — firma identica a Render/Entity_PrepareRender.h
-float* __cdecl Entity_SpawnEffects(intptr_t entity); // IDA: Entity_SpawnEffects (0x004FC070)
+void  __cdecl Entity_SpawnEffects(intptr_t entity); // IDA: Entity_SpawnEffects (0x004FC070)
 void  __cdecl Terrain_Render(void);              // Terrain_Render
 void *__cdecl CreateObject(int type, float *world_pos, float *target_pos, float extra); // IDA: CreateObject (0x004FF5A0)
 void *__cdecl Entity_InitRenderState(void *entity);                           // Entity_InitRenderState

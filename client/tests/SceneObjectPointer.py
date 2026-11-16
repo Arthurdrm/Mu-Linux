@@ -40,6 +40,24 @@ def dialog_messages(revision=None):
     return text.replace("#pragma once", "") + "\n"
 
 
+def object_creation_module(revision=None):
+    # S13: CreateObject delega los valores por mapa en WorldObject_Behavior.cpp.
+    # Devuelve las declaraciones del header y la sección de creación del módulo,
+    # o "" en las revisiones que no lo tienen.
+    try:
+        header = read_source("src/scenes/WorldObject_Behavior.h", revision)
+        module = read_source("src/scenes/WorldObject_Behavior.cpp", revision)
+    except Exception:
+        return ""
+    marker = "// Creación: valores iniciales por mapa y tipo"
+    if marker not in module:
+        return ""
+    header = "\n".join(line for line in header.split("\n")
+                       if not line.startswith("#") and "struct OBJECT;" not in line
+                       and "WorldObject_PerMapTick" not in line)
+    return header + "\n// " + module[module.index(marker):] + "\n"
+
+
 def index_any(source, needles, start=0):
     # La primera de las variantes que aparezca: literal (revisión vieja) o nombre.
     for needle in needles:
@@ -264,6 +282,8 @@ def harness(revision=None):
         behavior = None
     if behavior is not None:
         flames = behavior[behavior.index("namespace {"):]
+        # La sección de creación (S13) no la usa este harness.
+        flames = flames.split("// ═", 1)[0]
     else:
         start = scene.index("struct SceneFlamePreset {")
         end = scene.index("} // namespace", start)

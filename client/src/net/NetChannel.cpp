@@ -194,6 +194,8 @@ int PendingPlain() { return (int)s_Plain.size(); }
 
 bool IsSecure() { return s_Secure && s_Channel.IsReady(); }
 
+bool IsPlain() { return !s_Secure; }
+
 bool IsQueued(const char* data)
 {
     return data >= SocketClientSendBuffer && data < SocketClientSendBuffer + kQueueSize;

@@ -17,6 +17,7 @@
 #include "app/config/UserSettings.h"
 #include "net/HWID.h"
 #include "assets/data/ContentCatalog.h"
+#include "net/ContentSync.h"
 #include "net/Protocol/ProtocolVersion.h"
 
 // IDA: FUN_00433A80 ReceiveGGAuth. Pertenece al flujo de protocolo/autenticación,
@@ -377,6 +378,12 @@ void NetRecv_F4(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         case 0x05:
             NetLog("NET:  → F4/05 BackToConnecting");
             Recv_BackToConnecting();
+            break;
+        case 0x11:   // manifiesto del contenido (sincronización de la intro)
+            ContentSync::OnManifest(Msg, Size);
+            break;
+        case 0x13:   // pedazo de un archivo del contenido
+            ContentSync::OnFile(Msg, Size);
             break;
         default:
             NetLog("NET:  → F4/%02X unhandled", sub);

@@ -236,6 +236,8 @@
     <ClInclude Include="src\game\core\HeroVitals.h" />
     <ClInclude Include="src\net\Network.h" />
     <ClInclude Include="src\net\NetChannel.h" />
+    <ClInclude Include="src\net\ContentSync.h" />
+    <ClInclude Include="src\net\ContentSyncCore.h" />
     <ClInclude Include="src\net\SecureChannel.h" />
     <ClInclude Include="src\net\crypto\SecureRandom.h" />
     <ClInclude Include="src\net\ServerTrust.h" />
@@ -403,6 +405,10 @@
     <ClCompile Include="src\platform\Win32\ClientWndProc.cpp" />
     <ClCompile Include="src\net\Network.cpp" />
     <ClCompile Include="src\net\NetChannel.cpp" />
+    <ClCompile Include="src\net\ContentSync.cpp" />
+    <ClCompile Include="src\net\ContentSyncCore.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\net\SecureChannel.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>

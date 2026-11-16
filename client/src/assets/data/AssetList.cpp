@@ -126,11 +126,17 @@ void Apply(const Asset& asset)
     }
 }
 
+std::map<std::string, Sections> files;   // archivos ya leídos
+
 } // namespace
+
+void AssetList_ClearCache()
+{
+    files.clear();
+}
 
 void AssetList_Load(const char* file, const char* section)
 {
-    static std::map<std::string, Sections> files;
     auto found = files.find(file);
     if (found == files.end()) found = files.emplace(file, Read(file)).first;
     const auto entries = found->second.find(section);

@@ -119,6 +119,7 @@
 #include "assets/data/AssetList.h"
 #include "render/Gfx.h"
 #include "scenes/Scene_Intro.h"
+#include "net/ContentSync.h"
 
 // Debug trace (defined in WinMain.cpp)
 
@@ -143,17 +144,29 @@ void __cdecl Scene_Intro(HDC param_1)
     DWORD       stack_ec;   // local hash-compare buffer (4 bytes at EBP-0x14)
     DWORD       stack_e8;   // local hash-compare buffer (4 bytes at EBP-0x18)
 
-    // Reset Bitmaps table (stride 0x38, ~1414 entries = 0x13D30 bytes)
-    for (int i = 0; i < 0x13D30 / 0x38; ++i) {
-        Bitmaps[i].Ref = 0;
-        Bitmaps[i].Buffer = nullptr;
+    // DESVIACION (sincronización del contenido): el original muestra el logo un
+    // solo frame.  Acá se queda mientras el cliente sincroniza los .toml con el
+    // ConnectServer (net/ContentSync.h): lo de abajo corre sólo la primera vez y
+    // el dibujo se repite en cada frame hasta que termina.
+    static bool s_Started = false;
+    if (!s_Started) {
+        s_Started = true;
+
+        // Reset Bitmaps table (stride 0x38, ~1414 entries = 0x13D30 bytes)
+        for (int i = 0; i < 0x13D30 / 0x38; ++i) {
+            Bitmaps[i].Ref = 0;
+            Bitmaps[i].Buffer = nullptr;
+        }
+
+        OpenFont();    // World_Init
+        ClearInput(1);   // CharList_Init(1)
+
+        // Load splash textures
+        TextureList_Load("intro");   // Content/interface/textures.toml [intro]
+
+        if (DAT_083a410c == '\0')
+            ContentSync::Start();
     }
-
-    OpenFont();    // World_Init
-    ClearInput(1);   // CharList_Init(1)
-
-    // Load splash textures
-    TextureList_Load("intro");   // Content/interface/textures.toml [intro]
 
     FogEnable = 0;
     // Nota: el iTitle.wav (id 4) lo dispara el original con PlayBuffer(4,...)
@@ -191,6 +204,10 @@ void __cdecl Scene_Intro(HDC param_1)
     GL_PopMatrixAll();
     Gfx::Flush();
     gWindow.Present();
+
+    // Mientras sincroniza, el logo sigue en pantalla.
+    if (DAT_083a410c == '\0' && !ContentSync::Tick())
+        return;
 
     // Unload splash textures immediately after display
     UnloadImage(0xd);   // Texture_Unload(Everyone)

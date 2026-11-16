@@ -16,6 +16,10 @@
 
 #include "stdafx.h"
 #include "audio/SoundTable.h"
+#include "assets/model/MonsterModelTable.h"
+
+#include <cctype>
+#include <string>
 
 // IDA: Monster_Data_Load
 void __cdecl Monster_LoadStartupData(void)
@@ -151,369 +155,72 @@ LAB_0047d09b:
 }
 
 
-// OpenMonsterModel @ 0x005098c0
+// IDA: OpenMonsterModel (0x005098C0)
 //
-// Monster_SetupSoundAnim — registers sound and animation data for one
-// monster type (param_1 = monster index 0x00–0x3f).
+// Carga el modelo del monstruo de tipo Type en el slot 270 + Type y lo deja
+// listo para animar: velocidades y repetición de las acciones, los cinco
+// sonidos del modelo, el hueso de la cabeza y alguna textura extra.  Esos datos
+// salen de Content/monster/models.toml; los sonidos en sí, de [monster.N] en
+// Content/audio/sound/sounds.toml.
 //
-// Only runs when DAT_0055a7c4 == 0 (pre-load) OR when the monster has
-// no existing animations (sound/anim counts == 0).
-// Calls AccessModel to load the base monster script, then sets default
-// animation speeds and special flags in the animation block at
-// *(int*)(iVar2 + 0x30).
-// Sounds come from [monster.N] in Content/audio/sound/sounds.toml and
-// animation frame sets via Model_SetAnimationSlots.
-//
-// Globals:
-//   DAT_0055a7c4  — loader phase flag
-//   DAT_05828d58  — monster table base pointer
-
-/* WARNING: Globals starting with '_' overlap smaller symbols at the same address */
-
-void __cdecl OpenMonsterModel(int param_1)
-
+// Sólo carga si es la primera vez (DAT_0055a7c4 == 0) o si el modelo todavía no
+// tiene acciones ni mallas, y sólo arma el resto si el .bmd trajo mallas.
+// El orden es el del binario: velocidades por defecto, factor sobre las
+// acciones 0..5, velocidades propias del tipo, sonidos y por último los campos
+// del modelo y las texturas extra.
+void __cdecl OpenMonsterModel(int Type)
 {
-  int iVar1;
-  intptr_t iVar2;
-  intptr_t iVar3;
-  float fVar4;
-  int iVar5;
+  const int modelId = Type + 270;
+  BMD* model = AsModel(Models + (intptr_t)modelId * BMD_STRIDE);
+  if (DAT_0055a7c4 != '\0' && (model->NumActions >= 1 || model->NumMeshs >= 1))
+    return;
+  AccessModel(modelId, "Data/Monster/", "Monster", Type + 1);
+  if (model->NumMeshs == 0)
+    return;
+  OpenTexture(modelId, "Monster/", 0x2600, '\x01');
 
-  iVar1 = param_1 + 0x10e;
-  iVar2 = Models + iVar1 * BMD_STRIDE;
-  if (((DAT_0055a7c4 == '\0') || ((*(short *)(iVar2 + 0x26) < 1 && (*(short *)(iVar2 + 0x24) < 1))))
-     && (AccessModel(iVar1,"Data/Monster/","Monster",param_1 + 1),
-        *(short *)(iVar2 + 0x24) != 0)) {
-    OpenTexture(iVar1,"Monster/",0x2600,'\x01');
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(4)) = 0x3e800000;
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x14)) = 0x3e4ccccd;
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3eae147b;
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x34)) = 0x3ea8f5c3;
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x44)) = 0x3ea8f5c3;
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x54)) = 0x3f000000;
-    iVar5 = 0;
-    *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3f0ccccd;
-    *(undefined1 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x60)) = 1;
-    do {
-      if (param_1 == 3) {
-        iVar3 = (intptr_t)AsModel(iVar2)->Actions;
-        fVar4 = *(float *)(iVar3 + 4 + iVar5) * 1.0f;
-LAB_005099d1:
-        *(float *)(iVar3 + 4 + iVar5) = fVar4;
-      }
-      else {
-        if ((param_1 == 5) || (param_1 == 0x19)) {
-          *(float *)((intptr_t)AsModel(iVar2)->Actions + 4 + iVar5) =
-               *(float *)((intptr_t)AsModel(iVar2)->Actions + 4 + iVar5) * 0.7f;
-        }
-        if ((param_1 == 0x25) || (param_1 == 0x2a)) {
-          iVar3 = (intptr_t)AsModel(iVar2)->Actions;
-          fVar4 = *(float *)(iVar3 + 4 + iVar5) * 0.4f;
-          goto LAB_005099d1;
-        }
-      }
-      iVar5 = iVar5 + (int)sizeof(ModelAnimationAction);
-    } while (iVar5 < 6 * (int)sizeof(ModelAnimationAction));
-    switch(param_1) {
-    case 2:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3f333333;
-      break;
-    case 6:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3f19999a;
-      break;
-    case 8:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3f333333;
-      break;
-    case 9:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3f99999a;
-      break;
-    case 10:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3e8f5c29;
-      break;
-    case 0xc:
-    case 0x1c:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3e99999a;
-      break;
-    case 0xd:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3e8f5c29;
-      break;
-    case 0x11:
-    case 0x15:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3f000000;
-      break;
-    case 0x13:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3f19999a;
-      break;
-    case 0x14:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3ecccccd;
-      break;
-    case 0x27:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3e6147ae;
-      break;
-    case 0x29:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x24)) = 0x3e3851ec;
-      break;
-    case 0x2a:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x34)) = 0x3eb33333;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x44)) = 0x3eb33333;
-      break;
-    case 0x2c:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e99999a;
-    }
-    switch(param_1) {
-    case 0xe:
-    case 0x1f:
-    case 0x27:
-    case 0x28:
-      *(undefined1 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x10)) = 1;
-    }
-    // Los sonidos de cada tipo salen de [monster.N] en Content/audio/sound/sounds.toml.
-    SoundTable_LoadMonster(param_1);
-    switch(param_1) {
-    case 0:
-    case 0x1e:
-      Model_SetAnimationSlots(iVar1,0,1,2,3,4);
-      *(undefined4 *)(Models + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 0x14;
-      return;
-    case 1:
-      Model_SetAnimationSlots(iVar1,5,6,7,8,9);
-      *(undefined4 *)(Models + BMD_STRIDE * 271 + 0x54 + BMD_FIELD_SHIFT) = 5;
-      return;
-    case 2:
-      Model_SetAnimationSlots(iVar1,10,0xb,0xb,0xb,0xc);
-      *(undefined4 *)(Models + BMD_STRIDE * 272 + 0x54 + BMD_FIELD_SHIFT) = 7;
-      return;
-    case 3:
-    case 0x1d:
-    case 0x27:
-      Model_SetAnimationSlots(iVar1,0xf,0x10,0x11,0x12,0x13);
-      if (param_1 == 3) {
-        *(undefined4 *)(Models + BMD_STRIDE * 273 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
-        return;
-      }
-      if (param_1 == 0x1d) {
-        *(undefined4 *)(Models + BMD_STRIDE * 299 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-        return;
-      }
-      *(undefined4 *)(Models + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 0x13;
-      return;
-    case 4:
-      Model_SetAnimationSlots(iVar1,0x14,0x15,0x16,0x17,0x18);
-      *(undefined4 *)(Models + BMD_STRIDE * 274 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 5:
-      Model_SetAnimationSlots(iVar1,0x19,0x1a,0x1b,0x1c,0x1d);
-      *(undefined4 *)(Models + BMD_STRIDE * 275 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 6:
-      Model_SetAnimationSlots(iVar1,0x1e,0x1f,0x1e,0x1f,0x1f);
-      return;
-    case 7:
-      Model_SetAnimationSlots(iVar1,0x23,0x24,0x25,0x26,0x27);
-      *(undefined4 *)(Models + BMD_STRIDE * 277 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 8:
-      Model_SetAnimationSlots(iVar1,0x20,0x21,0x21,0x21,0x22);
-      *(undefined4 *)(Models + BMD_STRIDE * 278 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
-      return;
-    case 9:
-      Model_SetAnimationSlots(iVar1,0xd,0xd,0xd,0xd,0xd);
-      return;
-    case 10:
-      Model_SetAnimationSlots(iVar1,0x28,0x29,0x2a,0x2b,0x2c);
-      *(undefined4 *)(Models + BMD_STRIDE * 280 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 0xb:
-      Model_SetAnimationSlots(iVar1,0x2d,0x2e,0x2f,0x30,0x31);
-      *(undefined4 *)(Models + BMD_STRIDE * 281 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 0xc:
-    case 0xd:
-      Model_SetAnimationSlots(0x11a,0x44,0x44,0x46,0x46,0x47);
-      Model_SetAnimationSlots(0x11b,0x44,0x45,0x46,0x46,0x47);
-      *(undefined4 *)(Models + BMD_STRIDE * 282 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      *(undefined4 *)(Models + BMD_STRIDE * 283 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 0xe:
-      Model_SetAnimationSlots(iVar1,0xffff,0xffff,0x41,0x42,0x43);
-      *(undefined4 *)(Models + BMD_STRIDE * 284 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x14)) = 0x3eb33333;
-      return;
-    case 0xf:
-      Model_SetAnimationSlots(iVar1,0x32,0x33,0x32,0x32,0x34);
-      *(undefined4 *)(Models + BMD_STRIDE * 285 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
-      return;
-    case 0x10:
-      Model_SetAnimationSlots(iVar1,0x38,0x39,0x3a,0x3a,0x3b);
-      return;
-    case 0x11:
-      Model_SetAnimationSlots(iVar1,0x35,0x35,0x37,0x37,0x37);
-      return;
-    case 0x12:
-      Model_SetAnimationSlots(iVar1,0x3c,0x3d,0x3e,0x3f,0x40);
-      *(undefined4 *)(Models + BMD_STRIDE * 288 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
-      return;
-    case 0x13:
-      Model_SetAnimationSlots(iVar1,0x48,0x49,0x4a,0x4b,0x4c);
-      *(undefined4 *)(Models + BMD_STRIDE * 289 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      return;
-    case 0x14:
-      Model_SetAnimationSlots(iVar1,0x4d,0x4e,0x4f,0x50,0x51);
-      return;
-    case 0x15:
-      Model_SetAnimationSlots(iVar1,0x52,0x52,0x53,0x53,0x54);
-      *(undefined4 *)(Models + BMD_STRIDE * 291 + 0x54 + BMD_FIELD_SHIFT) = 5;
-      return;
-    case 0x16:
-      Model_SetAnimationSlots(iVar1,0x55,0x56,0x57,0x58,0x59);
-      *(undefined4 *)(Models + BMD_STRIDE * 292 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      return;
-    case 0x17:
-      Model_SetAnimationSlots(iVar1,0x5a,0x5b,0x5c,0x5d,0x5e);
-      *(undefined4 *)(Models + BMD_STRIDE * 293 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      return;
-    case 0x18:
-      Model_SetAnimationSlots(iVar1,0x5f,0x60,0x61,0x62,99);
-      *(undefined4 *)(Models + BMD_STRIDE * 294 + 0x54 + BMD_FIELD_SHIFT) = 0x10;
-      return;
-    case 0x19:
-      Model_SetAnimationSlots(iVar1,100,0x65,0x66,0x67,0x68);
-      *(undefined4 *)(Models + BMD_STRIDE * 295 + 0x54 + BMD_FIELD_SHIFT) = 5;
-      return;
-    case 0x1a:
-      Model_SetAnimationSlots(iVar1,0x69,0x69,0x6a,0x6a,0x6b);
-      *(undefined4 *)(Models + BMD_STRIDE * 296 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      return;
-    case 0x1b:
-      Model_SetAnimationSlots(iVar1,0x6c,0x6d,0x6e,0x6f,0x70);
-      *(undefined4 *)(Models + BMD_STRIDE * 297 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      *(undefined1 *)(Models + BMD_STRIDE * 297 + 0x88 + BMD_FIELD_SHIFT) = 1;
-      return;
-    case 0x1c:
-      Model_SetAnimationSlots(iVar1,0x71,0x72,0x73,0x74,0x75);
-      *(undefined4 *)(Models + BMD_STRIDE * 298 + 0x54 + BMD_FIELD_SHIFT) = 5;
-      return;
-    case 0x1f:
-      Model_SetAnimationSlots(iVar1,0x7b,0x7b,0x7c,0x7c,0x7d);
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x34)) = 0x3f000000;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x44)) = 0x3f333333;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x14)) = 0x3f4ccccd;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x74)) = 0x3f4ccccd;
-      return;
-    case 0x20:
-      Model_SetAnimationSlots(iVar1,0x7e,0x7f,0x80,0x81,0x7f);
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x84)) = 0x3ecccccd;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x94)) = 0x3ecccccd;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x74)) = 0x3ecccccd;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0xa4)) = 0x3ecccccd;
-      AsModel(iVar2)->BoneHead = 6;
-      return;
-    case 0x21:
-      Model_SetAnimationSlots(iVar1,0x82,0x82,0x83,0x83,0x82);
-      return;
-    case 0x22:
-      Model_SetAnimationSlots(iVar1,0x84,0x85,0x68,0x68,0x85);
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x34)) = 0x3f000000;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x44)) = 0x3f000000;
-      AsModel(iVar2)->BoneHead = 0x14;
-      return;
-    case 0x23:
-      Model_SetAnimationSlots(iVar1,0x87,0x87,0x88,0x88,0x89);
-      *(undefined4 *)(Models + BMD_STRIDE * 305 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
-      return;
-    case 0x24:
-    case 0x28:
-      Model_SetAnimationSlots(iVar1,0x8a,0x8b,0x8a,0x8b,0x8c);
-      if (param_1 == 0x24) {
-        *(undefined4 *)(Models + BMD_STRIDE * 306 + 0x54 + BMD_FIELD_SHIFT) = 0x13;
-        return;
-      }
-      *(undefined4 *)(Models + BMD_STRIDE * 270 + 0x54 + BMD_FIELD_SHIFT + param_1 * BMD_STRIDE) = 6;
-      return;
-    case 0x25:
-      Model_SetAnimationSlots(iVar1,0x8d,0x8d,0x8e,0x8e,0x8d);
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x34)) = 0x3e19999a;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(0x44)) = 0x3e19999a;
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e4ccccd;
-      return;
-    case 0x29:
-      Model_SetAnimationSlots(iVar1,0x8f,0x8f,0x90,0x90,0x90);
-      *(undefined4 *)(Models + BMD_STRIDE * 311 + 0x54 + BMD_FIELD_SHIFT) = 3;
-      return;
-    case 0x2a:
-      Model_SetAnimationSlots(iVar1,0x91,0x92,0x93,0x94,0x95);
-      OpenJPG("Monster/bv01_2.jpg",0x56b,0x2601,0x2901,0,'\x01');
-      OpenJPG("Monster/bv02_2.jpg",0x56c,0x2601,0x2901,0,'\x01');
-      *(undefined4 *)(Models + BMD_STRIDE * 312 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 0x2b:
-      Model_SetAnimationSlots(iVar1,0x96,0x96,0x97,0x98,0x99);
-      *(undefined4 *)(Models + BMD_STRIDE * 313 + 0x54 + BMD_FIELD_SHIFT) = 7;
-      return;
-    case 0x2c:
-      Model_SetAnimationSlots(iVar1,0x9a,0x9a,0x9b,0x9b,0x9c);
-      *(undefined4 *)(Models + BMD_STRIDE * 314 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      return;
-    case 0x2d:
-      Model_SetAnimationSlots(iVar1,0x9d,0x9e,0x9f,0x9f,0x9f);
-      *(undefined4 *)(Models + BMD_STRIDE * 315 + 0x54 + BMD_FIELD_SHIFT) = 6;
-      return;
-    case 0x2e:
-      Model_SetAnimationSlots(iVar1,0xffff,0xffff,0xa2,0xa2,4);
-      *(undefined4 *)(Models + BMD_STRIDE * 316 + 0x54 + BMD_FIELD_SHIFT) = 7;
-      return;
-    case 0x2f:
-      Model_SetAnimationSlots(iVar1,0x56,0x56,0xa1,0xa1,4);
-      *(undefined4 *)(Models + BMD_STRIDE * 317 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 0x30:
-      Model_SetAnimationSlots(iVar1,0xa0,0xa4,0xffff,0xffff,0xa3);
-      *(undefined4 *)(Models + BMD_STRIDE * 318 + 0x54 + BMD_FIELD_SHIFT) = 0x14;
-      return;
-    case 0x31:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      Model_SetAnimationSlots(iVar1,0xb1,0xb1,0xb2,0xb2,0xb3);
-      return;
-    case 0x32:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      Model_SetAnimationSlots(iVar1,0xaf,0xaf,0xaf,0xaf,0xb0);
-      return;
-    case 0x33:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      Model_SetAnimationSlots(iVar1,0xab,0xffff,0xac,0xac,0xad);
-      return;
-    case 0x34:
-      OpenTGA("Monster/iui02.tga",0x1ed,0x2600,0x2900,0,'\x01');
-      OpenTGA("Monster/iui03.tga",0x1ef,0x2600,0x2900,0,'\x01');
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      Model_SetAnimationSlots(iVar1,0xb4,0xb4,0xb5,0xb5,0xb6);
-      return;
-    case 0x35:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      Model_SetAnimationSlots(iVar1,0xa8,0xa8,0xa9,0xa9,0xaa);
-      return;
-    case 0x36:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      Model_SetAnimationSlots(iVar1,0xa5,0xa5,0xa6,0xa6,0xa7);
-      return;
-    case 0x37:
-      Model_SetAnimationSlots(iVar1,0xb7,0xb8,0xb9,0xb9,0xffff);
-    case 0x38:
-      *(undefined4 *)((intptr_t)AsModel(iVar2)->Actions + ModelActionByte(100)) = 0x3e6147ae;
-      return;
-    case 0x39:
-      Model_SetAnimationSlots(iVar1,0xc0,0xffff,0xc2,0xffff,0xc1);
-      break;
-    case 0x3a:
-      Model_SetAnimationSlots(iVar1,0xbc,0xffff,0xbe,0xffff,0xbf);
-      return;
-    case 0x3b:
-      Model_SetAnimationSlots(iVar1,0xbc,0xffff,0xbe,0xffff,0xbd);
-      return;
-    case 0x3e:
-      Model_SetAnimationSlots(iVar1,0xba,0xffff,0xffff,0xffff,0xbb);
-      return;
-    }
+  void* actions = model->Actions;
+  auto loop = [actions](int action) -> std::uint8_t& {
+    return *(static_cast<std::uint8_t*>(actions) + action * sizeof(ModelAnimationAction));
+  };
+  const MonsterModelDefaults& defaults = MonsterModel_Defaults();
+  for (size_t action = 0; action < defaults.Speeds.size(); action++)
+    ModelActionSpeed(actions, (int)action) = defaults.Speeds[action];
+  for (int action : defaults.Loops)
+    loop(action) = 1;
+
+  const MonsterModel* type = MonsterModel_Get(Type);
+  if (type) {
+    if (type->HasSpeedScale)
+      for (int action = 0; action < 6; action++)
+        ModelActionSpeed(actions, action) = ModelActionSpeed(actions, action) * type->SpeedScale;
+    for (const auto& speed : type->Speeds)
+      ModelActionSpeed(actions, speed.first) = speed.second;
+    for (int action : type->Loops)
+      loop(action) = 1;
   }
-  return;
+
+  SoundTable_LoadMonster(Type);
+  if (!type)
+    return;
+
+  for (const auto& entry : type->Slots) {
+    BMD* target = AsModel(Models + (intptr_t)entry.first * BMD_STRIDE);
+    const MonsterModelSlot& slot = entry.second;
+    if (slot.HasSounds)
+      Model_SetAnimationSlots(entry.first, slot.Sounds[0], slot.Sounds[1], slot.Sounds[2],
+                              slot.Sounds[3], slot.Sounds[4]);
+    if (slot.HasBoneHead) target->BoneHead = slot.BoneHead;
+    if (slot.HasStreamMesh) target->StreamMesh = (char)slot.StreamMesh;
+  }
+  for (const auto& texture : type->Textures) {
+    const auto dot = texture.File.rfind('.');
+    std::string ext = dot == std::string::npos ? std::string() : texture.File.substr(dot);
+    for (char& c : ext) c = (char)std::tolower((unsigned char)c);
+    const bool tga = ext == ".tga";
+    if (tga)
+      OpenTGA(texture.File.c_str(), texture.Slot, texture.Filter, texture.Wrap, 0, '\x01');
+    else
+      OpenJPG(texture.File.c_str(), texture.Slot, texture.Filter, texture.Wrap, 0, '\x01');
+  }
 }

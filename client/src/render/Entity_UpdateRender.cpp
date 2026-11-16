@@ -73,6 +73,94 @@ void __cdecl RenderGuildMarkOnShield(intptr_t entity, int shield_id)
     GL_DisableCullFace();
 }
 
+namespace {
+
+// Luz base del cuerpo: la del terreno más el ColorOffset del objeto (o+232..240).
+void SetBodyLight(int* c, const int* o, const float terrain[3])
+{
+    float* light = AsCharacter((char *)c)->Light;
+    light[0] = terrain[0] + *(const float *)(o + 0x3a);
+    light[1] = terrain[1] + *(const float *)(o + 0x3b);
+    light[2] = terrain[2] + *(const float *)(o + 0x3c);
+}
+
+// El héroe no usa la luz del terreno: (1,1,1) con el tinte de las bebidas de
+// `CharacterAttribute + 40` (IDA RenderCharacter L786-L1009, `if (c == Hero)`).
+//   bit 0 -> Ale             (0.9, 0.5, 0.5) = rojizo
+//   bit 1 -> Remedy of Love  multiplica (0.5, 0.9, 0.5)
+// Todo lo que IDA tiene entre el gate y estas tres escrituras es el ruido de
+// hash-table que descifra CharacterMachine para leer el byte (anti-tamper).
+void SetHeroDrinkLight(int* c)
+{
+    float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
+    const unsigned char drink = CharacterAttribute
+        ? *((unsigned char *)(uintptr_t)CharacterAttribute + 40) : 0;
+    if (drink & 1) { L0 = 0.9f;   L1 = 0.5f;   L2 = 0.5f;   }
+    if (drink & 2) { L0 *= 0.5f;  L1 *= 0.9f;  L2 *= 0.5f;  }
+    float* light = AsCharacter((char *)c)->Light;
+    light[0] = L0; light[1] = L1; light[2] = L2;
+}
+
+// Monstruos que se dibujan por el camino del widget de canal (rayo/barrera).
+bool IsChannelMonster(char id)
+{
+    return id == 'Y' || id == '_' || id == 'p' || id == 'v' || id == '|' ||
+           id == (char)-0x7e || id == (char)-0x78;
+}
+
+// Monstruos sin la pasada de cuerpo con sombra (EnableShadow).
+bool HasNoBodyPass(BYTE id)
+{
+    return id == 25 || id == 22 || id == 42 || id == (BYTE)-14 || id == 59 || id == 63;
+}
+
+// Pases de color del cuerpo del grupo de IDA 00456770 (antes de las ramas
+// individuales de Icarus).  `FirstPass` es el pase 0x48 previo que tienen 43 y
+// los Golden 78..83; 67 usa 0x144 en el segundo; 59 es el único a medio brillo.
+struct MonsterBodyPass { BYTE Id; bool FirstPass; int SecondFlags; float Bright; };
+constexpr MonsterBodyPass kMonsterBodyPasses[] = {
+    { 38, false, 0x44, 1.0f },
+    { 43, true,  0x44, 1.0f },
+    { 52, false, 0x44, 1.0f },
+    { 59, false, 0x44, 0.5f },
+    { 67, false, 0x144, 1.0f },
+    { 78, true,  0x44, 1.0f }, { 79, true, 0x44, 1.0f }, { 80, true, 0x44, 1.0f },
+    { 81, true,  0x44, 1.0f }, { 82, true, 0x44, 1.0f }, { 83, true, 0x44, 1.0f },
+};
+// DESVIACION (DLL CustomMonsterGolden, ahora catálogo 0.97.20): un monstruo
+// marcado golden en el server se dibuja como los Golden 78..83.
+constexpr MonsterBodyPass kCatalogGoldenPass = { 0, true, 0x44, 1.0f };
+
+const MonsterBodyPass* FindBodyPass(BYTE id)
+{
+    for (const MonsterBodyPass& row : kMonsterBodyPasses)
+        if (row.Id == id) return &row;
+    return nullptr;
+}
+
+// Ala del jugador (c + 0x2A0) en el hueso 47.  Se mueve más rápido al volar
+// (acciones 30/31).
+void RenderWing(int* c, int* o)
+{
+    *(BYTE *)((int*)&AsCharacter((char *)c)->Wing.LinkBone) = 0x2f;
+    BYTE bAnim = *(BYTE *)&((OBJECT*)(uintptr_t)(o))->CurrentAction;
+    *(int*)&((CHARACTER*)(uintptr_t)c)->Wing.PlaySpeed = ((bAnim == 0x1e) || (bAnim == 0x1f)) ? 0x3f800000 : 0x3e800000;
+    RenderLinkObject(0.0f, 0.0f, 15.0f, (intptr_t)c, (intptr_t)((int*)&AsCharacter((char *)c)->Wing.Type),
+                 (int)*(short *)((int*)&AsCharacter((char *)c)->Wing.Type),
+                 *(char *)&((CHARACTER*)(uintptr_t)(c))->Wing.Level,
+                 *(BYTE *)&((CHARACTER*)(uintptr_t)(c))->Wing.Option1, '\0', '\x01', 0);
+}
+
+// Monstruos de Blood Castle a los que la zona les sube el rojo (IDA L2310-2317).
+bool HasZoneTint(BYTE id)
+{
+    return (0x55 < id && id < 0x5a) || (0x5b < id && id < 0x60) ||
+           (0x72 < id && id < 0x77) || (0x78 < id && id < 0x7d) ||
+           (0x7e < id && id < 0x83) || (0x84 < id && id < 0x89);
+}
+
+} // namespace
+
 // IDA: RenderCharacter (0x00456770), case 390: brillo de Greater Damage en las
 // manos. DESVIACION: tambien se dibuja en monstruos (invocaciones), para que el
 // aura siga visible mientras el buff este activo; ahi solo si el hueso es valido.
@@ -121,22 +209,17 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
 
     // ── 2. Switch por TIPO DE MONSTRUO (+0x2EB) ──────────────────────────────
     char cVar6 = *(char *)&((CHARACTER*)(uintptr_t)(param_1))->MonsterIndex;  // tipo de monstruo
-    switch (cVar6) {
-    case 'Y': case '_': case 'p': case 'v': case '|':
-    case (char)-0x7e: case (char)-0x78:
-    {
+    if (IsChannelMonster(cVar6)) {
         // Skill channel active — beam/barrier widget path
         unsigned int uVar11 = (unsigned int)(size_t)Calc_RenderObject(AsObject(puVar13), '\x01', (intptr_t)param_3);
         if (AsObject(param_1)->Cloth) ClothWidget_Render((void *)AsObject(param_1)->Cloth);
         if ((BYTE)uVar11 != 0)
             Draw_RenderObject(puVar13, 1, (intptr_t)param_3, '\0');
-        break;
-    }
-    default:
-        // Normal state — prepare entity render (bone / AABB)
-        cVar6 = ((cVar6 == 'C') || (cVar6 == 'J') || (cVar6 == 'K')) ? '\x01' : '\0';
-        Entity_PrepareRender((unsigned char *)puVar13, 1, (intptr_t)param_3, cVar6);
-        break;
+    } else {
+        // Normal state — prepare entity render (bone / AABB).  67/74/75 piden la
+        // variante con el flag de la última llamada en 1.
+        const char variant = ((cVar6 == 'C') || (cVar6 == 'J') || (cVar6 == 'K')) ? '\x01' : '\0';
+        Entity_PrepareRender((unsigned char *)puVar13, 1, (intptr_t)param_3, variant);
     }
     // IDA RenderCharacter 0x456770: draw the projected shadow immediately
     // after Entity_PrepareRender and BEFORE monster glow/equipment passes.
@@ -147,8 +230,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
         // Use the global World; a same-name local here was self-initialized.
         float alpha = *(float *)&((OBJECT*)(uintptr_t)(puVar13))->Alpha;   // o + 360
 
-        if (v11 != 25 && v11 != 22 && v11 != 42 && v11 != (BYTE)-14 &&
-            v11 != 59 && v11 != 63 &&
+        if (!HasNoBodyPass(v11) &&
             gMapManager.GetCurrentMap() != MAP_ICARUS && alpha >= 0.3f)
         {
             // Blood Castle (11..16): clamp Z to terrain height when
@@ -204,23 +286,20 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     // ── 4. Skill-state / anim-state particle effects ─────────────────────────
     BYTE bVar7 = *(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->MonsterIndex;   // tipo de monstruo
 
-    // IDA 00456770 groups these MonsterIDs before the individual Icarus
-    // branches.  43 and 78..83 need the first 0x48 pass; 67 uses 0x144 for
-    // its second pass; 59 is the only half-bright member of the group.
-    // DESVIACION (DLL CustomMonsterGolden, ahora catálogo 0.97.20): un
-    // monstruo marcado golden en el server se dibuja como los Golden 78..83.
+    // Pases de color del cuerpo: tabla kMonsterBodyPasses (y los golden del
+    // catálogo), después las ramas individuales de Icarus.
     const CatalogMonster* catalogMonster = (entity_type != 390) ? gContentCatalog.GetMonster(bVar7) : nullptr;
     const bool catalogGolden = catalogMonster && catalogMonster->Golden;
-    if (bVar7 == 38 || bVar7 == 43 || bVar7 == 52 || bVar7 == 59 ||
-        bVar7 == 67 || (bVar7 >= 78 && bVar7 <= 83) || catalogGolden) {
-        const float bodyBright = (bVar7 == 59) ? 0.5f : 1.0f;
-        if (bVar7 == 43 || (bVar7 >= 78 && bVar7 <= 83) || catalogGolden) {
+    const MonsterBodyPass* bodyPass = FindBodyPass(bVar7);
+    if (!bodyPass && catalogGolden) bodyPass = &kCatalogGoldenPass;
+    if (bodyPass) {
+        // Un golden del catálogo hace el pase previo aunque su fila no lo tenga.
+        if (bodyPass->FirstPass || catalogGolden) {
             RenderPartObjectBodyColor(model, reinterpret_cast<uintptr_t>(puVar13), entity_type,
-                         *(float *)((int*)&AsObject((char *)puVar13)->Alpha), 0x48, bodyBright, 0xffffffff);
+                         *(float *)((int*)&AsObject((char *)puVar13)->Alpha), 0x48, bodyPass->Bright, 0xffffffff);
         }
-        const int secondFlags = (bVar7 == 67) ? 0x144 : 0x44;
         RenderPartObjectBodyColor(model, reinterpret_cast<uintptr_t>(puVar13), entity_type,
-                     *(float *)((int*)&AsObject((char *)puVar13)->Alpha), secondFlags, bodyBright, 0xffffffff);
+                     *(float *)((int*)&AsObject((char *)puVar13)->Alpha), bodyPass->SecondFlags, bodyPass->Bright, 0xffffffff);
     }
     else if (bVar7 == 0x45 || bVar7 == 0x46) {
         // Los sprites se reproducen desde la muestra SIM de esta entidad.
@@ -338,9 +417,7 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     // el original solo alcanza a lo que se dibuja despues: las alas.  Por eso
     // aca va solo la luz base; la segunda escritura (PK) vive mas abajo, justo
     // antes del bloque de armas y alas.
-    *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = local_60 + *(float *)(puVar13 + 0x3a);
-    *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = local_5c + *(float *)(puVar13 + 0x3b);
-    *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = local_58 + *(float *)(puVar13 + 0x3c);
+    SetBodyLight(param_1, puVar13, local_60_buf);
 
     // IDA RenderCharacter: ModelID 325 (Phoenix of Darkness) overrides the
     // final terrain-derived BodyLight before the body and attachment passes.
@@ -352,28 +429,13 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
 
     // ── BodyLight del heroe + tinte de las bebidas (IDA RenderCharacter
     //    L786-L1009, `if (c == Hero)`) ──────────────────────────────────────
-    // El heroe NO usa la luz del terreno que se acaba de calcular: la pisa con
-    // (1,1,1) y despues le aplica el tinte segun los dos bits de bebida activa
-    // de `CharacterAttribute + 40`, que escribe el handler del 0x29
+    // El heroe NO usa la luz del terreno que se acaba de calcular (ver
+    // SetHeroDrinkLight).  El byte de bebidas lo escribe el handler del 0x29
     // (ReceiveHelperItem / PMSG_ITEM_SPECIAL_TIME_SEND) y limpia el timer.
-    //   bit 0 -> Ale             (0.9, 0.5, 0.5) = rojizo
-    //   bit 1 -> Remedy of Love  multiplica (0.5, 0.9, 0.5)
-    // Todo lo que IDA tiene entre el gate y estas tres escrituras es el ruido
-    // de hash-table que descifra CharacterMachine para leer el byte (omitido
-    // por ser anti-tamper).
     //
     // Va ANTES del render del cuerpo y ANTES de la segunda escritura de luz
     // (la del PK, mas abajo), igual que en IDA: L786 el heroe, L2310 el PK.
-    if ((void *)param_1 == Hero) {
-        float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
-        const unsigned char drink = CharacterAttribute
-            ? *((unsigned char *)(uintptr_t)CharacterAttribute + 40) : 0;
-        if (drink & 1) { L0 = 0.9f;   L1 = 0.5f;   L2 = 0.5f;   }
-        if (drink & 2) { L0 *= 0.5f;  L1 *= 0.9f;  L2 *= 0.5f;  }
-        *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = L0;
-        *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = L1;
-        *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = L2;
-    }
+    if ((void *)param_1 == Hero) SetHeroDrinkLight(param_1);
 
     Equipment_Draw(AsCharacter(param_1), 1);
 
@@ -389,20 +451,8 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     // Se vuelve a poner la luz base justo antes del loop de partes.  El efecto
     // final es el del binario (alas rojas, cuerpo con su luz normal) sin tener
     // que reordenar los dos bloques de render, que estan muy anidados.
-    *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = local_60 + *(float *)(puVar13 + 0x3a);
-    *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = local_5c + *(float *)(puVar13 + 0x3b);
-    *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = local_58 + *(float *)(puVar13 + 0x3c);
-    if ((void *)param_1 == Hero) {
-        // El heroe no usa la luz del terreno (ver el bloque de mas arriba).
-        float L0 = 1.0f, L1 = 1.0f, L2 = 1.0f;
-        const unsigned char drink = CharacterAttribute
-            ? *((unsigned char *)(uintptr_t)CharacterAttribute + 40) : 0;
-        if (drink & 1) { L0 = 0.9f;   L1 = 0.5f;   L2 = 0.5f;   }
-        if (drink & 2) { L0 *= 0.5f;  L1 *= 0.9f;  L2 *= 0.5f;  }
-        *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = L0;
-        *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = L1;
-        *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = L2;
-    }
+    SetBodyLight(param_1, puVar13, local_60_buf);
+    if ((void *)param_1 == Hero) SetHeroDrinkLight(param_1);   // ver el bloque de mas arriba
 
     // ── 7b. Body-part render loop (Ghidra RenderCharacter lines 1622-1700) ──────
     // Player.bmd is skeleton-only (numMesh=0); body geometry lives in separate
@@ -469,21 +519,6 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
                 BYTE bClassByte = *(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->Class;
                 *(BYTE *)(Models + iVar9 * BMD_STRIDE + 0x98 + BMD_FIELD_SHIFT) =
                     (BYTE)(((bClassByte & 7) << 1) | (bClassByte >> 3));
-                // ── DIAG: log per-call to RenderPartObject (Entity_DrawAt) for char-select
-                // dump scale, model addr, animCount@26, and DAT_005524f8 (cull thresh).
-                if (SceneFlag == 4) {
-                    int csSlot = (int)(((uintptr_t)param_1_ - (uintptr_t)CharactersClient) / CHARACTER_STRIDE);
-                    if (csSlot >= 0 && csSlot < 5) {
-                        static DWORD s_lastDA[5] = {0,0,0,0,0};
-                        DWORD now = Platform::GetTimer().Ticks();
-                        if (now - s_lastDA[csSlot] > 1000) {
-                            // log only the FIRST body-part draw of this slot per second
-                            s_lastDA[csSlot] = now;
-                            void* bm = (void*)(Models + iVar9 * BMD_STRIDE);
-                            float fScale = *(float *)((int*)&AsObject((char *)puVar13)->Alpha);
-                        }
-                    }
-                }
                 {
                     BYTE rawLvl = piVar16->Level;
                     BYTE rawOpt = piVar16->Option1;
@@ -631,7 +666,6 @@ void Equipment_Tick(intptr_t entity, int highlighted)
 
     float light[3];
     RequestTerrainLight(AsObject(entity)->Position[0], AsObject(entity)->Position[1], light);
-    float local_60 = light[0], local_5c = light[1], local_58 = light[2];
     Equipment_SetStage(1);
     // ── 7. Entity type 0x186 weapon-slot arm render ──────────────────────────
     // (Local_74 = `Bind` de IDA RenderCharacter: arma a la espalda.)
@@ -668,17 +702,11 @@ void Equipment_Tick(intptr_t entity, int highlighted)
             // tinte de las bebidas que dejo el bloque del heroe, de modo que
             // el CUERPO (L1020, antes) lo tiene y las ALAS (L1239, despues) no.
             // Sacarlo hace que el Ale tina tambien las alas.
-            *(float *)((int*)&AsCharacter((char *)param_1)->Light[0])  = local_60 + *(float *)(puVar13 + 0x3a);
-            *(float *)((int*)&AsCharacter((char *)param_1)->Light[1]) = local_5c + *(float *)(puVar13 + 0x3b);
-            *(float *)((int*)&AsCharacter((char *)param_1)->Light[2]) = local_58 + *(float *)(puVar13 + 0x3c);
+            SetBodyLight(param_1, puVar13, light);
 
             // Override de escala por zona (World - 9 en [1..7])
             const int iSub = (int)gMapManager.GetCurrentMap() - 9;
-            const BYTE bv2 = *(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->MonsterIndex;
-            const bool bInRange =
-                (0x55 < bv2 && bv2 < 0x5a) || (0x5b < bv2 && bv2 < 0x60) ||
-                (0x72 < bv2 && bv2 < 0x77) || (0x78 < bv2 && bv2 < 0x7d) ||
-                (0x7e < bv2 && bv2 < 0x83) || (0x84 < bv2 && bv2 < 0x89);
+            const bool bInRange = HasZoneTint(*(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->MonsterIndex);
             if ((0 < iSub) && (iSub < 8) && bInRange && ((iSub / 3) != 0)) {
                 *(float *)((int*)&AsCharacter((char *)param_1)->Light[0]) = (float)(iSub / 3) * 0.5f;
                 bTint = true;
@@ -735,13 +763,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
             gContentCatalog.EntityDrawModel(param_1, *(short *)((int*)&AsCharacter((char *)param_1)->Wing.Type)) >= MODEL_MAX_VANILLA) {
             bDeferWing = true;
         } else if (*(short *)((int*)&AsCharacter((char *)param_1)->Wing.Type) != -1 && !gUserSettings.GetAntilag(ANTILAG_WINGS)) {
-            *(BYTE *)((int*)&AsCharacter((char *)param_1)->Wing.LinkBone) = 0x2f;
-            BYTE bAnim = *(BYTE *)&((OBJECT*)(uintptr_t)(puVar13))->CurrentAction;
-            *(int*)&((CHARACTER*)(uintptr_t)param_1)->Wing.PlaySpeed = ((bAnim == 0x1e) || (bAnim == 0x1f)) ? 0x3f800000 : 0x3e800000;
-            RenderLinkObject(0.0f, 0.0f, 15.0f, (intptr_t)param_1, (intptr_t)((int*)&AsCharacter((char *)param_1)->Wing.Type),
-                         (int)*(short *)((int*)&AsCharacter((char *)param_1)->Wing.Type),
-                         *(char *)&((CHARACTER*)(uintptr_t)(param_1))->Wing.Level,
-                         *(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->Wing.Option1, '\0', '\x01', 0);
+            RenderWing(param_1, puVar13);
         }
 
         // Wings / shield bone (slot 0xae == 0x331)
@@ -782,15 +804,7 @@ void Equipment_Tick(intptr_t entity, int highlighted)
 
 
     Equipment_SetStage(2);
-    if (bDeferWing) {
-        *(BYTE *)((int*)&AsCharacter((char *)param_1)->Wing.LinkBone) = 0x2f;
-        BYTE bAnim = *(BYTE *)&((OBJECT*)(uintptr_t)(puVar13))->CurrentAction;
-        *(int*)&((CHARACTER*)(uintptr_t)param_1)->Wing.PlaySpeed = ((bAnim == 0x1e) || (bAnim == 0x1f)) ? 0x3f800000 : 0x3e800000;
-        RenderLinkObject(0.0f, 0.0f, 15.0f, (intptr_t)param_1, (intptr_t)((int*)&AsCharacter((char *)param_1)->Wing.Type),
-                     (int)*(short *)((int*)&AsCharacter((char *)param_1)->Wing.Type),
-                     *(char *)&((CHARACTER*)(uintptr_t)(param_1))->Wing.Level,
-                     *(BYTE *)&((CHARACTER*)(uintptr_t)(param_1))->Wing.Option1, '\0', '\x01', 0);
-    }
+    if (bDeferWing) RenderWing(param_1, puVar13);
 
 
     memcpy(AsCharacter(param_1)->Light, savedLight, sizeof(savedLight));

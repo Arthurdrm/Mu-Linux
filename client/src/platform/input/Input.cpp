@@ -39,7 +39,7 @@
 //   DAT_07db8810  g_TextBuf[1]         Buffer de texto slot 1 (password, 256 bytes)
 //   (fórmula: g_TextBuf_base + slot * 0x100)
 //
-//   DAT_07d780a8  g_TextLen[N]         int[N] — longitud actual de cada slot
+//   InputLength   g_TextLen[N]         int[N] — longitud actual de cada slot
 //   InputTextMax  g_TextMaxLen[N]      int[N] — longitud máxima permitida por slot (de config)
 //   DAT_07e11d78  g_ActiveSlot         Slot activo de input (Tab para rotar)
 //
@@ -308,7 +308,7 @@ void __cdecl ClearInput(int param_1)
         *puVar3 = 0;
         puVar3 = puVar3 + 1;
       }
-      DAT_07d780a8[iVar2] = 0;
+      InputLength[iVar2] = 0;
       InputTextHide[iVar2] = 0;
       InputTextMaxClusters[iVar2] = 0;
     }

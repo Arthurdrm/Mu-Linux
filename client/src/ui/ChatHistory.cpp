@@ -18,7 +18,7 @@ void SetMessageField(const std::string& text)
     memset(field, 0, sizeof(InputText[0]));
     const size_t length = text.size() < sizeof(InputText[0]) - 1 ? text.size() : sizeof(InputText[0]) - 1;
     memcpy(field, text.data(), length);
-    reinterpret_cast<DWORD*>(DAT_07d780a8)[0] = (DWORD)length;
+    InputLength[0] = (int)length;
 }
 }
 

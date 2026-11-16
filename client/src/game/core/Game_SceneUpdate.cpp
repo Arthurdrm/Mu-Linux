@@ -309,7 +309,7 @@ int Game_SceneUpdate(void)
             ((int*)&InputTextMax)[1] = 10;  // InputTextMax[1] = password max
             InputNumber = 2;
             InputTextHide[1] = 1;
-            *(DWORD*)DAT_07d780a8 = vlen;
+            InputLength[0] = (int)vlen;
             InputIndex = (vlen != 0) ? 1 : 0;
         }
 
@@ -784,7 +784,7 @@ state_fail_common:
                     memcpy(InputText, lpData_055c9ba0, vlen + 1);
                     InputTextHide[1] = 1;
                     InputNumber = 2;
-                    *(DWORD*)DAT_07d780a8 = vlen;
+                    InputLength[0] = (int)vlen;
                     InputTextMax = 10;
                     _DAT_00559c98 = 10;
                     InputIndex = (vlen != 0) ? 1 : 0;

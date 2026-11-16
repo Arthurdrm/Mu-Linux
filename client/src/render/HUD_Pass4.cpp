@@ -38,12 +38,11 @@ extern "C" {
 }
 
 // ── Aliases: WM_CHAR + RenderInputText share storage via DAT_07db8710 /
-// DAT_07d780a8 globals (matching the IDA original where InputText is at
+// InputLength globals (matching the IDA original where InputText is at
 // 0x07db8710 and InputLength at 0x07d780a8). See globals.h.
 // MacroTime es 0x07E11D7C (IDA lo decrementa en Game_MainLoop y lo pone en
 // 100 al disparar una macro): tiene que ser el global, no una variable propia.
 
-#define InputLength ((int*)(void*)DAT_07d780a8)     // 10 × DWORD lengths
 
 // ── Local globals (kept here to avoid widening globals.h further) ───────────
 extern "C" {
@@ -60,7 +59,7 @@ extern "C" {
     // `++MixState` que la hace avanzar.
 
     // Input fields — IDA exposes 10 slots (chat + whisper-target + ...).
-    // InputText / InputLength son los globals DAT_07db8710 / DAT_07d780a8 que
+    // InputText / InputLength son los globals DAT_07db8710 / InputLength que
     // escribe WM_CHAR (ver los aliases de arriba), no storage local.
     char  InputTextIME[10][256]   = {{0}};
     // `InputIndex` e `InputFrame` son los globals reales, no copias locales:

@@ -650,7 +650,7 @@ void __cdecl UI_InGameMenu(void)
                 const char* src = (const char*)
                     ((uintptr_t)&GlobalText[0][0] + 300 * (DAT_083a7c04 + page));
                 g_iNumLineMessageBoxCustom = SeparateTextIntoLines(
-                    src, &DAT_083a44c4[0], 7, 38);
+                    src, g_lpszMessageBoxCustom[0], 7, 38);
             }
         }
 
@@ -887,7 +887,7 @@ void __cdecl UI_InGameMenu(void)
             gNetwork.SendC1(pkt, sizeof(pkt));
         }
         memset(InputText, 0, 10);                           // InputText[0][0..9]
-        *(DWORD*)DAT_07d780a8 = 0;                             // InputLength[0]
+        InputLength[0] = 0;
         goto tail;
     }
 
@@ -1012,7 +1012,7 @@ void __cdecl UI_InGameMenu(void)
 
         case 0x7e:
             memset(InputText, 0, 0x100);
-            *(DWORD*)DAT_07d780a8 = 0;
+            InputLength[0] = 0;
             DAT_07d552e4  = 0;
             // IDA consume MouseLButtonPush al cancelar. Estos dos latches son
             // el equivalente del pump reconstruido y evitan propagar el click

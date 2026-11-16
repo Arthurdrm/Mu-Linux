@@ -1058,10 +1058,9 @@ static int __fastcall ChatLB_advanceCursor(DWORD* self)
 //
 // flt_5590B0/B4/B8 son ChatListBox_TabButtonsX/Y/Spacing (globals.cpp, leídos
 // del binario = 295 / 417 / 18).
-// InputText/InputLength alias DAT_07db8710 / DAT_07d780a8
+// InputText/InputLength alias DAT_07db8710 / InputLength (0x07D780A8)
 // (ver HUD_Pass4.cpp). Usamos los mismos #define acá para compartir el storage
 // with WM_CHAR + RenderInputText.
-#define InputLength ((int*)(void*)DAT_07d780a8)
 
 static int __fastcall ChatLB_hitTestInput(DWORD* self)
 {

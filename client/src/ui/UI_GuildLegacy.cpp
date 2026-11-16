@@ -156,11 +156,11 @@ int __cdecl GuildOverview_Render(void)
 
 // IDA: FUN_0051D6F0 (0x0051D6F0)
 // CreateOkMessageBox — show an OK dialog by setting the UI state.
-// Wraps text at 7 chars / 0x26 lines into DAT_083a44c4, sets a fixed panel descriptor,
+// Wraps text at 7 chars / 0x26 lines into g_lpszMessageBoxCustom, sets a fixed panel descriptor,
 // then transitions ErrorMessage or NextErrorMessage to state 0x8b.
 void __cdecl CreateOkMessageBox(char *msg)
 {
-    g_iNumLineMessageBoxCustom = SeparateTextIntoLines(msg, (char *)&DAT_083a44c4, 7, 0x26);
+    g_iNumLineMessageBoxCustom = SeparateTextIntoLines(msg, g_lpszMessageBoxCustom[0], 7, 0x26);
     // clear panel descriptor (10 dwords)
     int *p = (int*)&DAT_083a42f8[0];
     for (int i = 0; i < 10; i++) p[i] = 0;
@@ -229,7 +229,7 @@ int __cdecl ItemList_Select(int param_1) {
 
     g_iCurrentDialogScript = param_1;
     g_iNumLineMessageBoxCustom =
-        SeparateTextIntoLines(dlg->m_lpszText, &DAT_083a44c4[0], 7, 38);
+        SeparateTextIntoLines(dlg->m_lpszText, g_lpszMessageBoxCustom[0], 7, 38);
 
     memset(DAT_083a42f8, 0, 0x28);              // rects de los botones
     memset(g_lpszDialogAnswer, 0, sizeof(g_lpszDialogAnswer));

@@ -544,11 +544,6 @@ float    DAT_06f42a5c[200*3]  = {0};   // bbox min, 3 floats por hueso
 
 // UI name-list panel data (ShowCheckBox)
 // DAT_083a430c — macro dentro de DAT_083a42f8 (dialog button rects)
-// DAT_083a44c4 ES g_lpszMessageBoxCustom — buffer de diálogo de 7 líneas × 0x26
-// bytes (char[7 * 0x26] = 266 bytes) que usan CreateOkMessageBox, RenderErrorMessage,
-// los diálogos de CSQuest, SecondPassword, UI_StatsPanel, etc.; DAT_083a44ea es un
-// macro alias al offset +0x26 (line[1]) dentro del buffer.
-// (Definición más abajo en el archivo, junto a los otros DAT_083a4*.)
 byte     DAT_005618b8  = 0;
 byte     DAT_005618bc  = 0;
 byte     DAT_005618c0  = 0;
@@ -1059,9 +1054,10 @@ char     DAT_07e113e4[5 * 256] = {};
 // _DAT_07e118e4 already defined at line ~470
 
 int      MouseOnWindow  = 0;   // IDA: MouseOnWindow (0x07D78094)
-BYTE     DAT_07d780a8[40]  = {0};
-// DAT_07d780ac no es una variable aparte: es `InputLength[1]` (bytes +4..+7 de
-// DAT_07d780a8), un macro en globals.h que proyecta dentro del array.
+// IDA: InputLength (0x07D780A8).  Era `BYTE[40]`: ClearInput lo indexaba por byte
+// y limpiaba 10 bytes en vez de los 10 largos.
+int      InputLength[10] = {0};
+// DAT_07d780ac no es una variable aparte: es `InputLength[1]`, un macro en globals.h.
 // Multi-slot input buffer (IDA: InputText[10][256] @ 0x07db8710).
 // Slot 0 = chat / username, slot 1 = whisper-target / password.
 // DAT_07db8810 is a #define alias for slot 1 in globals.h.
@@ -1243,8 +1239,9 @@ int      g_iNumAnswer  = 0;   // IDA: g_iNumAnswer (0x083A7C0C)
 DWORD    DAT_083a7c2c  = 0;
 // DAT_083a42fc — ahora macro dentro de DAT_083a42f8 (dialog button rects)
 int      g_iNumLineMessageBoxCustom = 0;   // IDA: g_iNumLineMessageBoxCustom (0x083A4324)
-// see comment near DAT_083a44ea — sized as 7×0x26 message-box-custom buffer.
-char     DAT_083a44c4[7 * 0x26] = {0};
+// IDA: g_lpszMessageBoxCustom (0x083A44C4) — 7 líneas × 0x26 que llenan
+// CreateOkMessageBox, CreateDialogInterface y los diálogos de quest.
+char     g_lpszMessageBoxCustom[7][0x26] = {};
 // DAT_07d566d0 (fallback char name string) es GlobalText[609] (ver el bloque de
 // alias al final de globals.h).
 char     s__d___s_005580b0[] = "%d %s";
@@ -1382,7 +1379,7 @@ WORD     DAT_00559f5c  = 0;
 // InputNumber  — defined above (DWORD)
 // Guild UI state
 // DAT_083a4324  — defined above (DWORD)
-// DAT_083a44c4  — defined above (char[7 * 0x26])
+// g_lpszMessageBoxCustom (0x083A44C4) — defined above (char[7][0x26])
 DWORD    DAT_083a42f8[10] = {};
 // ErrorMessage  — defined above (DWORD)
 // NextErrorMessage  — defined above (DWORD)
@@ -2353,7 +2350,6 @@ DWORD  DAT_00563e00       = 0;
 // Por eso son macros (globals.h) que apuntan al global real: todo el código que
 // setea m_dwTextColor (HUD_Pass1/2/3, ChatListBox render) tiene que llegar al
 // global que lee el render de texto (CUIRenderText_RenderText, lee DAT_00559c78).
-// g_lpszMessageBoxCustom es un alias de DAT_083a44c4 (ver globals.h).
 // m_hFontDC y las fuentes viven en CFont (Core/Font.h).
 
 // Batch 18 — InitGame / ReceiveChat globals

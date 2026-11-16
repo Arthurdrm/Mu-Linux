@@ -14,6 +14,7 @@ struct tagSIZE{std::int32_t cx,cy;};using LPSIZE=tagSIZE*;
 using uint=unsigned;using undefined4=std::uint32_t;
 char* table;
 #define DAT_083a44c4 (*reinterpret_cast<char(*)[7*38]>(table))
+#define g_lpszMessageBoxCustom (*reinterpret_cast<char(*)[7][38]>(table))
 DWORD g_iNumLineMessageBoxCustom;int DAT_07eaa13c;constexpr int FONT_BOLD=1;
 unsigned drawCalls,dcCalls,fontCalls,selectCalls,lengthCalls,measureCalls,widthCalls,startX,startY,glyphWidth,screenWidth;float currentColor[3];int dcToken,fontToken;std::vector<int> events;
 namespace Gfx{void Color3f(float r,float g,float b){currentColor[0]=r;currentColor[1]=g;currentColor[2]=b;events.push_back(1);}}

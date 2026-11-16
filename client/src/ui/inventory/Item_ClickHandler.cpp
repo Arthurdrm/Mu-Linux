@@ -220,7 +220,6 @@ unsigned int __cdecl FUN_004d6020(int origin_x, int origin_y,
 //                 3 = generic NPC sell confirm
 //
 // Returns: TRUE always (matches IDA — never errors out).
-extern char DAT_083a44c4[7 * 0x26];      // g_lpszMessageBoxCustom (266 bytes)
 // DAT_083a42f8 (2 entradas × 5 ints) y su alias DAT_083a430c (= entrada 1)
 // vienen de globals.h — NO redeclarar aca: DAT_083a430c es un macro que
 // proyecta dentro de DAT_083a42f8, y declararlo como array independiente
@@ -232,7 +231,7 @@ extern DWORD NextErrorMessage;               // NextErrorMessage (queued)
 
 void __cdecl ShowCheckBox(int num, int index, int message)
 {
-    char* lpMessageLines = DAT_083a44c4;        // 7 × 38-byte line buffer
+    char* lpMessageLines = g_lpszMessageBoxCustom[0];
     int   numLines = num;
 
     if (message == 153) {

@@ -162,7 +162,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
     //
     // Globals mapping (IDA → ours):
     //   InputIndex            → DAT_07e11d78   (active slot 0..9)
-    //   InputLength[i]        → ((DWORD*)DAT_07d780a8)[i]
+    //   InputLength[i]        → InputLength[i]
     //   InputText[i][j]       → DAT_07db8710 + i*0x100 + j
     //   InputEnable           → DAT_00559c84
     //   InputNumber           → InputNumber
@@ -178,7 +178,7 @@ void Input_OnEvent(const Platform::InputEvent& event)
         // Clampea el slot a [0,9] para evitar OOB si el índice por slot es basura.
         DWORD  slot = InputIndex & 0x0F;
         if (slot > 9) slot = 0;
-        DWORD* lens = (DWORD*)DAT_07d780a8;
+        DWORD* lens = (DWORD*)InputLength;
         int    len  = (int)lens[slot];
         char*  buf  = (char*)InputText + slot * 0x100;
 
@@ -356,7 +356,7 @@ static bool Input_AppendCharacter(DWORD slot, uint32_t c)
         (c >= 0xD800 && c <= 0xDFFF) || c > 0x10FFFF)
         return true;   // se ignora sin cortar un pegado
 
-    DWORD* lens = (DWORD*)DAT_07d780a8;
+    DWORD* lens = (DWORD*)InputLength;
     const int len = (int)lens[slot];
     char* buf = (char*)InputText + slot * 0x100;
 
@@ -383,7 +383,7 @@ static bool Input_AppendCharacter(DWORD slot, uint32_t c)
 extern "C" bool Input_AppendText(DWORD slot, const char* utf8)
 {
     if (!utf8 || slot >= 8) return false;
-    DWORD* lens = (DWORD*)DAT_07d780a8;
+    DWORD* lens = (DWORD*)InputLength;
     const DWORD previous = lens[slot];
     std::string_view rest(utf8);
     while (!rest.empty()) {

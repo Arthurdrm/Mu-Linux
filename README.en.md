@@ -119,6 +119,60 @@ temporary folder, replace the binaries (`ConnectServer`, `JoinServer`,
 `DataServer`, `GameServer`, `mu-data`, `mu-trace`) and `start.sh`, and keep your
 `Data/` and INI files.
 
+## What's new in 0.97.43
+
+- **UTF-8 translated texts.** The `.bmd` files in `Data/Local` were always
+  converted from Windows-1252, so a UTF-8 translation (Chinese, for example)
+  came out broken. UTF-8 is now kept (#48).
+- **Passwords with bcrypt.** New accounts and changed passwords are stored with
+  bcrypt; old ones are converted on the next login. `GlobalPassword` ships
+  empty (disabled).
+- **More server checks:** NPC windows, repairing, dropping items and confirming
+  a trade require being close; the client's path and the normal attack interval
+  are validated, in observe mode.
+- **Spawns per map (optional)** in `Data/Maps/NN-Name/Spawns.toml`, with
+  invasions in `Data/Events/Invasions/Spawns.toml`, editable from the panel.
+- **Invasions:** a chat notice for each monster killed, live monsters per map in
+  the events panel (H) and the golden monsters' bags fixed.
+- **Emotes** from 5.2 and `/fortnite`, with sound; **`mu-trace`** to inspect the
+  GameServer's packets and decisions (Linux); **MinGW** for the server and the
+  client.
+
+**Compatibility:** the protocol does not change; older clients get in. The
+`memb__pwd` column grows to 60 bytes (`Migrate-password-hash.sql` or the panel).
+
+## What's new in 0.97.42
+
+- **Server exploits:** zen duplication in trade, the Chaos Machine without its
+  NPC or with flag 5, walking with items loaded in the machine and kicking
+  members of another guild.
+- **Area skills without a target cap.** Evil Spirit, Triple Shot, Twisting
+  Slash, Rageful Blow, Death Stab, Power Slash and Fire Slash hit everything in
+  their radius, not the first 10 on the list. Monster area attacks stay at 5
+  players.
+- **`/makemob` mobs:** when they die they no longer fill nearby players' target
+  lists for 30 minutes.
+- **Client:** bigger effect, joint, particle and sprite pools; with many
+  monsters on screen, attacks stopped showing.
+
+**Compatibility:** the protocol does not change. Hitting more than 5 targets per
+packet needs the 0.97.42 client.
+
+## What's new in 0.97.41
+
+First monorepo Release: client and server ship from the same repository.
+
+- **WebGPU:** with 100 characters casting skills, the client goes from 40 to
+  about 80 FPS (item glow on the GPU, indexed draw data and its own staging
+  buffer).
+- **Graphics errors** in `debug.log` with a fixed code (`[WGPU-E1]` to
+  `[WGPU-L2]`); `GraphicsValidation=1` in `[Window]` to report them.
+- **Web panel** without known vulnerabilities (15 alerts closed) and on
+  **Node 24**.
+- **Compose:** on a fresh install, the database was left without tables.
+
+**Compatibility:** with the 0.97.40 server; the protocol does not change.
+
 ## What's new in 0.97.40 — Phase 4 completed
 
 - **UTF-8 text end to end.** The server no longer converts to Windows-1252:

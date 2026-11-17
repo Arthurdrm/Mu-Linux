@@ -453,7 +453,8 @@ Basado en las sources de Kayito.
 
 Se publican solas al publicar una Release en GitHub (`.github/workflows/release.yml`):
 amd64 y arm64, con el tag de la Release y `latest`. El mismo workflow adjunta a la
-Release los archivos de Pterodactyl. Se puede repetir para un tag desde *Actions >
+Release los archivos de Pterodactyl y actualiza el overview de cada imagen desde
+`.github/dockerhub/`. Se puede repetir para un tag desde *Actions >
 Release > Run workflow*.
 
 ## Update 1 (2026-02-20)

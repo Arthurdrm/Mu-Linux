@@ -445,7 +445,8 @@ Based on Kayito's sources.
 
 They are published automatically when a GitHub Release is published
 (`.github/workflows/release.yml`): amd64 and arm64, with the Release tag and
-`latest`. The same workflow attaches the Pterodactyl files to the Release. It can
+`latest`. The same workflow attaches the Pterodactyl files to the Release and updates each
+image's overview from `.github/dockerhub/`. It can
 be re-run for a tag from *Actions > Release > Run workflow*.
 
 ## Update 1 (2026-02-20)

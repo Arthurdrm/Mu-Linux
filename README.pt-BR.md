@@ -119,6 +119,59 @@ temporária, substitua os binários (`ConnectServer`, `JoinServer`, `DataServer`
 `GameServer`, `mu-data`, `mu-trace`) e o `start.sh`, e mantenha seu `Data/` e
 seus INI.
 
+## Novidades da 0.97.43
+
+- **Textos traduzidos em UTF-8.** Os `.bmd` de `Data/Local` eram sempre
+  convertidos a partir do Windows-1252, e uma tradução em UTF-8 (em chinês, por
+  exemplo) saía quebrada. Agora o UTF-8 é respeitado (#48).
+- **Senhas com bcrypt.** As contas novas e as que trocam de senha são salvas com
+  bcrypt; as antigas são convertidas sozinhas no próximo login. `GlobalPassword`
+  vem vazia (desligada).
+- **Mais controles do servidor:** janelas de NPC, reparar, jogar itens e
+  confirmar um trade exigem estar perto; o caminho do cliente e o intervalo do
+  ataque normal são validados, em modo observar.
+- **Spawns por mapa (opcional)** em `Data/Maps/NN-Nome/Spawns.toml`, com as
+  invasões em `Data/Events/Invasions/Spawns.toml`, editáveis pelo painel.
+- **Invasões:** aviso no chat de cada monstro morto, vivos por mapa no painel
+  de eventos (H) e as bolsas dos dourados corrigidas.
+- **Emotes** da 5.2 e `/fortnite`, com som; **`mu-trace`** para ver os pacotes e
+  as decisões do GameServer (Linux); **MinGW** para o servidor e o cliente.
+
+**Compatibilidade:** o protocolo não muda, os clientes anteriores entram. A
+coluna `memb__pwd` passa a 60 bytes (`Migrate-password-hash.sql` ou o painel).
+
+## Novidades da 0.97.42
+
+- **Exploits do servidor:** duplicar zen no trade, a Chaos Machine sem seu NPC
+  ou com o flag 5, andar com itens carregados na máquina e expulsar membros de
+  outra guild.
+- **Skills de área sem limite de alvos.** Evil Spirit, Triple Shot, Twisting
+  Slash, Rageful Blow, Death Stab, Power Slash e Fire Slash acertam tudo o que
+  está no seu raio, não os 10 primeiros da lista. O ataque de área dos monstros
+  continua em 5 jogadores.
+- **Mobs de `/makemob`:** ao morrer não ocupam mais a lista de alvos dos
+  jogadores próximos durante 30 minutos.
+- **Cliente:** pools de efeitos, joints, partículas e sprites maiores; com
+  muitos monstros na tela, os ataques deixavam de aparecer.
+
+**Compatibilidade:** o protocolo não muda. Para acertar mais de 5 alvos por
+pacote é preciso o cliente 0.97.42.
+
+## Novidades da 0.97.41
+
+Primeira Release do monorepo: cliente e servidor saem do mesmo repositório.
+
+- **WebGPU:** com 100 personagens lançando skills, o cliente passa de 40 para
+  cerca de 80 FPS (brilho dos itens na GPU, dados de desenho indexados e buffer
+  de staging próprio).
+- **Erros gráficos** no `debug.log` com um código fixo (`[WGPU-E1]` a
+  `[WGPU-L2]`); `GraphicsValidation=1` em `[Window]` para reportá-los.
+- **Painel web** sem vulnerabilidades conhecidas (15 alertas fechados) e no
+  **Node 24**.
+- **Compose:** numa instalação nova, o banco ficava sem tabelas.
+
+**Compatibilidade:** com o servidor 0.97.40; o protocolo não muda.
+
 ## Novidades da 0.97.40 — conclusão da Fase 4
 
 - **Texto em UTF-8 de ponta a ponta.** O servidor deixa de converter para

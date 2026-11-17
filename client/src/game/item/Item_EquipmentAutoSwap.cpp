@@ -47,7 +47,7 @@ void __cdecl Item_AutoEquipAmmo(int /*unused*/) {
     // envío de ese segundo pack no sale (SendRequestEquipmentItem 0x43C250
     // arranca con `if (!EquipmentItem)`), pero UI_Main ya lo sacó de la
     // grilla, así que el pack queda invisible en el cliente y ocupado en el
-    // server hasta reentrar.  Visto en las pruebas de 0.97.50.
+    // server hasta reentrar.  Visto en las pruebas de 0.97.45.
     if (EquipmentItem != 0)   // IDA: EquipmentItem (0x07EAA165)
         return;
 

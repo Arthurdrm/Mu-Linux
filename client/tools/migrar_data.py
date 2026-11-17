@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pasa una instalación vieja (con Data/) al orden nuevo de carpetas.
 
-Desde 0.97.50 el cliente ya no trae Data/: el contenido está en Content/ y lo
+Desde 0.97.45 el cliente ya no trae Data/: el contenido está en Content/ y lo
 mínimo para arrancar en System/. Un Data/ viejo se sigue leyendo, pero como la
 última capa y sólo por compatibilidad. Esta herramienta lo elimina sin perder
 nada:

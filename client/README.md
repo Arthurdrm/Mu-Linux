@@ -36,6 +36,40 @@ trade, chat, party, guild, combate, skills, efectos, eventos, sonido y música.
 | Linux x64 | OpenGL 3.3 y WebGPU (Vulkan) | Completo; es el build publicado |
 | Windows x86, Linux x86 | OpenGL 3.3 | Base histórica: compila, pero no se prueba ni recibe WebGPU |
 
+### Novedades de 0.97.45 — Fase 5, primera parte
+
+- **Contenido por entidad.** `Data/` pasa a `Content/` (una carpeta por item,
+  monstruo, NPC, set, mapa y efecto, con su `.toml`) y `System/` (lo mínimo para
+  arrancar); la configuración, la caché y los logs del jugador van a `User/`.
+  Ver [Capas de datos](#capas-de-datos). Un cliente viejo con `Data/` se pasa al
+  orden nuevo con `tools/migrar_data.py`.
+- **Pack HD.** El cliente trae un pack de texturas ×2 (`HDTextures = 1`). Ver
+  [Pack HD](#pack-hd).
+- **Canal cifrado** con el GameServer y con el ConnectServer, autenticado con la
+  identidad de cada server, que el cliente recuerda en `User/Cache/`.
+- **Contenido desde el server.** En la pantalla del logo, el cliente baja del
+  ConnectServer los `.toml` que no coinciden con los suyos. Si el server no
+  responde, sigue con lo que tiene.
+- **Catálogo:** gates, maná, AG y rango de los skills, apilado y precios de
+  items, lista de `/move` y música por mapa llegan del server, con caché en el
+  cliente.
+- **Datos en tablas.** Modelos de monstruos, items, personaje y skills, texturas
+  de la interfaz, sonidos y las cargas de cada mapa salen de `.toml`; el
+  dispatcher de red es una tabla y el código está ordenado por capas
+  (`src/app`, `assets`, `audio`, `game`, `net`, `platform`, `render`, `rhi`,
+  `scenes`, `ui`).
+- **Del server:** vida de los monstruos, detalle de los buffs propios (el panel
+  C muestra lo que suma cada uno), velocidad de ataque de los demás jugadores,
+  rechazos explícitos y el signo de GM y administrador sobre la cabeza.
+- **Fuentes:** colecciones `.ttc`, fuentes CJK del sistema y negrita simulada.
+- **Release sin herramientas de prueba:** F9 (benchmark) y F12 (FPS y perfil de
+  render) sólo en Debug o con `-DMU_BENCHMARK=ON`. `debug.log` y `fonts.log` van
+  a `User/` y se borran al salir si no hubo errores.
+
+**Compatibilidad: cliente 0.97.45 ↔ [server 0.97.45](../README.md).** El
+protocolo pasó a la versión 13 y se negocia al conectar: con un server de otra
+versión, el login muestra *"versión incorrecta"*.
+
 ### Novedades de 0.97.40 — cierre de la Fase 4
 
 - **64 bits.** El cliente se compila y se publica en x64. Los layouts de 32 bits
@@ -73,13 +107,14 @@ server 0.97.40 y al revés.
 
 ## Qué necesitás
 
-- **Los assets ya están incluidos** en `bin/Client/Data/` (~209 MB: modelos
-  `.bmd`, texturas `.ozj`/`.ozt`, mapas, sonidos, música y las fuentes de
-  respaldo). Clonás, compilás y arranca.
+- **Los assets ya están incluidos** en `bin/Client/Content/` y
+  `bin/Client/System/` (~375 MB con el pack HD: modelos `.bmd`, texturas
+  `.ozj`/`.ozt`, mapas, sonidos, música y las fuentes de respaldo). Clonás,
+  compilás y arranca.
 - **Una placa de video con OpenGL 3.3**, con el controlador instalado. Para WebGPU hace falta además DirectX 12,
   DirectX 11 o Vulkan; si no se puede crear el dispositivo, el cliente sigue con
   OpenGL.
-- **Un servidor 0.97.40.** El port está validado contra
+- **Un servidor 0.97.45.** El port está validado contra
   [MuEmu - Linux](../README.md) (season
   0.97k), que es la fuente autoritativa para el formato de los paquetes. Cada
   Release del cliente indica con qué versión del server funciona. Los servers
@@ -414,7 +449,7 @@ valores por defecto se ve como el 0.97k. Se cambian desde el mismo submenú, **O
 | `Shadows` | `0` sombra plana del original, `1` suaves, `2` fuertes | Sombras proyectadas con mapa de sombras. |
 | `DepthFog` | `0` / `1` | Niebla por profundidad con la cámara 3D. |
 | `DrawDistance` | `0` a `3` (×1, ×1,5, ×2, ×3) | Alcance de dibujado con la cámara 3D. Lejos sólo se dibuja el terreno. |
-| `HDTextures` | `0` / `1` | Usa las versiones `-hd` que estén al lado de los archivos (ver [Pack HD](#pack-hd)). No vienen en el repo; se aplica al reiniciar. |
+| `HDTextures` | `0` / `1` | Usa las versiones `-hd` que estén al lado de los archivos (ver [Pack HD](#pack-hd)). El repo trae un pack de texturas ×2; se aplica al reiniciar. |
 
 La **cámara 3D** (tecla **F10**, **F11** la vuelve a la normal) es la del DLL de
 inyección. La distancia de dibujado y la niebla por profundidad sólo se aplican
@@ -435,6 +470,8 @@ misma carpeta y con el mismo formato, con el sufijo `-hd` antes de la extensión
   vez pueden tener su `-hd`.
 
 Se activan con `HDTextures = 1`; con `0` no se busca ningún archivo extra.
+Desde 0.97.45 el cliente trae un pack de texturas ×2 en `Content/` (unas
+1800 texturas `-hd` de mapas, items, efectos e interfaz, ~90 MB).
 Es sólo visual: el server no se entera.
 
 ### Capas de datos

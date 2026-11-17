@@ -18,6 +18,107 @@ Servidor e cliente do Mu Online 0.97k num único repositório. O servidor (Mu-Li
 
 Cliente e servidor compartilham a numeração e saem juntos em cada Release. Até a 0.97.40 o cliente ficava em [Mu-97k-Client-Source](https://github.com/EmanuelCatania/Mu-97k-Client-Source), onde continuam os Releases anteriores.
 
+## Novidades da 0.97.45 — Fase 5, primeira parte
+
+Esta versão traz a primeira metade da Fase 5: conteúdo compartilhado entre
+cliente e servidor, autoridade do servidor e segurança. A 0.97.50 a conclui.
+
+- **Canal cifrado.** O tráfego entre o cliente e o GameServer, e também com o
+  ConnectServer, vai cifrado e autenticado (XChaCha20-Poly1305 com chaves
+  X25519 assinadas com Ed25519). Cada servidor tem sua identidade em
+  `Data/Keys/ServerIdentity.key`, que o GameServer gera sozinho na primeira vez;
+  o cliente lembra a chave pública de cada servidor e com ela verifica também o
+  catálogo. Veja [Identidade do servidor](docs/identidad-del-server.md).
+- **O cliente se organiza por conteúdo.** `Data/` vira `Content/` (uma pasta por
+  item, monstro, NPC, set, mapa e efeito, cada uma com seu `.toml`) e `System/`
+  (o mínimo para iniciar). As configurações, o cache e os logs do jogador vão
+  para `User/`. Os packs do jogador ficam em `Packs/`, e as versões `-hd` e
+  `-uhd` de uma textura, ao lado da clássica. O cliente agora traz um pacote de
+  texturas HD ×2. Uma instalação antiga é migrada com
+  `client/tools/migrar_data.py` (veja abaixo).
+- **Conteúdo do cliente a partir do servidor.** Na tela do logo, o cliente
+  compara seus `.toml` com os de `Data/ClientContent` do servidor e baixa os que
+  não coincidem. Se o ConnectServer não responder, segue com o que tem.
+- **Mais dados no catálogo:** gates, mana, AG e alcance das skills, empilhamento
+  e preços de itens, lista de `/move` e música por mapa. O cliente guarda um
+  cache e o servidor só manda o que mudou.
+- **Dados do servidor em TOML.** Por mapa em `Data/Maps/NN-Nome/` (`Map.toml`,
+  `Zones.toml`, `Gates.toml`, `Spawns.toml`, `Drops.toml`), itens por seção em
+  `Data/Items/` e invasões em `Data/Events/Invasions/`. Os `.txt` de sempre
+  continuam sendo lidos quando os TOML não existem. Os spawns são recarregados
+  a quente só nos mapas que mudaram.
+- **Autoridade do servidor:** orçamento de movimento, controle de velocidade de
+  ataque e de auto-poções, limite de pacotes por segundo por conexão, linha de
+  visão opcional para as skills de área, rejeições explícitas que o cliente
+  mostra, `AllowableIpList` também no Linux e consultas SQL escapadas.
+- **Pacotes mais completos:** vida dos monstros, CharSet expandido para os itens
+  custom, stats em um só bloco, detalhe dos próprios buffs (o painel C mostra o
+  que cada um soma), horários de eventos e velocidade de ataque dos outros
+  jogadores.
+- **Sinal de GM e administrador** sobre a cabeça, conforme o nível em
+  `Util/GameMaster.txt`: 1 é GM e 2 ou mais, administrador.
+- **Invocações da elfa:** escalonamento, orbes +7 a +10 e painel no admin.
+- **Painel web:** editor por mapa, com os spawns em modo visual e em texto.
+- **Fontes:** coleções `.ttc`, fontes CJK do sistema e negrito simulado quando a
+  família não o tem.
+- **Release sem ferramentas de teste.** `debug.log` e `fonts.log` ficam em
+  `User/` e são apagados ao sair se a sessão não teve erros, como o
+  `MuError.log` do original.
+- Correções: peixes de Atlans, um nome longo sobrescrevia a classe do
+  personagem no x64, o auto-equipar de flechas deixava um pack fantasma, pickup
+  com o inventário cheio, posição depois de um `/move`, botão de fechar do
+  painel de guild e o Arena Guard na entrada do estádio.
+
+**Compatibilidade: server 0.97.45 ↔ cliente 0.97.45.** O protocolo passou para a
+versão 13 e é negociado ao conectar: com um cliente ou servidor de outra versão,
+o login mostra *"versão incorreta"*. Atualize os dois juntos.
+
+### Como atualizar a partir da 0.97.43
+
+O banco de dados não muda.
+
+1. **Imagens.** Com o compose de imagens publicadas:
+
+   ```bash
+   docker compose -f docker-compose.images.yml pull mu-server mu-web mu-editor
+   docker compose -f docker-compose.images.yml up -d
+   ```
+
+   Para fixar a versão, use as imagens com tag `0.97.45`.
+2. **Volumes.** Não é preciso mexer neles para o servidor funcionar: tudo o que é
+   novo é opcional e o que faltar usa os valores de antes. A partir dos arquivos
+   desta versão você pode integrar:
+   - `GameServer/DATA/GameServerInfo - Common.dat`: os controles de autoridade
+     (`MoveCheck=2` com `MoveCheckBudget` e `MoveCheckTileTime`,
+     `CheckSpeedHack=1`, `CheckAutoPotionHack=1`, `AttackCheck=2`,
+     `SkillLineCheck`, `PacketRateCheck` e `PacketRateMax`). Os valores do
+     arquivo foram medidos contra o cliente.
+   - `Data/Maps/`, `Data/Items/` e `Data/Events/Invasions/`: os dados em TOML.
+     Para passar os seus sem perder mudanças, gere-os a partir dos seus `.txt`
+     com `mu-data import-maps`, `import-zones`, `import-gates`,
+     `import-spawns`, `import-drops`, `import-items` e `import-invasions`, e
+     revise-os com o `check-` de cada um.
+   - `Data/ClientContent/`: só se quiser distribuir `.toml` do cliente a partir
+     do servidor. Veja `Data/ClientContent/LEEME.md`.
+   - `Data/Text/*/Client.txt`: textos novos do cliente.
+   - `Data/Skill/Skill.txt`: as invocações 37 a 40 da elfa.
+3. **Cliente.** Compile-o a partir de `client/` com seu endereço e suas opções,
+   como sempre (veja o [README do cliente](client/README.pt-BR.md)). O cliente
+   novo não traz mais `Data/`, e sim `Content/` e `System/`. Se você tinha
+   distribuído um cliente com `Data/` e mudanças suas dentro, coloque esse
+   `Data/` ao lado do `main.exe` na pasta do cliente novo e rode
+   `python client/tools/migrar_data.py --cliente <essa pasta>`: sem outras
+   opções mostra o que faria e com `--aplicar` faz. O que for igual a uma versão
+   oficial é apagado, e o que você mudou vai para `Packs/datos-anteriores/`, que
+   o cliente continua lendo. Sem migrar, um `Data/` antigo continua sendo lido
+   como última camada, por compatibilidade.
+
+**Pterodactyl:** selecione `0.97.45` em `MU_RELEASE_TAG`. A imagem de runtime
+não muda. Com o servidor parado, extraia o arquivo da sua arquitetura numa pasta
+temporária, substitua os binários (`ConnectServer`, `JoinServer`, `DataServer`,
+`GameServer`, `mu-data`, `mu-trace`) e o `start.sh`, e mantenha seu `Data/` e
+seus INI.
+
 ## Novidades da 0.97.40 — conclusão da Fase 4
 
 - **Texto em UTF-8 de ponta a ponta.** O servidor deixa de converter para
@@ -160,7 +261,7 @@ Para fixar a versão, use a imagem `emapupi/mu-linux-97k:0.97.30` (amd64 e arm64
 5. Em `server/MuServer/ConnectServer/ServerList.dat`, colocar o IP do servidor (`127.0.0.1` para testar no mesmo PC).
 6. Iniciar nesta ordem: DataServer, JoinServer, ConnectServer e GameServer.
 
-O cliente `0.97.40` tem o endereço `mu.server-pups.space` compilado. Para apontá-lo para um servidor próprio sem recompilar, adicione a linha `127.0.0.1 mu.server-pups.space` em `C:\Windows\System32\drivers\etc\hosts` (como administrador) e remova-a ao terminar.
+O cliente tem o endereço `mu.server-pups.space` compilado. Para apontá-lo para um servidor próprio sem recompilar, adicione a linha `127.0.0.1 mu.server-pups.space` em `C:\Windows\System32\drivers\etc\hosts` (como administrador) e remova-a ao terminar.
 
 #### Windows x86 e dependências
 

@@ -7,8 +7,13 @@ cliente la usa para saber que sigue hablando con el mismo server de siempre.
 La misma clave autentica el **canal cifrado**: al conectarse, el GameServer firma
 con ella su saludo, y a partir de ahí todo lo que viaja entre el cliente y el
 server va cifrado y con verificación de integridad. Un tercero que escuche la red
-no puede leer el tráfico ni cambiarlo sin que la conexión se corte. El
-ConnectServer (la lista de servers) sigue en claro: sólo lleva datos públicos.
+no puede leer el tráfico ni cambiarlo sin que la conexión se corte.
+
+Desde 0.97.45 el ConnectServer usa la misma clave: lee el mismo
+`Data/Keys/ServerIdentity.key` y la conexión con la lista de servers también va
+cifrada. Por ese canal reparte además los `.toml` de `Data/ClientContent`. Si el
+ConnectServer no encuentra la clave, esa conexión sigue en claro como antes y no
+reparte nada.
 
 ## Dónde está
 

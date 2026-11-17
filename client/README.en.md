@@ -37,6 +37,40 @@ music.
 | Linux x64 | OpenGL 3.3 and WebGPU (Vulkan) | Complete; this is the published build |
 | Windows x86, Linux x86 | OpenGL 3.3 | Historical base: it builds, but it is not tested and gets no WebGPU |
 
+### What's new in 0.97.45 — Phase 5, first part
+
+- **Content per entity.** `Data/` becomes `Content/` (one folder per item,
+  monster, NPC, set, map and effect, with its `.toml`) and `System/` (the
+  minimum needed to start); the player's settings, cache and logs go to
+  `User/`. See [Data layers](#data-layers). An old client with `Data/` is moved
+  to the new layout with `tools/migrar_data.py`.
+- **HD pack.** The client ships a ×2 texture pack (`HDTextures = 1`). See
+  [HD pack](#hd-pack).
+- **Encrypted channel** with the GameServer and with the ConnectServer,
+  authenticated with each server's identity, which the client remembers in
+  `User/Cache/`.
+- **Content from the server.** On the logo screen, the client downloads from the
+  ConnectServer the `.toml` files that differ from its own. If the server does
+  not answer, it keeps what it has.
+- **Catalog:** gates, mana, AG and range of skills, item stacking and prices,
+  the `/move` list and music per map come from the server, cached on the client.
+- **Data in tables.** Monster, item, character and skill models, interface
+  textures, sounds and each map's loads come from `.toml` files; the network
+  dispatcher is a table and the code is organized by layer (`src/app`,
+  `assets`, `audio`, `game`, `net`, `platform`, `render`, `rhi`, `scenes`,
+  `ui`).
+- **From the server:** monster life, details of your own buffs (the C panel
+  shows what each one adds), other players' attack speed, explicit rejections
+  and the GM and administrator sign above the head.
+- **Fonts:** `.ttc` collections, system CJK fonts and simulated bold.
+- **Release builds without test tools:** F9 (benchmark) and F12 (FPS and render
+  profile) only in Debug or with `-DMU_BENCHMARK=ON`. `debug.log` and
+  `fonts.log` go to `User/` and are deleted on exit if there were no errors.
+
+**Compatibility: client 0.97.45 ↔ [server 0.97.45](../README.en.md).** The
+protocol moved to version 13 and is negotiated on connect: with a server of
+another version, login shows *"wrong version"*.
+
 ### What's new in 0.97.40 — end of Phase 4
 
 - **64 bits.** The client is built and published as x64. The 32-bit layouts of
@@ -73,13 +107,14 @@ server, and vice versa.
 
 ## What you need
 
-- **The assets are already included** in `bin/Client/Data/` (~209 MB: `.bmd`
-  models, `.ozj`/`.ozt` textures, maps, sounds, music and the fallback fonts).
-  Clone, build, and it runs.
+- **The assets are already included** in `bin/Client/Content/` and
+  `bin/Client/System/` (~375 MB with the HD pack: `.bmd` models, `.ozj`/`.ozt`
+  textures, maps, sounds, music and the fallback fonts). Clone, build, and it
+  runs.
 - **A graphics card with OpenGL 3.3**, with its driver installed. WebGPU also
   needs DirectX 12, DirectX 11 or Vulkan; if the device can't be created, the
   client keeps going with OpenGL.
-- **A 0.97.40 server.** The port is validated against
+- **A 0.97.45 server.** The port is validated against
   [MuEmu - Linux](../README.en.md) (season
   0.97k), which is the authoritative source for the packet format. Each client
   Release says which server version it works with. 0.97k servers without the
@@ -411,7 +446,7 @@ Advanced → Graphics**, and saved under `[Window]`.
 | `Shadows` | `0` the original's flat shadow, `1` soft, `2` strong | Cast shadows with a shadow map. |
 | `DepthFog` | `0` / `1` | Depth fog with the 3D camera. |
 | `DrawDistance` | `0` to `3` (×1, ×1.5, ×2, ×3) | Draw range with the 3D camera. Far away only the terrain is drawn. |
-| `HDTextures` | `0` / `1` | Uses the `-hd` versions found next to the files (see [HD pack](#hd-pack)). They are not in the repo; applies on restart. |
+| `HDTextures` | `0` / `1` | Uses the `-hd` versions found next to the files (see [HD pack](#hd-pack)). The repo ships a ×2 texture pack; applies on restart. |
 
 The **3D camera** (**F10**, **F11** puts it back to normal) is the injection
 DLL's. Draw distance and depth fog only apply with it: the normal camera sees
@@ -432,6 +467,8 @@ and the same format, with a `-hd` suffix before the extension:
   can have their own `-hd` in turn.
 
 They are used with `HDTextures = 1`; with `0` no extra file is looked up. It is visual only: the server is not involved.
+Since 0.97.45 the client ships a ×2 texture pack in `Content/` (about 1800
+`-hd` textures for maps, items, effects and interface, ~90 MB).
 
 ### Data layers
 

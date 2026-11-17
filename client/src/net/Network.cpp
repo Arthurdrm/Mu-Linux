@@ -120,7 +120,8 @@ void CNetwork::OnSocketEvent(WORD evt, WORD err)
         // caída) la UI de login mostrará el chat-log y el usuario verá
         // "Conexión cerrada" sin que el cliente se mate solo.
         extern void UIChatLogWindow_AddText(const char* strID, const char* msg, int color);
-        if (!reconnecting)
+        // En la intro (sincronización del contenido) no hay chat donde avisar.
+        if (!reconnecting && SceneFlag != 1)
             UIChatLogWindow_AddText((const char*)&DAT_083a7c5c, GlobalText[3], 1);
         if (Platform::GetSocket().IsOpen(SocketClientSocket)) {
             Platform::GetSocket().Close((SOCKET)SocketClientSocket);
@@ -232,6 +233,9 @@ void CNetwork::EndConnectServerSession()
 void CNetwork::RequestServerList()
 {
     if (!m_ConnectServerMode || m_ServerListRequested || !Platform::GetSocket().IsConnected(SocketClientSocket)) return;
+    // En la intro la conexión es para sincronizar el contenido: la lista la
+    // pide el login (Game_SceneUpdate) cuando la va a mostrar.
+    if (SceneFlag == 1) return;
     const BYTE req[4] = { 0xC1, 0x04, 0xF4, 0x02 };
     SendToConnectServer(req, 4);
     m_ServerListRequested = true;

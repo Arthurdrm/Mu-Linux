@@ -28,6 +28,9 @@ void OnNewConnection(bool allowPlain);
 // true si la conexión actual terminó el saludo del canal cifrado.
 bool IsSecure();
 
+// true si la conexión siguió en claro (el ConnectServer no habla el canal).
+bool IsPlain();
+
 // Manda `len` bytes (uno o más paquetes ya armados).  Siempre los acepta
 // enteros: lo que el socket no toma ahora queda en la cola de SocketClient, que
 // vacía CWsctlc_FDWriteSend en el próximo FD_WRITE.

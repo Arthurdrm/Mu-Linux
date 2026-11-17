@@ -14,6 +14,10 @@
 // Carga la sección `section` de Content/<file>.
 void AssetList_Load(const char* file, const char* section);
 
+// Olvida los archivos ya leídos: la próxima carga los vuelve a leer (después
+// de que la sincronización de la intro reemplaza alguno).
+void AssetList_ClearCache();
+
 // Texturas de la interfaz (Content/interface/textures.toml).
 inline void TextureList_Load(const char* section)
 {

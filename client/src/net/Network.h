@@ -61,11 +61,14 @@ public:
     void BeginConnectServerSession();   // modo CS, lista todavía sin pedir
     void EndConnectServerSession();     // vuelta al GameServer
 
+    // C1 04 F4 02, una sola vez por sesión de CS.  Sale al conectar, salvo en la
+    // intro: ahí lo pide el login, por la conexión que dejó la sincronización.
+    void RequestServerList();
+
 private:
     void SendFrameC1(const BYTE* pkt, int len);
     void SendFrameC3(const BYTE* pkt, int len);
     void SendResolved(const BYTE* pkt, int len, bool chosenC3, const char* who);
-    void RequestServerList();   // C1 04 F4 02, una sola vez por sesión de CS
 
     char m_SendSerial = 0; // IDA: DAT_05826CEB (0x05826CEB)
     DWORD m_ReceiveSerial = 0; // IDA: g_byPacketSerialRecv (0x05826CEC)

@@ -30,6 +30,7 @@
 #include "stdafx.h"
 #include <algorithm>
 #include "platform/ITimer.h"
+#include "platform/ISocket.h"
 #include "net/Reconnect.h"
 #include "net/PacketFrame.h"
 
@@ -168,7 +169,12 @@ int Game_SceneUpdate(void)
         // con F4/04 (nombres) + F4/02 (load). Al elegir server mandamos F4/03 y
         // el redirect nos lleva al GameServer. Si NO hay línea 2, queda el flujo
         // directo clásico (conectar al elegir server).
-        if (gNetwork.HasConnectServer()) {
+        if (gNetwork.HasConnectServer() && gNetwork.IsConnectServerMode()
+            && Platform::GetSocket().IsConnected(SocketClientSocket)) {
+            // La intro dejó abierta la conexión con el ConnectServer (la usó para
+            // sincronizar el contenido): la lista se pide por ella.
+            gNetwork.RequestServerList();
+        } else if (gNetwork.HasConnectServer()) {
             gNetwork.BeginConnectServerSession();
             // CRÍTICO: el ConnectServer usa paquetes PLANOS (sin el byte-XOR
             // MuEmu del GameServer). Desactivamos la capa MuEmu mientras hablamos

@@ -5,6 +5,7 @@
 #include "app/config/UserSettings.h"
 #include "game/core/MapManager.h"
 #include "render/EquipmentVisuals.h"
+#include "render/GmSign.h"
 #include "game/entity/CharacterEffects.h"
 
 extern "C" const char* Guild_GetMarkName(int row);
@@ -563,6 +564,9 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     Equipment_Draw(AsCharacter(param_1), 2);
 
     if (sVar2 == 390) {
+        // Signo de GM sobre la cabeza (5.2 RenderParts), con el cuerpo ya dibujado.
+        GmSign::Render(param_1);
+
         // ── Capa del Magic Gladiator (IDA RenderCharacter L667-743) ───────────
         // La capa NO es una malla del modelo: es un objeto de **tela**
         // (cloth/verlet) construido con `sub_408130`, texturizado con

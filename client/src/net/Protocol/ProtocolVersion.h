@@ -19,4 +19,8 @@
 // 8: stats en un bloque View* dentro de F3:03, F3:05 y F3:06; se quitan F3:E0 y F3:E1.
 // 9: horarios de eventos e invasiones en el C2:91; se quitan F3:E6 y F3:F2.
 // 10: detalle de los buffs propios en el 0x07 expandido; se quita F3:F1.
-constexpr unsigned short MU_PROTOCOL_VERSION = 12;
+// 11: firma del manifiesto del catálogo (F3:FC antes del F3:F6).
+// 12: canal cifrado (Common/SecureChannel): saludo al conectar y todo el tráfico
+//     en registros XChaCha20-Poly1305; se quita el XOR de byte de HackCheck.
+// 13: nivel de GM de cada jugador en el 0x12 (signo sobre la cabeza).
+constexpr unsigned short MU_PROTOCOL_VERSION = 13;

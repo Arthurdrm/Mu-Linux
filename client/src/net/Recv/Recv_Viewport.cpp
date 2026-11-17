@@ -3,6 +3,7 @@
 // Ver Net/Recv/NetRecv.h.
 
 #include "stdafx.h"
+#include "render/GmSign.h"
 #include "game/entity/EntityView.h"
 #include "ui/HealthBar.h"
 #include "game/combat/PlayerAttackSpeed.h"
@@ -322,9 +323,10 @@ void NetRecv_12(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // ViewSkillState, name[40], tx, ty, DirAndPkLevel, padding = 62 bytes.
     // Protocolo 3 (Fase 5, A5): + PhysiSpeed, MagicSpeed (WORD) = 66 bytes.
     // Protocolo 7 (Fase 5, C2): + ExtItem[9] (WORD) = 84 bytes.
+    // Protocolo 13: + GmLevel, reservado = 86 bytes.
     const int NAME = (int)NetText::CharacterNameSize;
     int entryStart = 4 + hdrOff;
-    const int entryStride = 44 + NAME;
+    const int entryStride = 46 + NAME;
     if ((entryStart + count * entryStride) > Size) {
         NetLog("NET:    0x12 SKIP - payload corto (count=%d, size=%d)", count, Size);
         return;
@@ -347,6 +349,7 @@ void NetRecv_12(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         BYTE dirpk = e[0x14 + NAME];
         BYTE dir = (dirpk >> 4) & 0x0F;
         const WORD viewSkillState = (WORD)(e[0x10] | (e[0x11] << 8));
+        const BYTE gmLevel = e[0x2C + NAME];
         // Un refresco de viewport por gate de mapa de MuEmu puede devolver
         // como eco al personaje local. El original mantiene al Hero como único objeto
         // para HeroKey; pasarlo por CreateCharacter crea
@@ -358,6 +361,9 @@ void NetRecv_12(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         BYTE* heroEnt = (BYTE*)(uintptr_t)Hero;
         const WORD heroKeyReal = heroEnt ? AsCharacter(heroEnt)->Key : g_HeroKey;
         if (entityId == g_HeroKey || entityId == heroKeyReal) {
+            // La entrada propia suele llegar mientras OpenWorld todavía carga y el
+            // héroe no existe: el nivel se guarda aparte, no en la entidad.
+            GmSign::SetHeroLevel(gmLevel);
             BYTE* hero = (BYTE*)(uintptr_t)Hero;
             if (hero) {
                 AsCharacter(hero)->PositionX = x;
@@ -492,6 +498,7 @@ void NetRecv_12(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             // para que Mana Shield y el resto de los buffs persistentes
             // appear without waiting for another 0x07 transition.
             ApplyPersistentSkillEffect97k(slot, viewSkillState, 1);
+            GmSign::SetLevel(slot, gmLevel);
             NetLog("NET:    0x12 spawn player slot=%d id=%d name=%s pos=(%d,%d)",
                    spawnSlot, entityId, name, x, y);
         }

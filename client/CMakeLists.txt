@@ -79,6 +79,7 @@ set(MU_SOURCES
     src/render/MaterialVisuals.cpp
     src/render/LooseWingVisuals.cpp
     src/render/EquipmentVisuals.cpp
+    src/render/GmSign.cpp
     src/game/core/RenderDerivedState.cpp
     src/game/core/RenderSnapshots.cpp
     src/game/core/RenderInterpolation.cpp
@@ -453,6 +454,7 @@ set(MU_HEADERS
     src/render/MaterialVisuals.h
     src/render/LooseWingVisuals.h
     src/render/EquipmentVisuals.h
+    src/render/GmSign.h
     src/game/core/FramePointerSet.h
     src/game/core/RenderDerivedState.h
     src/game/core/RenderSnapshots.h

@@ -46,7 +46,8 @@ void NetLog(const char*,...){}
 void ChangeCharacterExt(int index,BYTE*){Require(index==HeroIndex);++equipped;}
 void Hero_ApplyCatalogEquipment(CHARACTER*){}
 void ApplyPersistentSkillEffect97k(BYTE*,WORD,int){++buffed;}
-void Apply(BYTE* hero,const char* name){BYTE x=11,y=12,tx=13,ty=14,dir=3,dirpk=0x32;WORD viewSkillState=0;BYTE payload[62]{};const BYTE* e=payload;
+namespace GmSign{void SetLevel(const void*,int){}}
+void Apply(BYTE* hero,const char* name){BYTE x=11,y=12,tx=13,ty=14,dir=3,dirpk=0x32,gmLevel=0;WORD viewSkillState=0;BYTE payload[62]{};const BYTE* e=payload;
 '''+branch+r'''
 }
 int main(){

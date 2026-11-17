@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Viewport.h"
+#include "GameMaster.h"
 #include "EffectManager.h"
 #include "Guild.h"
 #include "Map.h"
@@ -699,6 +700,10 @@ void CViewport::GCViewportPlayerSend(int aIndex)
 
 		gObjFillExtItems(lpTarget, info.ExtItem);
 
+		info.GmLevel = (BYTE)gGameMaster.GetGameMasterLevel(lpTarget);
+
+		info.GmReserved = 0;
+
 		int InfoSize = sizeof(info);
 
 		info.ViewSkillState = lpTarget->ViewSkillState;
@@ -1294,6 +1299,10 @@ void CViewport::GCViewportSimplePlayerSend(LPOBJ lpObj)
 	info.MagicSpeed = (WORD)lpObj->MagicSpeed;
 
 	gObjFillExtItems(lpObj, info.ExtItem);
+
+	info.GmLevel = (BYTE)gGameMaster.GetGameMasterLevel(lpObj);
+
+	info.GmReserved = 0;
 
 	int InfoSize = sizeof(info);
 

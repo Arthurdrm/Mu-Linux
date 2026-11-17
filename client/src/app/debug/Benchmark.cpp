@@ -25,7 +25,7 @@ namespace {
 constexpr int kKeyBase   = 0x6000;   // lejos de los índices que reparte el server
 constexpr int kMaxCount  = 350;      // el pool tiene 400 slots; dejamos lugar a lo real
 constexpr int kNameSize  = (int)NetText::CharacterNameSize;
-constexpr int kEntrySize = 44 + kNameSize;   // PMSG_VIEWPORT_PLAYER (protocolo 7: + velocidades + ExtItem)
+constexpr int kEntrySize = 46 + kNameSize;   // PMSG_VIEWPORT_PLAYER (protocolo 13: + velocidades + ExtItem + GmLevel)
 
 struct Bot {
     WORD key;

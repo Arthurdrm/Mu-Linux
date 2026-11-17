@@ -389,6 +389,11 @@ Baseado nas sources do Kayito.
 - `emapupi/mu-linux-97k` (server), `emapupi/mu-linux-97k-web` (web).
 - `emapupi/mu-linux-97k-mu-editor` (API do editor), `emapupi/mu-linux-97k-mysql` (MySQL/init).
 
+São publicadas sozinhas ao publicar uma Release no GitHub
+(`.github/workflows/release.yml`): amd64 e arm64, com o tag da Release e `latest`.
+O mesmo workflow anexa à Release os arquivos do Pterodactyl. Dá para repetir para
+um tag em *Actions > Release > Run workflow*.
+
 ## Update 1 (2026-02-20)
 
 - Editor web para dados, contas, personagens, shops, spawns, gates, configurações, itens, monstros, drops, backups e snapshots.

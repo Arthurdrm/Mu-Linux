@@ -26,4 +26,5 @@
 // 11: firma del manifiesto del catálogo (F3:FC antes del F3:F6).
 // 12: canal cifrado (Common/SecureChannel): saludo al conectar y todo el tráfico
 //     en registros XChaCha20-Poly1305; se quita el XOR de byte de HackCheck.
-#define MU_PROTOCOL_VERSION 12
+// 13: nivel de GM de cada jugador en el 0x12 (signo sobre la cabeza).
+#define MU_PROTOCOL_VERSION 13

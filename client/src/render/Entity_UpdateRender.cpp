@@ -5,6 +5,7 @@
 #include "app/config/UserSettings.h"
 #include "game/core/MapManager.h"
 #include "render/EquipmentVisuals.h"
+#include "render/GmSign.h"
 #include "game/entity/CharacterEffects.h"
 
 extern "C" const char* Guild_GetMarkName(int row);
@@ -787,6 +788,9 @@ void Equipment_Tick(intptr_t entity, int highlighted)
         // ── Helper render (IDA 1267-1288) ──────────────────────────────────
         // Pet helper (Type 817) attached at bone 34 of player.
         Render_PlayerHelper((intptr_t)param_1, (intptr_t)puVar13);
+
+        // Signo de GM sobre la cabeza (5.2 RenderParts, antes del ala).
+        GmSign::Render(param_1);
 
         // ── Back-render decision (port WeaponView.cpp:49) ───────────────────
         // Si bBindBack=1, renderiza armas en la espalda (LinkBone

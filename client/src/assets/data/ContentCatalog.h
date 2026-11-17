@@ -163,6 +163,10 @@ public:
     void GetFogRange(int map, float& start, float& end) const;
     void GetFogColor(int map, float rgba[4]);
 
+    // Modelo propio del cliente (no del catálogo) en un slot dinámico; una vez por
+    // ruta.  -1 si no se pudo cargar.
+    int LoadClientModel(const char* folder, const char* name) { return LoadModel(folder, name, -1); }
+
 private:
     void Publish();
     void ApplyGates();

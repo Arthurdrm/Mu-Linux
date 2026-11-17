@@ -56,6 +56,10 @@ struct PMSG_VIEWPORT_PLAYER
 	// CharSet expandido (Fase 5, C2, protocolo 7): índice de los items >= 512
 	// equipados en los slots 0..8; 0xFFFF = vanilla o vacío.  Antes F3:EB.
 	WORD ExtItem[9];
+	// Signo sobre la cabeza (protocolo 13): nivel de GameMaster.txt, 0 = jugador,
+	// 1 = GM, 2 = administrador.
+	BYTE GmLevel;
+	BYTE GmReserved;
 };
 
 // Llena ExtItem[9] con el equipo agregado (>= 512) de los slots 0..8.

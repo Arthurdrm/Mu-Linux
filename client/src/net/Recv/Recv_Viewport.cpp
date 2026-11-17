@@ -361,6 +361,9 @@ void NetRecv_12(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
         BYTE* heroEnt = (BYTE*)(uintptr_t)Hero;
         const WORD heroKeyReal = heroEnt ? AsCharacter(heroEnt)->Key : g_HeroKey;
         if (entityId == g_HeroKey || entityId == heroKeyReal) {
+            // La entrada propia suele llegar mientras OpenWorld todavía carga y el
+            // héroe no existe: el nivel se guarda aparte, no en la entidad.
+            GmSign::SetHeroLevel(gmLevel);
             BYTE* hero = (BYTE*)(uintptr_t)Hero;
             if (hero) {
                 AsCharacter(hero)->PositionX = x;
@@ -417,7 +420,6 @@ void NetRecv_12(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
                 ChangeCharacterExt((int)HeroIndex, (BYTE*)e + 5);
                 Hero_ApplyCatalogEquipment(AsCharacter(hero));
                 ApplyPersistentSkillEffect97k(hero, viewSkillState, 1);
-                GmSign::SetLevel(hero, gmLevel);
             }
             NetLog("NET:    0x12 own HeroKey=%u synchronized, no viewport clone",
                    (unsigned)entityId);

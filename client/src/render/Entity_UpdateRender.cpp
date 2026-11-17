@@ -564,6 +564,9 @@ void* __cdecl RenderCharacter(void *param_1_, void *param_2_, void *param_3)
     Equipment_Draw(AsCharacter(param_1), 2);
 
     if (sVar2 == 390) {
+        // Signo de GM sobre la cabeza (5.2 RenderParts), con el cuerpo ya dibujado.
+        GmSign::Render(param_1);
+
         // ── Capa del Magic Gladiator (IDA RenderCharacter L667-743) ───────────
         // La capa NO es una malla del modelo: es un objeto de **tela**
         // (cloth/verlet) construido con `sub_408130`, texturizado con
@@ -788,9 +791,6 @@ void Equipment_Tick(intptr_t entity, int highlighted)
         // ── Helper render (IDA 1267-1288) ──────────────────────────────────
         // Pet helper (Type 817) attached at bone 34 of player.
         Render_PlayerHelper((intptr_t)param_1, (intptr_t)puVar13);
-
-        // Signo de GM sobre la cabeza (5.2 RenderParts, antes del ala).
-        GmSign::Render(param_1);
 
         // ── Back-render decision (port WeaponView.cpp:49) ───────────────────
         // Si bBindBack=1, renderiza armas en la espalda (LinkBone

@@ -13,6 +13,8 @@
 #include "stdafx.h"
 #include "render/GmSign.h"
 #include "assets/data/ContentCatalog.h"
+#include "render/EquipmentVisuals.h"
+#include "platform/ITimer.h"
 #include "assets/model/ModelTypes.h"
 #include "game/entity/EntityTypes.h"
 #include "globals.h"
@@ -31,9 +33,11 @@ struct State {
     BYTE  priorAction = 0;
     float frame = 0.0f;
     float priorFrame = 0.0f;
+    DWORD lastTick = 0;
 };
 
 State s_State[kSlots];
+BYTE  s_HeroLevel = 0;
 
 int SlotOf(const void* character)
 {
@@ -44,9 +48,13 @@ int SlotOf(const void* character)
     return slot < (uintptr_t)kSlots ? (int)slot : -1;
 }
 
+// El modelo se carga fuera del dibujo (al llegar el nivel por red): el render
+// restaura la tabla de modelos al terminar cada cuadro (RenderDerivedState), y
+// una carga hecha ahí se perdería.
+int s_Model[3] = { -2, -2, -2 };   // -2 = todavía no se intentó
+
 int Model(int level)
 {
-    static int s_Model[3] = { -2, -2, -2 };   // -2 = todavía no se intentó
     if (level < 1 || level > 2) return -1;
     if (s_Model[level] == -2)
         s_Model[level] = level == 2 ? gContentCatalog.LoadClientModel("Skill/AdminSign/", "musign")
@@ -65,27 +73,50 @@ void SetLevel(const void* character, int level)
     if (state.key != key || state.level != (BYTE)level) state = State{};
     state.key = key;
     state.level = (BYTE)(level < 0 ? 0 : level > 2 ? 2 : level);
+    Model(state.level);
+}
+
+void SetHeroLevel(int level)
+{
+    s_HeroLevel = (BYTE)(level < 0 ? 0 : level > 2 ? 2 : level);
+    Model(s_HeroLevel);
 }
 
 void Render(void* character)
 {
+    // Sólo dentro del mundo: el nivel llega con el viewport, y en la selección
+    // de personaje Hero apunta a un slot de la lista con el nivel de la sesión
+    // anterior.
+    if (SceneFlag != 5) return;
     const int slot = SlotOf(character);
     if (slot < 0) return;
     State& state = s_State[slot];
     CHARACTER& c = *AsCharacter(character);
+    if (character == (void*)(uintptr_t)Hero) {
+        if (state.key != c.Key || state.level != s_HeroLevel) state = State{};
+        state.key = c.Key;
+        state.level = s_HeroLevel;
+    }
     if (!state.level || state.key != c.Key) return;
     OBJECT& owner = c.Object;
     if (owner.Type != 390 || owner.Alpha < 0.01f || !owner.BoneMatrices || !Models) return;
     void* ownerModel = (void*)(Models + owner.Type * BMD_STRIDE);
     if (kHeadBone >= AsModel(ownerModel)->NumBones) return;
-    const int model = Model(state.level);
-    if (model < 0) return;
+    const int model = s_Model[state.level];
+    if (model < 0 || AsModel((void*)(Models + model * BMD_STRIDE))->NumMeshs <= 0) return;
 
-    // CSParts::IRender: posición sobre el hueso, con la pose del dueño.
+    // CSParts::IRender: posición sobre el hueso, con la pose que se acaba de
+    // dibujar.  El contexto del BMD del jugador es compartido: se fija el del
+    // dueño y se restaura al salir.
     float offset[3] = { 70.0f, -5.0f, 0.0f };
     alignas(16) unsigned char buffer[sizeof(OBJECT)] = {};
     OBJECT& o = *reinterpret_cast<OBJECT*>(buffer);
-    BMD_TransformPosition(ownerModel, (float*)owner.BoneMatrices + 12 * kHeadBone, offset, o.Position, 1);
+    {
+        EquipmentModelContext savedOwner(ownerModel);
+        AsModel(ownerModel)->BodyScale = owner.Scale;
+        memcpy(AsModel(ownerModel)->BodyOrigin, owner.Position, sizeof(owner.Position));
+        BMD_TransformPosition(ownerModel, (float*)owner.BoneMatrices + 12 * kHeadBone, offset, o.Position, 1);
+    }
 
     // CSParts::CSParts.
     o.Type = (short)model;
@@ -101,9 +132,18 @@ void Render(void* character)
     o.Angle[2] = 45.0f;
     o.Velocity = 0.5f;
 
-    BMD* b = AsModel((void*)(Models + model * BMD_STRIDE));
+    void* signModel = (void*)(Models + model * BMD_STRIDE);
+    EquipmentModelContext savedSign(signModel);
+    BMD* b = AsModel(signModel);
     b->CurrentAction = 0;
-    BMD__PlayAnimation(b, &state.frame, &state.priorFrame, &state.priorAction, o.Velocity);
+    // El 5.2 avanza 0.5 cuadros por frame a 25 fps; acá se dibuja más seguido,
+    // así que el avance va por tiempo (40 ms = un frame del original).
+    const DWORD now = Platform::GetTimer().Ticks();
+    DWORD elapsed = state.lastTick ? now - state.lastTick : 40;
+    if (elapsed > 200) elapsed = 200;
+    state.lastTick = now;
+    if (elapsed)
+        BMD__PlayAnimation(b, &state.frame, &state.priorFrame, &state.priorAction, o.Velocity * (float)elapsed / 40.0f);
     o.AnimationFrame = state.frame;
     o.PriorAnimationFrame = state.priorFrame;
     o.PriorAction = state.priorAction;

@@ -1,4 +1,5 @@
 #include "platform/SDL3/SDLFont.h"
+#include "platform/SessionLog.h"
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_TRUETYPE_TABLES_H
@@ -603,6 +604,14 @@ uint32_t SDLFont::DecodeByte(uint8_t byte)
     return byte >= 0x80 && byte < 0xa0 ? extended[byte - 0x80] : byte;
 }
 
+// User/fonts.log: qué archivo resolvió cada fuente pedida.  Usar la fuente de
+// respaldo o no poder cargar ninguna cuenta como error (el archivo queda).
+static Platform::SessionLog& FontLog()
+{
+    static Platform::SessionLog log("fonts.log");
+    return log;
+}
+
 bool SDLFont::LoadFamily(const char* family, bool bold, bool italic, int height,
     int width, bool underline, bool strikeOut, std::string& error, const char* assetRoot)
 {
@@ -654,6 +663,7 @@ bool SDLFont::LoadFamily(const char* family, bool bold, bool italic, int height,
     if (!loaded) {
         error += ": " + path;
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Fuente: %s", error.c_str());
+        FontLog().Write(("ERROR " + requested + ": " + error).c_str(), true);
         return false;
     }
     impl->underline = underline;
@@ -669,15 +679,12 @@ bool SDLFont::LoadFamily(const char* family, bool bold, bool italic, int height,
         }
     }
     SDL_Log("Fuente %s -> %s, altura %d%s", requested.c_str(), path.c_str(), height, fallback ? " (respaldo)" : "");
-#if !defined(NDEBUG)
-    // Log persistente de las fuentes resueltas, sólo en Debug: se agrega en cada
-    // sesión y en Release no tiene quien lo lea.
-    if (FILE* log = std::fopen("fonts.log", "a")) {
-        std::fprintf(log, "%s -> %s; altura=%d; bold=%d; italic=%d%s%s\n", requested.c_str(), path.c_str(), height, bold, italic,
-            fallback ? "; respaldo" : "", syntheticBold ? "; negrita simulada" : "");
-        std::fclose(log);
+    {
+        char line[512];
+        std::snprintf(line, sizeof(line), "%s -> %s; altura=%d; bold=%d; italic=%d%s%s", requested.c_str(), path.c_str(),
+            height, bold, italic, fallback ? "; respaldo" : "", syntheticBold ? "; negrita simulada" : "");
+        FontLog().Write(line, fallback);
     }
-#endif
     return true;
 }
 }

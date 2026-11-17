@@ -491,6 +491,7 @@ set(MU_HEADERS
     src/platform/IFileSystem.h
     src/platform/ContentLayers.h
     src/platform/UserPath.h
+    src/platform/SessionLog.h
     src/platform/ISocket.h
     src/platform/SDL3/SDLFont.h
     src/render/GlyphAtlas.h

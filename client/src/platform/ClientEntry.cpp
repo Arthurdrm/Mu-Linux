@@ -28,6 +28,7 @@
 
 #include "stdafx.h"
 #include "platform/UserPath.h"
+#include "platform/SessionLog.h"
 #include "app/core/DataPrefetch.h"
 #include "render/ResourceTables.h"
 #include "platform/Diagnostics.h"
@@ -804,6 +805,7 @@ int main(int, char**)
     Game_DestroyWindow();
     Platform::GetWindow().Shutdown();
     DbgLog_Finish();
+    Platform::SessionLog::FinishAll();
 
 #ifdef _WIN32
     return (int)msg.wParam;

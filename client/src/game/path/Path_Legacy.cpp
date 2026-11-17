@@ -206,12 +206,15 @@ static int PF_AStar(int sx, int sy, int tx, int ty, int iWall, bool bErrorCheck,
         endIdx = bestIdx;                  // camino parcial hacia el destino
     } else {
 #if !defined(NDEBUG)
-        // Diagnóstico de desarrollo: un click sin camino es normal en el juego y
-        // en Release marcaría el debug.log como sesión con errores.
+        // Diagnóstico de desarrollo, no un error: la búsqueda a mejor esfuerzo
+        // no encontró ninguna casilla más cerca del destino que el origen (p. ej.
+        // click en una pared pegada).  El original (PathFinding2) también
+        // devuelve false ahí y el héroe no se mueve.  En Release marcaría el
+        // debug.log como sesión con errores.
         static int s_pflogF = 0;
         if (s_pflogF++ < 30) {
             char b[200];
-            Platform::TextFormat(b, "A* FAIL #%d: src=(%d,%d) dst=(%d,%d) iWall=%d rad=%d errChk=%d explored=%d",
+            Platform::TextFormat(b, "A* sin camino #%d: src=(%d,%d) dst=(%d,%d) iWall=%d rad=%d errChk=%d explored=%d",
                       s_pflogF, sx, sy, tx, ty, iWall, (int)fDistance, (int)bErrorCheck, explored);
             DbgLogPublic(b);
         }

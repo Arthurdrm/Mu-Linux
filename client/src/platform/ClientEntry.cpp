@@ -274,9 +274,41 @@ void GameGuard_TickCheck(void)
 //   ~60 bloques unreachable (dead code). 63 phantom stack params (anti-tamper stack padding).
 //   HashTable tracking de DAT_055ca01c, g_iNoMouseTime, etc. entre cada paso.
 // ─────────────────────────────────────────────────────────────────────────────
-// ── TRACING DE DEBUG (temporal, para diagnosticar la pantalla negra) ──────────
+// ── debug.log ───────────────────────────────────────────────────────────────
+// En Release funciona como el MuError.log del original: se escribe durante la
+// sesión y, si se sale normalmente sin haber anotado errores, se borra
+// (DbgLog_Finish).  Si el cliente se cierra de golpe o crashea, queda.  En
+// Debug se conserva siempre.
 extern "C" void DbgLogPublic(const char* msg);
 extern "C" void CsmWatchdog(const char *tag);
+static char s_DbgLogPath[80] = {};
+static volatile LONG s_DbgLogHadError = 0;
+static volatile LONG s_DbgLogClosed = 0;   // después de DbgLog_Finish no se escribe más
+#ifdef _WIN32
+static HANDLE s_DbgLogHandle = INVALID_HANDLE_VALUE;
+#else
+static FILE* s_DbgLogFile = nullptr;
+#endif
+
+// Una línea cuenta como error si nombra una falla.  El texto ya pasó por el
+// sanitizado a ASCII, así que los acentos llegan como '?' ("fall??", "inv??lida").
+static bool DbgLog_IsError(const char* text)
+{
+    char lower[512];
+    std::size_t n = 0;
+    for (; text[n] && n + 1 < sizeof(lower); ++n)
+        lower[n] = (char)((text[n] >= 'A' && text[n] <= 'Z') ? text[n] + 32 : text[n]);
+    lower[n] = 0;
+    static const char* const kWords[] = { "error", "fail", "no se pud", "invalid", "inv??lid",
+                                          "crash", "corrupt", "not found", "no encontr", "abort" };
+    for (const char* word : kWords)
+        if (strstr(lower, word)) return true;
+    // "fall" (falla, falló, FALLO) pero no "fallback".
+    for (const char* at = strstr(lower, "fall"); at; at = strstr(at + 4, "fall"))
+        if (strncmp(at, "fallback", 8) != 0) return true;
+    return false;
+}
+
 static void DbgLog(const char* msg)
 {
     // Sin guard IsDebuggerPresent acá: el volcado binario de MuEmu::DumpHex (que
@@ -287,7 +319,7 @@ static void DbgLog(const char* msg)
     s_inside = true;
 
     static volatile LONG s_killed = 0;
-    if (s_killed) { s_inside = false; return; }
+    if (s_killed || s_DbgLogClosed) { s_inside = false; return; }
 
     char buf[600];
     const char* safeMsg = msg ? msg : "(null)";
@@ -305,26 +337,26 @@ static void DbgLog(const char* msg)
         sanitized[j] = 0;
     }
 
+    if (DbgLog_IsError(sanitized)) s_DbgLogHadError = 1;
     int n = Platform::TextFormat(buf, "[%u] %s\r\n", t, sanitized);
     if (n > 0) {
         // Salida a debug.log, con kill-switch si no se puede abrir (bajo debugger se
         // usa OutputDebugStringA, ver abajo).
 #ifdef _WIN32
-        static HANDLE h = INVALID_HANDLE_VALUE;
+        HANDLE& h = s_DbgLogHandle;
         if (h == INVALID_HANDLE_VALUE) {
             // Fase 5 (E1): el log va a User/ (Platform/UserPath.h).
             Platform::PrepareUserDir();
-            char path[64];
-            Platform::UserPath(path, "debug.log");
-            h = CreateFileA(path, GENERIC_WRITE, FILE_SHARE_READ,
+            Platform::UserPath(s_DbgLogPath, "debug.log");
+            h = CreateFileA(s_DbgLogPath, GENERIC_WRITE, FILE_SHARE_READ,
                             NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
             if (h == INVALID_HANDLE_VALUE) {
                 // Otro cliente de la misma carpeta ya tiene debug.log abierto:
                 // el segundo escribe en debug-<pid>.log en vez de quedarse mudo.
-                char name[64], alt[80];
+                char name[64];
                 Platform::TextFormat(name, "debug-%u.log", (unsigned)GetCurrentProcessId());
-                Platform::UserPath(alt, name);
-                h = CreateFileA(alt, GENERIC_WRITE, FILE_SHARE_READ,
+                Platform::UserPath(s_DbgLogPath, name);
+                h = CreateFileA(s_DbgLogPath, GENERIC_WRITE, FILE_SHARE_READ,
                                 NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
             }
             if (h == INVALID_HANDLE_VALUE) { s_killed = 1; s_inside = false; return; }
@@ -341,11 +373,12 @@ static void DbgLog(const char* msg)
             }
         }
 #else
+        // Una sesión por archivo, como en Windows (antes se acumulaba con "ab").
         static FILE* log = [] {
             Platform::PrepareUserDir();
-            char path[64];
-            Platform::UserPath(path, "debug.log");
-            return std::fopen(path, "ab");
+            Platform::UserPath(s_DbgLogPath, "debug.log");
+            s_DbgLogFile = std::fopen(s_DbgLogPath, "wb");
+            return s_DbgLogFile;
         }();
         if (!log || std::fwrite(buf, 1, n, log) != static_cast<size_t>(n)) s_killed = 1;
         if (log) std::fflush(log);
@@ -355,6 +388,21 @@ static void DbgLog(const char* msg)
 }
 
 extern "C" void DbgLogPublic(const char* msg) { DbgLog(msg); }
+
+// Salida normal del cliente: cierra el log y, en Release, lo borra si no hubo
+// errores (el MuError.log del original sólo existía cuando algo fallaba).
+static void DbgLog_Finish()
+{
+    s_DbgLogClosed = 1;
+#ifdef _WIN32
+    if (s_DbgLogHandle != INVALID_HANDLE_VALUE) { CloseHandle(s_DbgLogHandle); s_DbgLogHandle = INVALID_HANDLE_VALUE; }
+#else
+    if (s_DbgLogFile) { std::fclose(s_DbgLogFile); s_DbgLogFile = nullptr; }
+#endif
+#if defined(NDEBUG)
+    if (s_DbgLogPath[0] && !s_DbgLogHadError) remove(s_DbgLogPath);
+#endif
+}
 
 // ── HEAP CHECKPOINT ───────────────────────────────────────────────────────────
 // Llama _CrtCheckMemory() para validar el heap.  Si está corrupto:
@@ -755,6 +803,7 @@ int main(int, char**)
     // mensajes (DestroyWindow 0x4145C0: fuentes, widgets y la música).
     Game_DestroyWindow();
     Platform::GetWindow().Shutdown();
+    DbgLog_Finish();
 
 #ifdef _WIN32
     return (int)msg.wParam;

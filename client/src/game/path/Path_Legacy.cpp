@@ -205,6 +205,9 @@ static int PF_AStar(int sx, int sy, int tx, int ty, int iWall, bool bErrorCheck,
     } else if (!bErrorCheck && bestIdx != sIdx) {
         endIdx = bestIdx;                  // camino parcial hacia el destino
     } else {
+#if !defined(NDEBUG)
+        // Diagnóstico de desarrollo: un click sin camino es normal en el juego y
+        // en Release marcaría el debug.log como sesión con errores.
         static int s_pflogF = 0;
         if (s_pflogF++ < 30) {
             char b[200];
@@ -212,6 +215,7 @@ static int PF_AStar(int sx, int sy, int tx, int ty, int iWall, bool bErrorCheck,
                       s_pflogF, sx, sy, tx, ty, iWall, (int)fDistance, (int)bErrorCheck, explored);
             DbgLogPublic(b);
         }
+#endif
         // NO tocar `path` al fallar. Ver nota de abajo.
         return 0;
     }

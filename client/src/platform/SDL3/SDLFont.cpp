@@ -669,12 +669,15 @@ bool SDLFont::LoadFamily(const char* family, bool bold, bool italic, int height,
         }
     }
     SDL_Log("Fuente %s -> %s, altura %d%s", requested.c_str(), path.c_str(), height, fallback ? " (respaldo)" : "");
-    // Log persistente junto al resto de logs del cliente, también si no hay consola.
+#if !defined(NDEBUG)
+    // Log persistente de las fuentes resueltas, sólo en Debug: se agrega en cada
+    // sesión y en Release no tiene quien lo lea.
     if (FILE* log = std::fopen("fonts.log", "a")) {
         std::fprintf(log, "%s -> %s; altura=%d; bold=%d; italic=%d%s%s\n", requested.c_str(), path.c_str(), height, bold, italic,
             fallback ? "; respaldo" : "", syntheticBold ? "; negrita simulada" : "");
         std::fclose(log);
     }
+#endif
     return true;
 }
 }

@@ -109,11 +109,6 @@ Terrain_Render.obj
 doc-port/
 
 
-# Pack opcional HD (casa-hd.OZJ, modelo-hd.bmd al lado de los originales):
-# se distribuye aparte, no va en el repo
-bin/Client/System/**/*-hd.*
-bin/Client/Content/**/*-hd.*
-
 # Capas de datos del jugador y de cada server (Platform/ContentLayers.h)
 bin/Client/Packs/
 bin/Client/Servers/

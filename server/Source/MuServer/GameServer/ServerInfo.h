@@ -110,6 +110,9 @@ public:
 	// Autoridad del server (Fase 5): 0 = apagado, 1 = observar, 2 = aplicar
 	int m_MoveCheck;
 	int m_MoveCheckTolerance;
+	int m_MoveCheckBudget;
+	int m_MoveCheckTileTime;
+	int m_SkillLineCheck;
 	int m_AttackCheck;
 	int m_AttackCheckScale;
 	int m_PacketRateCheck;
@@ -154,6 +157,7 @@ public:
 	int m_ShopItemBlockExc;
 	int m_ShopItemBlockSellOnMaxMoney;
 	int m_MaxCharacterLevel;
+	double m_ExperienceExponent;
 	int m_MaxLevelUp;
 	int m_MaxLevelUpEvent;
 	int m_MaxStatPoint[MAX_ACCOUNT_LEVEL];
@@ -383,6 +387,16 @@ public:
 	int m_SummonMonster5;
 	int m_SummonMonster6;
 	int m_SummonMonster7;
+	// Mu-Linux: invocaciones del orbe +7..+10 y escalado por stats de la elfa.
+	int m_SummonMonster8;
+	int m_SummonMonster9;
+	int m_SummonMonster10;
+	int m_SummonMonster11;
+	int m_SummonConstA;
+	int m_SummonConstB;
+	int m_SummonConstC;
+	int m_SummonMaxRate;
+	int m_SummonResetRate;
 	int m_GreaterLifeConstA;
 	int m_GreaterLifeConstB;
 	int m_GreaterLifeConstC;

@@ -39,11 +39,13 @@
 #include "MapSpawns.h"
 #include "MapInfo.h"
 #include "ItemDrops.h"
+#include "ItemExtras.h"
 #include "MapGates.h"
 #include "MapZones.h"
 #include "Move.h"
 #include "Notice.h"
 #include "PacketManager.h"
+#include "ServerIdentity.h"
 #include "Path.h"
 #include "Quest.h"
 #include "QuestObjective.h"
@@ -189,7 +191,7 @@ void CServerInfo::ReadCommonInfo()
 	gMessage.Load(gPath.GetFullPath("Message_Spn.txt"), LANGUAGE_SPANISH);
 	gMessage.Load(gPath.GetFullPath("Message_Por.txt"), LANGUAGE_PORTUGUESE);
 
-	gObjSetExperienceTable();
+	gObjSetExperienceTable(gServerInfo.m_ExperienceExponent);
 
 	LogAdd(LOG_BLUE, "[ServerInfo] Common loaded successfully");
 }
@@ -291,6 +293,9 @@ void CServerInfo::ReadHackInfo()
 
 	gPacketManager.LoadDecryptionKey(gPath.GetFullPath("Hack\\Dec1.dat"));
 
+	// Clave de identidad (Fase 5, C3): se genera en el primer arranque.
+	gServerIdentity.Load(gPath.GetFullPath("Keys"));
+
 	LogAdd(LOG_BLUE, "[ServerInfo] Hack loaded successfully");
 }
 
@@ -315,28 +320,60 @@ void CServerInfo::ReadItemInfo()
 
 	gItemOptionRate.Load(gPath.GetFullPath("Item\\ItemOptionRate.txt"));
 
-	gItemStack.Load(gPath.GetFullPath("Item\\ItemStack.txt"));
+	// Fase 5: si hay algún Data/Items/NN-nombre.toml mandan ellos (modelo,
+	// glow, arco, ala, pose, efectos, tooltip, pet, apilado y precio); si no,
+	// los archivos de siempre. La fog sigue en MapFog.txt del Encoder.
+	if (ItemExtras_HasData(gPath.GetFullPath("")))
+	{
+		std::vector<ItemExtraDef> items;
 
-	gItemValue.Load(gPath.GetFullPath("Item\\ItemValue.txt"));
+		std::string error;
 
-	gCustomWing.Load(gPath.GetFullPath("Item\\CustomWing.txt"));
+		if (!ItemExtras_Load(gPath.GetFullPath(""), items, error))
+		{
+			LogAdd(LOG_RED, "[ServerInfo] Data/Items: %s (los datos extra de los items no se aplican)", error.c_str());
 
-	gContentCatalog.LoadLegacyItems(gPath.GetFullPath("Custom\\Encoder\\"));
+			items.clear();
+		}
 
-	gContentCatalog.LoadItemJson(gPath.GetFullPath("Custom\\Items\\"));
+		gItemStack.SetInfo(items);
 
-	gContentCatalog.LoadTexts(gPath.GetFullPath("Text\\"));
+		gItemValue.SetInfo(items);
 
-	gCustomPet.Load(gPath.GetFullPath("Custom\\Pets\\"));
+		gCustomWing.SetInfo(items);
+
+		gContentCatalog.LoadMapFog(gPath.GetFullPath("Custom\\Encoder\\"));
+
+		gContentCatalog.ApplyItemExtras(items);
+
+		gContentCatalog.LoadTexts(gPath.GetFullPath("Text\\"));
+
+		gCustomPet.SetInfo(items);
+	}
+	else
+	{
+		gItemStack.Load(gPath.GetFullPath("Item\\ItemStack.txt"));
+
+		gItemValue.Load(gPath.GetFullPath("Item\\ItemValue.txt"));
+
+		gCustomWing.Load(gPath.GetFullPath("Item\\CustomWing.txt"));
+
+		gContentCatalog.LoadLegacyItems(gPath.GetFullPath("Custom\\Encoder\\"));
+
+		gContentCatalog.LoadItemJson(gPath.GetFullPath("Custom\\Items\\"));
+
+		gContentCatalog.LoadTexts(gPath.GetFullPath("Text\\"));
+
+		gCustomPet.Load(gPath.GetFullPath("Custom\\Pets\\"));
+	}
+
+	// El apilado y los precios viajan en el catálogo (F3:F8 y F3:F9).
+	gContentCatalog.Invalidate();
 
 	for (int n = OBJECT_START_USER; n < MAX_OBJECT; n++)
 	{
 		if (gObjIsConnectedGP(n) != 0)
 		{
-			gItemStack.GCItemStackListSend(gObj[n].Index);
-
-			gItemValue.GCItemValueListSend(gObj[n].Index);
-
 			gContentCatalog.Send(gObj[n].Index);
 		}
 	}
@@ -1685,6 +1722,10 @@ void CServerInfo::ReadCommonInfo(const char* section, const char* path)
 
 	this->m_MaxCharacterLevel = ((this->m_MaxCharacterLevel < 1) ? 1 : ((this->m_MaxCharacterLevel > MAX_CHARACTER_LEVEL) ? MAX_CHARACTER_LEVEL : this->m_MaxCharacterLevel));
 
+	this->m_ExperienceExponent = GetPrivateProfileDouble(section, "ExperienceExponent", 3.0, path);
+
+	this->m_ExperienceExponent = ((this->m_ExperienceExponent < 1.0) ? 1.0 : ((this->m_ExperienceExponent > 3.0) ? 3.0 : this->m_ExperienceExponent));
+
 	this->m_MaxLevelUp = GetPrivateProfileInt(section, "MaxLevelUp", 0, path);
 
 	this->m_MaxLevelUpEvent = GetPrivateProfileInt(section, "MaxLevelUpEvent", 0, path);
@@ -1867,6 +1908,12 @@ void CServerInfo::ReadHackInfo(const char* section, const char* path)
 
 	this->m_MoveCheckTolerance = GetPrivateProfileInt(section, "MoveCheckTolerance", 4, path);
 
+	this->m_MoveCheckBudget = GetPrivateProfileInt(section, "MoveCheckBudget", 2000, path);
+
+	this->m_MoveCheckTileTime = GetPrivateProfileInt(section, "MoveCheckTileTime", 250, path);
+
+	this->m_SkillLineCheck = GetPrivateProfileInt(section, "SkillLineCheck", 0, path);
+
 	this->m_AttackCheck = GetPrivateProfileInt(section, "AttackCheck", 1, path);
 
 	this->m_AttackCheckScale = GetPrivateProfileInt(section, "AttackCheckScale", 240, path);
@@ -1945,6 +1992,24 @@ void CServerInfo::ReadSkillInfo(const char* section, const char* path)
 	this->m_SummonMonster6 = GetPrivateProfileInt(section, "SummonMonster6", 0, path);
 
 	this->m_SummonMonster7 = GetPrivateProfileInt(section, "SummonMonster7", 0, path);
+
+	this->m_SummonMonster8 = GetPrivateProfileInt(section, "SummonMonster8", 52, path);
+
+	this->m_SummonMonster9 = GetPrivateProfileInt(section, "SummonMonster9", 48, path);
+
+	this->m_SummonMonster10 = GetPrivateProfileInt(section, "SummonMonster10", 58, path);
+
+	this->m_SummonMonster11 = GetPrivateProfileInt(section, "SummonMonster11", 61, path);
+
+	this->m_SummonConstA = GetPrivateProfileInt(section, "SummonConstA", 0, path);
+
+	this->m_SummonConstB = GetPrivateProfileInt(section, "SummonConstB", 20, path);
+
+	this->m_SummonConstC = GetPrivateProfileInt(section, "SummonConstC", 2, path);
+
+	this->m_SummonMaxRate = GetPrivateProfileInt(section, "SummonMaxRate", 300, path);
+
+	this->m_SummonResetRate = GetPrivateProfileInt(section, "SummonResetRate", 0, path);
 
 	this->m_GreaterLifeConstA = GetPrivateProfileInt(section, "GreaterLifeConstA", 0, path);
 

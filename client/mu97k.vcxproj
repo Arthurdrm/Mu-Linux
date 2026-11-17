@@ -184,6 +184,7 @@
     <ClInclude Include="src\platform\IFileSystem.h" />
     <ClInclude Include="src\platform\ContentLayers.h" />
     <ClInclude Include="src\platform\UserPath.h" />
+    <ClInclude Include="src\platform\SessionLog.h" />
     <ClInclude Include="src\platform\ISocket.h" />
     <ClInclude Include="src\platform\SDL3\SDLFont.h" />
     <ClInclude Include="src\render\GlyphAtlas.h" />

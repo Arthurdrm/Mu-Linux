@@ -200,9 +200,10 @@ void __cdecl Game_MainLoop(HDC param_1)
         Chat_TickNoticeTimer();   CHK("ML/post_0047fcb0");
         Chat_TickMessageTimer();   CHK("ML/post_00480950");
 
-        // DESVIACION: F12 alterna el contador FPS una vez por pulsación.
-        if (PressKey(VK_F12)) ToggleFpsCounter();
 #if defined(MU_BENCHMARK)
+        // DESVIACION: herramientas de prueba, fuera de las Releases publicadas
+        // (Debug o -DMU_BENCHMARK=ON).  F12 alterna el contador FPS.
+        if (PressKey(VK_F12)) ToggleFpsCounter();
         // DESVIACION: modo benchmark (Debug/Benchmark.h), sólo en el mundo.
         if (SceneFlag == 5) Benchmark::Tick();
 #endif

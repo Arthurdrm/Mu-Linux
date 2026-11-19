@@ -2239,6 +2239,14 @@ void CCommandManager::CommandAttack(LPOBJ lpObj, char* arg)
 	char skillStr[32] = { 0 };
 	this->GetString(arg, skillStr, sizeof(skillStr), 0);
 
+	// Se estiver em Safe Zone, proibe ativar
+	if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 1) != 0)
+	{
+		lpObj->AutoAttackEnable = 0;
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Nao e permitido ativar em Safe Zone!");
+		return;
+	}
+
 	if (lpObj->AutoAttackEnable != 0 && strlen(skillStr) == 0)
 	{
 		lpObj->AutoAttackEnable = 0;
@@ -2247,9 +2255,79 @@ void CCommandManager::CommandAttack(LPOBJ lpObj, char* arg)
 	}
 
 	int skillNumber = -1;
+
 	if (strlen(skillStr) > 0)
 	{
-		skillNumber = atoi(skillStr);
+		// 1. Tenta numero direto (ID da skill ou slot)
+		int val = atoi(skillStr);
+		if (val > 0)
+		{
+			if (gSkillManager.GetSkill(lpObj, val) != 0)
+			{
+				skillNumber = val;
+			}
+			else if (val <= MAX_SKILL_LIST && lpObj->Skill[val - 1].IsSkill() != 0)
+			{
+				skillNumber = lpObj->Skill[val - 1].m_skill;
+			}
+		}
+
+		// 2. Atalhos populares
+		if (skillNumber <= 0)
+		{
+			if (_stricmp(skillStr, "ts") == 0) skillNumber = SKILL_TWISTING_SLASH;
+			else if (_stricmp(skillStr, "es") == 0) skillNumber = SKILL_EVIL_SPIRIT;
+		}
+
+		// 3. Busca dinamica pelo nome da skill (case-insensitive) nas magias do personagem
+		if (skillNumber <= 0)
+		{
+			for (int n = 0; n < MAX_SKILL_LIST; n++)
+			{
+				if (lpObj->Skill[n].IsSkill() != 0)
+				{
+					SKILL_INFO skCheck;
+					if (gSkillManager.GetInfo(lpObj->Skill[n].m_skill, &skCheck))
+					{
+						if (strcasestr(skCheck.Name, skillStr) != 0)
+						{
+							skillNumber = lpObj->Skill[n].m_skill;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		if (skillNumber <= 0)
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill '%s' nao encontrada na sua lista de magias!", skillStr);
+			return;
+		}
+	}
+	else
+	{
+		// Se nao passou argumento, prioriza a ultima skill usada / selecionada
+		if (lpObj->LastSkill > 0 && gSkillManager.GetSkill(lpObj, lpObj->LastSkill) != 0)
+		{
+			skillNumber = lpObj->LastSkill;
+		}
+		else
+		{
+			// Pega a primeira skill ofensiva que o personagem tiver aprendida
+			for (int n = 0; n < MAX_SKILL_LIST; n++)
+			{
+				if (lpObj->Skill[n].IsSkill() != 0)
+				{
+					int s = lpObj->Skill[n].m_skill;
+					if (s != SKILL_DEFENSE && s != SKILL_HEAL && s != SKILL_MANA_SHIELD && s != SKILL_GREATER_DEFENSE && s != SKILL_GREATER_DAMAGE)
+					{
+						skillNumber = s;
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	if (skillNumber > 0)
@@ -2267,40 +2345,25 @@ void CCommandManager::CommandAttack(LPOBJ lpObj, char* arg)
 		lpObj->AutoAttackX = lpObj->X;
 		lpObj->AutoAttackY = lpObj->Y;
 
-		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado com Skill ID %d! Digite /attack para desligar.", skillNumber);
+		SKILL_INFO skInfo;
+		if (gSkillManager.GetInfo(skillNumber, &skInfo))
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado com: %s! (/attack para desligar)", skInfo.Name);
+		}
+		else
+		{
+			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado (Skill %d)! (/attack para desligar)", skillNumber);
+		}
 	}
 	else
 	{
 		lpObj->AutoAttackSkill = -1;
-
-		for (int n = 0; n < MAX_SKILL_LIST; n++)
-		{
-			if (lpObj->Skill[n].IsSkill() != 0)
-			{
-				int s = lpObj->Skill[n].m_skill;
-				if (s == SKILL_TWISTING_SLASH || s == SKILL_EVIL_SPIRIT || s == SKILL_ENERGY_BALL || 
-				    s == SKILL_TRIPLE_SHOT || s == SKILL_FIRE_SLASH || s == SKILL_POWER_SLASH ||
-				    s == SKILL_FALLING_SLASH || s == SKILL_CYCLONE || s == SKILL_SLASH)
-				{
-					lpObj->AutoAttackSkill = s;
-					break;
-				}
-			}
-		}
-
 		lpObj->AutoAttackEnable = 1;
 		lpObj->AutoAttackTime = GetTickCount();
 		lpObj->AutoAttackX = lpObj->X;
 		lpObj->AutoAttackY = lpObj->Y;
 
-		if (lpObj->AutoAttackSkill > 0)
-		{
-			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado (Skill %d)! Digite /attack para desligar.", lpObj->AutoAttackSkill);
-		}
-		else
-		{
-			gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado (Ataque Fisico)! Digite /attack para desligar.");
-		}
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Ativado (Ataque Fisico)! (/attack para desligar)");
 	}
 }
 
@@ -2322,8 +2385,11 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 		return;
 	}
 
+	// Se entrou em Safe Zone, desativa imediatamente forcando reativar fora
 	if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 1) != 0)
 	{
+		lpObj->AutoAttackEnable = 0;
+		gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Desativado automaticamente (Entrou em Safe Zone).");
 		return;
 	}
 
@@ -2403,13 +2469,39 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 
 	if (lpSkill != 0 && gSkillManager.CheckSkillMana(lpObj, lpSkill->m_index) && gSkillManager.CheckSkillBP(lpObj, lpSkill->m_index))
 	{
-		if (lpSkill->m_skill == SKILL_TWISTING_SLASH || lpSkill->m_skill == SKILL_EVIL_SPIRIT || lpSkill->m_skill == SKILL_HELL_FIRE)
+		int s = lpSkill->m_skill;
+		if (s == SKILL_TWISTING_SLASH || s == SKILL_EVIL_SPIRIT || s == SKILL_HELL_FIRE || s == SKILL_INFERNO || s == SKILL_RAGEFUL_BLOW)
 		{
-			gSkillManager.UseDurationSkillAttack(lpObj->Index, targetIndex, lpSkill, lpObj->X, lpObj->Y, dir, 0);
+			gSkillManager.GCDurationSkillAttackSend(lpObj, lpSkill->m_index, (BYTE)lpObj->X, (BYTE)lpObj->Y, dir);
+
+			for (int n = 0; n < lpObj->VPCount2; n++)
+			{
+				if (lpObj->VpPlayer2[n].state == VIEWPORT_NONE) continue;
+				int bIndex = lpObj->VpPlayer2[n].index;
+				if (OBJECT_RANGE(bIndex) == false) continue;
+				LPOBJ lpTargetMon = &gObj[bIndex];
+				if (lpTargetMon->Type != OBJECT_MONSTER || lpTargetMon->Live == 0 || lpTargetMon->Teleport != 0) continue;
+				if (lpTargetMon->Class == 200) continue;
+				if (gMap[lpTargetMon->Map].CheckAttr(lpTargetMon->X, lpTargetMon->Y, 1) != 0) continue;
+
+				if (gSkillManager.CheckSkillRadio(lpSkill->m_index, lpObj->X, lpObj->Y, lpTargetMon->X, lpTargetMon->Y))
+				{
+					gAttack.Attack(lpObj, lpTargetMon, lpSkill, false, 0, 0);
+				}
+			}
+
+			lpObj->Mana -= ((gSkillManager.GetSkillMana(lpSkill->m_index) * lpObj->MPConsumptionRate) / 100);
+			lpObj->BP -= ((gSkillManager.GetSkillBP(lpSkill->m_index) * lpObj->BPConsumptionRate) / 100);
+			GCManaSend(lpObj->Index, 0xFF, (int)lpObj->Mana, lpObj->BP);
 		}
 		else
 		{
-			gSkillManager.UseAttackSkill(lpObj->Index, targetIndex, lpSkill);
+			gSkillManager.GCSkillAttackSend(lpObj, lpSkill->m_index, targetIndex, 1);
+			gAttack.Attack(lpObj, lpTarget, lpSkill, false, 0, 0);
+
+			lpObj->Mana -= ((gSkillManager.GetSkillMana(lpSkill->m_index) * lpObj->MPConsumptionRate) / 100);
+			lpObj->BP -= ((gSkillManager.GetSkillBP(lpSkill->m_index) * lpObj->BPConsumptionRate) / 100);
+			GCManaSend(lpObj->Index, 0xFF, (int)lpObj->Mana, lpObj->BP);
 		}
 	}
 	else

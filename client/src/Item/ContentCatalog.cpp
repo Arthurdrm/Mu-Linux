@@ -230,40 +230,51 @@ bool ValidName(const char* name)
 
 bool ReadSection(PendingSection& section, const BYTE* msg, int size)
 {
-    if (size < (int)sizeof(Proto::PMSG_CATALOG_HEAD)) return false;
-    Proto::PMSG_CATALOG_HEAD head;
-    memcpy(&head, msg, sizeof(head));
-    if (head.version != Proto::CATALOG_VERSION || head.recordSize == 0) return false;
-    const int bytes = head.count * head.recordSize;
-    if ((int)sizeof(head) + bytes > size) return false;
-    if (head.chunk == 0) {
-        section.records.clear();
-        section.received = 0;
-        section.recordSize = head.recordSize;
-        section.total = head.totalChunks;
+    try {
+        if (!msg || size < (int)sizeof(Proto::PMSG_CATALOG_HEAD)) return false;
+        Proto::PMSG_CATALOG_HEAD head;
+        memcpy(&head, msg, sizeof(head));
+        if (head.version != Proto::CATALOG_VERSION || head.recordSize == 0) return false;
+        if (head.count > 10000 || head.recordSize > 4096) return false;
+        const int bytes = head.count * head.recordSize;
+        if (bytes < 0 || (int)sizeof(head) + bytes > size) return false;
+        if (head.chunk == 0) {
+            section.records.clear();
+            section.received = 0;
+            section.recordSize = head.recordSize;
+            section.total = head.totalChunks;
+        }
+        if (head.recordSize != section.recordSize || head.chunk != section.received) return false;
+        if (section.records.size() + bytes > 20 * 1024 * 1024) return false; // Limite de 20MB para segurança
+        section.records.insert(section.records.end(), msg + sizeof(head), msg + sizeof(head) + bytes);
+        ++section.received;
+        return true;
+    } catch (const std::exception& e) {
+        Log("ContentCatalog: Exceção em ReadSection: %s", e.what());
+        return false;
+    } catch (...) {
+        return false;
     }
-    if (head.recordSize != section.recordSize || head.chunk != section.received) return false;
-    section.records.insert(section.records.end(), msg + sizeof(head), msg + sizeof(head) + bytes);
-    ++section.received;
-    return true;
 }
 
 // Velocidades de animación de un modelo de monstruo del catálogo (DLL
 // CustomMonster: OpenMonsterModel / OpenNpcModel).
 void SetMonsterSpeeds(int slot, bool npc)
 {
-    if (slot < 0 || !DAT_05828d58) return;
-    BYTE* model = (BYTE*)(uintptr_t)DAT_05828d58 + slot * BMD_STRIDE;
-    BYTE* actions = *(BYTE**)&((BMD*)(uintptr_t)(model))->Actions;
-    const short count = *(short*)(model + 0x26);
-    if (!actions || count <= 0) return;
-    if (npc) {
-        for (int i = 0; i < count; ++i) *(float*)(actions + sizeof(ModelAnimationAction) * i + 4) = 0.25f;
-        return;
-    }
-    static const float speeds[7] = { 0.25f, 0.2f, 0.34f, 0.33f, 0.33f, 0.5f, 0.55f };
-    for (int i = 0; i < count && i < 7; ++i) *(float*)(actions + sizeof(ModelAnimationAction) * i + 4) = speeds[i];
-    if (count > 6) *(bool*)(actions + sizeof(ModelAnimationAction) * 6) = true;   // MONSTER01_DIE: Loop
+    try {
+        if (slot < 0 || !DAT_05828d58) return;
+        BYTE* model = (BYTE*)(uintptr_t)DAT_05828d58 + slot * BMD_STRIDE;
+        BYTE* actions = *(BYTE**)&((BMD*)(uintptr_t)(model))->Actions;
+        const short count = *(short*)(model + 0x26);
+        if (!actions || count <= 0) return;
+        if (npc) {
+            for (int i = 0; i < count; ++i) *(float*)(actions + sizeof(ModelAnimationAction) * i + 4) = 0.25f;
+            return;
+        }
+        static const float speeds[7] = { 0.25f, 0.2f, 0.34f, 0.33f, 0.33f, 0.5f, 0.55f };
+        for (int i = 0; i < count && i < 7; ++i) *(float*)(actions + sizeof(ModelAnimationAction) * i + 4) = speeds[i];
+        if (count > 6) *(bool*)(actions + sizeof(ModelAnimationAction) * 6) = true;   // MONSTER01_DIE: Loop
+    } catch (...) {}
 }
 
 bool SectionComplete(const PendingSection& section)
@@ -385,37 +396,37 @@ PendingSection* PendingFor(BYTE subh)
 
 void CContentCatalog::ReceiveItems(const BYTE* msg, int size)
 {
-    ReceiveSection(s_PendingItems, 0xE7, msg, size);
+    try { ReceiveSection(s_PendingItems, 0xE7, msg, size); } catch (...) {}
 }
 
 void CContentCatalog::ReceiveMonsters(const BYTE* msg, int size)
 {
-    ReceiveSection(s_PendingMonsters, 0xE8, msg, size);
+    try { ReceiveSection(s_PendingMonsters, 0xE8, msg, size); } catch (...) {}
 }
 
 void CContentCatalog::ReceiveMapFog(const BYTE* msg, int size)
 {
-    ReceiveSection(s_PendingFog, 0xE9, msg, size);
+    try { ReceiveSection(s_PendingFog, 0xE9, msg, size); } catch (...) {}
 }
 
 void CContentCatalog::ReceiveEffects(const BYTE* msg, int size)
 {
-    ReceiveSection(s_PendingEffects, 0xEC, msg, size);
+    try { ReceiveSection(s_PendingEffects, 0xEC, msg, size); } catch (...) {}
 }
 
 void CContentCatalog::ReceivePets(const BYTE* msg, int size)
 {
-    ReceiveSection(s_PendingPets, 0xEE, msg, size);
+    try { ReceiveSection(s_PendingPets, 0xEE, msg, size); } catch (...) {}
 }
 
 void CContentCatalog::ReceiveTooltips(const BYTE* msg, int size)
 {
-    ReceiveSection(s_PendingTooltips, 0xEF, msg, size);
+    try { ReceiveSection(s_PendingTooltips, 0xEF, msg, size); } catch (...) {}
 }
 
 void CContentCatalog::ReceiveGates(const BYTE* msg, int size)
 {
-    if (ReceiveSection(s_PendingGates, 0xF3, msg, size)) ApplyGates();
+    try { if (ReceiveSection(s_PendingGates, 0xF3, msg, size)) ApplyGates(); } catch (...) {}
 }
 
 void CContentCatalog::ApplyGates()
@@ -456,7 +467,7 @@ void CContentCatalog::ApplyGates()
 
 void CContentCatalog::ReceiveMapMusic(const BYTE* msg, int size)
 {
-    if (ReceiveSection(s_PendingMapMusic, 0xF7, msg, size)) ApplyMapMusic();
+    try { if (ReceiveSection(s_PendingMapMusic, 0xF7, msg, size)) ApplyMapMusic(); } catch (...) {}
 }
 
 void CContentCatalog::ApplyMapMusic()
@@ -478,7 +489,7 @@ void CContentCatalog::ApplyMapMusic()
 
 void CContentCatalog::ReceiveSkills(const BYTE* msg, int size)
 {
-    if (ReceiveSection(s_PendingSkills, 0xF4, msg, size)) ApplySkills();
+    try { if (ReceiveSection(s_PendingSkills, 0xF4, msg, size)) ApplySkills(); } catch (...) {}
 }
 
 void CContentCatalog::ApplySkills()
@@ -548,44 +559,50 @@ void CContentCatalog::SendCacheList()
 
 void CContentCatalog::ReceiveSync(const BYTE* msg, int size)
 {
-    s_SyncHash.clear();
-    if (size < 8) return;
-    int count = msg[4];
-    if (count > Proto::CATALOG_CACHE_MAX || 8 + count * (int)sizeof(Proto::CATALOG_CACHE_ENTRY) > size) return;
-    int loaded = 0;
-    bool broken = false;
-    for (int i = 0; i < count; ++i) {
-        Proto::CATALOG_CACHE_ENTRY entry;
-        memcpy(&entry, msg + 8 + i * sizeof(entry), sizeof(entry));
-        SectionHash announced;
-        memcpy(announced.data(), entry.hash, announced.size());
-        s_SyncHash[entry.subh] = announced;
-        if (!entry.cached) continue;
-        PendingSection* section = PendingFor(entry.subh);
-        CacheFileHead head;
-        std::vector<BYTE> records;
-        if (!section || !CacheRead(entry.subh, head, records) ||
-            memcmp(head.Hash, announced.data(), announced.size()) != 0) {
-            // El server no la va a mandar y no se puede leer: el catálogo queda
-            // incompleto en este login.  Se borra la caché para que el próximo
-            // la pida entera.
-            Log("ContentCatalog: no se pudo leer %02X de la caché", entry.subh);
-            broken = true;
-            continue;
+    try {
+        s_SyncHash.clear();
+        if (!msg || size < 8) return;
+        int count = msg[4];
+        if (count > Proto::CATALOG_CACHE_MAX || 8 + count * (int)sizeof(Proto::CATALOG_CACHE_ENTRY) > size) return;
+        int loaded = 0;
+        bool broken = false;
+        for (int i = 0; i < count; ++i) {
+            Proto::CATALOG_CACHE_ENTRY entry;
+            memcpy(&entry, msg + 8 + i * sizeof(entry), sizeof(entry));
+            SectionHash announced;
+            memcpy(announced.data(), entry.hash, announced.size());
+            s_SyncHash[entry.subh] = announced;
+            if (!entry.cached) continue;
+            PendingSection* section = PendingFor(entry.subh);
+            CacheFileHead head;
+            std::vector<BYTE> records;
+            if (!section || !CacheRead(entry.subh, head, records) ||
+                memcmp(head.Hash, announced.data(), announced.size()) != 0) {
+                // El server no la va a mandar y no se puede leer: el catálogo queda
+                // incompleto en este login.  Se borra la caché para que el próximo
+                // la pida entera.
+                Log("ContentCatalog: no se pudo leer %02X de la caché", entry.subh);
+                broken = true;
+                continue;
+            }
+            section->records = std::move(records);
+            section->recordSize = head.RecordSize;
+            section->received = 1;
+            section->total = 1;
+            if (entry.subh == 0xF3) ApplyGates();
+            if (entry.subh == 0xF4) ApplySkills();
+            if (entry.subh == 0xF7) ApplyMapMusic();
+            ++loaded;
         }
-        section->records = std::move(records);
-        section->recordSize = head.RecordSize;
-        section->received = 1;
-        section->total = 1;
-        if (entry.subh == 0xF3) ApplyGates();
-        if (entry.subh == 0xF4) ApplySkills();
-        if (entry.subh == 0xF7) ApplyMapMusic();
-        ++loaded;
+        if (broken) {
+            for (BYTE subh : kCachedSections) remove(CacheFile(subh).c_str());
+        }
+        Log("ContentCatalog: F3/F6 %d secciones, %d desde la caché", count, loaded);
+    } catch (const std::exception& e) {
+        Log("ContentCatalog: Exceção em ReceiveSync: %s", e.what());
+    } catch (...) {
+        Log("ContentCatalog: Exceção desconhecida em ReceiveSync");
     }
-    if (broken) {
-        for (BYTE subh : kCachedSections) remove(CacheFile(subh).c_str());
-    }
-    Log("ContentCatalog: F3/F6 %d secciones, %d desde la caché", count, loaded);
 }
 
 int CContentCatalog::GetGateLevel(int index, int fallback) const
@@ -596,7 +613,9 @@ int CContentCatalog::GetGateLevel(int index, int fallback) const
 
 void CContentCatalog::ReceiveTexts(const BYTE* msg, int size)
 {
-    if (!ReadSection(s_PendingTexts, msg, size)) Log("ContentCatalog: F0 descartado (size=%d)", size);
+    try {
+        if (!ReadSection(s_PendingTexts, msg, size)) Log("ContentCatalog: F0 descartado (size=%d)", size);
+    } catch (...) {}
 }
 
 namespace {
@@ -665,184 +684,210 @@ void ApplyTexts(ITEM_ATTRIBUTE* attr)
 
 void CContentCatalog::ReceiveEnd(const BYTE* msg, int size)
 {
-    if (size < (int)sizeof(Proto::PMSG_CATALOG_END_SEND)) return;
-    Proto::PMSG_CATALOG_END_SEND end;
-    memcpy(&end, msg, sizeof(end));
-    const int items = SectionComplete(s_PendingItems) ? (int)(s_PendingItems.records.size() / s_PendingItems.recordSize) : -1;
-    const int monsters = SectionComplete(s_PendingMonsters) ? (int)(s_PendingMonsters.records.size() / s_PendingMonsters.recordSize) : -1;
-    if (items != end.itemCount || monsters != end.monsterCount || !SectionComplete(s_PendingFog)) {
-        Log("ContentCatalog: catálogo incompleto (items %d/%d, monstruos %d/%d); se sigue con item.bmd",
-            items, end.itemCount, monsters, end.monsterCount);
-        return;
+    try {
+        if (!msg || size < (int)sizeof(Proto::PMSG_CATALOG_END_SEND)) return;
+        Proto::PMSG_CATALOG_END_SEND end;
+        memcpy(&end, msg, sizeof(end));
+        const int items = SectionComplete(s_PendingItems) ? (int)(s_PendingItems.records.size() / s_PendingItems.recordSize) : -1;
+        const int monsters = SectionComplete(s_PendingMonsters) ? (int)(s_PendingMonsters.records.size() / s_PendingMonsters.recordSize) : -1;
+        if (items != end.itemCount || monsters != end.monsterCount || !SectionComplete(s_PendingFog)) {
+            Log("ContentCatalog: catálogo incompleto (items %d/%d, monstruos %d/%d); se sigue con item.bmd",
+                items, end.itemCount, monsters, end.monsterCount);
+            return;
+        }
+        Publish();
+        s_SyncHash.clear();
+        Log("ContentCatalog: %d items, %d monstruos, hash %08X", items, monsters, end.hash);
+    } catch (const std::exception& e) {
+        Log("ContentCatalog: Exceção em ReceiveEnd: %s", e.what());
+    } catch (...) {
+        Log("ContentCatalog: Exceção desconhecida em ReceiveEnd");
     }
-    Publish();
-    s_SyncHash.clear();
-    Log("ContentCatalog: %d items, %d monstruos, hash %08X", items, monsters, end.hash);
 }
 
 void CContentCatalog::Clear()
 {
-    ITEM_ATTRIBUTE* attr = Attributes();
-    if (attr && !s_VanillaAttributes.empty()) {
-        memcpy(attr, s_VanillaAttributes.data(), s_VanillaAttributes.size());
-        memset(attr + ITEM_MAX_VANILLA, 0, (ITEM_MAX_EX - ITEM_MAX_VANILLA) * sizeof(ITEM_ATTRIBUTE));
-    }
-    for (ItemExtraData& item : s_Items) item = ItemExtraData();
-    memset(s_Monsters, 0, sizeof(s_Monsters));
-    memset(s_Fog, 0, sizeof(s_Fog));
-    s_PendingItems = PendingSection();
-    s_PendingMonsters = PendingSection();
-    s_PendingFog = PendingSection();
-    s_PendingEffects = PendingSection();
-    s_Effects.clear();
-    s_PendingPets = PendingSection();
-    s_Pets.clear();
-    s_PendingTooltips = PendingSection();
-    s_Tooltips.clear();
-    s_PendingTexts = PendingSection();
-    s_SyncHash.clear();
-    s_PendingGates = PendingSection();
-    if (s_HasGates && s_HasVanillaGates && GateAttribute)
-        memcpy(GateAttribute, s_VanillaGates, sizeof(s_VanillaGates));
-    s_HasGates = false;
-    s_PendingSkills = PendingSection();
-    if (s_HasSkills && s_HasVanillaSkillData) {
-        for (int i = 0; i < MAX_CATALOG_SKILL; ++i)
-            memcpy((BYTE*)SkillAttribute.Raw + i * SKILL_RECORD + SKILL_DATA, s_VanillaSkillData[i], sizeof(s_VanillaSkillData[i]));
-    }
-    s_HasSkills = false;
-    s_PendingMapMusic = PendingSection();
-    gMapManager.ClearServerMusic();
-    gClientText.ClearServerTexts();
-    s_TooltipTexts.clear();
-    memset(s_MonsterTexts, 0, sizeof(s_MonsterTexts));
-    if (s_HasVanillaSkillNames) {
-        for (int i = 0; i < MAX_SKILL_NAME; ++i) {
-            memcpy(SkillName(SkillAttribute.Raw, i), s_VanillaSkillNames[i], SKILL_NAME_SIZE);
-            memcpy(SkillName((char*)DAT_07cf1ff8, i), s_VanillaSkillNames[i], SKILL_NAME_SIZE);
+    try {
+        ITEM_ATTRIBUTE* attr = Attributes();
+        if (attr && !s_VanillaAttributes.empty()) {
+            memcpy(attr, s_VanillaAttributes.data(), s_VanillaAttributes.size());
+            memset(attr + ITEM_MAX_VANILLA, 0, (ITEM_MAX_EX - ITEM_MAX_VANILLA) * sizeof(ITEM_ATTRIBUTE));
         }
-    }
-    // Los modelos y texturas ya cargados se conservan: si el server vuelve a
-    // mandar las mismas rutas se reusan sin volver a leer el disco.
-    m_Loaded = false;
-    m_HasFog = false;
+        for (ItemExtraData& item : s_Items) item = ItemExtraData();
+        memset(s_Monsters, 0, sizeof(s_Monsters));
+        memset(s_Fog, 0, sizeof(s_Fog));
+        s_PendingItems = PendingSection();
+        s_PendingMonsters = PendingSection();
+        s_PendingFog = PendingSection();
+        s_PendingEffects = PendingSection();
+        s_Effects.clear();
+        s_PendingPets = PendingSection();
+        s_Pets.clear();
+        s_PendingTooltips = PendingSection();
+        s_Tooltips.clear();
+        s_PendingTexts = PendingSection();
+        s_SyncHash.clear();
+        s_PendingGates = PendingSection();
+        if (s_HasGates && s_HasVanillaGates && GateAttribute)
+            memcpy(GateAttribute, s_VanillaGates, sizeof(s_VanillaGates));
+        s_HasGates = false;
+        s_PendingSkills = PendingSection();
+        if (s_HasSkills && s_HasVanillaSkillData) {
+            for (int i = 0; i < MAX_CATALOG_SKILL; ++i)
+                memcpy((BYTE*)SkillAttribute.Raw + i * SKILL_RECORD + SKILL_DATA, s_VanillaSkillData[i], sizeof(s_VanillaSkillData[i]));
+        }
+        s_HasSkills = false;
+        s_PendingMapMusic = PendingSection();
+        gMapManager.ClearServerMusic();
+        gClientText.ClearServerTexts();
+        s_TooltipTexts.clear();
+        memset(s_MonsterTexts, 0, sizeof(s_MonsterTexts));
+        if (s_HasVanillaSkillNames) {
+            for (int i = 0; i < MAX_SKILL_NAME; ++i) {
+                memcpy(SkillName(SkillAttribute.Raw, i), s_VanillaSkillNames[i], SKILL_NAME_SIZE);
+                memcpy(SkillName((char*)DAT_07cf1ff8, i), s_VanillaSkillNames[i], SKILL_NAME_SIZE);
+            }
+        }
+        // Los modelos y texturas ya cargados se conservan: si el server vuelve a
+        // mandar las mismas rutas se reusan sin volver a leer el disco.
+        m_Loaded = false;
+        m_HasFog = false;
+    } catch (...) {}
 }
 
 void CContentCatalog::Publish()
 {
-    ITEM_ATTRIBUTE* attr = Attributes();
-    if (!attr) return;
-    if (s_VanillaAttributes.empty()) {
-        s_VanillaAttributes.resize(ITEM_MAX_VANILLA * sizeof(ITEM_ATTRIBUTE));
-        memcpy(s_VanillaAttributes.data(), attr, s_VanillaAttributes.size());
-    }
-    for (ItemExtraData& item : s_Items) item = ItemExtraData();
-    s_DynamicModelItem.clear();
-    s_TwoSidedMeshes.clear();
+    static bool s_isPublishing = false;
+    if (s_isPublishing) return;
+    s_isPublishing = true;
+    ++g_WorldLoading; // Protege contra despacho reentrante de pacotes no message pump de AccessModel
 
-    const int itemSize = s_PendingItems.recordSize;
-    for (size_t off = 0; off + itemSize <= s_PendingItems.records.size(); off += itemSize)
-        ApplyItem(&s_PendingItems.records[off], itemSize);
-
-    memset(s_Monsters, 0, sizeof(s_Monsters));
-    const int monsterSize = s_PendingMonsters.recordSize;
-    for (size_t off = 0; off + monsterSize <= s_PendingMonsters.records.size(); off += monsterSize) {
-        Proto::CATALOG_MONSTER row = {};
-        memcpy(&row, &s_PendingMonsters.records[off], (std::min)((int)sizeof(row), monsterSize));
-        if (row.Index >= MAX_CATALOG_MONSTER) continue;
-        CatalogMonster& monster = s_Monsters[row.Index];
-        monster.Present = true;
-        monster.Kind = row.Kind;
-        monster.Golden = row.Golden != 0;
-        monster.Scale = row.Scale;
-        monster.Model = -1;
-        NetText::FromServer(monster.Name, sizeof(monster.Name), row.Name, sizeof(row.Name));
-        if (row.Flags & Proto::CATALOG_MONSTER_HAS_MODEL) {
-            row.ModelFolder[sizeof(row.ModelFolder) - 1] = 0;
-            row.ModelName[sizeof(row.ModelName) - 1] = 0;
-            monster.Model = LoadModel(row.ModelFolder, row.ModelName, -1);
-            SetMonsterSpeeds(monster.Model, row.Kind == 0);
+    try {
+        ITEM_ATTRIBUTE* attr = Attributes();
+        if (!attr) {
+            --g_WorldLoading;
+            s_isPublishing = false;
+            return;
         }
-    }
-
-    memset(s_Fog, 0, sizeof(s_Fog));
-    const int fogSize = s_PendingFog.recordSize;
-    for (size_t off = 0; fogSize > 0 && off + fogSize <= s_PendingFog.records.size(); off += fogSize) {
-        Proto::CATALOG_MAP_FOG row = {};
-        memcpy(&row, &s_PendingFog.records[off], (std::min)((int)sizeof(row), fogSize));
-        if (row.Map >= MAX_CATALOG_MAP) continue;
-        FogEntry& fog = s_Fog[row.Map];
-        fog.Present = true;
-        for (int c = 0; c < 3; ++c) {
-            fog.Day[c] = row.DayRGB[c] / 255.0f;
-            fog.Night[c] = row.NightRGB[c] / 255.0f;
+        if (s_VanillaAttributes.empty()) {
+            s_VanillaAttributes.resize(ITEM_MAX_VANILLA * sizeof(ITEM_ATTRIBUTE));
+            memcpy(s_VanillaAttributes.data(), attr, s_VanillaAttributes.size());
         }
-        // Sin distancias (server viejo), las fijas del DLL.
-        const bool range = row.Start > 0 && row.End > row.Start;
-        fog.Start = range ? row.Start : 2000.0f;
-        fog.End = range ? row.End : 2700.0f;
-    }
-    m_HasFog = false;
-    for (const FogEntry& fog : s_Fog) m_HasFog = m_HasFog || fog.Present;
+        for (ItemExtraData& item : s_Items) item = ItemExtraData();
+        s_DynamicModelItem.clear();
+        s_TwoSidedMeshes.clear();
 
-    // Textos traducidos: sección opcional.
-    ApplyTexts(attr);
-    s_PendingTexts = PendingSection();
+        const int itemSize = s_PendingItems.recordSize;
+        for (size_t off = 0; off + itemSize <= s_PendingItems.records.size(); off += itemSize)
+            ApplyItem(&s_PendingItems.records[off], itemSize);
 
-    // Tooltips: sección opcional.
-    s_Tooltips.clear();
-    const int tooltipSize = s_PendingTooltips.recordSize;
-    if (SectionComplete(s_PendingTooltips) && tooltipSize > 0) {
-        for (size_t off = 0; off + tooltipSize <= s_PendingTooltips.records.size(); off += tooltipSize) {
-            Proto::CATALOG_TOOLTIP line = {};
-            memcpy(&line, &s_PendingTooltips.records[off], (std::min)((int)sizeof(line), tooltipSize));
-            // 0.97.40: el server manda el tooltip en UTF-8; sólo se sanea.
-            char text[sizeof(line.Text)];
-            NetText::FromServer(text, sizeof(text), line.Text, sizeof(line.Text));
-            memcpy(line.Text, text, sizeof(line.Text));
-            if (line.Item < ITEM_MAX_EX && line.Color <= 8) {
-                std::vector<Proto::CATALOG_TOOLTIP>& lines = s_Tooltips[line.Item];
-                // La traducción de esta línea (por su número dentro del item), si el server la mandó.
-                const std::map<int, std::string>::const_iterator translated =
-                    s_TooltipTexts.find(line.Item * TOOLTIP_TEXT_LINES + (int)lines.size());
-                if (translated != s_TooltipTexts.end()) {
-                    memset(line.Text, 0, sizeof(line.Text));
-                    memcpy(line.Text, translated->second.c_str(), (std::min)(translated->second.size(), sizeof(line.Text) - 1));
-                }
-                lines.push_back(line);
+        memset(s_Monsters, 0, sizeof(s_Monsters));
+        const int monsterSize = s_PendingMonsters.recordSize;
+        for (size_t off = 0; off + monsterSize <= s_PendingMonsters.records.size(); off += monsterSize) {
+            Proto::CATALOG_MONSTER row = {};
+            memcpy(&row, &s_PendingMonsters.records[off], (std::min)((int)sizeof(row), monsterSize));
+            if (row.Index >= MAX_CATALOG_MONSTER) continue;
+            CatalogMonster& monster = s_Monsters[row.Index];
+            monster.Present = true;
+            monster.Kind = row.Kind;
+            monster.Golden = row.Golden != 0;
+            monster.Scale = row.Scale;
+            monster.Model = -1;
+            NetText::FromServer(monster.Name, sizeof(monster.Name), row.Name, sizeof(row.Name));
+            if (row.Flags & Proto::CATALOG_MONSTER_HAS_MODEL) {
+                row.ModelFolder[sizeof(row.ModelFolder) - 1] = 0;
+                row.ModelName[sizeof(row.ModelName) - 1] = 0;
+                monster.Model = LoadModel(row.ModelFolder, row.ModelName, -1);
+                SetMonsterSpeeds(monster.Model, row.Kind == 0);
             }
         }
+
+        memset(s_Fog, 0, sizeof(s_Fog));
+        const int fogSize = s_PendingFog.recordSize;
+        for (size_t off = 0; fogSize > 0 && off + fogSize <= s_PendingFog.records.size(); off += fogSize) {
+            Proto::CATALOG_MAP_FOG row = {};
+            memcpy(&row, &s_PendingFog.records[off], (std::min)((int)sizeof(row), fogSize));
+            if (row.Map >= MAX_CATALOG_MAP) continue;
+            FogEntry& fog = s_Fog[row.Map];
+            fog.Present = true;
+            for (int c = 0; c < 3; ++c) {
+                fog.Day[c] = row.DayRGB[c] / 255.0f;
+                fog.Night[c] = row.NightRGB[c] / 255.0f;
+            }
+            // Sin distancias (server viejo), las fijas del DLL.
+            const bool range = row.Start > 0 && row.End > row.Start;
+            fog.Start = range ? row.Start : 2000.0f;
+            fog.End = range ? row.End : 2700.0f;
+        }
+        m_HasFog = false;
+        for (const FogEntry& fog : s_Fog) m_HasFog = m_HasFog || fog.Present;
+
+        // Textos traducidos: sección opcional.
+        ApplyTexts(attr);
+        s_PendingTexts = PendingSection();
+
+        // Tooltips: sección opcional.
+        s_Tooltips.clear();
+        const int tooltipSize = s_PendingTooltips.recordSize;
+        if (SectionComplete(s_PendingTooltips) && tooltipSize > 0) {
+            for (size_t off = 0; off + tooltipSize <= s_PendingTooltips.records.size(); off += tooltipSize) {
+                Proto::CATALOG_TOOLTIP line = {};
+                memcpy(&line, &s_PendingTooltips.records[off], (std::min)((int)sizeof(line), tooltipSize));
+                // 0.97.40: el server manda el tooltip en UTF-8; sólo se sanea.
+                char text[sizeof(line.Text)];
+                NetText::FromServer(text, sizeof(text), line.Text, sizeof(line.Text));
+                memcpy(line.Text, text, sizeof(line.Text));
+                if (line.Item < ITEM_MAX_EX && line.Color <= 8) {
+                    std::vector<Proto::CATALOG_TOOLTIP>& lines = s_Tooltips[line.Item];
+                    // La traducción de esta línea (por su número dentro del item), si el server la mandó.
+                    const std::map<int, std::string>::const_iterator translated =
+                        s_TooltipTexts.find(line.Item * TOOLTIP_TEXT_LINES + (int)lines.size());
+                    if (translated != s_TooltipTexts.end()) {
+                        memset(line.Text, 0, sizeof(line.Text));
+                        memcpy(line.Text, translated->second.c_str(), (std::min)(translated->second.size(), sizeof(line.Text) - 1));
+                    }
+                    lines.push_back(line);
+                }
+            }
+        }
+
+        // Pets: sección opcional, igual que los efectos.
+        s_Pets.clear();
+        const int petSize = s_PendingPets.recordSize;
+        if (SectionComplete(s_PendingPets) && petSize > 0) {
+            for (size_t off = 0; off + petSize <= s_PendingPets.records.size(); off += petSize) {
+                Proto::CATALOG_PET pet = {};
+                memcpy(&pet, &s_PendingPets.records[off], (std::min)((int)sizeof(pet), petSize));
+                if (pet.Item < ITEM_MAX_EX) s_Pets[pet.Item] = pet;
+            }
+        }
+
+        // Efectos: sección opcional (un server sin Data/Custom/Items no la manda
+        // completa y el resto del catálogo vale igual).
+        s_Effects.clear();
+        const int effectSize = s_PendingEffects.recordSize;
+        if (SectionComplete(s_PendingEffects) && effectSize > 0) {
+            for (size_t off = 0; off + effectSize <= s_PendingEffects.records.size(); off += effectSize) {
+                ItemEffect effect = {};
+                memcpy(&effect.Data, &s_PendingEffects.records[off], (std::min)((int)sizeof(effect.Data), effectSize));
+                Proto::CATALOG_EFFECT& data = effect.Data;
+                if (data.Item >= ITEM_MAX_EX || data.BoneCount == 0 || data.BoneCount > Proto::CATALOG_EFFECT_MAX_BONES) continue;
+                data.Texture[sizeof(data.Texture) - 1] = 0;
+                effect.Bitmap = (data.Texture[0] != 0) ? LoadTexture(data.Texture) : (data.Bitmap != 0xFFFF ? (int)data.Bitmap : -1);
+                if (data.Type == Proto::CATALOG_EFFECT_SPRITE && effect.Bitmap < 0) continue;
+                s_Effects[data.Item].push_back(effect);
+            }
+        }
+        m_FogMap = -1;
+        m_Loaded = true;
+    } catch (const std::exception& e) {
+        Log("ContentCatalog: Exceção em Publish: %s", e.what());
+    } catch (...) {
+        Log("ContentCatalog: Exceção desconhecida em Publish");
     }
 
-    // Pets: sección opcional, igual que los efectos.
-    s_Pets.clear();
-    const int petSize = s_PendingPets.recordSize;
-    if (SectionComplete(s_PendingPets) && petSize > 0) {
-        for (size_t off = 0; off + petSize <= s_PendingPets.records.size(); off += petSize) {
-            Proto::CATALOG_PET pet = {};
-            memcpy(&pet, &s_PendingPets.records[off], (std::min)((int)sizeof(pet), petSize));
-            if (pet.Item < ITEM_MAX_EX) s_Pets[pet.Item] = pet;
-        }
-    }
-
-    // Efectos: sección opcional (un server sin Data/Custom/Items no la manda
-    // completa y el resto del catálogo vale igual).
-    s_Effects.clear();
-    const int effectSize = s_PendingEffects.recordSize;
-    if (SectionComplete(s_PendingEffects) && effectSize > 0) {
-        for (size_t off = 0; off + effectSize <= s_PendingEffects.records.size(); off += effectSize) {
-            ItemEffect effect = {};
-            memcpy(&effect.Data, &s_PendingEffects.records[off], (std::min)((int)sizeof(effect.Data), effectSize));
-            Proto::CATALOG_EFFECT& data = effect.Data;
-            if (data.Item >= ITEM_MAX_EX || data.BoneCount == 0 || data.BoneCount > Proto::CATALOG_EFFECT_MAX_BONES) continue;
-            data.Texture[sizeof(data.Texture) - 1] = 0;
-            effect.Bitmap = (data.Texture[0] != 0) ? LoadTexture(data.Texture) : (data.Bitmap != 0xFFFF ? (int)data.Bitmap : -1);
-            if (data.Type == Proto::CATALOG_EFFECT_SPRITE && effect.Bitmap < 0) continue;
-            s_Effects[data.Item].push_back(effect);
-        }
-    }
-    m_FogMap = -1;
-    m_Loaded = true;
+    --g_WorldLoading;
+    s_isPublishing = false;
 }
 
 void CContentCatalog::ApplyItem(const BYTE* record, int recordSize)
@@ -927,72 +972,87 @@ void CContentCatalog::ApplyItem(const BYTE* record, int recordSize)
 // del catálogo (>= BITMAP_MAX_VANILLA), que los mapas no reciclan.
 int CContentCatalog::LoadModel(const char* folder, const char* name, int fixedSlot)
 {
-    char sub[96];
-    if (!DAT_05828d58 || !NormalizeFolder(folder, sub, sizeof(sub)) || !ValidName(name)) {
-        Log("ContentCatalog: ruta de modelo inválida '%s' '%s'", folder, name);
+    try {
+        char sub[96];
+        if (!DAT_05828d58 || !NormalizeFolder(folder, sub, sizeof(sub)) || !ValidName(name)) {
+            Log("ContentCatalog: ruta de modelo inválida '%s' '%s'", folder, name);
+            return -1;
+        }
+        const std::string key = std::string(sub) + name + "#" + std::to_string(fixedSlot);
+        std::map<std::string, int>::iterator it = s_LoadedModels.find(key);
+        if (it != s_LoadedModels.end()) return it->second;
+
+        int slot = fixedSlot;
+        if (slot < 0) {
+            slot = MODEL_MAX_VANILLA + m_NextDynamicModel++;
+        }
+
+        ResourceTables::EnsureModels(std::size_t(slot)+1);
+        char dir[128];
+        Platform::TextFormatTruncated(dir, sizeof(dir), Platform::TruncateText, "Data\\%s", sub);
+        AccessModel(slot, dir, name, -1);
+        const BYTE* model = (const BYTE*)(uintptr_t)DAT_05828d58 + slot * BMD_STRIDE;
+        if (*(const short*)(model + 0x24) <= 0) {
+            Log("ContentCatalog: no se pudo cargar %s%s.bmd", dir, name);
+            s_LoadedModels[key] = -1;
+            return -1;
+        }
+
+        if (m_NextTexture == 0) m_NextTexture = BITMAP_MAX_VANILLA;
+        const DWORD savedBegin = TextureBegin;
+        const DWORD savedCurrent = TextureCurrent;
+        TextureBegin = BITMAP_MAX_VANILLA;
+        TextureCurrent = m_NextTexture;
+        OpenTexture(slot, sub, 0x2600, '\x01');
+        m_NextTexture = (int)TextureCurrent;
+        TextureBegin = savedBegin;
+        TextureCurrent = savedCurrent;
+
+        if (const unsigned int twoSided = FindTwoSidedMeshes(model)) {
+            s_TwoSidedMeshes[slot] = twoSided;
+            Log("ContentCatalog: %s%s.bmd tiene caras invertidas, se dibuja de los dos lados (mallas 0x%x)", dir, name, twoSided);
+        }
+        s_LoadedModels[key] = slot;
+        return slot;
+    } catch (const std::exception& e) {
+        Log("ContentCatalog: Exceção ao carregar modelo '%s/%s': %s", folder ? folder : "", name ? name : "", e.what());
+        return -1;
+    } catch (...) {
+        Log("ContentCatalog: Exceção desconhecida ao carregar modelo '%s/%s'", folder ? folder : "", name ? name : "");
         return -1;
     }
-    const std::string key = std::string(sub) + name + "#" + std::to_string(fixedSlot);
-    std::map<std::string, int>::iterator it = s_LoadedModels.find(key);
-    if (it != s_LoadedModels.end()) return it->second;
-
-    int slot = fixedSlot;
-    if (slot < 0) {
-        slot = MODEL_MAX_VANILLA + m_NextDynamicModel++;
-    }
-
-    ResourceTables::EnsureModels(std::size_t(slot)+1);
-    char dir[128];
-    Platform::TextFormatTruncated(dir, sizeof(dir), Platform::TruncateText, "Data\\%s", sub);
-    AccessModel(slot, dir, name, -1);
-    const BYTE* model = (const BYTE*)(uintptr_t)DAT_05828d58 + slot * BMD_STRIDE;
-    if (*(const short*)(model + 0x24) <= 0) {
-        Log("ContentCatalog: no se pudo cargar %s%s.bmd", dir, name);
-        s_LoadedModels[key] = -1;
-        return -1;
-    }
-
-    if (m_NextTexture == 0) m_NextTexture = BITMAP_MAX_VANILLA;
-    const DWORD savedBegin = TextureBegin;
-    const DWORD savedCurrent = TextureCurrent;
-    TextureBegin = BITMAP_MAX_VANILLA;
-    TextureCurrent = m_NextTexture;
-    OpenTexture(slot, sub, 0x2600, '\x01');
-    m_NextTexture = (int)TextureCurrent;
-    TextureBegin = savedBegin;
-    TextureCurrent = savedCurrent;
-
-    if (const unsigned int twoSided = FindTwoSidedMeshes(model)) {
-        s_TwoSidedMeshes[slot] = twoSided;
-        Log("ContentCatalog: %s%s.bmd tiene caras invertidas, se dibuja de los dos lados (mallas 0x%x)", dir, name, twoSided);
-    }
-    s_LoadedModels[key] = slot;
-    return slot;
 }
 
 // Textura suelta de un efecto, en la región del catálogo.  Una vez por ruta.
 int CContentCatalog::LoadTexture(const char* path)
 {
-    char sub[64];
-    size_t n = 0;
-    for (const char* p = path; *p && n + 1 < sizeof(sub); ++p) sub[n++] = (*p == '/') ? '\\' : *p;
-    sub[n] = 0;
-    if (n < 5 || sub[0] == '\\' || strstr(sub, "..") || strchr(sub, ':')) {
-        Log("ContentCatalog: ruta de textura inválida '%s'", path);
+    try {
+        char sub[64];
+        size_t n = 0;
+        for (const char* p = path; *p && n + 1 < sizeof(sub); ++p) sub[n++] = (*p == '/') ? '\\' : *p;
+        sub[n] = 0;
+        if (n < 5 || sub[0] == '\\' || strstr(sub, "..") || strchr(sub, ':')) {
+            Log("ContentCatalog: ruta de textura inválida '%s'", path);
+            return -1;
+        }
+        std::map<std::string, int>::iterator it = s_LoadedTextures.find(sub);
+        if (it != s_LoadedTextures.end()) return it->second;
+
+        if (m_NextTexture == 0) m_NextTexture = BITMAP_MAX_VANILLA;
+        const int slot = m_NextTexture++;
+        ResourceTables::EnsureTextures(std::size_t(slot)+1);
+        const char* ext = strrchr(sub, '.');
+        const bool tga = ext && (Platform::TextCompareIgnoreCase(ext, ".tga") == 0);
+        if (tga) OpenTGA(sub, slot, 0x2601, 0x2900, 0, '\x01');
+        else     OpenJPG(sub, slot, 0x2601, 0x2900, 0, '\x01');
+        s_LoadedTextures[sub] = slot;
+        return slot;
+    } catch (const std::exception& e) {
+        Log("ContentCatalog: Exceção ao carregar textura '%s': %s", path ? path : "", e.what());
+        return -1;
+    } catch (...) {
         return -1;
     }
-    std::map<std::string, int>::iterator it = s_LoadedTextures.find(sub);
-    if (it != s_LoadedTextures.end()) return it->second;
-
-    if (m_NextTexture == 0) m_NextTexture = BITMAP_MAX_VANILLA;
-    const int slot = m_NextTexture++;
-    ResourceTables::EnsureTextures(std::size_t(slot)+1);
-    const char* ext = strrchr(sub, '.');
-    const bool tga = ext && (Platform::TextCompareIgnoreCase(ext, ".tga") == 0);
-    if (tga) OpenTGA(sub, slot, 0x2601, 0x2900, 0, '\x01');
-    else     OpenJPG(sub, slot, 0x2601, 0x2900, 0, '\x01');
-    s_LoadedTextures[sub] = slot;
-    return slot;
 }
 
 void CContentCatalog::RunEquippedEffects(const void* c, int model, void* modelPtr) const

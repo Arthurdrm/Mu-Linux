@@ -153,6 +153,9 @@ public:
 	int m_TradeItemBlockExc;
 	int m_ShopItemBlockExc;
 	int m_ShopItemBlockSellOnMaxMoney;
+	int m_ShopItemMaxSellPrice;
+	int m_ShopItemBuyPriceRate;
+	int m_MonsterMaxMoneyDrop;
 	int m_MaxCharacterLevel;
 	int m_MaxLevelUp;
 	int m_MaxLevelUpEvent;

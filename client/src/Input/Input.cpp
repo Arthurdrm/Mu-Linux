@@ -344,64 +344,34 @@ void Input_CycleChatSize(void)
 // IDA: CheckFunctionButtons
 void Input_ProcessFunctionKeys(void)
 {
-  char cVar2;
-  SHORT SVar3;
-  undefined4 uVar6;
-  undefined4 uVar7;
+  if (PressKey(VK_F1)) {
+    if (DAT_07e11d20 == 3) {
+      DAT_07e11d20 = 0;
+    }
+    else {
+      DAT_07e11d20 = (DAT_07e11d20 + 1) % 3;
+    }
+    PlayBuffer(0x19, 0, 0);
+  }
 
-  SVar3 = Platform::GetInput().KeyState(0x70);
-  if ((char)((ushort)SVar3 >> 8) == -0x80) {
-    if (DAT_07e11aac == 0) {
-      DAT_07e11aac = 1;
-      if (DAT_07e11d20 == 3) {
-        DAT_07e11d20 = 0;
-      }
-      else {
-        DAT_07e11d20 = (DAT_07e11d20 + 1) % 3;
-      }
-      PlayBuffer(0x19,0,0);
+  if (PressKey(VK_F2)) {
+    DAT_00559bf1 = (DAT_00559bf1 == '\0');
+    PlayBuffer(0x19, 0, 0);
+    // vtable[+0x30] = slot 12 = ChatLB_scrollByN (__fastcall this+n).
+    if (DAT_055c9ff0 && ChatWidget_GetVTable(DAT_055c9ff0)) {
+        DWORD* obj = (DWORD*)DAT_055c9ff0;
+        void** vt  = ChatWidget_GetVTable(obj);
+        typedef int (__fastcall *FnScroll)(DWORD*, int /*edx*/, int);
+        ((FnScroll)vt[12])(obj, 0, 0);
     }
   }
-  else {
-    DAT_07e11aac = 0;
+
+  if (PressKey(VK_F3)) {
+    DAT_00559bf0 = (DAT_00559bf0 == '\0');
+    PlayBuffer(0x19, 0, 0);
   }
-  SVar3 = Platform::GetInput().KeyState(0x71);
-  if ((char)((ushort)SVar3 >> 8) == -0x80) {
-    if (DAT_07e11ab0 == 0) {
-      DAT_00559bf1 = DAT_00559bf1 == '\0';
-      DAT_07e11ab0 = 1;
-      PlayBuffer(0x19,0,0);
-      // vtable[+0x30] = slot 12 = ChatLB_scrollByN (__fastcall this+n).
-      if (DAT_055c9ff0 && ChatWidget_GetVTable(DAT_055c9ff0)) {
-          DWORD* obj = (DWORD*)DAT_055c9ff0;
-          void** vt  = ChatWidget_GetVTable(obj);
-          typedef int (__fastcall *FnScroll)(DWORD*, int /*edx*/, int);
-          ((FnScroll)vt[12])(obj, 0, 0);
-      }
-    }
+
+  if (PressKey(VK_F4)) {
+    Input_CycleChatSize();
   }
-  else {
-    DAT_07e11ab0 = 0;
-  }
-  SVar3 = Platform::GetInput().KeyState(0x72);
-  if ((char)((ushort)SVar3 >> 8) == -0x80) {
-    if (DAT_07e11ab4 == 0) {
-      DAT_07e11ab4 = 1;
-      DAT_00559bf0 = DAT_00559bf0 == '\0';
-      PlayBuffer(0x19,0,0);
-    }
-  }
-  else {
-    DAT_07e11ab4 = 0;
-  }
-  SVar3 = Platform::GetInput().KeyState(0x73);
-  if ((char)((ushort)SVar3 >> 8) != -0x80) {
-    DAT_07e11ab8 = 0;
-    return;
-  }
-  if (DAT_07e11ab8 != 0) {
-    return;
-  }
-  DAT_07e11ab8 = 1;
-  Input_CycleChatSize();
 }

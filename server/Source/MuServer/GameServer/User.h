@@ -560,6 +560,7 @@ struct OBJECTSTRUCT
 	int AutoPickEnable;
 	DWORD AutoPickTime;
 	int AutoPickMode;
+	int LastSkill;
 	int CommandManagerTransaction;
 	DWORD CommandLastTick[100];
 	DWORD PotionTime;

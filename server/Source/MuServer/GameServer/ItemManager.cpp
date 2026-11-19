@@ -1781,6 +1781,11 @@ bool CItemManager::ConvertItemByte(CItem* lpItem, BYTE* lpMsg)
 
 	lpItem->m_Durability = ((MaxStack == 0) ? lpItem->m_Durability : ((lpItem->m_Durability > MaxStack) ? MaxStack : lpItem->m_Durability));
 
+	if (lpItem->m_Index == GET_ITEM(14, 13) || lpItem->m_Index == GET_ITEM(14, 14) || lpItem->m_Index == GET_ITEM(14, 16) || lpItem->m_Index == GET_ITEM(14, 22) || lpItem->m_Index == GET_ITEM(12, 15))
+	{
+		lpItem->m_Durability = 1;
+	}
+
 	lpItem->m_Serial = MAKE_NUMBERDW(MAKE_NUMBERW(lpMsg[3], lpMsg[4]), MAKE_NUMBERW(lpMsg[5], lpMsg[6]));
 
 	lpItem->m_ExceOption = lpMsg[7] & 63;

@@ -13,3 +13,4 @@ docker-compose.override.yml
 # El README.md de la carpeta si se versiona; explica como agregarlos.
 client/bin/Client/Data/Sound/Dances/*
 !client/bin/Client/Data/Sound/Dances/README.md
+bin_compiled/

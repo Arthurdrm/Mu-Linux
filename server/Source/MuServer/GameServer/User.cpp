@@ -515,6 +515,7 @@ void gObjCharZeroSet(int aIndex)
 	lpObj->AutoPickEnable = 0;
 	lpObj->AutoPickTime = 0;
 	lpObj->AutoPickMode = 0;
+	lpObj->LastSkill = 0;
 
 	memset(lpObj->AutoPartyPassword, 0, sizeof(lpObj->AutoPartyPassword));
 

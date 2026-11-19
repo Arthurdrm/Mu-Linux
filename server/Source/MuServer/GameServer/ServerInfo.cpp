@@ -1681,6 +1681,10 @@ void CServerInfo::ReadCommonInfo(const char* section, const char* path)
 
 	this->m_ShopItemBlockExc = GetPrivateProfileInt(section, "ShopItemBlockExc", 0, path);
 
+	this->m_ShopItemMaxSellPrice = GetPrivateProfileInt(section, "ShopItemMaxSellPrice", 250000, path);
+	this->m_ShopItemBuyPriceRate = GetPrivateProfileInt(section, "ShopItemBuyPriceRate", 50, path);
+	this->m_MonsterMaxMoneyDrop = GetPrivateProfileInt(section, "MonsterMaxMoneyDrop", 25000, path);
+
 	this->m_MaxCharacterLevel = GetPrivateProfileInt(section, "MaxCharacterLevel", 400, path);
 
 	this->m_MaxCharacterLevel = ((this->m_MaxCharacterLevel < 1) ? 1 : ((this->m_MaxCharacterLevel > MAX_CHARACTER_LEVEL) ? MAX_CHARACTER_LEVEL : this->m_MaxCharacterLevel));

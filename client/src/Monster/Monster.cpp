@@ -505,6 +505,7 @@ extern void __cdecl OpenNpc(int Type);
 CHARACTER* __cdecl CreateCharacter(int Key, int Type, unsigned char PosX,
                                    unsigned char PosY, float Rotation)
 {
+    if (!DAT_07abf5d0) return nullptr;
     BYTE* c = reinterpret_cast<BYTE*>(DAT_07abf5d0);
     for (int i = 0; i < 400; ++i) {
         if (*(unsigned char*)c != 0 && *(short*)&((CHARACTER*)(uintptr_t)(c))->Key == (short)Key) {
@@ -1048,6 +1049,7 @@ CHARACTER* CreateMonsterFromDefinition(const MonsterDefinition& def, int key, in
     else if (def.Loader == SpawnLoader::Npc) OpenNpc(def.Resource);
     if (def.ExtraResource >= 0) OpenMonsterModel(def.ExtraResource);
     CHARACTER* const c = CreateChar5(key, def.Model, x, y);
+    if (!c) return nullptr;
     if (def.Scale > 0.0f) AsCharacter(c)->Object.Scale = def.Scale;
     if (def.Right >= 0) *(unsigned short *)&AsCharacter(c)->Weapon[0].Type = (unsigned short)def.Right;
     if (def.Left >= 0) *(unsigned short *)&AsCharacter(c)->Weapon[1].Type = (unsigned short)def.Left;
@@ -1097,18 +1099,20 @@ char* __cdecl CreateMonster(unsigned int Type_, int PositionX, int PositionY,
         ? MonsterDefinitions[Type_] : DefaultMonsterDefinition;
     c = reinterpret_cast<BYTE*>(CreateMonsterFromDefinition(definition, Key, PositionX, PositionY));
 
-    // Ajuste de escala por mundo para los tipos 84..136; se conserva el límite original.
-    v9 = gMapManager.GetCurrentMap() - 9;
-    if (v9 > 0 && v9 <= 7) {
-        v10 = Type;
-        if (Type >= 84 && Type <= 136) {
-            AsCharacter(c)->Level = 0;
-            AsCharacter(c)->Object.Scale = (float)((double)(v9 / 3) * 0.05000000074505806 + AsCharacter(c)->Object.Scale);
+    if (c) {
+        // Ajuste de escala por mundo para los tipos 84..136; se conserva el límite original.
+        v9 = gMapManager.GetCurrentMap() - 9;
+        if (v9 > 0 && v9 <= 7) {
+            v10 = Type;
+            if (Type >= 84 && Type <= 136) {
+                AsCharacter(c)->Level = 0;
+                AsCharacter(c)->Object.Scale = (float)((double)(v9 / 3) * 0.05000000074505806 + AsCharacter(c)->Object.Scale);
+            }
+        } else {
+            v10 = Type;
         }
-    } else {
-        v10 = Type;
+        if (custom && custom->Scale > 0.0f) AsCharacter(c)->Object.Scale = custom->Scale;
     }
-    if (c && custom && custom->Scale > 0.0f) AsCharacter(c)->Object.Scale = custom->Scale;
 
     if (c) {
         // Copia el nombre desde la tabla MonsterScript/NPCName (getMonsterName por

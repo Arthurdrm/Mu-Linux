@@ -129,6 +129,8 @@ void gObjMonsterDieGiveItem(LPOBJ lpObj, LPOBJ lpTarget)
 
 		money = (money * lpTarget->MoneyAmountDropRate) / 100;
 
+		if (gServerInfo.m_MonsterMaxMoneyDrop > 0 && money > gServerInfo.m_MonsterMaxMoneyDrop) { money = gServerInfo.m_MonsterMaxMoneyDrop; }
+
 		if (money > 0)
 		{
 			if ((money = (GetLargeRand() % money)) > 0)

@@ -772,24 +772,38 @@ void Net_ProcessPacket(void)
                        encLen, Size, HeadCode);
             }
         } else if (hdr == 0xC1) {
-            HeadCode = Msg[2];
             Size     = Msg[1];
+            if (Size < 3 || Size > 0x2000) {
+                NetLog("NET: C1 bad size=%d — discard", Size);
+                continue;
+            }
+            HeadCode = Msg[2];
         } else if (hdr == 0xC2) {
-            HeadCode = Msg[3];
             Size     = (Msg[1] << 8) | Msg[2];
+            if (Size < 4 || Size > 0x2000) {
+                NetLog("NET: C2 bad size=%d — discard", Size);
+                continue;
+            }
+            HeadCode = Msg[3];
         } else {
             NetLog("NET: unknown hdr=%02X — discard", hdr);
             continue;
         }
 
-        BYTE sub = Msg[(hdr == 0xC1) ? 3 : 4];
+        BYTE sub = 0;
+        if (hdr == 0xC1 && Size >= 4) {
+            sub = Msg[3];
+        } else if (hdr == 0xC2 && Size >= 5) {
+            sub = Msg[4];
+        }
         NetLog("NET: hdr=%02X op=%02X sub=%02X size=%d",
                hdr, HeadCode, sub, Size);
 
         // ── dispatch on opcode ───────────────────────────────────────────
         EquipWipe_Tick(HeadCode, sub);   // diagnostico del wipe de equipo
 
-        switch (HeadCode) {
+        try {
+            switch (HeadCode) {
             case 0xF1: NetRecv_F1(Msg, Size, hdr, sub, bEncrypted); break;
             case 0xF3: NetRecv_F3(Msg, Size, hdr, sub, bEncrypted); break;
             case 0xF4: NetRecv_F4(Msg, Size, hdr, sub, bEncrypted); break;
@@ -902,6 +916,11 @@ void Net_ProcessPacket(void)
             default:
                 NetLog("NET:  → op=%02X unhandled (in-game)", HeadCode);
                 break;
+            }
+        } catch (const std::exception& e) {
+            NetLog("NET: EXCEPTION handling packet op=%02X sub=%02X: %s", HeadCode, sub, e.what());
+        } catch (...) {
+            NetLog("NET: UNKNOWN EXCEPTION handling packet op=%02X sub=%02X", HeadCode, sub);
         }
 
         (void)Size;

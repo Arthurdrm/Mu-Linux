@@ -662,6 +662,8 @@ void CItem::Value()
 
 		this->m_SellMoney = ((this->m_SellMoney >= 1000) ? ((this->m_SellMoney / 100) * 100) : this->m_SellMoney);
 
+	if (gServerInfo.m_ShopItemMaxSellPrice > 0 && this->m_SellMoney > (DWORD)gServerInfo.m_ShopItemMaxSellPrice) { this->m_SellMoney = (DWORD)gServerInfo.m_ShopItemMaxSellPrice; }
+
 		return;
 	}
 
@@ -688,7 +690,9 @@ void CItem::Value()
 
 			price = ((price > MAX_ITEM_PRICE) ? MAX_ITEM_PRICE : price);
 
-			this->m_BuyMoney = (DWORD)price;
+			if (gServerInfo.m_ShopItemBuyPriceRate > 0 && gServerInfo.m_ShopItemBuyPriceRate < 100) { price = (price * gServerInfo.m_ShopItemBuyPriceRate) / 100; }
+
+	this->m_BuyMoney = (DWORD)price;
 
 			this->m_BuyMoney = ((this->m_BuyMoney >= 10) ? ((this->m_BuyMoney / 10) * 10) : this->m_BuyMoney);
 
@@ -830,6 +834,8 @@ void CItem::Value()
 		}
 	}
 
+	if (gServerInfo.m_ShopItemBuyPriceRate > 0 && gServerInfo.m_ShopItemBuyPriceRate < 100) { price = (price * gServerInfo.m_ShopItemBuyPriceRate) / 100; }
+
 	this->m_BuyMoney = (DWORD)price;
 
 	this->m_BuyMoney = ((this->m_BuyMoney >= 100) ? ((this->m_BuyMoney / 10) * 10) : this->m_BuyMoney);
@@ -848,6 +854,8 @@ void CItem::Value()
 	this->m_SellMoney = ((this->m_SellMoney >= 100) ? ((this->m_SellMoney / 10) * 10) : this->m_SellMoney);
 
 	this->m_SellMoney = ((this->m_SellMoney >= 1000) ? ((this->m_SellMoney / 100) * 100) : this->m_SellMoney);
+
+	if (gServerInfo.m_ShopItemMaxSellPrice > 0 && this->m_SellMoney > (DWORD)gServerInfo.m_ShopItemMaxSellPrice) { this->m_SellMoney = (DWORD)gServerInfo.m_ShopItemMaxSellPrice; }
 }
 
 void CItem::OldValue()

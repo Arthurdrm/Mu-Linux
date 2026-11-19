@@ -599,69 +599,75 @@ void NetRecv_13(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // (el `type` sale de un byte que no es el suyo → monstruos fantasma).
     const int entryStride = 12;
     BYTE* basePtr = (BYTE*)(uintptr_t)DAT_07abf5d0;
-    for (int i = 0; i < count && (entryStart + i*entryStride + 11) <= Size; ++i) {
-        const BYTE* e = Msg + entryStart + i*entryStride;
-        // Layout decompilado del binario MuEmu
-        // Linux server (CViewport::GCViewportMonsterSend, asm
-        // a17c0). Confirmado disasm:
-        //   e[0]=KeyH|CREATE, e[1]=KeyL, e[2]=Class,
-        //   e[3]=padding, e[4..5]=ViewSkillState (LE),
-        //   e[6]=PosX, e[7]=PosY, e[8]=TargetX, e[9]=TargetY,
-        //   e[10]=Path|Dir, e[11]=padding.
-        WORD entityId = ((WORD)(e[0] & 0x7F) << 8) | e[1];
-        BYTE type = e[2];
-        BYTE x = e[6], y = e[7];
-        BYTE tx = e[8], ty = e[9];
-        BYTE dirpk = e[10];
-        BYTE dir = (dirpk >> 4) & 0x0F;
-        const WORD viewSkillState = (WORD)(e[4] | (e[5] << 8));
-        // CreateMonster (no CreateCharacterPointer): ADEMÁS carga el BMD model via
-        // OpenMonsterModel/OpenNpc; sin modelo el slot no se dibuja.
-        extern char* __cdecl CreateMonster(unsigned int Type, int PosX,
-                                         int PosY, int Key, int);
-        float rot = ((float)dir - 1.0f) * 45.0f;
-        char* slotChar = CreateMonster((unsigned int)type, x, y,
-                                      (int)entityId, 0);
-        if (slotChar) {
-            BYTE* slot = (BYTE*)slotChar;
-            // El facing va por separado — CreateMonster no lo setea.
-            AsCharacter(slot)->Object.Angle[2] = rot;
-            AsCharacter(slot)->Key = entityId;
-            // NO sobrescribir +0x84 (kind).  CreateMonster ya lo setea correcto por
-            // Type: 2=monster, 4=NPC (type>200), 8=ground-item.  Forzarlo a 2 haría
-            // que Target_Render muestre a los NPCs con el banner de monstruo
-            // (RenderCenteredText arriba) en vez del chat flotante de NPC (CreateChat).
-            AsCharacter(slot)->Object.Visible = 1;    // visible flag
-            AsCharacter(slot)->Object.LightEnable = 1;     // is_rendered sub-flag
-            AsCharacter(slot)->JumpTime = 0;
-            AsCharacter(slot)->TargetX = tx;
-            AsCharacter(slot)->TargetY = ty;
-            AsCharacter(slot)->PathNum = 0;
-            AsCharacter(slot)->PositionX = x;
-            AsCharacter(slot)->PositionY = y;
-            AsCharacter(slot)->Object.Live = 1;
-            // Init +0x168 (screen distance) a 1.0f para
-            // que mob sea targetable INMEDIATAMENTE (antes del primer
-            // frame de render). Sin esto, FUN_004afdc0 (hover detect)
-            // filtra mob por `_DAT_00552580 < ent[+0x168]` (= 0
-            // por default) → mob no es hovered hasta que sea
-            // rendered (1+ frame later).
-            AsCharacter(slot)->Object.Alpha = 1.0f;
-            // Init move speed (+0x2FA = +762 word).
-            // CreateMonster solo setea esto para case 11. Resto de
-            // los tipos quedan en 0 → CharacterMoveSpeed retorna 0 →
-            // sin movimiento. O queda en basura → mobs acelerados.
-            // 4 = "slow walk" baseline para mobs/NPCs (vs player ~12).
-            if (AsCharacter(slot)->MoveSpeed == 0) {
-                AsCharacter(slot)->MoveSpeed = 4;
+    for (int i = 0; i < count && (entryStart + (i + 1) * entryStride) <= Size; ++i) {
+        try {
+            const BYTE* e = Msg + entryStart + i*entryStride;
+            // Layout decompilado del binario MuEmu
+            // Linux server (CViewport::GCViewportMonsterSend, asm
+            // a17c0). Confirmado disasm:
+            //   e[0]=KeyH|CREATE, e[1]=KeyL, e[2]=Class,
+            //   e[3]=padding, e[4..5]=ViewSkillState (LE),
+            //   e[6]=PosX, e[7]=PosY, e[8]=TargetX, e[9]=TargetY,
+            //   e[10]=Path|Dir, e[11]=padding.
+            WORD entityId = ((WORD)(e[0] & 0x7F) << 8) | e[1];
+            BYTE type = e[2];
+            BYTE x = e[6], y = e[7];
+            BYTE tx = e[8], ty = e[9];
+            BYTE dirpk = e[10];
+            BYTE dir = (dirpk >> 4) & 0x0F;
+            const WORD viewSkillState = (WORD)(e[4] | (e[5] << 8));
+            // CreateMonster (no CreateCharacterPointer): ADEMÁS carga el BMD model via
+            // OpenMonsterModel/OpenNpc; sin modelo el slot no se dibuja.
+            extern char* __cdecl CreateMonster(unsigned int Type, int PosX,
+                                             int PosY, int Key, int);
+            float rot = ((float)dir - 1.0f) * 45.0f;
+            char* slotChar = CreateMonster((unsigned int)type, x, y,
+                                          (int)entityId, 0);
+            if (slotChar) {
+                BYTE* slot = (BYTE*)slotChar;
+                // El facing va por separado — CreateMonster no lo setea.
+                AsCharacter(slot)->Object.Angle[2] = rot;
+                AsCharacter(slot)->Key = entityId;
+                // NO sobrescribir +0x84 (kind).  CreateMonster ya lo setea correcto por
+                // Type: 2=monster, 4=NPC (type>200), 8=ground-item.  Forzarlo a 2 haría
+                // que Target_Render muestre a los NPCs con el banner de monstruo
+                // (RenderCenteredText arriba) en vez del chat flotante de NPC (CreateChat).
+                AsCharacter(slot)->Object.Visible = 1;    // visible flag
+                AsCharacter(slot)->Object.LightEnable = 1;     // is_rendered sub-flag
+                AsCharacter(slot)->JumpTime = 0;
+                AsCharacter(slot)->TargetX = tx;
+                AsCharacter(slot)->TargetY = ty;
+                AsCharacter(slot)->PathNum = 0;
+                AsCharacter(slot)->PositionX = x;
+                AsCharacter(slot)->PositionY = y;
+                AsCharacter(slot)->Object.Live = 1;
+                // Init +0x168 (screen distance) a 1.0f para
+                // que mob sea targetable INMEDIATAMENTE (antes del primer
+                // frame de render). Sin esto, FUN_004afdc0 (hover detect)
+                // filtra mob por `_DAT_00552580 < ent[+0x168]` (= 0
+                // por default) → mob no es hovered hasta que sea
+                // rendered (1+ frame later).
+                AsCharacter(slot)->Object.Alpha = 1.0f;
+                // Init move speed (+0x2FA = +762 word).
+                // CreateMonster solo setea esto para case 11. Resto de
+                // los tipos quedan en 0 → CharacterMoveSpeed retorna 0 →
+                // sin movimiento. O queda en basura → mobs acelerados.
+                // 4 = "slow walk" baseline para mobs/NPCs (vs player ~12).
+                if (AsCharacter(slot)->MoveSpeed == 0) {
+                    AsCharacter(slot)->MoveSpeed = 4;
+                }
+                ApplyPersistentSkillEffect97k(slot, viewSkillState, 1);
+                int spawnSlot = (int)((slot - basePtr) / CHARACTER_STRIDE);
+                NetLog("NET:    0x13 spawn monster slot=%d id=%d type=%d pos=(%d,%d) rot=%.0f",
+                       spawnSlot, entityId, type, x, y, rot);
+            } else {
+                NetLog("NET:    0x13 SKIP - CreateMonster returned NULL (type=%d)",
+                       type);
             }
-            ApplyPersistentSkillEffect97k(slot, viewSkillState, 1);
-            int spawnSlot = (int)((slot - basePtr) / CHARACTER_STRIDE);
-            NetLog("NET:    0x13 spawn monster slot=%d id=%d type=%d pos=(%d,%d) rot=%.0f",
-                   spawnSlot, entityId, type, x, y, rot);
-        } else {
-            NetLog("NET:    0x13 SKIP - CreateMonster returned NULL (type=%d)",
-                   type);
+        } catch (const std::exception& ex) {
+            NetLog("NET:    0x13 exception in monster %d/%d: %s", i, count, ex.what());
+        } catch (...) {
+            NetLog("NET:    0x13 unknown exception in monster %d/%d", i, count);
         }
     }
 }

@@ -392,6 +392,8 @@ void CChaosBox::ChaosItemMix(LPOBJ lpObj)
 
 	if (this->GetChaosItemMixRates(lpObj->Index, rate, money) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -530,7 +532,7 @@ bool CChaosBox::GetChaosItemMixRates(int aIndex, DWORD& rate, DWORD& money)
 
 	if (gServerInfo.m_ChaosItemMixRate[lpObj->AccountLevel] == -1)
 	{
-		rate = (MixMoney / 20000);
+		rate = 25 + (MixMoney / 20000);
 	}
 	else
 	{
@@ -579,6 +581,8 @@ void CChaosBox::DevilSquareMix(LPOBJ lpObj)
 
 	if (this->GetDevilSquareMixRates(lpObj->Index, rate, money, Level) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -718,6 +722,8 @@ void CChaosBox::PlusItemLevelMix(LPOBJ lpObj, int type)
 
 	if (this->GetPlusItemLevelMixRates(lpObj->Index, rate, money, type, ItemSlot) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -849,6 +855,8 @@ void CChaosBox::DinorantMix(LPOBJ lpObj)
 
 	if (this->GetDinorantMixRates(lpObj->Index, rate, money) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -940,6 +948,8 @@ void CChaosBox::FruitMix(LPOBJ lpObj)
 
 	if (this->GetFruitMixRates(lpObj->Index, rate, money) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -1025,6 +1035,8 @@ void CChaosBox::Wing1Mix(LPOBJ lpObj)
 
 	if (this->GetWing1MixRates(lpObj->Index, rate, money) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -1131,7 +1143,7 @@ bool CChaosBox::GetWing1MixRates(int aIndex, DWORD& rate, DWORD& money)
 
 			JewelMoney += lpObj->ChaosBox[n].m_OldBuyMoney;
 		}
-		else if ((lpObj->ChaosBox[n].GetKind() == GET_ITEM(2, 6) || lpObj->ChaosBox[n].GetKind() == GET_ITEM(4, 6) || lpObj->ChaosBox[n].GetKind() == GET_ITEM(5, 7)) && lpObj->ChaosBox[n].m_Level >= 4 && lpObj->ChaosBox[n].m_AddOption >= 1)
+		else if (lpObj->ChaosBox[n].GetKind() == GET_ITEM(2, 6) || lpObj->ChaosBox[n].GetKind() == GET_ITEM(4, 6) || lpObj->ChaosBox[n].GetKind() == GET_ITEM(5, 7))
 		{
 			if (!IsItem)
 			{
@@ -1161,7 +1173,7 @@ bool CChaosBox::GetWing1MixRates(int aIndex, DWORD& rate, DWORD& money)
 
 	if (gServerInfo.m_Wing1MixRate[lpObj->AccountLevel] == -1)
 	{
-		rate = (MixMoney / 20000);
+		rate = 60 + (MixMoney / 20000);
 	}
 	else
 	{
@@ -1210,6 +1222,8 @@ void CChaosBox::BloodCastleMix(LPOBJ lpObj)
 
 	if (this->GetBloodCastleMixRates(lpObj->Index, rate, money, Level) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -1365,6 +1379,8 @@ void CChaosBox::Wing2Mix(LPOBJ lpObj)
 
 	if (this->GetWing2MixRates(lpObj->Index, rate, money) == false)
 	{
+		this->GCChaosMixSend(lpObj->Index, 2, 0);
+
 		return;
 	}
 
@@ -1493,7 +1509,7 @@ bool CChaosBox::GetWing2MixRates(int aIndex, DWORD& rate, DWORD& money)
 
 	if (gServerInfo.m_Wing2MixRate[lpObj->AccountLevel] == -1)
 	{
-		rate = (WingItemMoney / 4000000);
+		rate = 40 + (WingItemMoney / 4000000);
 	}
 	else
 	{

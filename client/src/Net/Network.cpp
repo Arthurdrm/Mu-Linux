@@ -67,76 +67,97 @@ const BYTE CNetwork::XorKey[32] = {
 
 void CNetwork::OnSocketEvent(WORD evt, WORD err)
 {
-    // Compatibilidad MuEmu: tras F4/03 redirect podemos reconectar a un
-    // socket nuevo antes de que Windows entregue el FD_CLOSE del socket
-    // viejo. Si procesamos ese evento tardío como si fuera del socket
-    // actual, cerramos la sesión nueva inmediatamente.
-    extern int  __fastcall CWsctlc_nRecv(void* ctx);
-    extern int  __fastcall CWsctlc_FDWriteSend(uintptr_t ctx);
-    extern void Net_ProcessPacket(void);
-    if (evt & 0x01) { // FD_READ
-        CWsctlc_nRecv((void*)(uintptr_t)SocketClient);
-        CsmWatchdog("after-Recv");        // catches any future trample regression
-        // Durante OpenWorld el pump de AccessModel reentra aca.
-        // Se drena el socket (arriba) para que el server no cierre por
-        // backpressure, pero NO se despachan los paquetes: quedan en la cola
-        // y los procesa el frame siguiente, ya con los modelos cargados.
-        // Sin esto, el 0x13 ViewportMonster creaba monstruos a medio cargar.
-        if (!g_WorldLoading)
-            Net_ProcessPacket();
-    }
-    if (evt & 0x02) { // FD_WRITE
-        CWsctlc_FDWriteSend(reinterpret_cast<uintptr_t>(SocketClient));
-        // La conexión no-bloqueante completa suele señalizarse con el primer
-        // FD_WRITE (el mask WSAAsyncSelect es 0x23, sin FD_CONNECT), así que el
-        // pedido de lista al ConnectServer también sale de acá.
-        RequestServerList();
-    }
-    if (evt & 0x10) { // FD_CONNECT
-        if (err == 0)
-            RequestServerList();
-    }
-    if (evt & 0x20) { // FD_CLOSE
-        DbgLogPublic("NET: socket cerrado por el servidor");
-        // DESVIACION (DLL Reconnect.cpp): en el juego, un cierre que no pidió
-        // el jugador arranca la reconexión en vez de sólo avisar.
-        const bool reconnecting = !m_ConnectServerMode && gReconnect.OnConnectionLost();
-        ResetSessionData();
-        // IDA WndProc @ 0x004149D0 case FD_CLOSE (original behaviour):
-        //   UIChatLogWindow_AddText(strID, GlobalText[3], 1);
-        //   CWsctlc::Close(&SocketClient);
-        // ── No MessageBoxA, no PostQuitMessage. Solo log y cierre local.
-        // El cierre del socket por logout limpio (F1/02/* iniciado por el
-        // cliente) NO debe matar el proceso — el countdown de "Salir" o el
-        // local-transition de "Seleccionar Servidor" se encargan de la
-        // siguiente fase. Para FD_CLOSE no solicitado (server kick / red
-        // caída) la UI de login mostrará el chat-log y el usuario verá
-        // "Conexión cerrada" sin que el cliente se mate solo.
-        extern void UIChatLogWindow_AddText(const char* strID, const char* msg, int color);
-        if (!reconnecting)
-            UIChatLogWindow_AddText((const char*)&DAT_083a7c5c, GlobalText[3], 1);
-        if (Platform::GetSocket().IsOpen(SocketClientSocket)) {
-            Platform::GetSocket().Close((SOCKET)SocketClientSocket);
-            SocketClientSocket = static_cast<DWORD>(Platform::InvalidSocket);
-        }
-        // Antes del login el servidor puede vencer la sesión por inactividad.
-        // La lista visible no significa que el socket siga vivo: liberar la
-        // espera y permitir una nueva selección sin reiniciar el cliente.
-        if (SceneFlag == 2 && !reconnecting) {
-            g_bGameServerConnected = 0;
-            CurrentProtocolState = 0;
-            DAT_083a7c14 = 0;
-            DAT_083a7c44 = 0;
-            DAT_083a7c24 = 0;
-            DAT_083a7c28 = 0;
-            ServerSelectHi = -1;
-            ServerSelectLo = -1;
-            if (m_HasConnectServer) {
-                m_ConnectServerMode = true;
-                m_ServerListRequested = false;
-                MuEmu::SetActive(false);
+    try {
+        // Compatibilidad MuEmu: tras F4/03 redirect podemos reconectar a un
+        // socket nuevo antes de que Windows entregue el FD_CLOSE del socket
+        // viejo. Si procesamos ese evento tardío como si fuera del socket
+        // actual, cerramos la sesión nueva inmediatamente.
+        extern int  __fastcall CWsctlc_nRecv(void* ctx);
+        extern int  __fastcall CWsctlc_FDWriteSend(uintptr_t ctx);
+        extern void Net_ProcessPacket(void);
+        static bool s_inProcessPacket = false;
+
+        if (evt & 0x01) { // FD_READ
+            CWsctlc_nRecv((void*)(uintptr_t)SocketClient);
+            CsmWatchdog("after-Recv");        // catches any future trample regression
+            // Durante OpenWorld o carga de catálogo el pump de AccessModel reentra aca.
+            // Se drena el socket para que el server no cierre por backpressure,
+            // pero NO se despachan paquetes reentrantes.
+            if (!g_WorldLoading && !s_inProcessPacket) {
+                s_inProcessPacket = true;
+                try {
+                    Net_ProcessPacket();
+                } catch (const std::exception& e) {
+                    char dbg[256];
+                    Platform::TextFormat(dbg, "NET: Exceção em Net_ProcessPacket: %s", e.what());
+                    DbgLogPublic(dbg);
+                } catch (...) {
+                    DbgLogPublic("NET: Exceção desconhecida em Net_ProcessPacket");
+                }
+                s_inProcessPacket = false;
             }
         }
+        if (evt & 0x02) { // FD_WRITE
+            CWsctlc_FDWriteSend(reinterpret_cast<uintptr_t>(SocketClient));
+            // La conexión no-bloqueante completa suele señalizarse con el primer
+            // FD_WRITE (el mask WSAAsyncSelect es 0x23, sin FD_CONNECT), así que el
+            // pedido de lista al ConnectServer también sale de acá.
+            RequestServerList();
+        }
+        if (evt & 0x10) { // FD_CONNECT
+            if (err == 0)
+                RequestServerList();
+        }
+        if (evt & 0x20) { // FD_CLOSE
+            DbgLogPublic("NET: socket cerrado por el servidor");
+            // DESVIACION (DLL Reconnect.cpp): en el juego, un cierre que no pidió
+            // el jugador arranca la reconexión en vez de sólo avisar.
+            const bool reconnecting = !m_ConnectServerMode && gReconnect.OnConnectionLost();
+            ResetSessionData();
+            // IDA WndProc @ 0x004149D0 case FD_CLOSE (original behaviour):
+            //   UIChatLogWindow_AddText(strID, GlobalText[3], 1);
+            //   CWsctlc::Close(&SocketClient);
+            // ── No MessageBoxA, no PostQuitMessage. Solo log y cierre local.
+            // El cierre del socket por logout limpio (F1/02/* iniciado por el
+            // cliente) NO debe matar el proceso — el countdown de "Salir" o el
+            // local-transition de "Seleccionar Servidor" se encargan de la
+            // siguiente fase. Para FD_CLOSE no solicitado (server kick / red
+            // caída) la UI de login mostrará el chat-log y el usuario verá
+            // "Conexión cerrada" sin que el cliente se mate solo.
+            extern void UIChatLogWindow_AddText(const char* strID, const char* msg, int color);
+            if (!reconnecting) {
+                const char* closeMsg = (GlobalText && GlobalText[3]) ? GlobalText[3] : "Conexión cerrada";
+                UIChatLogWindow_AddText((const char*)&DAT_083a7c5c, closeMsg, 1);
+            }
+            if (Platform::GetSocket().IsOpen(SocketClientSocket)) {
+                Platform::GetSocket().Close((SOCKET)SocketClientSocket);
+                SocketClientSocket = static_cast<DWORD>(Platform::InvalidSocket);
+            }
+            // Antes del login el servidor puede vencer la sesión por inactividad.
+            // La lista visible no significa que el socket siga vivo: liberar la
+            // espera y permitir una nueva selección sin reiniciar el cliente.
+            if (SceneFlag == 2 && !reconnecting) {
+                g_bGameServerConnected = 0;
+                CurrentProtocolState = 0;
+                DAT_083a7c14 = 0;
+                DAT_083a7c44 = 0;
+                DAT_083a7c24 = 0;
+                DAT_083a7c28 = 0;
+                ServerSelectHi = -1;
+                ServerSelectLo = -1;
+                if (m_HasConnectServer) {
+                    m_ConnectServerMode = true;
+                    m_ServerListRequested = false;
+                    MuEmu::SetActive(false);
+                }
+            }
+        }
+    } catch (const std::exception& e) {
+        char dbg[256];
+        Platform::TextFormat(dbg, "NET: Exceção capturada em OnSocketEvent (evt=0x%04X err=%u): %s", evt, err, e.what());
+        DbgLogPublic(dbg);
+    } catch (...) {
+        DbgLogPublic("NET: Exceção não tratada capturada em OnSocketEvent");
     }
 }
 

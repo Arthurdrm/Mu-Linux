@@ -1776,6 +1776,27 @@ void CSkillManager::CGMultiSkillAttackRecv(PMSG_MULTI_SKILL_ATTACK_RECV* lpMsg, 
 	{
 		return;
 	}
+// AUTO_SKILL_HOOK_START
+
+	CSkill* lpActiveSkill = this->GetSkill(lpObj, lpMsg->skill);
+	if (lpActiveSkill != 0)
+	{
+		lpObj->LastSkill = lpActiveSkill->m_skill;
+		if (lpObj->AutoAttackEnable != 0 && lpObj->AutoAttackSkill != lpActiveSkill->m_skill)
+		{
+			lpObj->AutoAttackSkill = lpActiveSkill->m_skill;
+			SKILL_INFO skInfo;
+			if (this->GetInfo(lpActiveSkill->m_skill, &skInfo))
+			{
+				gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill trocada para: %s!", skInfo.Name);
+			}
+			else
+			{
+				gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill trocada para ID %d!", lpActiveSkill->m_skill);
+			}
+		}
+	}
+	// AUTO_SKILL_HOOK_END
 
 	if (lpObj->Live == 0 || lpObj->Teleport != 0)
 	{
@@ -1830,6 +1851,9 @@ void CSkillManager::CGMultiSkillAttackRecv(PMSG_MULTI_SKILL_ATTACK_RECV* lpMsg, 
 		TRACE_REJECT(aIndex, 0x1D, -1, "skill %d: no es un skill de área", lpSkill->m_skill);
 		return;
 	}
+
+	lpObj->LastSkill = lpSkill->m_skill;
+	if (lpObj->AutoAttackEnable != 0) { lpObj->AutoAttackSkill = lpSkill->m_skill; }
 
 	if (lpObj->Type == OBJECT_USER && (lpObj->MultiSkillIndex == 0 || lpObj->MultiSkillIndex != lpSkill->m_index || (lpObj->MultiSkillCount++) >= 5))
 	{
@@ -1924,6 +1948,27 @@ void CSkillManager::CGSkillAttackRecv(PMSG_SKILL_ATTACK_RECV* lpMsg, int aIndex)
 	}
 
 	LPOBJ lpObj = &gObj[aIndex];
+// AUTO_SKILL_HOOK_START
+
+	CSkill* lpActiveSkill = this->GetSkill(lpObj, lpMsg->skill);
+	if (lpActiveSkill != 0)
+	{
+		lpObj->LastSkill = lpActiveSkill->m_skill;
+		if (lpObj->AutoAttackEnable != 0 && lpObj->AutoAttackSkill != lpActiveSkill->m_skill)
+		{
+			lpObj->AutoAttackSkill = lpActiveSkill->m_skill;
+			SKILL_INFO skInfo;
+			if (this->GetInfo(lpActiveSkill->m_skill, &skInfo))
+			{
+				gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill trocada para: %s!", skInfo.Name);
+			}
+			else
+			{
+				gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill trocada para ID %d!", lpActiveSkill->m_skill);
+			}
+		}
+	}
+	// AUTO_SKILL_HOOK_END
 
 	if (lpObj->Live == 0 || lpObj->Teleport != 0)
 	{
@@ -1995,6 +2040,8 @@ void CSkillManager::CGSkillAttackRecv(PMSG_SKILL_ATTACK_RECV* lpMsg, int aIndex)
 
 	lpObj->MultiSkillCount = 0;
 
+	lpObj->LastSkill = lpSkill->m_skill;
+	if (lpObj->AutoAttackEnable != 0) { lpObj->AutoAttackSkill = lpSkill->m_skill; }
 	this->UseAttackSkill(aIndex, bIndex, lpSkill);
 }
 
@@ -2006,6 +2053,27 @@ void CSkillManager::CGDurationSkillAttackRecv(PMSG_DURATION_SKILL_ATTACK_RECV* l
 	{
 		return;
 	}
+// AUTO_SKILL_HOOK_START
+
+	CSkill* lpActiveSkill = this->GetSkill(lpObj, lpMsg->skill);
+	if (lpActiveSkill != 0)
+	{
+		lpObj->LastSkill = lpActiveSkill->m_skill;
+		if (lpObj->AutoAttackEnable != 0 && lpObj->AutoAttackSkill != lpActiveSkill->m_skill)
+		{
+			lpObj->AutoAttackSkill = lpActiveSkill->m_skill;
+			SKILL_INFO skInfo;
+			if (this->GetInfo(lpActiveSkill->m_skill, &skInfo))
+			{
+				gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill trocada para: %s!", skInfo.Name);
+			}
+			else
+			{
+				gNotice.GCNoticeSend(lpObj->Index, 1, "[Auto Attack] Skill trocada para ID %d!", lpActiveSkill->m_skill);
+			}
+		}
+	}
+	// AUTO_SKILL_HOOK_END
 
 	if (lpObj->Live == 0 || lpObj->Teleport != 0)
 	{
@@ -2058,6 +2126,8 @@ void CSkillManager::CGDurationSkillAttackRecv(PMSG_DURATION_SKILL_ATTACK_RECV* l
 
 	short bIndex = MAKE_NUMBERW(lpMsg->index[0], lpMsg->index[1]);
 
+	lpObj->LastSkill = lpSkill->m_skill;
+	if (lpObj->AutoAttackEnable != 0) { lpObj->AutoAttackSkill = lpSkill->m_skill; }
 	this->UseDurationSkillAttack(lpObj->Index, bIndex, lpSkill, lpMsg->x, lpMsg->y, lpMsg->dir, lpMsg->angle);
 }
 

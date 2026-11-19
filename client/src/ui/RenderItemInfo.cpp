@@ -663,7 +663,16 @@ static void RenderItemInfo_IDA(int sx, int sy, ITEM* ip, bool Sell)
         int mana = 0;
         if ((s >= 18 && s <= 24) || s == 49 || s == 56)
             GetSkillInformation(s, 1, 0, &mana, 0, 0);
-        GetInventorySpecialOptionText(type, (BYTE)s, (BYTE)val, (ip->Level >> 3) & 0xF, mana, RII_Line(TextNum), 100);
+        // 73/75 guardan "nivel / divisor" (lo suma PlusSpecial); el texto
+        // muestra el divisor, que sale de la tabla del server.
+        int shown = val;
+        if (s == 73 || s == 75) {
+            BYTE divisor = 0;
+            const int add = (ip->Level & 3) + 4 * ((ip->Option1 >> 6) & 1);
+            shown = ItemOptionTable_FindValue(s, type, (ip->Level >> 7) & 1, (ip->Level >> 2) & 1, add,
+                                              ip->Option1 & 0x3F, &divisor) ? divisor : 0;
+        }
+        GetInventorySpecialOptionText(type, (BYTE)s, (BYTE)shown, (ip->Level >> 3) & 0xF, mana, RII_Line(TextNum), 100);
         RII_Style(TextNum, 1, 0);
         ++TextNum;
         if (s == 64)                     RII_ADD(1, 0, GlobalText[94], val);

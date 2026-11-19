@@ -167,15 +167,7 @@ extern "C" void __cdecl PlusSpecial(unsigned short *Value, int Special, const IT
     for (int i = 0; i < count; ++i) {
         if (data[i + 37] == (unsigned int)Special) {
             if (Item->Durability) {
-                // 73/75 ("+nivel/20"): SpecialValue es el divisor, como en el
-                // ItemOption.txt del server.  El 0.97k guardaba el cociente con
-                // el nivel del momento de ItemConvert.
-                if (Special == 73 || Special == 75) {
-                    const int level = *(const unsigned short*)((const BYTE*)CharacterAttribute + 14);
-                    if (data[i + 45]) *Value += (unsigned short)(level / data[i + 45]);
-                } else {
-                    *Value += data[i + 45];
-                }
+                *Value += data[i + 45];
             }
         }
     }

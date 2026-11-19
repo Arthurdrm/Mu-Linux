@@ -30,3 +30,8 @@ bool ItemOptionTable_Loaded();
 // opciones que trae el item.
 bool ItemOptionTable_Find(int slot, int behavior, int skill, int luck, int add, int exc,
                           std::uint8_t* option, std::uint8_t* value);
+
+// Valor de la tabla para la opción `optionCode` de ese item (recorre los slots
+// como ItemConvert).  false si la tabla no la da.
+bool ItemOptionTable_FindValue(int optionCode, int behavior, int skill, int luck, int add, int exc,
+                               std::uint8_t* value);

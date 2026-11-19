@@ -22,6 +22,7 @@ std::uint64_t RunPercent(BYTE* itemStorage, BYTE* valueStorage) {
         auto* item = reinterpret_cast<ITEM*>(itemStorage + 16); auto* data = reinterpret_cast<BYTE*>(item);
         item->Type = trial % 3 == 0 ? -1 : 500; item->Durability = trial % 5 == 0 ? 0 : BYTE(255); item->SpecialNum = BYTE(trial % 10);
         for(int i = 0; i < 9; ++i) data[37+i] = i % 3 ? BYTE(trial & 255) : BYTE(trial + i);
+        for(int i = 0; i < 9; ++i) data[45+i] = (trial + i) % 4 ? BYTE(trial / 7 + 13*i) : BYTE(0);
         const int offsets[] = {0, 0, 18, 26, 46}; const int alias = trial % 5;
         auto* value = reinterpret_cast<unsigned short*>(alias ? data + offsets[alias] : valueStorage + 16); *value = static_cast<unsigned short>(trial);
         const int special = trial % 4 == 0 ? int(data[37 + trial % 9]) : trial % 4 == 1 ? -1 : trial % 4 == 2 ? 256 : trial & 255;
@@ -32,8 +33,12 @@ std::uint64_t RunPercent(BYTE* itemStorage, BYTE* valueStorage) {
         short expectedType; std::memcpy(&expectedType, expectedData, 2);
         if(expectedType != -1) {
             const int count = expectedData[36];
-            for(int i = 0; i < count; ++i) if(int(expectedData[i + 37]) == special)
-                *expectedDest = static_cast<unsigned short>(*expectedDest + static_cast<unsigned short>(factor * *expectedDest / 100));
+            // El porcentaje es el de la opción (SpecialValue); el factor fijo sólo
+            // queda si la opción no trae valor.
+            for(int i = 0; i < count; ++i) if(int(expectedData[i + 37]) == special) {
+                const unsigned short percent = expectedData[i + 45] ? expectedData[i + 45] : factor;
+                *expectedDest = static_cast<unsigned short>(*expectedDest + static_cast<unsigned short>(percent * *expectedDest / 100));
+            }
         }
         const auto returned = CallPercent(reinterpret_cast<short*>(value), special, item, factor);
         Require(returned == reinterpret_cast<std::uintptr_t>(item));

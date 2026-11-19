@@ -353,10 +353,12 @@ void __cdecl ItemConvert(ITEM* ip, int Attribute1, int Attribute2) {
     }
 
     // SpecialValue guarda el valor de la opción tal como lo define el server
-    // (ItemOption.txt): la cifra de los porcentajes, el divisor de 73/75
-    // ("nivel/20") y el valor por nivel de 80/81 (50 + valor * nivel).  Quien
-    // lo usa (PlusSpecial, PlusSpecialPercent y el tooltip) hace la cuenta.
+    // (ItemOption.txt): la cifra de los porcentajes y el valor por nivel de
+    // 80/81 (50 + valor * nivel); PlusSpecialPercent y el tooltip hacen la
+    // cuenta.  73/75 ("+nivel/20") guardan el cociente como el 0.97k, porque
+    // PlusSpecial lo suma tal cual; el divisor lo vuelve a buscar el tooltip.
     // El 0.97k guardaba 0 en casi todas y ponía las cifras fijas en el tooltip.
+    const int heroLevel = CharacterAttribute ? *(unsigned short*)((BYTE*)CharacterAttribute + 14) : 0;
     const int option3 = (Attribute1 & 3) + 4 * ((Attribute2 >> 6) & 1);
     if (option3 && wType != ITEM_HELPER_DINORANT &&
         wType >= 0 && wType < ITEM_WING_ELF && wType != 135 && wType != 143) {
@@ -414,7 +416,12 @@ void __cdecl ItemConvert(ITEM* ip, int Attribute1, int Attribute2) {
                 ++count;
             }
         }
-        for (int i = 0; i < count; ++i) push_special(options[i][0], options[i][1]);
+        for (int i = 0; i < count; ++i) {
+            BYTE value = options[i][1];
+            if ((options[i][0] == 73 || options[i][0] == 75) && value)
+                value = (BYTE)(heroLevel / value);
+            push_special(options[i][0], value);
+        }
     } else {
         // Sin tabla del server: reglas del 0.97k (ItemConvert 0x47B910), con
         // los valores que el server trae por defecto en ItemOption.txt.
@@ -518,10 +525,10 @@ void __cdecl ItemConvert(ITEM* ip, int Attribute1, int Attribute2) {
         if ((wType >= 0 && wType < ITEM_SHIELD_BASE) || (wType >= 428 && wType <= 429)) {
             if (Attribute2 & 0x20) push_special(72, 10);
             if ((wType >= ITEM_STAFF_BASE && wType < ITEM_SHIELD_BASE) || wType == 428) {
-                if (Attribute2 & 0x10) push_special(75, 20);
+                if (Attribute2 & 0x10) push_special(75, (BYTE)(heroLevel / 20));
                 if (Attribute2 & 8)    push_special(76, 2);
             } else {
-                if (Attribute2 & 0x10) push_special(73, 20);
+                if (Attribute2 & 0x10) push_special(73, (BYTE)(heroLevel / 20));
                 if (Attribute2 & 8)    push_special(74, 2);
             }
             if (Attribute2 & 4) push_special(77, 7);

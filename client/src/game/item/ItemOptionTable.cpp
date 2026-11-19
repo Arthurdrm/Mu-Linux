@@ -66,3 +66,16 @@ bool ItemOptionTable_Find(int slot, int behavior, int skill, int luck, int add, 
     }
     return found;
 }
+
+bool ItemOptionTable_FindValue(int optionCode, int behavior, int skill, int luck, int add, int exc,
+                               std::uint8_t* value)
+{
+    for (int slot = ITEM_OPTION_SLOT_SKILL; slot <= ITEM_OPTION_SLOT_EXCELLENT6; ++slot) {
+        std::uint8_t opt = 0, val = 0;
+        if (ItemOptionTable_Find(slot, behavior, skill, luck, add, exc, &opt, &val) && opt == optionCode) {
+            *value = val;
+            return true;
+        }
+    }
+    return false;
+}

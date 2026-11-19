@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const countdownEls = Array.from(document.querySelectorAll('[data-countdown]'));
   const formatCountdown = (totalSeconds) => {
-    if (totalSeconds <= 0) return 'En curso';
+    if (totalSeconds <= 0) return 'Iniciado';
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;

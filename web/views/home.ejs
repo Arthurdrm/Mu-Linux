@@ -114,22 +114,27 @@
                 <thead>
                   <tr>
                     <th><%= t("Evento") %></th>
-                    <th><%= t("Proxima hora") %></th>
-                    <th><%= t("Faltan") %></th>
+                    <th class="text-center" style="width: 45%;"><%= t("Temporizador") %></th>
                   </tr>
                 </thead>
                 <tbody>
                   <% if (!events || events.length === 0) { %>
                     <tr>
-                      <td colspan="3" class="text-center"><%= t("Sin datos") %></td>
+                      <td colspan="2" class="text-center"><%= t("Sin datos") %></td>
                     </tr>
                   <% } else { %>
                     <% events.forEach(function(ev) { %>
+                      <% 
+                        const sec = Math.max(0, Number(ev.remainingSeconds) || 0);
+                        const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+                        const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+                        const s = String(sec % 60).padStart(2, '0');
+                        const formatted = `${h}:${m}:${s}`;
+                      %>
                       <tr>
-                        <td><%= ev.name %></td>
-                        <td><%= ev.nextTime %></td>
-                        <td>
-                          <span class="event-countdown" data-countdown="<%= ev.nextAt %>"><%= ev.remainingSeconds %></span>
+                        <td class="align-middle fw-semibold"><%= ev.name %></td>
+                        <td class="text-center align-middle">
+                          <span class="badge bg-dark fs-6 px-3 py-2 font-monospace event-countdown" data-countdown="<%= ev.nextAt %>"><%= formatted %></span>
                         </td>
                       </tr>
                     <% }); %>

@@ -50,6 +50,7 @@ void __cdecl Model_AssignItemTexturePrefixes(void)
 
     OpenTexture(0x1a3, "Item\\", 0x2600, '\x01');
     OpenTexture(0x23a, "Item\\", 0x2600, '\x01');
+    OpenTexture(0x23b, "Item\\", 0x2600, '\x01');
     OpenTexture(0x222, "Item\\", 0x2600, '\x01');
 
     DAT_0055a7c4 = 1;

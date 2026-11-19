@@ -1146,16 +1146,16 @@ app.get('/', async (req, res) => {
     const nextAt = getNextEventTime(ev.times, now);
     if (!nextAt) return null;
     const diffSeconds = Math.max(0, Math.floor((nextAt.getTime() - now.getTime()) / 1000));
+    const pad = (n) => String(n).padStart(2, '0');
+    const h = Math.floor(diffSeconds / 3600);
+    const m = Math.floor((diffSeconds % 3600) / 60);
+    const s = diffSeconds % 60;
+    const formatted = `${pad(h)}:${pad(m)}:${pad(s)}`;
     return {
       name: ev.name,
       nextAt: nextAt.toISOString(),
-      nextTime: nextAt.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        ...(resolvedTimeZone ? { timeZone: resolvedTimeZone } : {})
-      }),
-      remainingSeconds: diffSeconds
+      remainingSeconds: diffSeconds,
+      remainingFormatted: formatted
     };
   }).filter(Boolean);
 

@@ -172,17 +172,10 @@ void __cdecl Model_LoadItemMeshes(void)
     AccessModel(0x25f, "Data\\Item\\", "Shield", 0x10);
     AccessModel(0x260, "Data\\Item\\", "Shield", 0x11);
 
-    // Staffs BMD (0x230-0x238) — 9 iter (560-568)  ← SM weapon=568 vivía aquí
-    for (int i = MODEL_STAFF; i-MODEL_STAFF < 9; i++)
+    // Staffs BMD (0x230-0x23b) — 12 iter (560-571: Staff01..Staff12, Staff of Kundun)
+    for (int i = MODEL_STAFF; i-MODEL_STAFF < 12; i++)
         AccessModel(i, "Data\\Item\\", "Staff", i - 0x22f);
 
-    if (DAT_0055a7c4 == '\0')
-        OpenModel((int)0x239, "Data2\\Item\\Staff\\", "SpiritStaff.smd");
-    AccessModel(0x239, "Data\\Item\\", "Staff", 10);
-
-    if (DAT_0055a7c4 == '\0')
-        OpenModel((int)0x23a, "Data2\\Item\\Staff\\", "UniqueStaff.smd");
-    AccessModel(0x23a, "Data\\Item\\", "Staff", 0xb);
     DAT_0055a7c4 = '\x01';
 
     // Bows BMD (0x210-0x216) — 7 iter (528-534)

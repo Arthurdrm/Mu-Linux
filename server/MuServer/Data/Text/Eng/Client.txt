@@ -162,4 +162,12 @@
 79	"Open the shop to repair"
 //ServerKeyMismatch
 80	"This server could not prove its identity. The connection was closed."
+//ItemOptionHuntLife
+81	"Increase life gained when killing monsters +%d%% of max life"
+//ItemOptionHuntMana
+82	"Increase mana gained when killing monsters +%d%% of max mana"
+//ItemOptionMaxAG
+83	"Increase maximum AG +%d%%"
+//HelperDamageIncrease
+84	"Attack power and magic power increased by %d%%"
 end

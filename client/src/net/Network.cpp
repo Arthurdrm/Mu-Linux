@@ -22,6 +22,7 @@
 #include "ui/EventTimer.h"
 #include "ui/GoldenArcher.h"
 #include "game/item/ChaosMixRates.h"
+#include "game/item/ItemOptionTable.h"
 #include "game/item/Item_ServerValue.h"
 
 extern "C" void DbgLogPublic(const char* msg);
@@ -50,6 +51,7 @@ void CNetwork::ResetSessionData()
     // El apilado y los precios viajan en él (F3:F8 y F3:F9): se limpian juntos.
     gContentCatalog.Clear();
     ItemServerValue_ResetSession();
+    ItemOptionTable_ResetSession();   // F3:FD
     gMoveList.Clear();   // también viaja en el catálogo (F3:F5)
     gPing.Reset();
     gEventTimer.Clear();

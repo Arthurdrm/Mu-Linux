@@ -45,6 +45,11 @@ enum class ClientTextId {
     RejectRepairNoShop,
     // La clave de identidad del server no es la que el cliente tenía fijada.
     ServerKeyMismatch,
+    // Opciones de items con la fórmula del server (Fase 5, catálogo F3:FD/FE).
+    ItemOptionHuntLife,
+    ItemOptionHuntMana,
+    ItemOptionMaxAG,
+    HelperDamageIncrease,
     Count
 };
 // Los textos salen del server (F3/F0, tabla 4, Data/Text/<idioma>/Client.txt).

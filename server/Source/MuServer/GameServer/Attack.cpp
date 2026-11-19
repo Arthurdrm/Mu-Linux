@@ -535,11 +535,11 @@ void CAttack::WingSprite(LPOBJ lpObj, LPOBJ lpTarget, int* damage)
 
 			if (!gCustomWing.CheckCustomWingByItem(lpItem->m_Index) && (lpItem->GetKind() >= GET_ITEM(12, 0) && lpItem->GetKind() <= GET_ITEM(12, 2))) // 1st wing (0.97.20: el ala custom usa sus constantes)
 			{
-				(*damage) = ((*damage) * (112 + (lpItem->m_Level * 2))) / 100;
+				(*damage) = ((*damage) * (100 + WING1_INC_DAMAGE_BASE + (lpItem->m_Level * WING1_INC_DAMAGE_LEVEL))) / 100;
 			}
 			else if (!gCustomWing.CheckCustomWingByItem(lpItem->m_Index) && (lpItem->GetKind() >= GET_ITEM(12, 3) && lpItem->GetKind() <= GET_ITEM(12, 6))) // 2sd wing (0.97.20: el ala custom usa sus constantes)
 			{
-				(*damage) = ((*damage) * (132 + (lpItem->m_Level * 1))) / 100;
+				(*damage) = ((*damage) * (100 + WING2_INC_DAMAGE_BASE + (lpItem->m_Level * WING2_INC_DAMAGE_LEVEL))) / 100;
 			}
 			else if (gCustomWing.CheckCustomWingByItem(lpItem->m_Index) != 0)
 			{
@@ -556,11 +556,11 @@ void CAttack::WingSprite(LPOBJ lpObj, LPOBJ lpTarget, int* damage)
 		{
 			if (!gCustomWing.CheckCustomWingByItem(lpItem->m_Index) && (lpItem->GetKind() >= GET_ITEM(12, 0) && lpItem->GetKind() <= GET_ITEM(12, 2))) // 1st wing (0.97.20: el ala custom usa sus constantes)
 			{
-				(*damage) = ((*damage) * (88 - (lpItem->m_Level * 2))) / 100;
+				(*damage) = ((*damage) * (100 - WING1_DEC_DAMAGE_BASE - (lpItem->m_Level * WING1_DEC_DAMAGE_LEVEL))) / 100;
 			}
 			else if (!gCustomWing.CheckCustomWingByItem(lpItem->m_Index) && (lpItem->GetKind() >= GET_ITEM(12, 3) && lpItem->GetKind() <= GET_ITEM(12, 6))) // 2sd wing (0.97.20: el ala custom usa sus constantes)
 			{
-				(*damage) = ((*damage) * (75 - (lpItem->m_Level * 2))) / 100;
+				(*damage) = ((*damage) * (100 - WING2_DEC_DAMAGE_BASE - (lpItem->m_Level * WING2_DEC_DAMAGE_LEVEL))) / 100;
 			}
 			else if (gCustomWing.CheckCustomWingByItem(lpItem->m_Index) != 0)
 			{

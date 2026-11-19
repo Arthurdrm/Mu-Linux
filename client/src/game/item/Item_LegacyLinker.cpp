@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "assets/data/ContentCatalog.h"
+#include "game/item/ItemOptionTable.h"
 #include "globals.h"
 #include "functions.h"
 #include "structs.h"
@@ -351,120 +352,189 @@ void __cdecl ItemConvert(ITEM* ip, int Attribute1, int Attribute2) {
         ip->RequireLevel = (WORD)(ip->RequireLevel + 20);
     }
 
-    if (wType >= ITEM_WING_SPIRITS && wType <= ITEM_WING_DARKNESS) {
-        if (Attribute2 & 1)  push_special(80, (BYTE)(5 * (itemLevel + 10)));
-        if (Attribute2 & 2)  push_special(81, (BYTE)(5 * (itemLevel + 10)));
-        if (Attribute2 & 4)  push_special(82, 3);
-        if (Attribute2 & 8)  push_special(83, 50);
-        if (Attribute2 & 0x10) push_special(77, 5);
+    // SpecialValue guarda el valor de la opción tal como lo define el server
+    // (ItemOption.txt): la cifra de los porcentajes y el valor por nivel de
+    // 80/81 (50 + valor * nivel); PlusSpecialPercent y el tooltip hacen la
+    // cuenta.  73/75 ("+nivel/20") guardan el cociente como el 0.97k, porque
+    // PlusSpecial lo suma tal cual; el divisor lo vuelve a buscar el tooltip.
+    // El 0.97k guardaba 0 en casi todas y ponía las cifras fijas en el tooltip.
+    const int heroLevel = CharacterAttribute ? *(unsigned short*)((BYTE*)CharacterAttribute + 14) : 0;
+    const int option3 = (Attribute1 & 3) + 4 * ((Attribute2 >> 6) & 1);
+    if (option3 && wType != ITEM_HELPER_DINORANT &&
+        wType >= 0 && wType < ITEM_WING_ELF && wType != 135 && wType != 143) {
+        ip->RequireStrength = (WORD)(ip->RequireStrength + 5 * option3);
     }
 
-    if (Attribute1 & 0x80) {
-        const int catalogSkill = gContentCatalog.GetItemSkill(ip->Type);
-        if (catalogSkill >= 0) {
-            // The server owns weapon skills, including custom items. Zero
-            // explicitly means no skill; only an absent entry uses vanilla rules.
-            if (catalogSkill != 0)
-                push_special((BYTE)catalogSkill, catalogSkill == 24 ? 6 : 0);
-        } else {
-            if (p->RequireClass[1]) {
-                if (ip->Type >= 196 && ip->Type < ITEM_HELM_BASE) push_special(18);
-                if (wType == 4 || wType == 7 || wType == 8) push_special(21);
-                if (wType == 3 || wType == 6 || wType == 9 || wType == 11 || (wType >= 97 && wType <= 100)) push_special(20);
-                if (wType == 5 || wType == 10 || wType == 13 || wType == 14 || wType == 16 || wType == 96 || (wType >= 103 && wType <= 105)) push_special(22);
-                if (wType == 12 || (wType >= 34 && wType < ITEM_MACE_BASE) || wType == 65 || wType == 67 || wType == 68) push_special(19);
-                if (wType == 15 || wType == 69 || wType == 70 || wType == 17) push_special(23);
-                if (wType == 19 || wType == 106) push_special(22);
-            }
-            if (p->RequireClass[2]) {
-                if (wType >= ITEM_BOW_BASE && wType < ITEM_STAFF_BASE && wType != 135 && wType != 143) push_special(24, 6);
-            }
-            if (p->RequireClass[3]) {
-                if (wType == 18) push_special(23);
-                else if (wType == 31) push_special(56);
-            }
-            if (wType == ITEM_HELPER_DINORANT) push_special(49);
-        }
-    }
-
-    if (Attribute1 & 4) {
-        if ((wType >= 0 && wType < ITEM_WING_ELF && wType != 135 && wType != 143) || (wType >= ITEM_WING_ELF && wType <= ITEM_WING_DARKNESS)) {
-            push_special(64);
-        }
-    }
-
-    int option3 = (Attribute1 & 3) + 4 * ((Attribute2 >> 6) & 1);
-    if (option3) {
-        if (wType == ITEM_HELPER_DINORANT) {
-            if (option3 & 1) push_special(84, 5);
-            if (option3 & 2) push_special(83, 50);
-            if (option3 & 4) push_special(77, 5);
-        } else {
-            if (wType >= 0 && wType < ITEM_STAFF_BASE && wType != 135 && wType != 143) {
-                push_special(60, (BYTE)(4 * option3));
-                ip->RequireStrength = (WORD)(ip->RequireStrength + 5 * option3);
-            }
-            if (wType >= ITEM_STAFF_BASE && wType < ITEM_SHIELD_BASE) {
-                push_special(61, (BYTE)(4 * option3));
-                ip->RequireStrength = (WORD)(ip->RequireStrength + 5 * option3);
-            }
-            if (wType >= ITEM_SHIELD_BASE && wType < ITEM_HELM_BASE) {
-                push_special(62, (BYTE)(5 * option3));
-                ip->RequireStrength = (WORD)(ip->RequireStrength + 5 * option3);
-            }
-            if (wType >= ITEM_HELM_BASE && wType < ITEM_WING_ELF) {
-                push_special(63, (BYTE)(4 * option3));
-                ip->RequireStrength = (WORD)(ip->RequireStrength + 5 * option3);
-            }
-            if (wType >= 424 && wType < ITEM_POTION_BASE) {
-                push_special(65, (BYTE)option3);
-            }
-            switch (wType) {
-            case ITEM_WING_ELF: push_special(65, (BYTE)option3); break;
-            case ITEM_WING_HEAVEN: push_special(61, (BYTE)(4 * option3)); break;
-            case ITEM_WING_SATAN: push_special(60, (BYTE)(4 * option3)); break;
-            case ITEM_WING_SPIRITS:
-                if (itemExcel & 0x20) push_special(65, (BYTE)option3);
-                else push_special(60, (BYTE)(4 * option3));
-                break;
-            case ITEM_WING_SOUL:
-                if (itemExcel & 0x20) push_special(61, (BYTE)(4 * option3));
-                else push_special(65, (BYTE)option3);
-                break;
-            case ITEM_WING_DRAGON:
-                if (itemExcel & 0x20) push_special(60, (BYTE)(4 * option3));
-                else push_special(65, (BYTE)option3);
-                break;
-            case ITEM_WING_DARKNESS:
-                if (itemExcel & 0x20) push_special(60, (BYTE)(4 * option3));
-                else push_special(61, (BYTE)(4 * option3));
-                break;
-            default: break;
+    if (ItemOptionTable_Loaded()) {
+        // Tabla del server (F3:FD): misma resolución que CItem::Convert.
+        const int skill = (Attribute1 >> 7) & 1;
+        const int luck = (Attribute1 >> 2) & 1;
+        const int exc = Attribute2 & 0x3F;
+        BYTE opt = 0, val = 0;
+        BYTE options[3 + 6][2];
+        int excCount = 0;
+        BYTE excOptions[6][2];
+        for (int slot = ITEM_OPTION_SLOT_EXCELLENT1; slot <= ITEM_OPTION_SLOT_EXCELLENT6; ++slot) {
+            if (ItemOptionTable_Find(slot, wType, skill, luck, option3, exc, &opt, &val)) {
+                excOptions[excCount][0] = opt;
+                excOptions[excCount][1] = val;
+                ++excCount;
             }
         }
-    }
-
-    if ((wType >= ITEM_SHIELD_BASE && wType < ITEM_WING_ELF) || (wType >= 424 && wType <= 425)) {
-        if (Attribute2 & 0x20) push_special(66);
-        if (Attribute2 & 0x10) push_special(67);
-        if (Attribute2 & 8)    push_special(68);
-        if (Attribute2 & 4)    push_special(69);
-        if (Attribute2 & 2)    push_special(70);
-        if (Attribute2 & 1)    push_special(71);
-    }
-
-    if ((wType >= 0 && wType < ITEM_SHIELD_BASE) || (wType >= 428 && wType <= 429)) {
-        if (Attribute2 & 0x20) push_special(72);
-        if ((wType >= ITEM_STAFF_BASE && wType < ITEM_SHIELD_BASE) || wType == 428) {
-            if (Attribute2 & 0x10) push_special(75, (BYTE)(*(unsigned short*)((BYTE*)CharacterAttribute + 14) / 20));
-            if (Attribute2 & 8)    push_special(76);
-        } else {
-            if (Attribute2 & 0x10) push_special(73, (BYTE)(*(unsigned short*)((BYTE*)CharacterAttribute + 14) / 20));
-            if (Attribute2 & 8)    push_special(74);
+        int luckCount = 0;
+        BYTE luckOptions[2][2];
+        if (ItemOptionTable_Find(ITEM_OPTION_SLOT_LUCK, wType, skill, luck, option3, exc, &opt, &val)) {
+            luckOptions[luckCount][0] = opt;
+            luckOptions[luckCount][1] = val;
+            ++luckCount;
         }
-        if (Attribute2 & 4) push_special(77, 7);
-        if (Attribute2 & 2) push_special(78);
-        if (Attribute2 & 1) push_special(79);
+        if (ItemOptionTable_Find(ITEM_OPTION_SLOT_ADDITIONAL, wType, skill, luck, option3, exc, &opt, &val)) {
+            luckOptions[luckCount][0] = opt;
+            luckOptions[luckCount][1] = (BYTE)(val * (option3 ? option3 : 1));
+            ++luckCount;
+        }
+        // Las alas llevan suerte y adicional después de las excelentes.
+        const bool wing = (wType >= ITEM_WING_ELF && wType <= ITEM_WING_DARKNESS) ||
+                          gContentCatalog.GetItemWing(ip->Type) != nullptr;
+        int count = 0;
+        if (ItemOptionTable_Find(ITEM_OPTION_SLOT_SKILL, wType, skill, luck, option3, exc, &opt, &val)) {
+            // Opción 0 = el skill de la columna Skill de Item.txt.
+            const int itemSkill = gContentCatalog.GetItemSkill(ip->Type);
+            const int code = opt ? opt : (itemSkill > 0 ? itemSkill : 0);
+            if (code) {
+                options[count][0] = (BYTE)code;
+                options[count][1] = val;
+                ++count;
+            }
+        }
+        for (int pass = 0; pass < 2; ++pass) {
+            const bool takeLuck = (pass == 0) != wing;
+            const int n = takeLuck ? luckCount : excCount;
+            for (int i = 0; i < n; ++i) {
+                options[count][0] = takeLuck ? luckOptions[i][0] : excOptions[i][0];
+                options[count][1] = takeLuck ? luckOptions[i][1] : excOptions[i][1];
+                ++count;
+            }
+        }
+        for (int i = 0; i < count; ++i) {
+            BYTE value = options[i][1];
+            if ((options[i][0] == 73 || options[i][0] == 75) && value)
+                value = (BYTE)(heroLevel / value);
+            push_special(options[i][0], value);
+        }
+    } else {
+        // Sin tabla del server: reglas del 0.97k (ItemConvert 0x47B910), con
+        // los valores que el server trae por defecto en ItemOption.txt.
+        if (wType >= ITEM_WING_SPIRITS && wType <= ITEM_WING_DARKNESS) {
+            if (Attribute2 & 1)  push_special(80, 5);
+            if (Attribute2 & 2)  push_special(81, 5);
+            if (Attribute2 & 4)  push_special(82, 3);
+            if (Attribute2 & 8)  push_special(83, 50);
+            if (Attribute2 & 0x10) push_special(77, 5);
+        }
+
+        if (Attribute1 & 0x80) {
+            const int catalogSkill = gContentCatalog.GetItemSkill(ip->Type);
+            if (catalogSkill >= 0) {
+                // The server owns weapon skills, including custom items. Zero
+                // explicitly means no skill; only an absent entry uses vanilla rules.
+                if (catalogSkill != 0)
+                    push_special((BYTE)catalogSkill, catalogSkill == 24 ? 6 : 0);
+            } else {
+                if (p->RequireClass[1]) {
+                    if (ip->Type >= 196 && ip->Type < ITEM_HELM_BASE) push_special(18);
+                    if (wType == 4 || wType == 7 || wType == 8) push_special(21);
+                    if (wType == 3 || wType == 6 || wType == 9 || wType == 11 || (wType >= 97 && wType <= 100)) push_special(20);
+                    if (wType == 5 || wType == 10 || wType == 13 || wType == 14 || wType == 16 || wType == 96 || (wType >= 103 && wType <= 105)) push_special(22);
+                    if (wType == 12 || (wType >= 34 && wType < ITEM_MACE_BASE) || wType == 65 || wType == 67 || wType == 68) push_special(19);
+                    if (wType == 15 || wType == 69 || wType == 70 || wType == 17) push_special(23);
+                    if (wType == 19 || wType == 106) push_special(22);
+                }
+                if (p->RequireClass[2]) {
+                    if (wType >= ITEM_BOW_BASE && wType < ITEM_STAFF_BASE && wType != 135 && wType != 143) push_special(24, 6);
+                }
+                if (p->RequireClass[3]) {
+                    if (wType == 18) push_special(23);
+                    else if (wType == 31) push_special(56);
+                }
+                if (wType == ITEM_HELPER_DINORANT) push_special(49);
+            }
+        }
+
+        if (Attribute1 & 4) {
+            if ((wType >= 0 && wType < ITEM_WING_ELF && wType != 135 && wType != 143) || (wType >= ITEM_WING_ELF && wType <= ITEM_WING_DARKNESS)) {
+                push_special(64, 5);
+            }
+        }
+
+        if (option3) {
+            if (wType == ITEM_HELPER_DINORANT) {
+                if (option3 & 1) push_special(84, 5);
+                if (option3 & 2) push_special(83, 50);
+                if (option3 & 4) push_special(77, 5);
+            } else {
+                if (wType >= 0 && wType < ITEM_STAFF_BASE && wType != 135 && wType != 143) {
+                    push_special(60, (BYTE)(4 * option3));
+                }
+                if (wType >= ITEM_STAFF_BASE && wType < ITEM_SHIELD_BASE) {
+                    push_special(61, (BYTE)(4 * option3));
+                }
+                if (wType >= ITEM_SHIELD_BASE && wType < ITEM_HELM_BASE) {
+                    push_special(62, (BYTE)(5 * option3));
+                }
+                if (wType >= ITEM_HELM_BASE && wType < ITEM_WING_ELF) {
+                    push_special(63, (BYTE)(4 * option3));
+                }
+                if (wType >= 424 && wType < ITEM_POTION_BASE) {
+                    push_special(65, (BYTE)option3);
+                }
+                switch (wType) {
+                case ITEM_WING_ELF: push_special(65, (BYTE)option3); break;
+                case ITEM_WING_HEAVEN: push_special(61, (BYTE)(4 * option3)); break;
+                case ITEM_WING_SATAN: push_special(60, (BYTE)(4 * option3)); break;
+                case ITEM_WING_SPIRITS:
+                    if (itemExcel & 0x20) push_special(65, (BYTE)option3);
+                    else push_special(60, (BYTE)(4 * option3));
+                    break;
+                case ITEM_WING_SOUL:
+                    if (itemExcel & 0x20) push_special(61, (BYTE)(4 * option3));
+                    else push_special(65, (BYTE)option3);
+                    break;
+                case ITEM_WING_DRAGON:
+                    if (itemExcel & 0x20) push_special(60, (BYTE)(4 * option3));
+                    else push_special(65, (BYTE)option3);
+                    break;
+                case ITEM_WING_DARKNESS:
+                    if (itemExcel & 0x20) push_special(60, (BYTE)(4 * option3));
+                    else push_special(61, (BYTE)(4 * option3));
+                    break;
+                default: break;
+                }
+            }
+        }
+
+        if ((wType >= ITEM_SHIELD_BASE && wType < ITEM_WING_ELF) || (wType >= 424 && wType <= 425)) {
+            if (Attribute2 & 0x20) push_special(66, 4);
+            if (Attribute2 & 0x10) push_special(67, 4);
+            if (Attribute2 & 8)    push_special(68, 4);
+            if (Attribute2 & 4)    push_special(69, 5);
+            if (Attribute2 & 2)    push_special(70, 10);
+            if (Attribute2 & 1)    push_special(71, 30);
+        }
+
+        if ((wType >= 0 && wType < ITEM_SHIELD_BASE) || (wType >= 428 && wType <= 429)) {
+            if (Attribute2 & 0x20) push_special(72, 10);
+            if ((wType >= ITEM_STAFF_BASE && wType < ITEM_SHIELD_BASE) || wType == 428) {
+                if (Attribute2 & 0x10) push_special(75, (BYTE)(heroLevel / 20));
+                if (Attribute2 & 8)    push_special(76, 2);
+            } else {
+                if (Attribute2 & 0x10) push_special(73, (BYTE)(heroLevel / 20));
+                if (Attribute2 & 8)    push_special(74, 2);
+            }
+            if (Attribute2 & 4) push_special(77, 7);
+            if (Attribute2 & 2) push_special(78, 8);
+            if (Attribute2 & 1) push_special(79, 8);
+        }
     }
 
     const int partType = wType;

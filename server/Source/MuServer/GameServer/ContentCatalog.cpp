@@ -10,6 +10,8 @@
 #include "CustomPet.h"
 #include "CustomWing.h"
 #include "ItemManager.h"
+#include "Attack.h"
+#include "ItemOption.h"
 #include "ItemStack.h"
 #include "ItemValue.h"
 #include "Log.h"
@@ -872,6 +874,91 @@ void CContentCatalog::Build()
 	this->BuildSection(0xF9, values.empty() ? 0 : (const BYTE*)&values[0], sizeof(ITEM_VALUE_INFO), (int)values.size(), this->m_Packets);
 
 	this->MarkSection(0xF9, sectionBegin);
+
+	// Opciones de los items (F3:FD): ItemOption.txt completo.  El cliente arma
+	// skill, suerte, adicional y excelentes con la misma resolución que
+	// CItem::Convert, así el tooltip y sus stats usan los valores del server.
+	std::vector<CATALOG_ITEM_OPTION> options;
+
+	for (const std::pair<const int, std::vector<ITEM_OPTION_INFO>>& it : gItemOption.GetAll())
+	{
+		for (const ITEM_OPTION_INFO& info : it.second)
+		{
+			if (info.Index < 0 || info.Index > 255)
+			{
+				continue;
+			}
+
+			CATALOG_ITEM_OPTION entry;
+
+			memset(&entry, 0, sizeof(entry));
+
+			entry.Index = (BYTE)info.Index;
+
+			entry.Option = (BYTE)info.OptionIndex;
+
+			entry.Value = (BYTE)info.OptionValue;
+
+			entry.SkillOption = (BYTE)((info.ItemSkillOption < 0) ? 0xFF : info.ItemSkillOption);
+
+			entry.LuckOption = (BYTE)((info.ItemLuckOption < 0) ? 0xFF : info.ItemLuckOption);
+
+			entry.AddOption = (BYTE)((info.ItemAddOption < 0) ? 0xFF : info.ItemAddOption);
+
+			entry.ExceOption = (BYTE)((info.ItemExceOption < 0) ? 0xFF : info.ItemExceOption);
+
+			entry.ItemMin = (WORD)((info.ItemMinIndex < 0) ? 0xFFFF : info.ItemMinIndex);
+
+			entry.ItemMax = (WORD)((info.ItemMaxIndex < 0) ? 0xFFFF : info.ItemMaxIndex);
+
+			options.push_back(entry);
+		}
+	}
+
+	sectionBegin = this->m_Packets.size();
+
+	this->BuildSection(0xFD, options.empty() ? 0 : (const BYTE*)&options[0], sizeof(CATALOG_ITEM_OPTION), (int)options.size(), this->m_Packets);
+
+	this->MarkSection(0xFD, sectionBegin);
+
+	// Porcentajes de daño de alas y helpers (F3:FE), para el tooltip.
+	CATALOG_COMBAT_RATES rates;
+
+	memset(&rates, 0, sizeof(rates));
+
+	rates.SatanIncDamage = (WORD)gServerInfo.m_SatanIncDamageConstA;
+
+	rates.DinorantIncDamage = (WORD)gServerInfo.m_DinorantIncDamageConstA;
+
+	rates.AngelDecDamage = (WORD)gServerInfo.m_AngelDecDamageConstA;
+
+	rates.DinorantDecDamage = (WORD)gServerInfo.m_DinorantDecDamageConstA;
+
+	rates.DinorantDecDamageExc = (WORD)gServerInfo.m_DinorantDecDamageConstB;
+
+	rates.Wing1IncBase = WING1_INC_DAMAGE_BASE;
+
+	rates.Wing1IncLevel = WING1_INC_DAMAGE_LEVEL;
+
+	rates.Wing1DecBase = WING1_DEC_DAMAGE_BASE;
+
+	rates.Wing1DecLevel = WING1_DEC_DAMAGE_LEVEL;
+
+	rates.Wing2IncBase = WING2_INC_DAMAGE_BASE;
+
+	rates.Wing2IncLevel = WING2_INC_DAMAGE_LEVEL;
+
+	rates.Wing2DecBase = WING2_DEC_DAMAGE_BASE;
+
+	rates.Wing2DecLevel = WING2_DEC_DAMAGE_LEVEL;
+
+	rates.AngelAddLife = ANGEL_ADD_LIFE;
+
+	sectionBegin = this->m_Packets.size();
+
+	this->BuildSection(0xFE, (const BYTE*)&rates, sizeof(CATALOG_COMBAT_RATES), 1, this->m_Packets);
+
+	this->MarkSection(0xFE, sectionBegin);
 
 	// Lista del menú M (F3:F5), antes F3:E5 por personaje.
 	std::vector<CATALOG_MOVE> moves;

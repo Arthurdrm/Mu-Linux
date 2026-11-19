@@ -4,6 +4,8 @@
 #include "assets/data/ContentCatalog.h"
 #include "game/item/ItemDefines.h"
 #include "game/item/Item_ServerValue.h"
+#include "game/item/ItemOptionTable.h"
+#include "assets/text/ClientText.h"
 
 // RenderItemInfo.cpp  @0x004C4650 / 0x004C8D70
 // Populates the item info tooltip string buffer (TextList, stride 100, ~0x18 slots)
@@ -51,8 +53,11 @@ static void CopyCollapsingPercent(char* dst, size_t dstSize, const char* src)
     dst[o] = 0;
 }
 
-static bool GetInventorySpecialOptionText(short type, BYTE option, BYTE value, int mana, char* dst, size_t dstSize)
+// `value` es SpecialValue tal como lo define el ItemOption.txt del server (ver
+// ItemConvert).  Con 0 (las lineas fijas de RII_OPT) quedan las cifras del 0.97k.
+static bool GetInventorySpecialOptionText(short type, BYTE option, BYTE value, int itemLevel, int mana, char* dst, size_t dstSize)
 {
+    auto orDefault = [value](int fallback) { return value ? (int)value : fallback; };
     if (!dst || dstSize == 0)
         return false;
 
@@ -112,52 +117,56 @@ static bool GetInventorySpecialOptionText(short type, BYTE option, BYTE value, i
         }
         return false;
     case 66:
-        snprintf(dst, dstSize, GlobalText[622], 4);
+        snprintf(dst, dstSize, GlobalText[622], orDefault(4));
         return true;
     case 67:
-        snprintf(dst, dstSize, GlobalText[623], 4);
+        snprintf(dst, dstSize, GlobalText[623], orDefault(4));
         return true;
     case 68:
-        snprintf(dst, dstSize, GlobalText[624], 4);
+        snprintf(dst, dstSize, GlobalText[624], orDefault(4));
         return true;
     case 69:
-        snprintf(dst, dstSize, GlobalText[625], 5);
+        snprintf(dst, dstSize, GlobalText[625], orDefault(5));
         return true;
     case 70:
-        snprintf(dst, dstSize, GlobalText[626], 10);
+        snprintf(dst, dstSize, GlobalText[626], orDefault(10));
         return true;
     case 71:
-        snprintf(dst, dstSize, GlobalText[627], 30);
+        snprintf(dst, dstSize, GlobalText[627], orDefault(30));
         return true;
     case 72:
-        snprintf(dst, dstSize, GlobalText[628], 10);
+        snprintf(dst, dstSize, GlobalText[628], orDefault(10));
         return true;
     case 73:
-        snprintf(dst, dstSize, GlobalText[629], 20);
+        snprintf(dst, dstSize, GlobalText[629], orDefault(20));
         return true;
     case 74:
-        snprintf(dst, dstSize, GlobalText[630], 2);
+        snprintf(dst, dstSize, GlobalText[630], orDefault(2));
         return true;
     case 75:
-        snprintf(dst, dstSize, GlobalText[631], 20);
+        snprintf(dst, dstSize, GlobalText[631], orDefault(20));
         return true;
     case 76:
-        snprintf(dst, dstSize, GlobalText[632], 2);
+        snprintf(dst, dstSize, GlobalText[632], orDefault(2));
         return true;
     case 77:
         snprintf(dst, dstSize, GlobalText[633], value);
         return true;
+    // 78/79: con la tabla del server el valor es un porcentaje de la vida/mana
+    // máxima (ObjectManager del server); el 0.97k dividía por 8.
     case 78:
-        snprintf(dst, dstSize, GlobalText[634], 8);
+        if (ItemOptionTable_Loaded()) snprintf(dst, dstSize, gClientText.Get(ClientTextId::ItemOptionHuntLife), value);
+        else snprintf(dst, dstSize, GlobalText[634], orDefault(8));
         return true;
     case 79:
-        snprintf(dst, dstSize, GlobalText[635], 8);
+        if (ItemOptionTable_Loaded()) snprintf(dst, dstSize, gClientText.Get(ClientTextId::ItemOptionHuntMana), value);
+        else snprintf(dst, dstSize, GlobalText[635], orDefault(8));
         return true;
     case 80:
-        snprintf(dst, dstSize, GlobalText[740], value);
+        snprintf(dst, dstSize, GlobalText[740], 50 + value * itemLevel);   // 50 + valor * nivel
         return true;
     case 81:
-        snprintf(dst, dstSize, GlobalText[741], value);
+        snprintf(dst, dstSize, GlobalText[741], 50 + value * itemLevel);   // 50 + valor * nivel
         return true;
     case 82:
         snprintf(dst, dstSize, GlobalText[742], value);
@@ -165,8 +174,11 @@ static bool GetInventorySpecialOptionText(short type, BYTE option, BYTE value, i
     case 83:
         snprintf(dst, dstSize, GlobalText[743], value);
         return true;
+    // 84: en el server es AG máximo en porcentaje (ITEM_OPTION_MUL_BP).  La
+    // absorción extra del Dinorant va en sus líneas de helper.
     case 84:
-        snprintf(dst, dstSize, GlobalText[744], value);
+        if (ItemOptionTable_Loaded()) snprintf(dst, dstSize, gClientText.Get(ClientTextId::ItemOptionMaxAG), value);
+        else snprintf(dst, dstSize, GlobalText[744], value);
         return true;
     case 90:
         snprintf(dst, dstSize, "%s", GlobalText[746]);
@@ -228,7 +240,7 @@ static void RII_Gold(char* buf, int v)       // mismo formato que el binario
 // texto; el que usamos trae %d, asi que se pasa el valor que tiene la opcion
 // (GetInventorySpecialOptionText, opcion = texto - 556).  Desviacion forzada.
 #define RII_OPT(color, bold, idx) \
-    do { GetInventorySpecialOptionText(type, (BYTE)((idx) - 556), 0, 0, RII_Line(TextNum), 100); \
+    do { GetInventorySpecialOptionText(type, (BYTE)((idx) - 556), 0, 0, 0, RII_Line(TextNum), 100); \
          RII_Style(TextNum, (color), (bold)); ++TextNum; } while (0)
 // Separador de media altura: "\n" + SkipNum.
 #define RII_GAP() do { sprintf(RII_Line(TextNum), "\n"); ++TextNum; ++DAT_07eaa158; } while (0)
@@ -500,11 +512,16 @@ static void RenderItemInfo_IDA(int sx, int sy, ITEM* ip, bool Sell)
     if (type == 465 || type == 466) RII_TXT(0, 0, 637);
     if (type == 399)                RII_TXT(0, 0, 574);
     if (type == 470)                RII_TXT(0, 0, 619);
+    // Porcentajes de alas y helpers del server (F3:FE); sin ellos, los del 0.97k.
+    const Proto::CATALOG_COMBAT_RATES* rates = gContentCatalog.GetCombatRates();
     if (type == 416) {
-        RII_ADD(0, 0, GlobalText[578], 20);
-        RII_ADD(0, 0, GlobalText[739], 50);
+        RII_ADD(0, 0, GlobalText[578], rates ? rates->AngelDecDamage : 20);
+        RII_ADD(0, 0, GlobalText[739], rates ? rates->AngelAddLife : 50);
     }
-    if (type == 417)                RII_TXT(0, 0, 576);
+    if (type == 417) {
+        if (rates) RII_ADD(0, 0, gClientText.Get(ClientTextId::HelperDamageIncrease), rates->SatanIncDamage);
+        else       RII_TXT(0, 0, 576);
+    }
 
     // DESVIACION (DLL CustomWing, catálogo 0.97.20): aumento y reducción de
     // daño del ala custom con sus constantes.
@@ -513,18 +530,21 @@ static void RenderItemInfo_IDA(int sx, int sy, ITEM* ip, bool Sell)
         RII_ADD(0, 0, GlobalText[578], wing->DecDamageConstA + Level * wing->DecDamageConstB);
         RII_TXT(0, 0, 579);
     } else if (type >= 384 && type <= 386) {               // alas de primera
-        RII_ADD(0, 0, GlobalText[577], 2 * Level + 12);
-        RII_ADD(0, 0, GlobalText[578], 2 * Level + 12);
+        RII_ADD(0, 0, GlobalText[577], rates ? rates->Wing1IncBase + Level * rates->Wing1IncLevel : 2 * Level + 12);
+        RII_ADD(0, 0, GlobalText[578], rates ? rates->Wing1DecBase + Level * rates->Wing1DecLevel : 2 * Level + 12);
         RII_TXT(0, 0, 579);
     } else if (type >= 387 && type <= 390) {               // alas de segunda
-        RII_ADD(0, 0, GlobalText[577], Level + 32);
-        RII_ADD(0, 0, GlobalText[578], Level + 25);
+        RII_ADD(0, 0, GlobalText[577], rates ? rates->Wing2IncBase + Level * rates->Wing2IncLevel : Level + 32);
+        RII_ADD(0, 0, GlobalText[578], rates ? rates->Wing2DecBase + Level * rates->Wing2DecLevel : Level + 25);
         RII_TXT(0, 0, 579);
     } else {
         switch (type) {
         case 419:
-            RII_ADD(0, 0, GlobalText[577], 15);
-            RII_ADD(0, 0, GlobalText[578], 10);
+            RII_ADD(0, 0, GlobalText[577], rates ? rates->DinorantIncDamage : 15);
+            RII_ADD(0, 0, GlobalText[578], rates ? rates->DinorantDecDamage : 10);
+            // Con la excelente 1 el server absorbe además DinorantDecDamageConstB.
+            if (rates && (ip->Option1 & 1))
+                RII_ADD(0, 0, GlobalText[744], rates->DinorantDecDamageExc);
             break;
         case 430:
             RII_Color(TextNum, 0);
@@ -637,13 +657,22 @@ static void RenderItemInfo_IDA(int sx, int sy, ITEM* ip, bool Sell)
         const int s   = ip->Special[i];
         const int val = ip->SpecialValue[i];
         // Texto de la opcion: mismo switch que IDA (L2064-2175), via el helper
-        // que ya pasa los valores fijos de 66..79 y colapsa el %% de [87].  Para
+        // que toma las cifras de SpecialValue y colapsa el %% de [87].  Para
         // opciones sin texto (default, y 65 en 430..434) deja la linea vacia, que
         // es lo que hace el original al saltar a LABEL_660.
         int mana = 0;
         if ((s >= 18 && s <= 24) || s == 49 || s == 56)
             GetSkillInformation(s, 1, 0, &mana, 0, 0);
-        GetInventorySpecialOptionText(type, (BYTE)s, (BYTE)val, mana, RII_Line(TextNum), 100);
+        // 73/75 guardan "nivel / divisor" (lo suma PlusSpecial); el texto
+        // muestra el divisor, que sale de la tabla del server.
+        int shown = val;
+        if (s == 73 || s == 75) {
+            BYTE divisor = 0;
+            const int add = (ip->Level & 3) + 4 * ((ip->Option1 >> 6) & 1);
+            shown = ItemOptionTable_FindValue(s, type, (ip->Level >> 7) & 1, (ip->Level >> 2) & 1, add,
+                                              ip->Option1 & 0x3F, &divisor) ? divisor : 0;
+        }
+        GetInventorySpecialOptionText(type, (BYTE)s, (BYTE)shown, (ip->Level >> 3) & 0xF, mana, RII_Line(TextNum), 100);
         RII_Style(TextNum, 1, 0);
         ++TextNum;
         if (s == 64)                     RII_ADD(1, 0, GlobalText[94], val);

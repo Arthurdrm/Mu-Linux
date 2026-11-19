@@ -2510,7 +2510,7 @@ void CObjectManager::CharacterCalcAttribute(int aIndex)
 	{
 		if (gItemManager.GetBehavior(Helper->m_Index) == GET_ITEM(13, 0)) // Angel
 		{
-			lpObj->AddLife += 50;
+			lpObj->AddLife += ANGEL_ADD_LIFE;
 		}
 	}
 

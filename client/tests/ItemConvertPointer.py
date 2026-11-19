@@ -33,6 +33,16 @@ struct Catalog {
     int GetItemSkill(int type) { Require(type==activeType); catalogEvents.push_back(3); return catalogMode==0?-1:catalogMode==1?0:catalogMode==2?24:255; }
     int GetItemSlot(int type) { Require(type==activeType); catalogEvents.push_back(4); return type%4==0?-1:type%11; }
 } gContentCatalog;
+// Tabla de opciones del server (F3:FD): la mitad de los casos con tabla, con
+// opciones que incluyen 73..75 para ejercitar el cociente de nivel.
+enum { ITEM_OPTION_SLOT_SKILL=0, ITEM_OPTION_SLOT_LUCK=1, ITEM_OPTION_SLOT_ADDITIONAL=2,
+       ITEM_OPTION_SLOT_EXCELLENT1=3, ITEM_OPTION_SLOT_EXCELLENT6=8 };
+int optionTableMode;
+bool ItemOptionTable_Loaded() { return optionTableMode!=0; }
+bool ItemOptionTable_Find(int slot,int behavior,int skill,int luck,int add,int exc,std::uint8_t* option,std::uint8_t* value) {
+    if(((slot*7+behavior+exc)&3)==0) return false;
+    *option=static_cast<std::uint8_t>(60+slot*3+(behavior&3)); *value=static_cast<std::uint8_t>(slot*5+add+luck+skill); return true;
+}
 '''
 
 MAIN = r'''
@@ -70,7 +80,7 @@ std::uint64_t RunConvert(BYTE* memory,BYTE* tableMemory,BYTE* attributeMemory) {
             for(int klass=0;klass<4;++klass) row.RequireClass[klass]=static_cast<BYTE>(next()%3);
             std::memcpy(&beforeRow,&row,sizeof(row)); std::memcpy(expectedTable.data()+type*64,&row,64);
         }
-        catalogMode=trial%4; activeType=type; wing.DefenseConstA=static_cast<WORD>(trial%32+1); catalogEvents.clear();
+        catalogMode=trial%4; optionTableMode=(trial/4)%2; activeType=type; wing.DefenseConstA=static_cast<WORD>(trial%32+1); catalogEvents.clear();
         BYTE before[100], beforeAttribute[96]; std::memcpy(before,memory,100); std::memcpy(beforeAttribute,attributeMemory,96);
         Convert(item,a1,a2);
         if(type<0) {

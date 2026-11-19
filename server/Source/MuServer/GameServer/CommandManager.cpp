@@ -2394,7 +2394,7 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	}
 
 	// Velocidade atrelada diretamente a agilidade real do personagem (fisica e magica)
-	int charSpeed = max((int)lpObj->PhysiSpeed, (int)lpObj->MagicSpeed);
+	int charSpeed = std::max((int)lpObj->PhysiSpeed, (int)lpObj->MagicSpeed);
 	DWORD speed = (charSpeed > 0) ? (DWORD)charSpeed : 0;
 	DWORD minDelay = 450;
 	if (speed > 0)

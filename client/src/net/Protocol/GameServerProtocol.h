@@ -810,6 +810,47 @@ struct CATALOG_MAP_MUSIC
 };
 static_assert(sizeof(CATALOG_MAP_MUSIC) == 32, "F3:F7 entrada");
 
+// F3:FD — opciones de los items (Fase 5, ItemOption.txt del server).  Index:
+// 0 skill, 1 suerte, 2 adicional, 3..8 excelente 1..6.  0xFF / 0xFFFF en las
+// condiciones = "cualquiera" (el "*" del txt).  ItemMin/ItemMax comparan contra
+// el comportamiento del item (ItemBehaviorType), como GetBehavior del server.
+struct CATALOG_ITEM_OPTION
+{
+    std::uint8_t Index;
+    std::uint8_t Option;
+    std::uint8_t Value;
+    std::uint8_t SkillOption;
+    std::uint8_t LuckOption;
+    std::uint8_t AddOption;
+    std::uint8_t ExceOption;
+    std::uint8_t Reserved;
+    std::uint16_t ItemMin;
+    std::uint16_t ItemMax;
+};
+static_assert(sizeof(CATALOG_ITEM_OPTION) == 12, "F3:FD entrada");
+
+// F3:FE — porcentajes de daño de alas y helpers (Fase 5, un solo registro).
+// Alas vanilla: Base + PorNivel * nivel (Attack.h del server); helpers de
+// GameServerInfo - Character.dat.
+struct CATALOG_COMBAT_RATES
+{
+    std::uint16_t SatanIncDamage;
+    std::uint16_t DinorantIncDamage;
+    std::uint16_t AngelDecDamage;
+    std::uint16_t DinorantDecDamage;
+    std::uint16_t DinorantDecDamageExc;   // extra con la excelente 1 del Dinorant
+    std::uint16_t Wing1IncBase;
+    std::uint16_t Wing1IncLevel;
+    std::uint16_t Wing1DecBase;
+    std::uint16_t Wing1DecLevel;
+    std::uint16_t Wing2IncBase;
+    std::uint16_t Wing2IncLevel;
+    std::uint16_t Wing2DecBase;
+    std::uint16_t Wing2DecLevel;
+    std::uint16_t AngelAddLife;
+};
+static_assert(sizeof(CATALOG_COMBAT_RATES) == 28, "F3:FE entrada");
+
 // Caché del catálogo (Fase 5).  F1:06 (cliente -> server, antes del login):
 // secciones que el cliente tiene guardadas de este server con su hash.
 // F3:F6 (server -> cliente, antes de las secciones): todas las secciones con su

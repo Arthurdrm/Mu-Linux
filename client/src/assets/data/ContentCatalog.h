@@ -66,6 +66,8 @@ public:
     // F3/F8 y F3/F9: apilado y precios fijos de los items; se aplican al llegar.
     void ReceiveItemStacks(const BYTE* msg, int size);
     void ReceiveItemValues(const BYTE* msg, int size);
+    void ReceiveItemOptions(const BYTE* msg, int size);   // F3/FD
+    void ReceiveCombatRates(const BYTE* msg, int size);   // F3/FE
     // F3/F5: lista del menú M; se aplica al llegar.
     void ReceiveMoveList(const BYTE* msg, int size);
 
@@ -113,6 +115,9 @@ public:
     const CatalogItemPose* GetItemPose(int type) const;
 
     const CatalogWing* GetItemWing(int type) const;
+    // Porcentajes de daño de alas y helpers (F3:FE), o nullptr si el server no
+    // los mandó (el tooltip usa entonces los del 0.97k).
+    const Proto::CATALOG_COMBAT_RATES* GetCombatRates() const;
     // Item del ala custom con ese índice del CharSet (0..6), o -1.
     int GetWingItem(int index) const;
 
@@ -174,6 +179,8 @@ private:
     void ApplyMapMusic();
     void ApplyItemStacks();
     void ApplyItemValues();
+    void ApplyItemOptions();
+    void ApplyCombatRates();
     void ApplyMoveList();
     void ApplyItem(const BYTE* record, int recordSize);
     int  LoadModel(const char* folder, const char* name, int fixedSlot);

@@ -311,6 +311,45 @@ struct CATALOG_MAP_MUSIC
 	char Music[28];     // nombre de Data/Music del cliente, sin extensión
 };
 
+struct CATALOG_ITEM_OPTION
+{
+	BYTE Index;          // 0 skill, 1 suerte, 2 adicional, 3..8 excelente 1..6
+	BYTE Option;         // OptionIndex
+	BYTE Value;          // OptionValue
+	BYTE SkillOption;    // 0xFF = cualquiera
+	BYTE LuckOption;     // 0xFF = cualquiera
+	BYTE AddOption;      // 0xFF = cualquiera
+	BYTE ExceOption;     // máscara; 0xFF = cualquiera
+	BYTE Reserved;
+	WORD ItemMin;        // comportamiento (GetBehavior); 0xFFFF = sin límite
+	WORD ItemMax;
+};
+
+static_assert(sizeof(CATALOG_ITEM_OPTION) == 12, "CATALOG_ITEM_OPTION");
+
+// F3:FE: porcentajes de daño de alas y helpers (un solo registro).  Las alas
+// vanilla: Base + PorNivel * nivel.  Los helpers salen de
+// GameServerInfo - Character.dat.
+struct CATALOG_COMBAT_RATES
+{
+	WORD SatanIncDamage;
+	WORD DinorantIncDamage;
+	WORD AngelDecDamage;
+	WORD DinorantDecDamage;
+	WORD DinorantDecDamageExc;   // extra con la excelente 1 del Dinorant
+	WORD Wing1IncBase;
+	WORD Wing1IncLevel;
+	WORD Wing1DecBase;
+	WORD Wing1DecLevel;
+	WORD Wing2IncBase;
+	WORD Wing2IncLevel;
+	WORD Wing2DecBase;
+	WORD Wing2DecLevel;
+	WORD AngelAddLife;
+};
+
+static_assert(sizeof(CATALOG_COMBAT_RATES) == 28, "CATALOG_COMBAT_RATES");
+
 struct PMSG_CATALOG_END_SEND
 {
 	PSBMSG_HEAD header; // C1:F3:EA

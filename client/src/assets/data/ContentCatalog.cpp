@@ -10,6 +10,7 @@
 #include "platform/ITimer.h"
 #include "assets/data/ContentCatalog.h"
 #include "game/item/Item_ServerValue.h"
+#include "game/item/ItemOptionTable.h"
 #include "ui/MoveList.h"
 #include "game/core/MapManager.h"
 #include "assets/text/ClientText.h"
@@ -73,6 +74,10 @@ PendingSection s_PendingSkills;
 PendingSection s_PendingMapMusic;
 PendingSection s_PendingItemStacks;
 PendingSection s_PendingItemValues;
+PendingSection s_PendingItemOptions;
+PendingSection s_PendingCombatRates;
+Proto::CATALOG_COMBAT_RATES s_CombatRates = {};
+bool s_HasCombatRates = false;
 PendingSection s_PendingMoveList;
 
 // Textos traducidos del server (F3/F0).  Los nombres de items y skills se
@@ -303,7 +308,7 @@ SectionHash HashOf(std::uint16_t recordSize, const std::vector<BYTE>& records)
     return hash;
 }
 
-const BYTE kCachedSections[] = { 0xE7, 0xE8, 0xE9, 0xEC, 0xEE, 0xEF, 0xF3, 0xF4, 0xF5, 0xF7, 0xF8, 0xF9 };
+const BYTE kCachedSections[] = { 0xE7, 0xE8, 0xE9, 0xEC, 0xEE, 0xEF, 0xF3, 0xF4, 0xF5, 0xF7, 0xF8, 0xF9, 0xFD, 0xFE };
 std::string s_CacheDir;                   // "Cache/<ip>_<puerto>", vacío = sin caché
 std::map<int, SectionHash> s_SyncHash;    // hash de cada sección del último F3:F6
 
@@ -393,6 +398,8 @@ PendingSection* PendingFor(BYTE subh)
         case 0xF7: return &s_PendingMapMusic;
         case 0xF8: return &s_PendingItemStacks;
         case 0xF9: return &s_PendingItemValues;
+        case 0xFD: return &s_PendingItemOptions;
+        case 0xFE: return &s_PendingCombatRates;
         default:   return nullptr;
     }
 }
@@ -540,6 +547,47 @@ void CContentCatalog::ApplyItemValues()
     else
         Log("ContentCatalog: precios de %d items", count);
     s_PendingItemValues = PendingSection();
+}
+
+void CContentCatalog::ReceiveItemOptions(const BYTE* msg, int size)
+{
+    if (ReceiveSection(s_PendingItemOptions, 0xFD, msg, size)) ApplyItemOptions();
+}
+
+void CContentCatalog::ApplyItemOptions()
+{
+    if (!SectionComplete(s_PendingItemOptions)) return;
+    const PendingSection& s = s_PendingItemOptions;
+    const int count = s.recordSize > 0 ? (int)(s.records.size() / s.recordSize) : 0;
+    if (!ItemOptionTable_SetCatalog(s.records.empty() ? nullptr : s.records.data(), s.recordSize, count))
+        Log("ContentCatalog: opciones de items no válidas (registro de %d bytes), se conservan las anteriores", s.recordSize);
+    else
+        Log("ContentCatalog: %d opciones de items", count);
+    s_PendingItemOptions = PendingSection();
+}
+
+void CContentCatalog::ReceiveCombatRates(const BYTE* msg, int size)
+{
+    if (ReceiveSection(s_PendingCombatRates, 0xFE, msg, size)) ApplyCombatRates();
+}
+
+void CContentCatalog::ApplyCombatRates()
+{
+    if (!SectionComplete(s_PendingCombatRates)) return;
+    const PendingSection& s = s_PendingCombatRates;
+    if (s.recordSize != (int)sizeof(Proto::CATALOG_COMBAT_RATES) || s.records.size() != sizeof(Proto::CATALOG_COMBAT_RATES)) {
+        Log("ContentCatalog: porcentajes de alas y helpers no válidos (registro de %d bytes)", s.recordSize);
+    } else {
+        memcpy(&s_CombatRates, s.records.data(), sizeof(s_CombatRates));
+        s_HasCombatRates = true;
+        Log("ContentCatalog: porcentajes de alas y helpers");
+    }
+    s_PendingCombatRates = PendingSection();
+}
+
+const Proto::CATALOG_COMBAT_RATES* CContentCatalog::GetCombatRates() const
+{
+    return s_HasCombatRates ? &s_CombatRates : nullptr;
 }
 
 void CContentCatalog::ReceiveSkills(const BYTE* msg, int size)
@@ -721,6 +769,8 @@ void CContentCatalog::ReceiveSync(const BYTE* msg, int size)
         if (entry.subh == 0xF5) ApplyMoveList();
         if (entry.subh == 0xF8) ApplyItemStacks();
         if (entry.subh == 0xF9) ApplyItemValues();
+        if (entry.subh == 0xFD) ApplyItemOptions();
+        if (entry.subh == 0xFE) ApplyCombatRates();
         ++loaded;
     }
     if (broken) {
@@ -853,6 +903,9 @@ void CContentCatalog::Clear()
     }
     s_HasSkills = false;
     s_PendingMapMusic = PendingSection();
+    s_PendingItemOptions = PendingSection();
+    s_PendingCombatRates = PendingSection();
+    s_HasCombatRates = false;
     gMapManager.ClearServerMusic();
     gClientText.ClearServerTexts();
     s_TooltipTexts.clear();

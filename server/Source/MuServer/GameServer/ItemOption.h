@@ -57,6 +57,10 @@ public:
 
 	bool GetItemOption(int index, CItem* lpItem);
 
+	// Tabla completa, en el orden en que se cargó (el catálogo F3:FD la manda
+	// tal cual: GetItemOption se queda con la última fila que coincide).
+	const std::map<int, std::vector<ITEM_OPTION_INFO>>& GetAll() const { return this->m_ItemOptionInfo; }
+
 	bool GetItemOption(int index, WORD ItemIndex, BYTE ItemSkill, BYTE ItemLuck, BYTE ItemOption, BYTE ItemExcellent, BYTE* pItemOption, BYTE* pItemValue);
 
 	void CalcItemCommonOption(LPOBJ lpObj);

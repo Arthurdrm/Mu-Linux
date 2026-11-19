@@ -170,6 +170,7 @@
     <ClInclude Include="src\game\item\RightClickMove.h" />
     <ClInclude Include="src\assets\data\ContentCatalog.h" />
     <ClInclude Include="src\game\item\ItemDefines.h" />
+    <ClInclude Include="src\game\item\ItemOptionTable.h" />
     <ClInclude Include="src\game\item\Item_ServerValue.h" />
     <ClInclude Include="src\ui\GoldenArcher.h" />
     <ClInclude Include="src\app\core\Window.h" />
@@ -533,6 +534,9 @@
     <ClCompile Include="src\game\item\Item_LegacyHelpers.cpp" />
     <ClCompile Include="src\ui\UI_DialogInterface.cpp" />
     <ClCompile Include="src\game\item\Item_Durability.cpp" />
+    <ClCompile Include="src\game\item\ItemOptionTable.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\game\item\Item_ServerValue.cpp" />
     <ClCompile Include="src\render\BMD_LegacyDraw.cpp" />
     <ClCompile Include="src\app\config\Config_TokenParser.cpp" />

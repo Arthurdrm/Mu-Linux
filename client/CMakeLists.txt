@@ -236,6 +236,7 @@ set(MU_SOURCES
     src/game/item/Item_LegacyHelpers.cpp
     src/ui/UI_DialogInterface.cpp
     src/game/item/Item_Durability.cpp
+    src/game/item/ItemOptionTable.cpp
     src/game/item/Item_ServerValue.cpp
     src/render/BMD_LegacyDraw.cpp
     src/app/config/Config_TokenParser.cpp
@@ -479,6 +480,7 @@ set(MU_HEADERS
     src/game/item/RightClickMove.h
     src/assets/data/ContentCatalog.h
     src/game/item/ItemDefines.h
+    src/game/item/ItemOptionTable.h
     src/game/item/Item_ServerValue.h
     src/ui/GoldenArcher.h
     src/app/core/Window.h
@@ -708,7 +710,7 @@ target_compile_options(mu97k PRIVATE
 # target_precompile_headers porque ése fuerza un /FI propio; el .vcxproj
 # depende de que cada .cpp haga #include "stdafx.h".
 set(MU_PCH_USERS ${MU_SOURCES})
-list(REMOVE_ITEM MU_PCH_USERS src/net/SecureChannel.cpp src/net/ContentSyncCore.cpp src/net/ServerTrustCore.cpp src/net/crypto/monocypher.c src/rhi/GL/FragmentPipeline.cpp src/render/Gfx.cpp src/rhi/GL/GfxDevice.cpp src/rhi/Dispatch.cpp src/render/RenderState.cpp src/render/TerrainDraw.cpp src/rhi/GL/TerrainRenderer.cpp src/render/RenderProfile.cpp src/rhi/GL/ProfileQueries.cpp src/stdafx.cpp src/render/Texture/ImageCodec.cpp src/render/text/TextCore.cpp src/render/text/Utf8Proc.c src/render/text/UniBreak.c src/platform/GLFunctions.cpp src/rhi/GL/BufferedDraw.cpp src/render/GlyphAtlas.cpp src/render/BufferedDraw.cpp src/render/Skinning.cpp src/render/MeshTopology.cpp src/rhi/GL/MeshDraw.cpp src/rhi/GL/Skinning.cpp src/render/ResourceTables.cpp src/rhi/GL/ShadowMap.cpp src/render/ShadowLight.cpp src/platform/ContentLayers.cpp)
+list(REMOVE_ITEM MU_PCH_USERS src/net/SecureChannel.cpp src/net/ContentSyncCore.cpp src/net/ServerTrustCore.cpp src/net/crypto/monocypher.c src/rhi/GL/FragmentPipeline.cpp src/render/Gfx.cpp src/rhi/GL/GfxDevice.cpp src/rhi/Dispatch.cpp src/render/RenderState.cpp src/render/TerrainDraw.cpp src/rhi/GL/TerrainRenderer.cpp src/render/RenderProfile.cpp src/rhi/GL/ProfileQueries.cpp src/stdafx.cpp src/render/Texture/ImageCodec.cpp src/render/text/TextCore.cpp src/render/text/Utf8Proc.c src/render/text/UniBreak.c src/platform/GLFunctions.cpp src/rhi/GL/BufferedDraw.cpp src/render/GlyphAtlas.cpp src/render/BufferedDraw.cpp src/render/Skinning.cpp src/render/MeshTopology.cpp src/rhi/GL/MeshDraw.cpp src/rhi/GL/Skinning.cpp src/render/ResourceTables.cpp src/rhi/GL/ShadowMap.cpp src/render/ShadowLight.cpp src/platform/ContentLayers.cpp src/game/item/ItemOptionTable.cpp)
 set_source_files_properties(${MU_PCH_USERS} PROPERTIES
     COMPILE_OPTIONS "/Yustdafx.h")
 # La sonda gráfica compila el backend real sin depender del PCH del ejecutable.
@@ -847,6 +849,15 @@ if(MSVC)
     target_compile_options(mu_content_layers_list_test PRIVATE /utf-8 /EHsc)
 endif()
 add_test(NAME content_layers_list COMMAND mu_content_layers_list_test)
+
+# Opciones de items del catálogo (F3:FD): misma resolución que CItemOption del server.
+add_executable(mu_item_option_table_test EXCLUDE_FROM_ALL tests/ItemOptionTable.cpp src/game/item/ItemOptionTable.cpp)
+target_include_directories(mu_item_option_table_test PRIVATE src)
+target_compile_features(mu_item_option_table_test PRIVATE cxx_std_17)
+if(MSVC)
+    target_compile_options(mu_item_option_table_test PRIVATE /utf-8)
+endif()
+add_test(NAME item_option_table COMMAND mu_item_option_table_test)
 
 add_executable(mu_text_core_test EXCLUDE_FROM_ALL tests/TextCore.cpp src/render/text/TextCore.cpp src/render/text/Utf8Proc.c src/render/text/UniBreak.c)
 target_include_directories(mu_text_core_test PRIVATE src)

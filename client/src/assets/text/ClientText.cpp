@@ -82,7 +82,11 @@ const char* const English[] = {
     "That NPC does not repair",
     "Trade canceled: too far apart",
     "Open the shop to repair",
-    "This server could not prove its identity. The connection was closed."
+    "This server could not prove its identity. The connection was closed.",
+    "Increase life gained when killing monsters +%d%% of max life",
+    "Increase mana gained when killing monsters +%d%% of max mana",
+    "Increase maximum AG +%d%%",
+    "Attack power and magic power increased by %d%%"
 };
 constexpr size_t Count = (size_t)ClientTextId::Count;
 static_assert(sizeof(English) / sizeof(English[0]) == Count, "Faltan textos en ingl\xC3\xA9s");
@@ -138,6 +142,10 @@ const char* MenuFallback(ClientTextId id, int language)
         { ClientTextId::RejectTradeRange, "Trade cancelado: est\xC3\xA1n demasiado lejos", "Troca cancelada: longe demais" },
         { ClientTextId::RejectRepairNoShop, "Abr\xC3\xAD la tienda para reparar", "Abra a loja para consertar" },
         { ClientTextId::ServerKeyMismatch, "Este server no pudo demostrar su identidad. Se cerr\xC3\xB3 la conexi\xC3\xB3n.", "Este servidor n\xC3\xA3o conseguiu provar sua identidade. A conex\xC3\xA3o foi fechada." },
+        { ClientTextId::ItemOptionHuntLife, "Incrementa la vida obtenida al matar monstruos +%d%% de la vida m\xC3\xA1" "xima", "Aumenta a vida obtida ao matar monstros +%d%% da vida m\xC3\xA1" "xima" },
+        { ClientTextId::ItemOptionHuntMana, "Incrementa el mana obtenido al matar monstruos +%d%% del mana m\xC3\xA1" "ximo", "Aumenta a mana obtida ao matar monstros +%d%% da mana m\xC3\xA1" "xima" },
+        { ClientTextId::ItemOptionMaxAG, "Incrementa el AG m\xC3\xA1" "ximo +%d%%", "Aumenta o AG m\xC3\xA1" "ximo +%d%%" },
+        { ClientTextId::HelperDamageIncrease, "Poder de ataque y poder m\xC3\xA1" "gico incrementado en %d%%", "Poder de ataque e poder m\xC3\xA1" "gico aumentados em %d%%" },
         { ClientTextId::RenderVSyncUnavailable, "VSync no disponible", "VSync indispon\xC3\xAD" "vel" },
     };
     for (const Entry& entry : entries) {

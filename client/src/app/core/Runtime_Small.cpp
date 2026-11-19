@@ -167,7 +167,15 @@ extern "C" void __cdecl PlusSpecial(unsigned short *Value, int Special, const IT
     for (int i = 0; i < count; ++i) {
         if (data[i + 37] == (unsigned int)Special) {
             if (Item->Durability) {
-                *Value += data[i + 45];
+                // 73/75 ("+nivel/20"): SpecialValue es el divisor, como en el
+                // ItemOption.txt del server.  El 0.97k guardaba el cociente con
+                // el nivel del momento de ItemConvert.
+                if (Special == 73 || Special == 75) {
+                    const int level = *(const unsigned short*)((const BYTE*)CharacterAttribute + 14);
+                    if (data[i + 45]) *Value += (unsigned short)(level / data[i + 45]);
+                } else {
+                    *Value += data[i + 45];
+                }
             }
         }
     }
@@ -207,7 +215,10 @@ const ITEM* __cdecl PlusSpecialPercent(short *a1, int a2, const ITEM* a3, unsign
     int count = a3->SpecialNum;
     for (int i = 0; i < count; ++i) {
         if (data[i + 37] == (unsigned int)a2) {
-            *(unsigned short*)a1 += (unsigned short)(a4 * (unsigned short)*a1 / 100);
+            // El porcentaje es el de la opción (ItemOption.txt del server); `a4`
+            // es el fijo del 0.97k y sólo queda si la opción no trae valor.
+            const unsigned short percent = data[i + 45] ? data[i + 45] : a4;
+            *(unsigned short*)a1 += (unsigned short)(percent * (unsigned short)*a1 / 100);
         }
     }
     return result;

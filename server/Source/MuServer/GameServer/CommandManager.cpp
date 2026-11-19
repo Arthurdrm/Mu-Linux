@@ -2393,13 +2393,17 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 		return;
 	}
 
-	DWORD speed = (lpObj->PhysiSpeed > 0) ? lpObj->PhysiSpeed : 0;
-	DWORD minDelay = 400;
+	// Velocidade atrelada diretamente a agilidade real do personagem (fisica e magica)
+	int charSpeed = max((int)lpObj->PhysiSpeed, (int)lpObj->MagicSpeed);
+	DWORD speed = (charSpeed > 0) ? (DWORD)charSpeed : 0;
+	DWORD minDelay = 450;
 	if (speed > 0)
 	{
-		minDelay = (DWORD)(10000 / (speed + 25));
-		if (minDelay < 250) minDelay = 250;
-		if (minDelay > 600) minDelay = 600;
+		// Cadencia fiel a animacao do client e agilidade real do boneco:
+		// Speed 20 -> ~320ms, Speed 100 -> ~220ms, Speed 250 -> ~137ms, Speed 500 -> ~84ms
+		minDelay = (DWORD)(220000 / (600 + 4 * speed));
+		if (minDelay < 40) minDelay = 40;   // Piso minimo de protecao (40ms = 25 fps)
+		if (minDelay > 600) minDelay = 600; // Teto maximo para velocidades muito baixas
 	}
 
 	DWORD currentTick = GetTickCount();

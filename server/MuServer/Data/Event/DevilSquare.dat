@@ -10,12 +10,9 @@ end
 // DOW: 1=Sunday / 2=Monday / 3=Tuesday / 4=Wednesday / 5=Thursday / 6=Friday / 7=Saturday
 1
 //Year	Month	Day	DoW	Hour	Minute	Second
-*	*	*	*	0	30	0
-*	*	*	*	4	30	0
-*	*	*	*	8	30	0
-*	*	*	*	12	30	0
-*	*	*	*	16	30	0
-*	*	*	*	20	30	0
+*	*	*	*	1	30	0
+*	*	*	*	9	30	0
+*	*	*	*	17	30	0
 end
 
 2

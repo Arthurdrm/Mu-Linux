@@ -1114,34 +1114,18 @@ bool CInvasionManager::StartInvasion(int InvasionIndex)
 	if (!gServerInfo.m_InvasionManagerSwitch || InvasionIndex < 0 || InvasionIndex >= MAX_INVASION) return false;
 	if (!m_InvasionInfo[InvasionIndex].InvasionName[0] || m_InvasionInfo[InvasionIndex].State == INVASION_STATE_START) return false;
 
-	// One dated occurrence, including rollover through midnight.
-	time_t theTime = time(NULL) + 120;
-	tm aTime;
-	localtime_s(&aTime, &theTime);
-	int hour = aTime.tm_hour;
-	int minute = aTime.tm_min;
+	LogAdd(LOG_EVENT, "[Set Invasion Start][%s] Immediate start triggered", this->m_InvasionInfo[InvasionIndex].InvasionName);
 
-	INVASION_START_TIME info;
+	if (_stricmp(this->m_InvasionInfo[InvasionIndex].InvasionName, "Tamachan") == 0)
+	{
+		gNotice.GCNoticeSendToAll(0, "Tamachan ha aparecido en Lorencia.");
+	}
+	else if (this->m_InvasionInfo[InvasionIndex].RespawnMessage != -1)
+	{
+		gNotice.GCNoticeSendToAll(0, this->m_InvasionInfo[InvasionIndex].RespawnMessage, this->m_InvasionInfo[InvasionIndex].InvasionName);
+	}
 
-	info.Year = aTime.tm_year + 1900;
-
-	info.Month = aTime.tm_mon + 1;
-
-	info.Day = aTime.tm_mday;
-
-	info.DayOfWeek = -1;
-
-	info.Hour = hour;
-
-	info.Minute = minute;
-
-	info.Second = 0;
-
-	this->m_InvasionInfo[InvasionIndex].StartTime.push_back(info);
-
-	LogAdd(LOG_EVENT, "[Set Invasion Start][%s] At %2d:%2d:00", this->m_InvasionInfo[InvasionIndex].InvasionName, hour, minute);
-
-	this->SetState(&this->m_InvasionInfo[InvasionIndex], INVASION_STATE_EMPTY);
+	this->SetState(&this->m_InvasionInfo[InvasionIndex], INVASION_STATE_START);
 	return true;
 }
 

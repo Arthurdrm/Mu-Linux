@@ -119,6 +119,15 @@ void CheckEditorReload()
 			gServerInfo.ReadEventInfo();
 			LogAdd(LOG_BLUE, "[ServerInfo] Event reloaded by editor flag");
 		}
+		else if (strncmp(token, "invasion:", 9) == 0)
+		{
+			int invIndex = atoi(token + 9);
+			if (invIndex >= 0 && invIndex < MAX_INVASION)
+			{
+				gInvasionManager.StartInvasion(invIndex);
+				LogAdd(LOG_BLUE, "[ServerInfo] Invasion %d triggered by editor flag", invIndex);
+			}
+		}
 		else if (_stricmp(token, "eventitembag") == 0)
 		{
 			gServerInfo.ReadEventItemBagInfo();

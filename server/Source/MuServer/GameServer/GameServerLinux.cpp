@@ -10,6 +10,10 @@
 #include "SocketManager.h"
 #include "SocketManagerUdp.h"
 #include "Util.h"
+#include "BloodCastle.h"
+#include "DevilSquare.h"
+#include "GoldenArcherBingo.h"
+#include "InvasionManager.h"
 
 void CheckEditorReload()
 {
@@ -100,6 +104,37 @@ void CheckEditorReload()
 		{
 			gServerInfo.ReadEventInfo();
 			LogAdd(LOG_BLUE, "[ServerInfo] Event reloaded by editor flag");
+		}
+		else if (_stricmp(token, "bcstart") == 0)
+		{
+			gBloodCastle.StartBC();
+			LogAdd(LOG_BLUE, "[ServerInfo] BloodCastle triggered by editor flag");
+		}
+		else if (_stricmp(token, "dsstart") == 0)
+		{
+			gDevilSquare.StartDS();
+			LogAdd(LOG_BLUE, "[ServerInfo] DevilSquare triggered by editor flag");
+		}
+		else if (_stricmp(token, "bingostart") == 0)
+		{
+			gGoldenArcherBingo.StartGoldenArcherBingo();
+			LogAdd(LOG_BLUE, "[ServerInfo] GoldenArcherBingo triggered by editor flag");
+		}
+		else if (_stricmp(token, "tamastart") == 0)
+		{
+			gInvasionManager.StartInvasion(3);
+			LogAdd(LOG_BLUE, "[ServerInfo] Tamachan triggered by editor flag");
+		}
+		else if (strncmp(token, "invasionstart", 13) == 0 || strncmp(token, "invasion:", 9) == 0)
+		{
+			const char* pNum = (strncmp(token, "invasionstart", 13) == 0) ? (token + 13) : (token + 9);
+			while (*pNum == ':' || *pNum == '_' || *pNum == ' ') pNum++;
+			int invIndex = atoi(pNum);
+			if (invIndex >= 0 && invIndex < MAX_INVASION)
+			{
+				gInvasionManager.StartInvasion(invIndex);
+				LogAdd(LOG_BLUE, "[ServerInfo] Invasion %d triggered by editor flag", invIndex);
+			}
 		}
 		else if (_stricmp(token, "eventitembag") == 0)
 		{

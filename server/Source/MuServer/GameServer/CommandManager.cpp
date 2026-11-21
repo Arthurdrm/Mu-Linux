@@ -2498,6 +2498,45 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 			lpObj->BP -= ((gSkillManager.GetSkillBP(lpSkill->m_index) * lpObj->BPConsumptionRate) / 100);
 			GCManaSend(lpObj->Index, 0xFF, (int)lpObj->Mana, lpObj->BP);
 		}
+		else if (s == SKILL_TRIPLE_SHOT || s == SKILL_PENETRATION)
+		{
+			int angle = gSkillManager.GetSkillAngle(lpObj->X, lpObj->Y, lpTarget->X, lpTarget->Y);
+			BYTE angleByte = (BYTE)((angle * 255) / 360);
+			BYTE dirByte = (BYTE)((angle * 256) / 360);
+
+			gSkillManager.GCDurationSkillAttackSend(lpObj, lpSkill->m_index, (BYTE)lpObj->X, (BYTE)lpObj->Y, dirByte);
+
+			SKILL_INFO SkillInfo;
+			if (gSkillManager.GetInfo(lpSkill->m_index, &SkillInfo))
+			{
+				int SkillFrustrumX[4], SkillFrustrumY[4];
+				gSkillManager.GetSkillFrustrum(SkillFrustrumX, SkillFrustrumY, angleByte, lpObj->X, lpObj->Y, (float)SkillInfo.Radio, (float)SkillInfo.Range);
+
+				for (int n = 0; n < lpObj->VPCount2; n++)
+				{
+					if (lpObj->VpPlayer2[n].state == VIEWPORT_NONE) continue;
+					int bIndex = lpObj->VpPlayer2[n].index;
+					if (OBJECT_RANGE(bIndex) == false) continue;
+					LPOBJ lpTargetMon = &gObj[bIndex];
+					if (lpTargetMon->Type != OBJECT_MONSTER || lpTargetMon->Live == 0 || lpTargetMon->Teleport != 0) continue;
+					if (lpTargetMon->Class == 200) continue;
+					if (gMap[lpTargetMon->Map].CheckAttr(lpTargetMon->X, lpTargetMon->Y, 1) != 0) continue;
+
+					if (bIndex == targetIndex || (gSkillManager.CheckSkillRange(lpSkill->m_index, lpObj->X, lpObj->Y, lpTargetMon->X, lpTargetMon->Y) && gSkillManager.CheckSkillFrustrum(SkillFrustrumX, SkillFrustrumY, lpTargetMon->X, lpTargetMon->Y)))
+					{
+						gAttack.Attack(lpObj, lpTargetMon, lpSkill, false, 0, 0);
+					}
+				}
+			}
+			else
+			{
+				gAttack.Attack(lpObj, lpTarget, lpSkill, false, 0, 0);
+			}
+
+			lpObj->Mana -= ((gSkillManager.GetSkillMana(lpSkill->m_index) * lpObj->MPConsumptionRate) / 100);
+			lpObj->BP -= ((gSkillManager.GetSkillBP(lpSkill->m_index) * lpObj->BPConsumptionRate) / 100);
+			GCManaSend(lpObj->Index, 0xFF, (int)lpObj->Mana, lpObj->BP);
+		}
 		else
 		{
 			gSkillManager.GCSkillAttackSend(lpObj, lpSkill->m_index, targetIndex, 1);

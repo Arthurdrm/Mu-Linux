@@ -83,13 +83,19 @@ static void SetPlayerBow97k(BYTE* entity)
     }
 }
 
-// Skills_PacketHandler @ 0042BCA0 LABEL_107/LABEL_98.  A broadcast only
-// animates its remote caster; it does not invoke a target-selection helper and
-// it never replays the local hero's cast animation.
+// Skills_PacketHandler @ 0042BCA0 LABEL_107/LABEL_98. Dispara animação de
+// conjuração/ataque para habilidades disparadas via rede (incluindo /attack).
 static void AnimateRemoteSkillCaster97k(BYTE* caster)
 {
-    if (!caster || caster == (BYTE*)DAT_07abf5d8)
+    if (!caster)
         return;
+    if (caster == (BYTE*)DAT_07abf5d8) {
+        BYTE curAct = AsObject(caster)->CurrentAction;
+        // Se o herói já estiver numa ação de combate e no início do frame, deixa rodar
+        if (curAct >= 34 && curAct <= 91 && AsObject(caster)->AnimationFrame < 3.0f) {
+            return;
+        }
+    }
     if (*(WORD*)(caster + 2) == 390)
         SetPlayerMagic(AsCharacter(caster));
     else

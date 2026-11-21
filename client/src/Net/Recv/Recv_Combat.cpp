@@ -556,44 +556,50 @@ void NetRecv_1E(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     AsCharacter(caster)->Skill = skill;
     caster[EntityOffset(776)] = Msg[6];
     caster[EntityOffset(777)] = Msg[7];
-    if (caster == (BYTE*)DAT_07abf5d8) {
-        AsCharacter(caster)->SkillStage = 1;
-        *(WORD *)&AsCharacter(caster)->TargetCharacter = 0xFFFF;
-        caster[EntityOffset(756)] = 0;
-        return;
-    }
 
-    // DESVIACION (DLL Protocol.cpp, GCDurationSkillAttackRecv): ReceiveMagicContinue
-    // no toca la orientación, y el 0x10 sin pasos que manda el que castea no gira
-    // a la entidad remota; el skill salía hacia donde miraba antes.  El paquete
-    // trae `dir` = Angle[2] * 256/360 del que castea (Msg[8]; x,y es su casilla).
+    const bool isHero = (caster == (BYTE*)DAT_07abf5d8);
+
+    // Atualiza orientação para a direção do ataque informada pelo servidor
     AsObject(caster)->Angle[2] = (float)Msg[8] * (360.0f / 256.0f);
 
-    if (*(WORD *)&AsCharacter(caster)->Object.Type == 390) {
-        switch (skill) {
-        case 10: SetAction(AsObject(caster), 90); break;
-        case 12: SetAction(AsObject(caster), 88); break;
-        case 14: SetAction(AsObject(caster), 89); break;
-        case 24:
-        case 52: SetPlayerAttack(AsCharacter(caster), 0, 0, 0); break;
-        case 41:
-        case 55: SetAction(AsObject(caster), 61); break;
-        case 42: SetAction(AsObject(caster), 62); break;
-        case 43: SetAction(AsObject(caster), 67); break;
-        case 47: SetAction(AsObject(caster), 66); break;
-        case 56: SetAction(AsObject(caster), 81); break;
-        default: SetPlayerMagic(AsCharacter(caster)); break;
+    bool shouldTriggerAnim = true;
+    if (isHero) {
+        BYTE curAct = AsObject(caster)->CurrentAction;
+        // Se o herói já está executando uma ação de combate/conjuração e ainda no começo do frame,
+        // não reseta para manter a fluidez de quem está clicando manualmente
+        if (curAct >= 34 && curAct <= 91 && AsObject(caster)->AnimationFrame < 3.0f) {
+            shouldTriggerAnim = false;
         }
-    } else {
-        SetPlayerAttack(AsCharacter(caster), 0, 0, 0);
     }
-    *(DWORD *)&AsCharacter(caster)->Object.AnimationFrame = 0;
+
+    if (shouldTriggerAnim) {
+        if (*(WORD *)&AsCharacter(caster)->Object.Type == 390) {
+            switch (skill) {
+            case 10: SetAction(AsObject(caster), 90); break;
+            case 12: SetAction(AsObject(caster), 88); break;
+            case 14: SetAction(AsObject(caster), 89); break;
+            case 24:
+            case 52: SetPlayerAttack(AsCharacter(caster), 0, 0, 0); break;
+            case 41:
+            case 55: SetAction(AsObject(caster), 61); break;
+            case 42: SetAction(AsObject(caster), 62); break;
+            case 43: SetAction(AsObject(caster), 67); break;
+            case 47: SetAction(AsObject(caster), 66); break;
+            case 56: SetAction(AsObject(caster), 81); break;
+            default: SetPlayerMagic(AsCharacter(caster)); break;
+            }
+        } else {
+            SetPlayerAttack(AsCharacter(caster), 0, 0, 0);
+        }
+        *(DWORD *)&AsCharacter(caster)->Object.AnimationFrame = 0;
+    }
+
     AsCharacter(caster)->SkillStage = 1;
     // DESVIACION: Triple Shot de otro jugador dispara ya. El modelo 390 anima
     // con la velocidad de ataque del héroe local; si es más lenta que la del
     // que tira, el 0x1E siguiente resetea la etapa antes del frame 5 y sólo
     // sale una de cada varias tandas de flechas.
-    if (skill == 24 && *(WORD *)&AsCharacter(caster)->Object.Type == 390)
+    if (skill == 24 && *(WORD *)&AsCharacter(caster)->Object.Type == 390 && !isHero)
         AsCharacter(caster)->SkillStage = 15;
     *(WORD *)&AsCharacter(caster)->TargetCharacter = 0xFFFF;
     caster[EntityOffset(756)] = 0;

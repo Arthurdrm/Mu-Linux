@@ -2510,7 +2510,16 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	}
 	else
 	{
-		GCActionSend(lpObj, 0x01, lpObj->Index, targetIndex);
+		PMSG_ACTION_SEND pMsg;
+		pMsg.header.set(0x18, sizeof(pMsg));
+		pMsg.index[0] = SET_NUMBERHB(lpObj->Index);
+		pMsg.index[1] = SET_NUMBERLB(lpObj->Index);
+		pMsg.dir = lpObj->Dir;
+		pMsg.action = 100;
+
+		DataSend(lpObj->Index, (BYTE*)&pMsg, pMsg.header.size);
+		MsgSendV2(lpObj, (BYTE*)&pMsg, pMsg.header.size);
+
 		gAttack.Attack(lpObj, lpTarget, 0, 0, 0, 0);
 	}
 }

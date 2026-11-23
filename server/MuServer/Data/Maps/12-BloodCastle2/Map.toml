@@ -17,7 +17,7 @@
 
 name = "Blood Castle 2"
 view_range = 15
-experience_rate = 100
+experience_rate = 200
 item_drop_rate = 100
 exc_item_drop_rate = 0
 dead_gate = 22

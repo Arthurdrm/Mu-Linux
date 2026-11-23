@@ -1,7 +1,7 @@
 // DOW: 1=Sunday / 2=Monday / 3=Tuesday / 4=Wednesday / 5=Thursday / 6=Friday / 7=Saturday
 0
 //Index	Year	Month	Day	DoW	Hour	Minute	Second
-0	*	*	*	*	20	0	0
+// 0	*	*	*	*	20	0	0 // Desativado agendamento automatico (100% manual)
 end
 
 // BonusTime = Duration of the Bonus active (in Minutes)
@@ -22,5 +22,5 @@ end
 2
 //Bonus	Bonus	Value	Value	Value	Value	Item	Item	Map	Monster	Monster	Monster
 //Index	Type	AL0	AL1	AL2	AL3	Index	Level	Number	Class	MinLvl	MaxLvl
-0	0	150	150	150	150	*	*	*	*	*	*
+0	0	200	200	200	200	*	*	*	*	*	*
 end

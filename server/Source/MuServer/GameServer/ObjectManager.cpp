@@ -2268,6 +2268,17 @@ void CObjectManager::CharacterCalcAttribute(int aIndex)
 		lpObj->MagicSpeed += Amulet->m_AttackSpeed;
 	}
 
+	// Limite de seguranca para evitar instabilidade/desync na animacao do cliente original 0.97k
+	if (lpObj->PhysiSpeed > 220)
+	{
+		lpObj->PhysiSpeed = 220;
+	}
+
+	if (lpObj->MagicSpeed > 220)
+	{
+		lpObj->MagicSpeed = 220;
+	}
+
 	if (lpObj->Class == CLASS_DW)
 	{
 		lpObj->DefenseSuccessRate = Dexterity / gServerInfo.m_DWDefenseSuccessRateConstA;

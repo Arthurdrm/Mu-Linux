@@ -2418,6 +2418,12 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	int minDistance = 999;
 	int maxRadius = 6;
 
+	// Para ataques corpo a corpo melee (DK com Twisting Slash ou ataque fisico basico), mantem raio maximo de 3 tiles
+	if (lpObj->Class == CLASS_DK && (lpObj->AutoAttackSkill == 0 || lpObj->AutoAttackSkill == SKILL_TWISTING_SLASH || lpObj->AutoAttackSkill == SKILL_DEATH_STAB || lpObj->AutoAttackSkill == SKILL_RAGEFUL_BLOW))
+	{
+		maxRadius = 3;
+	}
+
 	for (int n = 0; n < lpObj->VPCount2; n++)
 	{
 		if (lpObj->VpPlayer2[n].state == VIEWPORT_NONE)

@@ -232,7 +232,7 @@ DWPhysiSpeedConstA=20
 DWMagicSpeedConstA=10
 
 ; PhysiSpeed = Dexterity / DKPhysiSpeedConstA
-DKPhysiSpeedConstA=15
+DKPhysiSpeedConstA=25
 
 ; MagicSpeed = Dexterity / DKMagicSpeedConstA
 DKMagicSpeedConstA=20

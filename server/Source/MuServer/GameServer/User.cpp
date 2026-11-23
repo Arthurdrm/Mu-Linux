@@ -1225,47 +1225,38 @@ bool gObjCheckMapTile(LPOBJ lpObj, int type)
 		return 0;
 	}
 
-	for (int x = 0; x < 3; x++)
+	// Se a posicao atual do jogador eh chao valido (sem parede e com chao), esta 100% regular
+	if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 8) == 0)
 	{
-		for (int y = 0; y < 3; y++)
-		{
-			if (gMap[lpObj->Map].CheckAttr((lpObj->X + x), (lpObj->Y + y), 4) == 0 && gMap[lpObj->Map].CheckAttr((lpObj->X + x), (lpObj->Y + y), 8) == 0)
-			{
-				return 0;
-			}
-		}
+		return 0;
 	}
 
-	switch (lpObj->Class)
+	// Se a posicao anterior for valida, volta para ela em vez de teleportar para outro mapa
+	if (gMap[lpObj->Map].CheckAttr(lpObj->OldX, lpObj->OldY, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->OldX, lpObj->OldY, 8) == 0)
 	{
-		case CLASS_DW:
-		{
-			gObjMoveGate(lpObj->Index, 17);
+		gObjSetPosition(lpObj->Index, lpObj->OldX, lpObj->OldY);
 
-			break;
-		}
-
-		case CLASS_DK:
-		{
-			gObjMoveGate(lpObj->Index, 17);
-
-			break;
-		}
-
-		case CLASS_FE:
-		{
-			gObjMoveGate(lpObj->Index, 27);
-
-			break;
-		}
-
-		case CLASS_MG:
-		{
-			gObjMoveGate(lpObj->Index, 17);
-
-			break;
-		}
+		return 1;
 	}
+
+	// Apenas em caso de estar preso sem posicao anterior valida, move para o retorno do mapa atual
+	int gate = 17;
+
+	switch (lpObj->Map)
+	{
+		case MAP_LORENCIA:   gate = 17; break;
+		case MAP_DUNGEON:    gate = 17; break;
+		case MAP_DEVIAS:     gate = 22; break;
+		case MAP_NORIA:      gate = 27; break;
+		case MAP_LOST_TOWER: gate = 42; break;
+		case MAP_ARENA:      gate = 115; break;
+		case MAP_ATLANS:     gate = 49; break;
+		case MAP_TARKAN:     gate = 57; break;
+		case MAP_ICARUS:     gate = 42; break;
+		default:             gate = (lpObj->Class == CLASS_FE ? 27 : 17); break;
+	}
+
+	gObjMoveGate(lpObj->Index, gate);
 
 	return 1;
 }

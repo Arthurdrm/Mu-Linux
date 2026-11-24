@@ -891,31 +891,33 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 		return;
 	}
 
-	// O cliente nao pode alterar suas proprias coordenadas via pacote 0x11 (PROTOCOL_CODE3).
-	// O movimento do personagem ocorre exclusivamente atraves de CGMoveRecv (0x10).
-	// Pacotes 0x11 com coordenadas divergentes (como os enviados por skills melee do cliente)
-	// sao rejeitados e corrigidos com a posicao real autoritativa do servidor.
-	if (lpMsg->x != lpObj->X || lpMsg->y != lpObj->Y)
+	// Descarta coordenadas invalidas (fora dos limites do mapa ou (0,0))
+	if (lpMsg->x <= 0 || lpMsg->y <= 0 || lpMsg->x >= 255 || lpMsg->y >= 255)
 	{
-		PMSG_POSITION_SEND pMsg;
-
-		pMsg.header.set(PROTOCOL_CODE3, sizeof(pMsg));
-
-		pMsg.index[0] = SET_NUMBERHB(aIndex);
-
-		pMsg.index[1] = SET_NUMBERLB(aIndex);
-
-		pMsg.x = (BYTE)lpObj->X;
-
-		pMsg.y = (BYTE)lpObj->Y;
-
-		if (lpObj->Type == OBJECT_USER)
-		{
-			DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
-		}
-
 		return;
 	}
+
+	// Descarta coordenadas em paredes ou fora do mapa (bits 4 ou 8)
+	if (gMap[lpObj->Map].CheckAttr(lpMsg->x, lpMsg->y, 4) != 0 || gMap[lpObj->Map].CheckAttr(lpMsg->x, lpMsg->y, 8) != 0)
+	{
+		return;
+	}
+
+	gMap[lpObj->Map].DelStandAttr(lpObj->OldX, lpObj->OldY);
+
+	lpObj->X = lpMsg->x;
+
+	lpObj->Y = lpMsg->y;
+
+	lpObj->TX = lpMsg->x;
+
+	lpObj->TY = lpMsg->y;
+
+	lpObj->OldX = lpMsg->x;
+
+	lpObj->OldY = lpMsg->y;
+
+	gMap[lpObj->Map].SetStandAttr(lpObj->TX, lpObj->TY);
 
 	PMSG_POSITION_SEND pMsg;
 
@@ -925,14 +927,9 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 
 	pMsg.index[1] = SET_NUMBERLB(aIndex);
 
-	pMsg.x = (BYTE)lpObj->X;
+	pMsg.x = (BYTE)lpObj->TX;
 
-	pMsg.y = (BYTE)lpObj->Y;
-
-	if (lpObj->Type == OBJECT_USER)
-	{
-		DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
-	}
+	pMsg.y = (BYTE)lpObj->TY;
 
 	for (int n = 0; n < MAX_VIEWPORT; n++)
 	{
@@ -1191,7 +1188,7 @@ void CGMoveRecv(PMSG_MOVE_RECV* lpMsg, int aIndex)
 
 	bool bBadPath = (lpObj->Type == OBJECT_USER && gServerInfo.m_MoveCheck != 0 && MoveCheckPath(lpObj, lpMsg) == false);
 
-	if ((bBadPath && gServerInfo.m_MoveCheck == 2) || lpObj->TX < (lpObj->X - 15) || lpObj->TX >(lpObj->X + 15) || lpObj->TY < (lpObj->Y - 15) || lpObj->TY >(lpObj->Y + 15))
+	if ((bBadPath && gServerInfo.m_MoveCheck == 2) || lpObj->TX < (lpMsg->x - 15) || lpObj->TX >(lpMsg->x + 15) || lpObj->TY < (lpMsg->y - 15) || lpObj->TY >(lpMsg->y + 15))
 	{
 		lpObj->PathCur = 0;
 
@@ -1204,8 +1201,6 @@ void CGMoveRecv(PMSG_MOVE_RECV* lpMsg, int aIndex)
 		memset(lpObj->PathY, 0, sizeof(lpObj->PathY));
 
 		memset(lpObj->PathOri, 0, sizeof(lpObj->PathOri));
-
-		gObjSetPosition(lpObj->Index, lpObj->X, lpObj->Y);
 
 		return;
 	}
@@ -1223,8 +1218,6 @@ void CGMoveRecv(PMSG_MOVE_RECV* lpMsg, int aIndex)
 		memset(lpObj->PathY, 0, sizeof(lpObj->PathY));
 
 		memset(lpObj->PathOri, 0, sizeof(lpObj->PathOri));
-
-		gObjSetPosition(lpObj->Index, lpObj->X, lpObj->Y);
 
 		return;
 	}

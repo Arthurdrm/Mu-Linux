@@ -2385,6 +2385,13 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 		return;
 	}
 
+	// Se o jogador estiver se movendo (caminhando), aguarda concluir a rota
+	// para nao interromper a animacao de caminhada no cliente nem gerar desync de coordenadas
+	if (lpObj->PathCount > 0)
+	{
+		return;
+	}
+
 	// Se entrou em Safe Zone, desativa imediatamente forcando reativar fora
 	if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 1) != 0)
 	{
@@ -2418,10 +2425,22 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	int minDistance = 999;
 	int maxRadius = 6;
 
-	// Para ataques corpo a corpo melee (DK com Twisting Slash ou ataque fisico basico), mantem raio maximo de 3 tiles
-	if (lpObj->Class == CLASS_DK && (lpObj->AutoAttackSkill == 0 || lpObj->AutoAttackSkill == SKILL_TWISTING_SLASH || lpObj->AutoAttackSkill == SKILL_DEATH_STAB || lpObj->AutoAttackSkill == SKILL_RAGEFUL_BLOW))
+	// Para ataques corpo a corpo melee (DK com Twisting Slash ou ataque fisico basico):
+	if (lpObj->Class == CLASS_DK)
 	{
-		maxRadius = 3;
+		if (lpObj->AutoAttackSkill == SKILL_TWISTING_SLASH || lpObj->AutoAttackSkill == SKILL_RAGEFUL_BLOW || lpObj->AutoAttackSkill == SKILL_DEATH_STAB)
+		{
+			maxRadius = 3;
+		}
+		else
+		{
+			// Ataque basico fisico ou skills melee de curta distancia (raio 2 tiles colado)
+			maxRadius = 2;
+		}
+	}
+	else if (lpObj->Class == CLASS_MG && lpObj->AutoAttackSkill <= 0)
+	{
+		maxRadius = 2;
 	}
 
 	for (int n = 0; n < lpObj->VPCount2; n++)

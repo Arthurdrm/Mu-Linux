@@ -885,78 +885,37 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 		return;
 	}
 
-	// Descarta coordenadas invalidas (fora dos limites do mapa ou (0,0))
-	if (lpMsg->x <= 0 || lpMsg->y <= 0 || lpMsg->x >= 255 || lpMsg->y >= 255)
-	{
-		return;
-	}
-
-	// Descarta coordenadas em paredes ou fora do mapa (bits 4 ou 8)
-	if (gMap[lpObj->Map].CheckAttr(lpMsg->x, lpMsg->y, 4) != 0 || gMap[lpObj->Map].CheckAttr(lpMsg->x, lpMsg->y, 8) != 0)
-	{
-		return;
-	}
-
-	if (gObjCheckMapTile(lpObj, 2) != 0)
-	{
-		return;
-	}
-
 	// Mismo criterio que CGMoveRecv: con el chaos box abierto no hay movimiento.
-	// La posición actual sí pasa: es la corrección que manda gObjSetPosition
-	// para devolver al jugador a su lugar.
-	if (ChaosBoxBlocksMove(lpObj) && (lpMsg->x != lpObj->X || lpMsg->y != lpObj->Y))
+	if (ChaosBoxBlocksMove(lpObj))
 	{
 		return;
 	}
 
-	if (lpMsg->x < (lpObj->X - 15) || lpMsg->x >(lpObj->X + 15) || lpMsg->y < (lpObj->Y - 15) || lpMsg->y >(lpObj->Y + 15))
+	// O cliente nao pode alterar suas proprias coordenadas via pacote 0x11 (PROTOCOL_CODE3).
+	// O movimento do personagem ocorre exclusivamente atraves de CGMoveRecv (0x10).
+	// Pacotes 0x11 com coordenadas divergentes (como os enviados por skills melee do cliente)
+	// sao rejeitados e corrigidos com a posicao real autoritativa do servidor.
+	if (lpMsg->x != lpObj->X || lpMsg->y != lpObj->Y)
 	{
+		PMSG_POSITION_SEND pMsg;
+
+		pMsg.header.set(PROTOCOL_CODE3, sizeof(pMsg));
+
+		pMsg.index[0] = SET_NUMBERHB(aIndex);
+
+		pMsg.index[1] = SET_NUMBERLB(aIndex);
+
+		pMsg.x = (BYTE)lpObj->X;
+
+		pMsg.y = (BYTE)lpObj->Y;
+
+		if (lpObj->Type == OBJECT_USER)
+		{
+			DataSend(aIndex, (BYTE*)&pMsg, pMsg.header.size);
+		}
+
 		return;
 	}
-
-	// Misma tolerancia que el inicio de un camino (MoveCheckPath): la corrección
-	// de posición no puede reubicar al personaje más lejos que eso.
-	if (gServerInfo.m_MoveCheck != 0 && MoveCheckDistance(lpObj, lpMsg->x, lpMsg->y) > gServerInfo.m_MoveCheckTolerance)
-	{
-		const char* mode = (gServerInfo.m_MoveCheck == 2) ? "" : " [observado]";
-
-		gLog.Output(LOG_HACK, "[%s][%s] Posicion: (%d,%d) a %d tiles de la del server (%d,%d)%s", lpObj->Account, lpObj->Name, lpMsg->x, lpMsg->y, MoveCheckDistance(lpObj, lpMsg->x, lpMsg->y), lpObj->X, lpObj->Y, mode);
-
-		TRACE_REJECT(aIndex, PROTOCOL_CODE3, -1, "pos: (%d,%d) a %d tiles de la del server (%d,%d)%s", lpMsg->x, lpMsg->y, MoveCheckDistance(lpObj, lpMsg->x, lpMsg->y), lpObj->X, lpObj->Y, mode);
-
-		if (gServerInfo.m_MoveCheck == 2)
-		{
-			return;
-		}
-	}
-
-	gMap[lpObj->Map].DelStandAttr(lpObj->OldX, lpObj->OldY);
-
-	if (lpObj->X > 0 && lpObj->Y > 0 && lpObj->X < 255 && lpObj->Y < 255)
-	{
-		if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 8) == 0)
-		{
-			lpObj->OldX = lpObj->X;
-			lpObj->OldY = lpObj->Y;
-		}
-	}
-
-	lpObj->X = lpMsg->x;
-
-	lpObj->Y = lpMsg->y;
-
-	lpObj->TX = lpMsg->x;
-
-	lpObj->TY = lpMsg->y;
-
-	if (lpObj->OldX <= 0 || lpObj->OldY <= 0)
-	{
-		lpObj->OldX = lpMsg->x;
-		lpObj->OldY = lpMsg->y;
-	}
-
-	gMap[lpObj->Map].SetStandAttr(lpObj->TX, lpObj->TY);
 
 	PMSG_POSITION_SEND pMsg;
 
@@ -966,9 +925,9 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 
 	pMsg.index[1] = SET_NUMBERLB(aIndex);
 
-	pMsg.x = (BYTE)lpObj->TX;
+	pMsg.x = (BYTE)lpObj->X;
 
-	pMsg.y = (BYTE)lpObj->TY;
+	pMsg.y = (BYTE)lpObj->Y;
 
 	if (lpObj->Type == OBJECT_USER)
 	{

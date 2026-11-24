@@ -2297,14 +2297,7 @@ void gObjSecondProc()
 					gParty.GCPartyLifeSend(lpObj->PartyNumber);
 				}
 
-				int BattleGround = 1;
-
-				//int m_BattleTimer = gBattleSoccer.CheckBattleGroundTimer();
-
-				if (gGameMaster.CheckGameMasterLevel(lpObj, 1) != 0)
-				{
-					BattleGround = 0;
-				}
+				int BattleGround = 0; // Desativado kick de BattleSoccer para nao teleportar jogadores da Arena para Lorencia
 
 				if (lpObj->Map == MAP_ARENA && BattleGround == 1)
 				{

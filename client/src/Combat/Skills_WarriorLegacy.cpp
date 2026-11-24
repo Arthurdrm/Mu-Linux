@@ -282,20 +282,23 @@ void __cdecl Combat_UseWarriorSkill(intptr_t c /* IDA: c */, intptr_t o /* IDA: 
 
     AsCharacter(c)->SkillStage = 1;
     if ((*(DWORD*)(o + 120) & 0x20) == 0) {
-        int tileX = (int)(AsCharacter(c)->TargetPosition[0] * 0.01f);
-        int tileY = (int)(AsCharacter(c)->TargetPosition[1] * 0.01f);
+        // En Blood Castle (mapas 11-16), el heroe avanza hacia la puerta/estatua
         if (gMapManager.GetCurrentMap() >= 11 && gMapManager.GetCurrentMap() <= 16) {
+            int tileX = (int)*(DWORD*)&AsCharacter(c)->PositionX;
+            int tileY = (int)*(DWORD*)&AsCharacter(c)->PositionY;
             switch (abs((int)(*(float*)(o + 36) * 0.022222223f)) & 7) {
             case 0: ++tileY; break; case 1: --tileX; ++tileY; break;
             case 2: --tileX; break; case 3: --tileX; --tileY; break;
             case 4: --tileY; break; case 5: ++tileX; --tileY; break;
             case 6: ++tileX; break; case 7: ++tileX; ++tileY; break;
             }
-        }
-        const BYTE terrain = TerrainWall[((tileY & 0xFF) << 8) | (tileX & 0xFF)];
-        if ((terrain & 0x0C) == 0 && skillType != 47 && skillType != 43 && skillType != 49) {
-            BYTE confirm[5] = { 0xC1, 5, 0x11, (BYTE)tileX, (BYTE)tileY };
-            gNetwork.SendC1(confirm, sizeof(confirm));
+            if (tileX > 0 && tileY > 0 && tileX < 255 && tileY < 255) {
+                const BYTE terrain = TerrainWall[((tileY & 0xFF) << 8) | (tileX & 0xFF)];
+                if ((terrain & 0x0C) == 0 && skillType != 47 && skillType != 43 && skillType != 49) {
+                    BYTE confirm[5] = { 0xC1, 5, 0x11, (BYTE)tileX, (BYTE)tileY };
+                    gNetwork.SendC1(confirm, sizeof(confirm));
+                }
+            }
         }
     }
 }

@@ -233,10 +233,10 @@ void gObjSetExperienceTable()
 {
 	memset(gLevelExperience, 0, sizeof(gLevelExperience));
 
-	// Parámetros ajustables
-	double maxExperience = DWORD_MAX * 0.95; // Aproximar al máximo seguro
+	// Parametros ajustables
+	double maxExperience = DWORD_MAX * 0.95; // Aproximar ao maximo seguro
 
-	// Ajustar el multiplicador dinámicamente
+	// Ajustar multiplicador dinamicamente
 	double scaleFactor = maxExperience / pow(gServerInfo.m_MaxCharacterLevel, 3);
 
 	for (int level = 1; level <= gServerInfo.m_MaxCharacterLevel; level++)
@@ -1226,39 +1226,50 @@ bool gObjCheckMapTile(LPOBJ lpObj, int type)
 	}
 
 	// Se a posicao atual do jogador eh chao valido (sem parede e com chao), esta 100% regular
-	if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 8) == 0)
+	if (lpObj->X > 0 && lpObj->Y > 0 && lpObj->X < 255 && lpObj->Y < 255)
 	{
-		return 0;
+		if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 8) == 0)
+		{
+			return 0;
+		}
 	}
 
-	// Se a posicao anterior for valida, volta para ela em vez de teleportar para outro mapa
-	if (gMap[lpObj->Map].CheckAttr(lpObj->OldX, lpObj->OldY, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->OldX, lpObj->OldY, 8) == 0)
+	// Se a posicao anterior for valida, volta para ela em vez de teleportar para a cidade
+	if (lpObj->OldX > 0 && lpObj->OldY > 0 && lpObj->OldX < 255 && lpObj->OldY < 255)
 	{
-		gObjSetPosition(lpObj->Index, lpObj->OldX, lpObj->OldY);
+		if (gMap[lpObj->Map].CheckAttr(lpObj->OldX, lpObj->OldY, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->OldX, lpObj->OldY, 8) == 0)
+		{
+			gObjSetPosition(lpObj->Index, lpObj->OldX, lpObj->OldY);
 
-		return 1;
+			return 1;
+		}
 	}
 
-	// Apenas em caso de estar preso sem posicao anterior valida, move para o retorno do mapa atual
-	int gate = 17;
-
-	switch (lpObj->Map)
+	// Tenta encontrar um tile valido ao redor imediato (raio de 1 a 3 tiles)
+	for (int dist = 1; dist <= 3; dist++)
 	{
-		case MAP_LORENCIA:   gate = 17; break;
-		case MAP_DUNGEON:    gate = 17; break;
-		case MAP_DEVIAS:     gate = 22; break;
-		case MAP_NORIA:      gate = 27; break;
-		case MAP_LOST_TOWER: gate = 42; break;
-		case MAP_ARENA:      gate = 115; break;
-		case MAP_ATLANS:     gate = 49; break;
-		case MAP_TARKAN:     gate = 57; break;
-		case MAP_ICARUS:     gate = 42; break;
-		default:             gate = (lpObj->Class == CLASS_FE ? 27 : 17); break;
+		for (int dx = -dist; dx <= dist; dx++)
+		{
+			for (int dy = -dist; dy <= dist; dy++)
+			{
+				int nx = lpObj->X + dx;
+				int ny = lpObj->Y + dy;
+
+				if (nx > 0 && ny > 0 && nx < 255 && ny < 255)
+				{
+					if (gMap[lpObj->Map].CheckAttr(nx, ny, 4) == 0 && gMap[lpObj->Map].CheckAttr(nx, ny, 8) == 0)
+					{
+						gObjSetPosition(lpObj->Index, nx, ny);
+
+						return 1;
+					}
+				}
+			}
+		}
 	}
 
-	gObjMoveGate(lpObj->Index, gate);
-
-	return 1;
+	// NUNCA teleportar para o portao da cidade arbitrariamente por tile check
+	return 0;
 }
 
 //**************************************************************************//
@@ -2804,6 +2815,10 @@ void gObjSetPosition(int aIndex, int x, int y)
 	gMap[lpObj->Map].DelStandAttr(lpObj->OldX, lpObj->OldY);
 
 	gMap[lpObj->Map].SetStandAttr(x, y);
+
+	lpObj->X = x;
+
+	lpObj->Y = y;
 
 	lpObj->OldX = x;
 

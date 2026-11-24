@@ -885,6 +885,18 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 		return;
 	}
 
+	// Descarta coordenadas invalidas (fora dos limites do mapa ou (0,0))
+	if (lpMsg->x <= 0 || lpMsg->y <= 0 || lpMsg->x >= 255 || lpMsg->y >= 255)
+	{
+		return;
+	}
+
+	// Descarta coordenadas em paredes ou fora do mapa (bits 4 ou 8)
+	if (gMap[lpObj->Map].CheckAttr(lpMsg->x, lpMsg->y, 4) != 0 || gMap[lpObj->Map].CheckAttr(lpMsg->x, lpMsg->y, 8) != 0)
+	{
+		return;
+	}
+
 	if (gObjCheckMapTile(lpObj, 2) != 0)
 	{
 		return;
@@ -921,6 +933,15 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 
 	gMap[lpObj->Map].DelStandAttr(lpObj->OldX, lpObj->OldY);
 
+	if (lpObj->X > 0 && lpObj->Y > 0 && lpObj->X < 255 && lpObj->Y < 255)
+	{
+		if (gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 4) == 0 && gMap[lpObj->Map].CheckAttr(lpObj->X, lpObj->Y, 8) == 0)
+		{
+			lpObj->OldX = lpObj->X;
+			lpObj->OldY = lpObj->Y;
+		}
+	}
+
 	lpObj->X = lpMsg->x;
 
 	lpObj->Y = lpMsg->y;
@@ -929,9 +950,11 @@ void CGPositionRecv(PMSG_POSITION_RECV* lpMsg, int aIndex)
 
 	lpObj->TY = lpMsg->y;
 
-	lpObj->OldX = lpMsg->x;
-
-	lpObj->OldY = lpMsg->y;
+	if (lpObj->OldX <= 0 || lpObj->OldY <= 0)
+	{
+		lpObj->OldX = lpMsg->x;
+		lpObj->OldY = lpMsg->y;
+	}
 
 	gMap[lpObj->Map].SetStandAttr(lpObj->TX, lpObj->TY);
 

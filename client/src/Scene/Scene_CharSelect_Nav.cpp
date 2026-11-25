@@ -2313,6 +2313,8 @@ int __cdecl CalculateAttackSpeed(BYTE* param_1) {
     BYTE* helm = param_1 + 1080;
     PlusSpecial(atkPtr, 77, AsItem(helm));
     PlusSpecial(magPtr, 77, AsItem(helm));
+    if (*atkPtr > 220) *atkPtr = 220;
+    if (*magPtr > 220) *magPtr = 220;
     return 0;
 }
 

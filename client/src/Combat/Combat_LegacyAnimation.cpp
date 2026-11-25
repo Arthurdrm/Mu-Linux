@@ -91,6 +91,10 @@ void __cdecl SetAttackSpeed(void) {
     int  attackSpeed = (int)(*(unsigned short*)(ca + 0x38));
     int  magicSpeed  = (int)(*(unsigned short*)(ca + 0x44));
 
+    // Cap de seguranca para evitar o 'Bug de Agilidade' clássico com stats full (32767)
+    if (attackSpeed > 220) attackSpeed = 220;
+    if (magicSpeed  > 220) magicSpeed  = 220;
+
     float v34 = (float)attackSpeed * _DAT_005524bc;  // = AttackSpeed * 0.004
     float v39 = (float)magicSpeed  * _DAT_005524bc;  // = MagicSpeed  * 0.004
 

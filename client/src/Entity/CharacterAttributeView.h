@@ -12,8 +12,14 @@ public:
     WORD PhysicalSpeed() const { return ReadWord(0x38); }
     WORD MagicSpeed() const { return ReadWord(0x44); }
     BYTE Effects() const { return m_Data[0x28]; }
-    void SetPhysicalSpeed(DWORD value) { WriteWord(0x38, value); }
-    void SetMagicSpeed(DWORD value) { WriteWord(0x44, value); }
+    void SetPhysicalSpeed(DWORD value) { 
+        if (value > 220) value = 220;
+        WriteWord(0x38, value); 
+    }
+    void SetMagicSpeed(DWORD value) { 
+        if (value > 220) value = 220;
+        WriteWord(0x44, value); 
+    }
     void SetAttackSuccessRate(DWORD value) { WriteWord(0x3A, value); }
     void SetDefense(DWORD value) { WriteWord(0x4E, value); }
     void SetDefenseSuccessRate(DWORD value) { WriteWord(0x4C, value); }

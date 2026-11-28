@@ -2417,10 +2417,9 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	DWORD minDelay = 450;
 	if (speed > 0)
 	{
-		// Cadencia fiel a animacao do client e agilidade real do boneco:
-		// Speed 20 -> ~320ms, Speed 100 -> ~220ms, Speed 250 -> ~137ms, Speed 500 -> ~84ms
-		minDelay = (DWORD)(220000 / (600 + 4 * speed));
-		if (minDelay < 40) minDelay = 40;   // Piso minimo de protecao (40ms = 25 fps)
+		// Cadencia sincronizada com a animacao de 25fps do client (frame 5.0f = ~180-200ms em speed 220):
+		minDelay = (DWORD)(265000 / (600 + 4 * speed));
+		if (minDelay < 180) minDelay = 180; // Evita cortar a animacao antes do frame de disparo no client
 		if (minDelay > 600) minDelay = 600; // Teto maximo para velocidades muito baixas
 	}
 
@@ -2512,9 +2511,13 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	if (lpObj->AutoAttackSkill > 0)
 	{
 		lpSkill = gSkillManager.GetSkill(lpObj, lpObj->AutoAttackSkill);
+		if (lpSkill == 0 || !gSkillManager.CheckSkillMana(lpObj, lpSkill->m_index) || !gSkillManager.CheckSkillBP(lpObj, lpSkill->m_index))
+		{
+			return;
+		}
 	}
 
-	if (lpSkill != 0 && gSkillManager.CheckSkillMana(lpObj, lpSkill->m_index) && gSkillManager.CheckSkillBP(lpObj, lpSkill->m_index))
+	if (lpSkill != 0)
 	{
 		int s = lpSkill->m_skill;
 		if (s == SKILL_TWISTING_SLASH || s == SKILL_EVIL_SPIRIT || s == SKILL_HELL_FIRE || s == SKILL_INFERNO || s == SKILL_RAGEFUL_BLOW)

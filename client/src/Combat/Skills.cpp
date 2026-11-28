@@ -320,6 +320,12 @@ void PacketHandler_0x19(BYTE* pkt)
     case 0x18:  // 24 Triple Shot
     case 0x34:  // 52 Penetration
     {
+        if (caster == (BYTE*)DAT_07abf5d8) {
+            BYTE curAct = AsObject(caster)->CurrentAction;
+            if (curAct >= 46 && curAct <= 49 && AsObject(caster)->AnimationFrame < 5.0f && AsCharacter(caster)->SkillStage != 0) {
+                return;
+            }
+        }
         SetPlayerBow97k(caster);
         goto common_tail;
     }

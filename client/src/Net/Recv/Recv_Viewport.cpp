@@ -223,6 +223,8 @@ void NetRecv_10(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             if (AsCharacter(h)->Movement == 0) {
                 AsCharacter(h)->PositionX = gx;
                 AsCharacter(h)->PositionY = gy;
+                AsCharacter(h)->TargetX = gx;
+                AsCharacter(h)->TargetY = gy;
             }
         } else {
             // ReceiveMoveCharacter 00427B90: remote entities store

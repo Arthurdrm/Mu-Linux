@@ -399,10 +399,13 @@ void NetRecv_18(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     //   *(float*)(c + 36) = (dir - 1) * 45.0
     AsCharacter(slot)->Object.Angle[2] = ((float)(int)dirByte - 1.0f) * 45.0f;
     AsCharacter(slot)->Movement = 0;  // alive flag cleared (per IDA c+748=0)
-    // ReceiveAction también aplica la grilla objetivo recibida antes
-    // (+774/+775) a la posición de mundo, antes de la animación.
-    AsCharacter(slot)->Object.Position[0] = (float)AsCharacter(slot)->TargetX * 100.0f + 50.0f;
-    AsCharacter(slot)->Object.Position[1] = (float)AsCharacter(slot)->TargetY * 100.0f + 50.0f;
+    // ReceiveAction aplica a grilla objetivo (+774/+775) apenas para entidades remotas.
+    // No heroi local, TargetX/Y podem estar desatualizados (ex: ponto inicial do mapa),
+    // o que teleportaria o modelo/camera visualmente sem alterar PositionX/Y.
+    if (!isHero) {
+        AsCharacter(slot)->Object.Position[0] = (float)AsCharacter(slot)->TargetX * 100.0f + 50.0f;
+        AsCharacter(slot)->Object.Position[1] = (float)AsCharacter(slot)->TargetY * 100.0f + 50.0f;
+    }
 
     // Helper: equivalente a SetAction — setea anim_state guardando el previo en cache
     auto SetAnim = [](BYTE* s, BYTE animId) {
@@ -565,9 +568,9 @@ void NetRecv_1E(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     bool shouldTriggerAnim = true;
     if (isHero) {
         BYTE curAct = AsObject(caster)->CurrentAction;
-        // Se o herói já está executando uma ação de combate/conjuração e ainda no começo do frame,
-        // não reseta para manter a fluidez de quem está clicando manualmente
-        if (curAct >= 34 && curAct <= 91 && AsObject(caster)->AnimationFrame < 3.0f) {
+        // Se o herói já está executando uma ação de combate antes do frame de disparo (5.0f),
+        // não interrompe nem reseta o giro/efeito antes da conclusão.
+        if (curAct >= 34 && curAct <= 91 && AsObject(caster)->AnimationFrame < 5.0f) {
             shouldTriggerAnim = false;
         }
     }
@@ -592,9 +595,10 @@ void NetRecv_1E(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
             SetPlayerAttack(AsCharacter(caster), 0, 0, 0);
         }
         *(DWORD *)&AsCharacter(caster)->Object.AnimationFrame = 0;
+        AsCharacter(caster)->SkillStage = 1;
+    } else if (AsCharacter(caster)->SkillStage == 0) {
+        AsCharacter(caster)->SkillStage = 1;
     }
-
-    AsCharacter(caster)->SkillStage = 1;
     // DESVIACION: Triple Shot de otro jugador dispara ya. El modelo 390 anima
     // con la velocidad de ataque del héroe local; si es más lenta que la del
     // que tira, el 0x1E siguiente resetea la etapa antes del frame 5 y sólo

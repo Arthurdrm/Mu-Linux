@@ -1531,6 +1531,9 @@ void NetRecv_1C(BYTE* Msg, int Size, BYTE hdr, BYTE sub, bool bEncrypted)
     // retoma porque el final del handler hace c+748 = 0 y SetPlayerStop.
     *(DWORD *)&AsCharacter(hero)->PositionX = gridX;
     *(DWORD *)&AsCharacter(hero)->PositionY = gridY;
+    AsCharacter(hero)->TargetX = gridX;
+    AsCharacter(hero)->TargetY = gridY;
+    AsCharacter(hero)->JumpTime = 0;
     AsCharacter(hero)->Object.Angle[2] = ((float)direction - 1.0f) * 45.0f;
 
     if (gate != 0) {

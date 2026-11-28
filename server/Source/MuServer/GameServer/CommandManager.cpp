@@ -168,6 +168,17 @@ void CCommandManager::MainProc()
 		{
 			this->CommandResetAutoProc(&gObj[n]);
 		}
+	}
+}
+
+void CCommandManager::AutoProc()
+{
+	for (int n = OBJECT_START_USER; n < MAX_OBJECT; n++)
+	{
+		if (gObjIsConnectedGP(n) == false)
+		{
+			continue;
+		}
 
 		if (gObj[n].AutoAttackEnable != 0)
 		{
@@ -2419,8 +2430,6 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 		return;
 	}
 
-	lpObj->AutoAttackTime = currentTick;
-
 	int targetIndex = -1;
 	int minDistance = 999;
 	int maxRadius = 6;
@@ -2483,6 +2492,15 @@ void CCommandManager::CommandAttackAutoProc(LPOBJ lpObj)
 	if (targetIndex == -1)
 	{
 		return;
+	}
+
+	if ((currentTick - lpObj->AutoAttackTime) > (minDelay * 2))
+	{
+		lpObj->AutoAttackTime = currentTick;
+	}
+	else
+	{
+		lpObj->AutoAttackTime += minDelay;
 	}
 
 	LPOBJ lpTarget = &gObj[targetIndex];

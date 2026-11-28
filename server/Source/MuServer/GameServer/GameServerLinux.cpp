@@ -220,6 +220,7 @@ int main()
 			gQueueTimer.CreateTimer(QUEUE_TIMER_FIRST, 1000, &QueueTimerCallback);
 			gQueueTimer.CreateTimer(QUEUE_TIMER_CLOSE, 1000, &QueueTimerCallback);
 			gQueueTimer.CreateTimer(QUEUE_TIMER_ACCOUNT_LEVEL, 60000, &QueueTimerCallback);
+			gQueueTimer.CreateTimer(QUEUE_TIMER_AUTO, 50, &QueueTimerCallback);
 		}
 	}
 	else

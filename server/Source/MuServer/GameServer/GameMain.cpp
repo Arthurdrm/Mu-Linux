@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameMain.h"
 #include "BattleSoccerManager.h"
+#include "CommandManager.h"
 #include "DSProtocol.h"
 #include "HackCheck.h"
 #include "JSProtocol.h"
@@ -172,6 +173,13 @@ void CALLBACK QueueTimerCallback(PVOID lpParameter, BOOLEAN TimerOrWaitFired)
 		case QUEUE_TIMER_ACCOUNT_LEVEL:
 		{
 			gObjAccountLevelProc();
+
+			break;
+		}
+
+		case QUEUE_TIMER_AUTO:
+		{
+			gCommandManager.AutoProc();
 
 			break;
 		}

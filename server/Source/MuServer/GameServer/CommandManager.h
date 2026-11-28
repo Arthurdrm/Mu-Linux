@@ -140,6 +140,8 @@ public:
 
 	void MainProc();
 
+	void AutoProc();
+
 	long GetNumber(char* arg, int pos);
 
 	void GetString(char* arg, char* out, int size, int pos);

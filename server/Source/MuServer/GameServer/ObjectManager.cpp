@@ -2181,27 +2181,27 @@ void CObjectManager::CharacterCalcAttribute(int aIndex)
 
 	if (lpObj->Class == CLASS_DW)
 	{
-		lpObj->PhysiSpeed = Dexterity / gServerInfo.m_DWPhysiSpeedConstA;
+		lpObj->PhysiSpeed = Dexterity / ((gServerInfo.m_DWPhysiSpeedConstA > 0) ? gServerInfo.m_DWPhysiSpeedConstA : 20);
 
-		lpObj->MagicSpeed = Dexterity / gServerInfo.m_DWMagicSpeedConstA;
+		lpObj->MagicSpeed = Dexterity / ((gServerInfo.m_DWMagicSpeedConstA > 0) ? gServerInfo.m_DWMagicSpeedConstA : 10);
 	}
-	if (lpObj->Class == CLASS_DK)
+	else if (lpObj->Class == CLASS_DK)
 	{
-		lpObj->PhysiSpeed = Dexterity / gServerInfo.m_DKPhysiSpeedConstA;
+		lpObj->PhysiSpeed = Dexterity / ((gServerInfo.m_DKPhysiSpeedConstA > 0) ? gServerInfo.m_DKPhysiSpeedConstA : 25);
 
-		lpObj->MagicSpeed = Dexterity / gServerInfo.m_DKMagicSpeedConstA;
+		lpObj->MagicSpeed = Dexterity / ((gServerInfo.m_DKMagicSpeedConstA > 0) ? gServerInfo.m_DKMagicSpeedConstA : 20);
 	}
 	else if (lpObj->Class == CLASS_FE)
 	{
-		lpObj->PhysiSpeed = Dexterity / gServerInfo.m_FEPhysiSpeedConstA;
+		lpObj->PhysiSpeed = Dexterity / ((gServerInfo.m_FEPhysiSpeedConstA > 0) ? gServerInfo.m_FEPhysiSpeedConstA : 100);
 
-		lpObj->MagicSpeed = Dexterity / gServerInfo.m_FEMagicSpeedConstA;
+		lpObj->MagicSpeed = Dexterity / ((gServerInfo.m_FEMagicSpeedConstA > 0) ? gServerInfo.m_FEMagicSpeedConstA : 200);
 	}
 	else if (lpObj->Class == CLASS_MG)
 	{
-		lpObj->PhysiSpeed = Dexterity / gServerInfo.m_MGPhysiSpeedConstA;
+		lpObj->PhysiSpeed = Dexterity / ((gServerInfo.m_MGPhysiSpeedConstA > 0) ? gServerInfo.m_MGPhysiSpeedConstA : 30);
 
-		lpObj->MagicSpeed = Dexterity / gServerInfo.m_MGMagicSpeedConstA;
+		lpObj->MagicSpeed = Dexterity / ((gServerInfo.m_MGMagicSpeedConstA > 0) ? gServerInfo.m_MGMagicSpeedConstA : 20);
 	}
 
 	lpObj->PhysiSpeed += lpObj->DrinkSpeed;

@@ -1255,21 +1255,21 @@ void CServerInfo::ReadCharacterInfo(const char* section, const char* path)
 
 	this->m_MGAttackSuccessRateConstD = GetPrivateProfileInt(section, "MGAttackSuccessRateConstD", 0, path);
 
-	this->m_DWPhysiSpeedConstA = GetPrivateProfileInt(section, "DWPhysiSpeedConstA", 0, path);
+	this->m_DWPhysiSpeedConstA = GetPrivateProfileInt(section, "DWPhysiSpeedConstA", 20, path);
 
-	this->m_DWMagicSpeedConstA = GetPrivateProfileInt(section, "DWMagicSpeedConstA", 0, path);
+	this->m_DWMagicSpeedConstA = GetPrivateProfileInt(section, "DWMagicSpeedConstA", 10, path);
 
-	this->m_DKPhysiSpeedConstA = GetPrivateProfileInt(section, "DKPhysiSpeedConstA", 0, path);
+	this->m_DKPhysiSpeedConstA = GetPrivateProfileInt(section, "DKPhysiSpeedConstA", 25, path);
 
-	this->m_DKMagicSpeedConstA = GetPrivateProfileInt(section, "DKMagicSpeedConstA", 0, path);
+	this->m_DKMagicSpeedConstA = GetPrivateProfileInt(section, "DKMagicSpeedConstA", 20, path);
 
-	this->m_FEPhysiSpeedConstA = GetPrivateProfileInt(section, "FEPhysiSpeedConstA", 0, path);
+	this->m_FEPhysiSpeedConstA = GetPrivateProfileInt(section, "FEPhysiSpeedConstA", 100, path);
 
-	this->m_FEMagicSpeedConstA = GetPrivateProfileInt(section, "FEMagicSpeedConstA", 0, path);
+	this->m_FEMagicSpeedConstA = GetPrivateProfileInt(section, "FEMagicSpeedConstA", 200, path);
 
-	this->m_MGPhysiSpeedConstA = GetPrivateProfileInt(section, "MGPhysiSpeedConstA", 0, path);
+	this->m_MGPhysiSpeedConstA = GetPrivateProfileInt(section, "MGPhysiSpeedConstA", 30, path);
 
-	this->m_MGMagicSpeedConstA = GetPrivateProfileInt(section, "MGMagicSpeedConstA", 0, path);
+	this->m_MGMagicSpeedConstA = GetPrivateProfileInt(section, "MGMagicSpeedConstA", 20, path);
 
 	this->m_DWDefenseSuccessRateConstA = GetPrivateProfileInt(section, "DWDefenseSuccessRateConstA", 0, path);
 
